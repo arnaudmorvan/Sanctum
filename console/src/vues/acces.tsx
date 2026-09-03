@@ -14,13 +14,14 @@ const COULEUR: Record<string, string> = {
 }
 
 export const VueAcces = ({ cle }: { cle: string }) => {
-  const { data, erreur, charge } = useRoute<Acces>("/console/acces.json", cle)
+  const { data, erreur, charge, sansCle } = useRoute<Acces>("/console/acces.json", cle)
 
   return (
     <Etat
       charge={charge}
       erreur={erreur}
       data={data}
+      sansCle={sansCle}
       enfants={
         <div className="flex flex-col gap-5">
           {data?.lecture_seule ? (

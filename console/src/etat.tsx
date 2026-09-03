@@ -14,6 +14,14 @@ export function useRoute<T>(route: string, cle: string) {
 
   useEffect(() => {
     let vivant = true
+    // Sans clé, on n'appelle même pas : un 401 provoqué par un champ vide s'affichait
+    // « Clé refusée », ce qui accuse la clé alors qu'aucune n'a été envoyée.
+    if (!cle) {
+      setData(null)
+      setErreur("")
+      setCharge(false)
+      return
+    }
     setCharge(true)
     setErreur("")
     lire<T>(route)
@@ -32,8 +40,19 @@ export function useRoute<T>(route: string, cle: string) {
     }
   }, [route, cle])
 
-  return { data, erreur, charge }
+  return { data, erreur, charge, sansCle: !cle }
 }
+
+export const SansCle = () => (
+  <div className="rounded-xl border border-white/12 border-dashed px-5 py-8 text-center">
+    <Text c="secondary">
+      Saisis la clé de lecture en haut à droite pour afficher cette section.
+    </Text>
+    <Text c="muted" size="sm">
+      C'est la variable DASHBOARD_KEY du service MCP. Elle reste dans ton navigateur.
+    </Text>
+  </div>
+)
 
 export const Etat = ({
   charge,
@@ -41,13 +60,16 @@ export const Etat = ({
   data,
   enfants,
   vide,
+  sansCle,
 }: {
   charge: boolean
   erreur: string
   data: unknown
   enfants: ReactNode
   vide?: string
+  sansCle?: boolean
 }) => {
+  if (sansCle) return <SansCle />
   if (erreur)
     return <Alert color="red" variant="light" title="Lecture impossible" description={erreur} />
   if (charge && !data)

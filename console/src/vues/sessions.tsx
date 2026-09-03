@@ -9,7 +9,7 @@ import type { Session } from "../mcp"
 const couleurFriction = (f: number) => (f >= 8 ? "red" : f >= 3 ? "orange" : "green")
 
 export const VueSessions = ({ cle }: { cle: string }) => {
-  const { data, erreur, charge } = useRoute<{ sessions: Session[] }>("/sessions.json", cle)
+  const { data, erreur, charge, sansCle } = useRoute<{ sessions: Session[] }>("/sessions.json", cle)
   const sessions = data?.sessions ?? []
 
   return (
@@ -17,6 +17,7 @@ export const VueSessions = ({ cle }: { cle: string }) => {
       charge={charge}
       erreur={erreur}
       data={data}
+      sansCle={sansCle}
       enfants={
         sessions.length === 0 ? (
           <Text c="secondary">

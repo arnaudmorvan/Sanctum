@@ -61,7 +61,7 @@ export const App = () => {
             <Input
               type="password"
               value={cle}
-              placeholder="DASHBOARD_KEY"
+              placeholder="colle la clé ici"
               onChange={(e) => {
                 const v = e.currentTarget.value
                 setCle(v)

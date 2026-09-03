@@ -13,7 +13,7 @@ const cellule = (v: unknown): string => {
  *  (consolidation, export DS) : leurs clés diffèrent d'un point à l'autre. On rend donc les
  *  colonnes rencontrées plutôt qu'un schéma figé, qui masquerait la moitié des points. */
 export const VueQualite = ({ cle }: { cle: string }) => {
-  const { data, erreur, charge } = useRoute<Qualite>("/quality.json", cle)
+  const { data, erreur, charge, sansCle } = useRoute<Qualite>("/quality.json", cle)
   const points = data?.points ?? []
   const colonnes = Array.from(
     points.reduce((acc, p) => {
@@ -27,6 +27,7 @@ export const VueQualite = ({ cle }: { cle: string }) => {
       charge={charge}
       erreur={erreur}
       data={data}
+      sansCle={sansCle}
       enfants={
         points.length === 0 ? (
           <Text c="secondary">

@@ -4,6 +4,7 @@ import { Spinner } from "@42/ui-react/spinner"
 import { Text } from "@42/ui-react/text"
 import { Title } from "@42/ui-react/title"
 import { useEffect, useState } from "react"
+import { SansCle } from "../etat"
 import { type Arbre, type Fichier, lire } from "../mcp"
 
 /** Les quatre corpus qu'on veut voir. Ce sont des dossiers du repo, pas des concepts
@@ -28,6 +29,7 @@ export const VueContexte = ({ cle }: { cle: string }) => {
     setArbre(null)
     setFichier(null)
     setErreur("")
+    if (!cle) return // pas de clé : rien à demander, la vue le dit d'elle-même
     lire<Arbre>(`/console/arbre.json?dir=${encodeURIComponent(corpus.dir)}`)
       .then(setArbre)
       .catch((e: Error) => setErreur(e.message))
@@ -43,6 +45,8 @@ export const VueContexte = ({ cle }: { cle: string }) => {
   }
 
   const fichiers = (arbre?.entrees ?? []).filter((e) => e.type !== "dir")
+
+  if (!cle) return <SansCle />
 
   return (
     <div className="flex flex-col gap-5">

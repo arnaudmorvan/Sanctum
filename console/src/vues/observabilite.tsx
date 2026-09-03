@@ -31,13 +31,14 @@ const Classement = ({ titre, lignes, vide }: { titre: string; lignes?: Paire[]; 
 )
 
 export const VueObservabilite = ({ cle }: { cle: string }) => {
-  const { data, erreur, charge } = useRoute<Metriques>("/metrics.json", cle)
+  const { data, erreur, charge, sansCle } = useRoute<Metriques>("/metrics.json", cle)
 
   return (
     <Etat
       charge={charge}
       erreur={erreur}
       data={data}
+      sansCle={sansCle}
       enfants={
         <div className="flex flex-col gap-6">
           <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-5">
