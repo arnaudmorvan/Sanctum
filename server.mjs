@@ -47,4 +47,4 @@ http
     res.writeHead(200, { "content-type": type, "cache-control": cache })
     fs.createReadStream(cible).pipe(res)
   })
-  .listen(PORT, () => console.log(`protos-42 sur :${PORT}`))
+  .listen(PORT, () => console.log(`Sanctum sur :${PORT}`))

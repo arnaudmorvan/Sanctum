@@ -1,9 +1,11 @@
-# La console 42
+# Sanctum — la console 42
 
 Un site, deux choses : **la console d'administration** à la racine, et **N parcours
 cliquables** sous `/p/<slug>/`. Tout est construit avec les vrais composants de
 `@42/ui-react` — y compris la console, qui est donc le premier vrai test du kit sur une
 application non triviale.
+
+Le repo s'appelle `Sanctum` ; le serveur MCP qui écrit dedans, `mcp-Omniscient`.
 
 Un parcours est déposé **depuis une conversation Claude** (connecteur 42 Design), pas par
 git : le PO décrit son parcours, le serveur MCP commit ici, Railway construit et déploie.
