@@ -47,6 +47,16 @@ export async function lireProtos<T>(): Promise<T> {
   return (await r.json()) as T
 }
 
+/** Teste une clé SANS la stocker : c'est ce qui permet à l'écran de connexion de dire
+ *  « refusée » plutôt que d'enregistrer une clé fausse et de laisser six onglets échouer
+ *  chacun de leur côté. Rend le résumé en cas de succès — l'appel sert deux fois. */
+export async function verifierCle(cle: string): Promise<Resume> {
+  const r = await fetch(`${BASE}/console/resume.json`, { headers: { "X-DS-Key": cle } })
+  if (r.status === 401) throw new ErreurAcces("Clé refusée par le serveur.")
+  if (!r.ok) throw new Error(`Serveur injoignable (HTTP ${r.status}).`)
+  return (await r.json()) as Resume
+}
+
 export const URL_MCP = BASE
 
 // ---------------------------------------------------------------- formes servies
