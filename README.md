@@ -1,10 +1,14 @@
-# protos-42 — les prototypes du produit
+# La console 42
 
-Un site, N parcours cliquables, construits avec les vrais composants de `@42/ui-react`.
-Chaque parcours est déposé **depuis une conversation Claude** (connecteur 42 Design), pas
-par git : le PO décrit son parcours, le serveur MCP commit ici, Railway construit et déploie.
+Un site, deux choses : **la console d'administration** à la racine, et **N parcours
+cliquables** sous `/p/<slug>/`. Tout est construit avec les vrais composants de
+`@42/ui-react` — y compris la console, qui est donc le premier vrai test du kit sur une
+application non triviale.
 
-- **Galerie** : `/`
+Un parcours est déposé **depuis une conversation Claude** (connecteur 42 Design), pas par
+git : le PO décrit son parcours, le serveur MCP commit ici, Railway construit et déploie.
+
+- **Console** : `/` — onglets Prototypes, Observabilité, Accès
 - **Un parcours** : `/p/<slug>/`
 
 ## Pour un PO : ajouter ou faire évoluer un parcours
@@ -21,6 +25,7 @@ Republier avec le **même slug** met le parcours à jour. Un slug nouveau crée 
 ## Structure
 
 ```
+console/             ← la console React (@42/ui-react) : galerie, métriques, rôles
 protos/<slug>/
 ├── views.tsx        ← LE PARCOURS : une entrée par écran. Obligatoire.
 ├── pages/*.tsx      ← les écrans
@@ -68,9 +73,14 @@ Mesuré le 2026-09-03.
 
 ```bash
 npm install
-npm run build     # dist/index.html (galerie) + dist/p/<slug>/ (un par parcours)
+npm run build     # dist/ (la console) + dist/p/<slug>/ (un par parcours)
 npm start         # sert dist/ sur $PORT
 ```
+
+**Chaque build est précédé d'un `tsc --noEmit`**, et ce n'est pas du zèle : Vite/esbuild
+retirent les types sans les vérifier. Un parcours qui écrit `Table.Root` (la racine est
+`Table` lui-même) se bundle sans broncher puis plante à l'ouverture — la console afficherait
+un parcours vert et cassé. Le typecheck est la seule chose qui attrape ça.
 
 Un build **par parcours**, volontairement : le code vient d'agents pilotés par des PO, et un
 parcours qui ne compile pas ne doit pas emporter ceux des autres. Il est marqué « build en

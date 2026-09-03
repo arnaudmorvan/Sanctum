@@ -24,18 +24,20 @@ export const Detail = ({ id }: { id: string }) => {
         </Badge>
       </div>
 
-      <Card.Root>
-        <Card.Body>
+      <Card variant="outline" padding="lg">
+        <Card.Content>
           <div className="flex flex-col gap-3">
-            <Text><strong>Motif</strong> — {d.motif}</Text>
-            <Text><strong>Heures demandées</strong> — {d.heures} h</Text>
-            <Text><strong>Déposée le</strong> — {d.depose_le}</Text>
+            <Text>Motif — {d.motif}</Text>
+            <Text>Heures demandées — {d.heures} h</Text>
+            <Text>Déposée le {d.depose_le}</Text>
           </div>
-        </Card.Body>
-      </Card.Root>
+        </Card.Content>
+      </Card>
 
       <div className="flex gap-2">
-        <Button variant="filled" color="blue">Accepter</Button>
+        <Button variant="filled" color="blue">
+          Accepter
+        </Button>
         <Button variant="outline">Refuser</Button>
       </div>
     </div>

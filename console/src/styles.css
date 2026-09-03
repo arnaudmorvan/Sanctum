@@ -1,0 +1,8 @@
+/* Même contrat que les protos : le kit ne livre pas de CSS compilé, ses classes
+   se génèrent par un scan de son dist. Sans ce @source, la console s'affiche nue. */
+@import "tailwindcss";
+@import "@42/ui-react/theme.css";
+@source "../../node_modules/@42/ui-react/dist/**/*.js";
+
+html, body, #root { height: 100%; }
+body { margin: 0; background: var(--color-brand-950); font-family: var(--font-sans); }

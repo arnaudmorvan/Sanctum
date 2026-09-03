@@ -11,40 +11,42 @@ export const Liste = () => (
       <Title order={1} size="2xl">
         Demandes de transformation d'heures
       </Title>
-      <Text className="text-gray-dark-400">
-        {DEMANDES.length} demandes déposées ce mois-ci.
-      </Text>
+      <Text c="secondary">{DEMANDES.length} demandes déposées ce mois-ci.</Text>
     </div>
 
-    <Table.Root>
-      <Table.Head>
-        <Table.Row>
-          <Table.Header>Étudiant</Table.Header>
-          <Table.Header>Motif</Table.Header>
-          <Table.Header>Heures</Table.Header>
-          <Table.Header>Statut</Table.Header>
-          <Table.Header />
-        </Table.Row>
-      </Table.Head>
-      <Table.Body>
-        {DEMANDES.map((d) => (
-          <Table.Row key={d.id}>
-            <Table.Cell>{d.etudiant}</Table.Cell>
-            <Table.Cell>{d.motif}</Table.Cell>
-            <Table.Cell>{d.heures} h</Table.Cell>
-            <Table.Cell>
-              <Badge color={d.statut === "acceptee" ? "green" : d.statut === "refusee" ? "red" : "blue"}>
-                {LIBELLE[d.statut]}
-              </Badge>
-            </Table.Cell>
-            <Table.Cell>
-              <Button variant="subtle" size="sm" asChild>
-                <a href={`#/demandes/${d.id}`}>Ouvrir</a>
-              </Button>
-            </Table.Cell>
+    <Table>
+      <Table.Content>
+        <Table.Head>
+          <Table.Row>
+            <Table.HeaderCell>Étudiant</Table.HeaderCell>
+            <Table.HeaderCell>Motif</Table.HeaderCell>
+            <Table.HeaderCell>Heures</Table.HeaderCell>
+            <Table.HeaderCell>Statut</Table.HeaderCell>
+            <Table.HeaderCell />
           </Table.Row>
-        ))}
-      </Table.Body>
-    </Table.Root>
+        </Table.Head>
+        <Table.Body>
+          {DEMANDES.map((d) => (
+            <Table.Row key={d.id}>
+              <Table.Cell>{d.etudiant}</Table.Cell>
+              <Table.Cell>{d.motif}</Table.Cell>
+              <Table.Cell>{d.heures} h</Table.Cell>
+              <Table.Cell>
+                <Badge
+                  color={d.statut === "acceptee" ? "green" : d.statut === "refusee" ? "red" : "blue"}
+                >
+                  {LIBELLE[d.statut]}
+                </Badge>
+              </Table.Cell>
+              <Table.Cell>
+                <Button variant="subtle" size="sm" asChild>
+                  <a href={`#/demandes/${d.id}`}>Ouvrir</a>
+                </Button>
+              </Table.Cell>
+            </Table.Row>
+          ))}
+        </Table.Body>
+      </Table.Content>
+    </Table>
   </div>
 )
