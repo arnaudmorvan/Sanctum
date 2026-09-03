@@ -1,0 +1,293 @@
+/**
+ * Per-color CSS variable slots consumed by colored components (Button,
+ * ActionIcon, Slider, …). Each `[data-color="<name>"]` block defines a
+ * fixed set of slots; the dark-mode override under
+ * `[data-theme="dark"]` swaps shades so the same color reads correctly on
+ * both surfaces.
+ *
+ * The `:root` block at the top declares the project-wide default palette.
+ * Components that don't set `data-color` inherit these via the cascade —
+ * consumers can change the default for the whole app by overriding the
+ * slot vars at `:root`, with no JS / prop plumbing required:
+ *
+ *   :root {
+ *     --c-solid: var(--color-purple-500);
+ *     --c-soft:  var(--color-purple-50);
+ *     ...
+ *   }
+ *
+ * Slots:
+ *   --c-solid       : filled background, outline border, strong accent (500)
+ *   --c-solid-hover : filled hover state (600 light / 400 dark)
+ *   --c-on-solid    : foreground sitting on a solid background. brand-950 (dark navy)
+ *                     for every color, light or dark theme — matches the 42 UI Kit
+ *                     Figma, which uses dark navy text on solid fills. `gray` (light
+ *                     theme) is the one exception, kept white — its solid shade is
+ *                     too dark for brand-950 text to clear WCAG AA (2.05:1; see the
+ *                     inline comment there). `purple` is a marginal fail (4.29:1 vs
+ *                     the 4.5 AA threshold) but keeps brand-950 anyway for
+ *                     consistency with the other nine colors.
+ *   --c-soft        : tinted surface for `light` / hover tints (50 light / 950 dark)
+ *   --c-soft-hover  : a step darker than --c-soft
+ *   --c-text        : text + icon on non-filled surfaces (700 light / 300 dark)
+ *
+ * Disabled slots (--c-*-disabled):
+ *   A disabled control reads as inactive, so these are deliberately
+ *   palette-independent — neutral grays that mute the accent. They are
+ *   declared once on `:root` / `[data-theme="dark"]`; every `[data-color]`
+ *   inherits the same muted appearance, so they are *not* repeated per color.
+ *   Consumers wanting a palette-specific disabled look can still override
+ *   `[data-color="x"] { --c-solid-disabled: … }` in their own CSS.
+ *     --c-solid-disabled    : muted stand-in for --c-solid (disabled fill / border / accent)
+ *     --c-on-solid-disabled : foreground on a disabled solid fill
+ *     --c-soft-disabled     : disabled tinted surface
+ *     --c-text-disabled     : disabled text + icon on non-filled surfaces
+ *
+ * Adding a color = add a new pair of blocks below and append it to
+ * `lib/colors.ts`. Keep the (non-disabled) slot set identical across colors.
+ */
+
+:root {
+  /* Mirrors [data-color="neutral"] — the zero-config Button (no data-color
+     attribute rendered) resolves to filled · neutral, not brand. */
+  --c-solid: var(--color-black);
+  --c-solid-hover: var(--color-gray-true-800);
+  --c-on-solid: var(--color-white);
+  --c-soft: var(--color-gray-true-100);
+  --c-soft-hover: var(--color-gray-true-200);
+  --c-text: var(--color-gray-light-700);
+
+  /* Neutral disabled slots — shared across every palette (see header). */
+  --c-solid-disabled: var(--color-gray-light-300);
+  --c-on-solid-disabled: var(--color-gray-light-500);
+  --c-soft-disabled: var(--color-gray-light-100);
+  --c-text-disabled: var(--color-gray-light-400);
+}
+[data-theme="dark"] {
+  --c-solid: var(--color-white);
+  --c-solid-hover: var(--color-gray-light-300);
+  --c-on-solid: var(--color-brand-950);
+  --c-soft: var(--color-gray-dark-800);
+  --c-soft-hover: var(--color-gray-dark-700);
+  --c-text: var(--color-gray-dark-300);
+
+  --c-solid-disabled: var(--color-gray-dark-700);
+  --c-on-solid-disabled: var(--color-gray-dark-500);
+  --c-soft-disabled: var(--color-gray-dark-800);
+  --c-text-disabled: var(--color-gray-dark-600);
+}
+
+[data-color="brand"] {
+  --c-solid: var(--color-brand-500);
+  --c-solid-hover: var(--color-brand-600);
+  --c-on-solid: var(--color-brand-950);
+  --c-soft: var(--color-brand-50);
+  --c-soft-hover: var(--color-brand-100);
+  --c-text: var(--color-brand-700);
+}
+[data-theme="dark"] [data-color="brand"] {
+  --c-solid: var(--color-brand-500);
+  --c-solid-hover: var(--color-brand-400);
+  --c-on-solid: var(--color-brand-950);
+  --c-soft: var(--color-brand-950);
+  --c-soft-hover: var(--color-brand-900);
+  --c-text: var(--color-brand-300);
+}
+
+[data-color="gray"] {
+  /* gray-700 is too dark for brand-950 text (2.05:1, fails WCAG AA) — kept white. */
+  --c-solid: var(--color-gray-light-700);
+  --c-solid-hover: var(--color-gray-light-800);
+  --c-on-solid: var(--color-white);
+  --c-soft: var(--color-gray-light-100);
+  --c-soft-hover: var(--color-gray-light-200);
+  --c-text: var(--color-gray-light-700);
+}
+[data-theme="dark"] [data-color="gray"] {
+  --c-solid: var(--color-gray-dark-300);
+  --c-solid-hover: var(--color-gray-dark-200);
+  --c-on-solid: var(--color-brand-950);
+  --c-soft: var(--color-gray-dark-800);
+  --c-soft-hover: var(--color-gray-dark-700);
+  --c-text: var(--color-gray-dark-300);
+}
+
+[data-color="red"] {
+  --c-solid: var(--color-red-500);
+  --c-solid-hover: var(--color-red-600);
+  --c-on-solid: var(--color-brand-950);
+  --c-soft: var(--color-red-50);
+  --c-soft-hover: var(--color-red-100);
+  --c-text: var(--color-red-700);
+}
+[data-theme="dark"] [data-color="red"] {
+  --c-solid: var(--color-red-500);
+  --c-solid-hover: var(--color-red-400);
+  --c-on-solid: var(--color-brand-950);
+  --c-soft: var(--color-red-950);
+  --c-soft-hover: var(--color-red-900);
+  --c-text: var(--color-red-300);
+}
+
+[data-color="orange"] {
+  --c-solid: var(--color-orange-500);
+  --c-solid-hover: var(--color-orange-600);
+  --c-on-solid: var(--color-brand-950);
+  --c-soft: var(--color-orange-50);
+  --c-soft-hover: var(--color-orange-100);
+  --c-text: var(--color-orange-700);
+}
+[data-theme="dark"] [data-color="orange"] {
+  --c-solid: var(--color-orange-500);
+  --c-solid-hover: var(--color-orange-400);
+  --c-on-solid: var(--color-brand-950);
+  --c-soft: var(--color-orange-950);
+  --c-soft-hover: var(--color-orange-900);
+  --c-text: var(--color-orange-300);
+}
+
+[data-color="yellow"] {
+  --c-solid: var(--color-yellow-400);
+  --c-solid-hover: var(--color-yellow-500);
+  --c-on-solid: var(--color-brand-950);
+  --c-soft: var(--color-yellow-50);
+  --c-soft-hover: var(--color-yellow-100);
+  --c-text: var(--color-yellow-700);
+}
+[data-theme="dark"] [data-color="yellow"] {
+  --c-solid: var(--color-yellow-400);
+  --c-solid-hover: var(--color-yellow-300);
+  --c-on-solid: var(--color-brand-950);
+  --c-soft: var(--color-yellow-950);
+  --c-soft-hover: var(--color-yellow-900);
+  --c-text: var(--color-yellow-300);
+}
+
+[data-color="green"] {
+  --c-solid: var(--color-green-500);
+  --c-solid-hover: var(--color-green-600);
+  --c-on-solid: var(--color-brand-950);
+  --c-soft: var(--color-green-50);
+  --c-soft-hover: var(--color-green-100);
+  --c-text: var(--color-green-700);
+}
+[data-theme="dark"] [data-color="green"] {
+  --c-solid: var(--color-green-500);
+  --c-solid-hover: var(--color-green-400);
+  --c-on-solid: var(--color-brand-950);
+  --c-soft: var(--color-green-950);
+  --c-soft-hover: var(--color-green-900);
+  --c-text: var(--color-green-300);
+}
+
+[data-color="teal"] {
+  --c-solid: var(--color-teal-500);
+  --c-solid-hover: var(--color-teal-600);
+  --c-on-solid: var(--color-brand-950);
+  --c-soft: var(--color-teal-50);
+  --c-soft-hover: var(--color-teal-100);
+  --c-text: var(--color-teal-700);
+}
+[data-theme="dark"] [data-color="teal"] {
+  --c-solid: var(--color-teal-500);
+  --c-solid-hover: var(--color-teal-400);
+  --c-on-solid: var(--color-brand-950);
+  --c-soft: var(--color-teal-950);
+  --c-soft-hover: var(--color-teal-900);
+  --c-text: var(--color-teal-300);
+}
+
+[data-color="cyan"] {
+  --c-solid: var(--color-cyan-500);
+  --c-solid-hover: var(--color-cyan-600);
+  --c-on-solid: var(--color-brand-950);
+  --c-soft: var(--color-cyan-50);
+  --c-soft-hover: var(--color-cyan-100);
+  --c-text: var(--color-cyan-700);
+}
+[data-theme="dark"] [data-color="cyan"] {
+  --c-solid: var(--color-cyan-500);
+  --c-solid-hover: var(--color-cyan-400);
+  --c-on-solid: var(--color-brand-950);
+  --c-soft: var(--color-cyan-950);
+  --c-soft-hover: var(--color-cyan-900);
+  --c-text: var(--color-cyan-300);
+}
+
+[data-color="blue"] {
+  --c-solid: var(--color-blue-500);
+  --c-solid-hover: var(--color-blue-600);
+  --c-on-solid: var(--color-brand-950);
+  --c-soft: var(--color-blue-50);
+  --c-soft-hover: var(--color-blue-100);
+  --c-text: var(--color-blue-700);
+}
+[data-theme="dark"] [data-color="blue"] {
+  --c-solid: var(--color-blue-500);
+  --c-solid-hover: var(--color-blue-400);
+  --c-on-solid: var(--color-brand-950);
+  --c-soft: var(--color-blue-950);
+  --c-soft-hover: var(--color-blue-900);
+  --c-text: var(--color-blue-300);
+}
+
+[data-color="purple"] {
+  /* purple-500 vs brand-950 is 4.29:1 — just under 4.5 AA for normal text.
+     Forced navy anyway for consistency with every other color; the gap is
+     marginal and the text is bold. */
+  --c-solid: var(--color-purple-500);
+  --c-solid-hover: var(--color-purple-600);
+  --c-on-solid: var(--color-brand-950);
+  --c-soft: var(--color-purple-50);
+  --c-soft-hover: var(--color-purple-100);
+  --c-text: var(--color-purple-700);
+}
+[data-theme="dark"] [data-color="purple"] {
+  --c-solid: var(--color-purple-500);
+  --c-solid-hover: var(--color-purple-400);
+  --c-on-solid: var(--color-brand-950);
+  --c-soft: var(--color-purple-950);
+  --c-soft-hover: var(--color-purple-900);
+  --c-text: var(--color-purple-300);
+}
+
+[data-color="pink"] {
+  --c-solid: var(--color-pink-500);
+  --c-solid-hover: var(--color-pink-600);
+  --c-on-solid: var(--color-brand-950);
+  --c-soft: var(--color-pink-50);
+  --c-soft-hover: var(--color-pink-100);
+  --c-text: var(--color-pink-700);
+}
+[data-theme="dark"] [data-color="pink"] {
+  --c-solid: var(--color-pink-500);
+  --c-solid-hover: var(--color-pink-400);
+  --c-on-solid: var(--color-brand-950);
+  --c-soft: var(--color-pink-950);
+  --c-soft-hover: var(--color-pink-900);
+  --c-text: var(--color-pink-300);
+}
+
+[data-color="neutral"] {
+  /* Figma "White" hierarchy — the literal white/dark-navy button most of the
+     kit defaults to. Modeled as "gray, but with a stark white solid fill"
+     rather than Figma's own translucent-white overlays: those only read
+     against a dark page surface, and would go invisible (or white-on-white)
+     wherever the surrounding surface isn't guaranteed dark — e.g. this same
+     swatch rendered on a light doc-page card. Opaque gray-* tokens instead,
+     matching every other color's soft/text mechanism. */
+  --c-solid: var(--color-black);
+  --c-solid-hover: var(--color-gray-true-800);
+  --c-on-solid: var(--color-white);
+  --c-soft: var(--color-gray-true-100);
+  --c-soft-hover: var(--color-gray-true-200);
+  --c-text: var(--color-gray-light-700);
+}
+[data-theme="dark"] [data-color="neutral"] {
+  --c-solid: var(--color-white);
+  --c-solid-hover: var(--color-gray-light-300);
+  --c-on-solid: var(--color-brand-950);
+  --c-soft: var(--color-gray-dark-800);
+  --c-soft-hover: var(--color-gray-dark-700);
+  --c-text: var(--color-gray-dark-300);
+}

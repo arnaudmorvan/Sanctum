@@ -1,0 +1,17 @@
+/**
+ * @42/ui-react — convenience entrypoint for consumers who'd rather pull in a
+ * single CSS import than wire the Tailwind pipeline by hand.
+ *
+ * Consumers can use either pattern:
+ *
+ *   Option A — opinionated (one line):
+ *   Option B — full control (recommended for app code):
+ *
+ * Option A skips the @source declaration, so production builds may miss
+ * dynamic classes used inside @42/ui-react components. Stick with Option B unless
+ * you have full ahead-of-time class coverage.
+ */
+
+@import "tailwindcss";
+@import "./theme.css";
+@source "../node_modules/@42/ui-react/dist/**/*.js";

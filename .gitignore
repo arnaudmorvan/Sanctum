@@ -1,0 +1,6 @@
+node_modules/
+
+# Ancrés à la racine, EXPRÈS : un `dist/` non ancré matcherait aussi vendor/ui-react/dist,
+# c'est-à-dire le kit vendoré — que le build exige. Sans l'ancre, un clone neuf ne construit pas.
+/dist/
+/src/proto/

@@ -1,0 +1,61 @@
+{
+  "name": "@42/ui-react",
+  "version": "0.5.0",
+  "description": "React UI kit for 42 tools",
+  "license": "UNLICENSED",
+  "type": "module",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./cn": {
+      "types": "./dist/lib/cn.d.ts",
+      "import": "./dist/lib/cn.js"
+    },
+    "./styles.css": "./dist/styles.css",
+    "./theme.css": "./dist/theme.css",
+    "./colors.css": "./dist/colors.css",
+    "./theme-init.js": "./dist/theme-init.js",
+    "./nav-link/tanstack": {
+      "types": "./dist/components/nav-link/tanstack.d.ts",
+      "import": "./dist/components/nav-link/tanstack.js"
+    },
+    "./*": {
+      "types": "./dist/components/*/index.d.ts",
+      "import": "./dist/components/*/index.js"
+    }
+  },
+  "peerDependencies": {
+    "@ark-ui/react": "^5.0.0",
+    "@tanstack/react-router": "^1.170.0",
+    "@tanstack/react-table": "^8.20.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tailwindcss": "^4.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@tanstack/react-router": {
+      "optional": true
+    },
+    "@tanstack/react-table": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "@internationalized/date": "^3.12.2",
+    "@standard-schema/spec": "^1.1.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.21.0",
+    "nanoid": "^5.1.16",
+    "tailwind-merge": "^3.6.0",
+    "ts-pattern": "^5.9.0"
+  }
+}

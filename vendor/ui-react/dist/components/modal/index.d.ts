@@ -1,0 +1,2 @@
+export { Modal, type ModalClassNames, type ModalCloseTriggerProps, type ModalContentProps, type ModalPosition, type ModalPositionerProps, type ModalProps, type ModalRadius, type ModalSize, } from "./modal";
+//# sourceMappingURL=index.d.ts.map

@@ -1,0 +1,9 @@
+{
+  "slug": "exemple-demandes",
+  "titre": "Demandes de transformation d'heures",
+  "auteur": "Arnaud",
+  "resume": "Parcours d'exemple : liste des demandes et détail, avec les composants du kit.",
+  "cree_le": "2026-09-03",
+  "maj_le": "2026-09-03",
+  "fichiers": ["views.tsx", "pages/liste.tsx", "pages/detail.tsx", "data/demandes.ts"]
+}

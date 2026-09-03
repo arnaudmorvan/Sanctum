@@ -1,0 +1,14 @@
+/* ⚠️ LA ligne qui décide de tout : @source.
+   Le kit ne livre AUCUN CSS compilé — ses classes utilitaires sont générées par un scan
+   de son dist. Sans cette ligne : 0 classe produite, composants entièrement nus.
+   Avec : ~3100 classes, ~164 Ko. Vérifié le 2026-09-03. Ne pas la retirer. */
+@import "tailwindcss";
+@import "@42/ui-react/theme.css";
+@source "../node_modules/@42/ui-react/dist/**/*.js";
+
+html, body, #root { height: 100%; }
+body {
+  margin: 0;
+  background: var(--color-brand-950);
+  font-family: var(--font-sans);
+}

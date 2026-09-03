@@ -1,0 +1,928 @@
+@import "./colors.css";
+/* Wire Tailwind's `dark:` utilities to the `data-theme="dark"` attribute.
+   Consumers should toggle `data-theme` on `<html>` (next-themes can be
+   configured with `attribute={["class", "data-theme"]}` to set both). */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* `static` forces every token to be emitted as a `:root` CSS variable even
+   when no utility references it. The kit's tokens are part of the public API —
+   consumers (and these docs) read `var(--color-lime-500)` directly — so they
+   must survive Tailwind v4's default usage-based tree-shaking of `@theme`. */
+@theme static {
+  /* Breakpoints — add an `xs` below Tailwind's default `sm` (40rem) so
+     mobile-first tweaks (e.g. full-width bottom toasts) can target phones via
+     the `xs` / `max-xs` variants. */
+  --breakpoint-xs: 30rem;
+
+  /* ==========================================
+     COLORS
+     ========================================== */
+  --color-white: #ffffff;
+  --color-black: #000000;
+
+  /* Gray Series (Light Mode) */
+  --color-gray-light-25: #fdfdfd;
+  --color-gray-light-50: #fafafa;
+  --color-gray-light-100: #f5f5f5;
+  --color-gray-light-200: #e9eaeb;
+  --color-gray-light-300: #d5d7da;
+  --color-gray-light-400: #a4a7ae;
+  --color-gray-light-500: #717680;
+  --color-gray-light-600: #535862;
+  --color-gray-light-700: #414651;
+  --color-gray-light-800: #252b37;
+  --color-gray-light-900: #181d27;
+  --color-gray-light-950: #0a0d12;
+
+  /* Gray Series (Dark Mode) */
+  --color-gray-dark-25: #fafafa;
+  --color-gray-dark-50: #f7f7f7;
+  --color-gray-dark-100: #f0f0f1;
+  --color-gray-dark-200: #ececed;
+  --color-gray-dark-300: #cecfd2;
+  --color-gray-dark-400: #94979c;
+  --color-gray-dark-500: #85888e;
+  --color-gray-dark-600: #61656c;
+  --color-gray-dark-700: #373a41;
+  --color-gray-dark-800: #22262f;
+  --color-gray-dark-900: #13161b;
+  --color-gray-dark-950: #0c0e12;
+
+  /* Gray Modern */
+  --color-gray-modern-25: #fcfcfd;
+  --color-gray-modern-50: #f8fafc;
+  --color-gray-modern-100: #eef2f6;
+  --color-gray-modern-200: #e3e8ef;
+  --color-gray-modern-300: #cdd5df;
+  --color-gray-modern-400: #9aa4b2;
+  --color-gray-modern-500: #697586;
+  --color-gray-modern-600: #4b5565;
+  --color-gray-modern-700: #364152;
+  --color-gray-modern-800: #202939;
+  --color-gray-modern-900: #121926;
+  --color-gray-modern-950: #0d121c;
+
+  /* Gray Blue */
+  --color-gray-blue-25: #fcfcfd;
+  --color-gray-blue-50: #f8f9fc;
+  --color-gray-blue-100: #eaecf5;
+  --color-gray-blue-200: #d5d9eb;
+  --color-gray-blue-300: #b3b8db;
+  --color-gray-blue-400: #717bbc;
+  --color-gray-blue-500: #4e5ba6;
+  --color-gray-blue-600: #3e4784;
+  --color-gray-blue-700: #363f72;
+  --color-gray-blue-800: #293056;
+  --color-gray-blue-900: #101323;
+  --color-gray-blue-950: #0d0f1c;
+
+  /* Gray True */
+  --color-gray-true-25: #fcfcfc;
+  --color-gray-true-50: #f7f7f7;
+  --color-gray-true-100: #f5f5f5;
+  --color-gray-true-200: #e5e5e5;
+  --color-gray-true-300: #d6d6d6;
+  --color-gray-true-400: #a3a3a3;
+  --color-gray-true-500: #737373;
+  --color-gray-true-600: #525252;
+  --color-gray-true-700: #424242;
+  --color-gray-true-800: #292929;
+  --color-gray-true-900: #141414;
+  --color-gray-true-950: #0f0f0f;
+
+  /* Brand */
+  --color-brand-25: #f4f7ff;
+  --color-brand-50: #edf2ff;
+  --color-brand-100: #e6edff;
+  --color-brand-200: #d0deff;
+  --color-brand-300: #b8cdff;
+  --color-brand-400: #92b0fa;
+  --color-brand-500: #6388e3;
+  --color-brand-600: #4d6fc3;
+  --color-brand-700: #365399;
+  --color-brand-800: #233970;
+  --color-brand-900: #0a1e41;
+  --color-brand-950: #030d20;
+
+  /* Red */
+  --color-red-25: #fffbfa;
+  --color-red-50: #fef3f2;
+  --color-red-100: #fee4e2;
+  --color-red-200: #fecdca;
+  --color-red-300: #fda29b;
+  --color-red-400: #f97066;
+  --color-red-500: #ff4e41;
+  --color-red-600: #d92d20;
+  --color-red-700: #b42318;
+  --color-red-800: #912018;
+  --color-red-900: #7a271a;
+  --color-red-950: #55160c;
+
+  /* Orange */
+  --color-orange-25: #fefaf5;
+  --color-orange-50: #fef6ee;
+  --color-orange-100: #fdead7;
+  --color-orange-200: #f9dbaf;
+  --color-orange-300: #f7b27a;
+  --color-orange-400: #f38744;
+  --color-orange-500: #ef6820;
+  --color-orange-600: #e04f16;
+  --color-orange-700: #b93815;
+  --color-orange-800: #932f19;
+  --color-orange-900: #772917;
+  --color-orange-950: #511c10;
+
+  /* Yellow */
+  --color-yellow-25: #fefdf0;
+  --color-yellow-50: #fefbe8;
+  --color-yellow-100: #fef7c3;
+  --color-yellow-200: #feee95;
+  --color-yellow-300: #fde272;
+  --color-yellow-400: #fac515;
+  --color-yellow-500: #eaaa08;
+  --color-yellow-600: #ca8504;
+  --color-yellow-700: #a15c07;
+  --color-yellow-800: #854a0e;
+  --color-yellow-900: #713b12;
+  --color-yellow-950: #542c0d;
+
+  /* Lime */
+  --color-lime-25: #fafef5;
+  --color-lime-50: #f3fee7;
+  --color-lime-100: #e3fbcc;
+  --color-lime-200: #d0f8ab;
+  --color-lime-300: #a6ef67;
+  --color-lime-400: #85e13a;
+  --color-lime-500: #66c61c;
+  --color-lime-600: #4ca30d;
+  --color-lime-700: #3b7c0f;
+  --color-lime-800: #326212;
+  --color-lime-900: #2b5314;
+  --color-lime-950: #15290a;
+
+  /* Green */
+  --color-green-25: #f6fef9;
+  --color-green-50: #edfcf2;
+  --color-green-100: #d3f8df;
+  --color-green-200: #aaf0c4;
+  --color-green-300: #73e2a3;
+  --color-green-400: #3ccb7f;
+  --color-green-500: #17b26a;
+  --color-green-600: #079455;
+  --color-green-700: #067647;
+  --color-green-800: #095c37;
+  --color-green-900: #084c2e;
+  --color-green-950: #052e1c;
+
+  /* Teal */
+  --color-teal-25: #f6fefc;
+  --color-teal-50: #f0fdf9;
+  --color-teal-100: #ccfbef;
+  --color-teal-200: #99f6e0;
+  --color-teal-300: #5fe9d0;
+  --color-teal-400: #2ed3b7;
+  --color-teal-500: #15b79e;
+  --color-teal-600: #0e9384;
+  --color-teal-700: #107569;
+  --color-teal-800: #125d56;
+  --color-teal-900: #134e48;
+  --color-teal-950: #0a2926;
+
+  /* Cyan */
+  --color-cyan-25: #f5feff;
+  --color-cyan-50: #ecfdff;
+  --color-cyan-100: #cff9fe;
+  --color-cyan-200: #a5f0fc;
+  --color-cyan-300: #67e3f9;
+  --color-cyan-400: #22ccee;
+  --color-cyan-500: #06aed4;
+  --color-cyan-600: #088ab2;
+  --color-cyan-700: #0e7090;
+  --color-cyan-800: #155b75;
+  --color-cyan-900: #164c63;
+  --color-cyan-950: #0d2d3a;
+
+  /* Blue */
+  --color-blue-25: #f5faff;
+  --color-blue-50: #eff8ff;
+  --color-blue-100: #d1e9ff;
+  --color-blue-200: #b2ddff;
+  --color-blue-300: #84caff;
+  --color-blue-400: #53b1fd;
+  --color-blue-500: #2e90fa;
+  --color-blue-600: #1570ef;
+  --color-blue-700: #175cd3;
+  --color-blue-800: #1849a9;
+  --color-blue-900: #194185;
+  --color-blue-950: #102a56;
+
+  /* Purple */
+  --color-purple-25: #fafaff;
+  --color-purple-50: #f4f3ff;
+  --color-purple-100: #ebe9fe;
+  --color-purple-200: #d9d6fe;
+  --color-purple-300: #bdb4fe;
+  --color-purple-400: #9b8afb;
+  --color-purple-500: #7a5af8;
+  --color-purple-600: #6938ef;
+  --color-purple-700: #5925dc;
+  --color-purple-800: #4a1fb8;
+  --color-purple-900: #3e1c96;
+  --color-purple-950: #27115f;
+
+  /* Pink */
+  --color-pink-25: #fef6fb;
+  --color-pink-50: #fdf2fa;
+  --color-pink-100: #fce7f6;
+  --color-pink-200: #fcceee;
+  --color-pink-300: #faa7e0;
+  --color-pink-400: #f670c7;
+  --color-pink-500: #ee46bc;
+  --color-pink-600: #dd2590;
+  --color-pink-700: #c11574;
+  --color-pink-800: #9e165f;
+  --color-pink-900: #851651;
+  --color-pink-950: #4e0d30;
+
+  /* Rose */
+  --color-rose-25: #fff5f6;
+  --color-rose-50: #fff1f3;
+  --color-rose-100: #ffe4e8;
+  --color-rose-200: #fecdd6;
+  --color-rose-300: #fea3b4;
+  --color-rose-400: #fd6f8e;
+  --color-rose-500: #f63d68;
+  --color-rose-600: #e31b54;
+  --color-rose-700: #c01048;
+  --color-rose-800: #a11043;
+  --color-rose-900: #89123e;
+  --color-rose-950: #510b24;
+
+  /* ==========================================
+     BORDER RADIUS
+     ========================================== */
+  --radius-none: 0rem;
+  --radius-xxs: 0.125rem; /* 2px */
+  --radius-xs: 0.25rem; /* 4px */
+  --radius-sm: 0.375rem; /* 6px */
+  --radius-md: 0.5rem; /* 8px */
+  --radius-lg: 0.625rem; /* 10px */
+  --radius-xl: 0.75rem; /* 12px */
+  --radius-2xl: 1rem; /* 16px */
+  --radius-3xl: 1.25rem; /* 20px */
+  --radius-4xl: 1.5rem; /* 24px */
+  --radius-full: 999px; /* Try not to put it too high as animations tends to break */
+
+  /* Per-component default radius — override at `:root` to retheme without
+     touching component code. Tailwind v4 generates matching utilities
+     (`rounded-button`, `rounded-action-icon`, …) from these tokens. */
+  --radius-button: var(--radius-xs); /* 4px — matches the 42 UI Kit Figma exactly */
+  --radius-action-icon: var(--radius-xs);
+  --radius-badge: var(--radius-xs);
+  --radius-card: var(--radius-sm);
+  --radius-input: var(--radius-xs);
+  --radius-pill: var(--radius-xs);
+
+  /* ==========================================
+     WIDTH DEFINITIONS
+     ========================================== */
+  --width-xxs: 20rem; /* 320px */
+  --width-xs: 24rem; /* 384px */
+  --width-sm: 30rem; /* 480px */
+  --width-md: 35rem; /* 560px */
+  --width-lg: 40rem; /* 640px */
+  --width-xl: 48rem; /* 768px */
+  --width-2xl: 64rem; /* 1024px */
+  --width-3xl: 80rem; /* 1280px */
+  --width-4xl: 90rem; /* 1440px */
+  --width-5xl: 100rem; /* 1600px */
+  --width-6xl: 120rem; /* 1920px */
+  --max-width-paragraph: 45rem; /* 720px */
+
+  /* ==========================================
+     TYPOGRAPHY (FONTS, SIZES, WEIGHTS)
+     ========================================== */
+  /* Font Family Definitions
+     Lato for prose; Kode Mono is the kit's second voice — headings and the
+     short labels of `Button` / `Badge` / `ActionIcon`. Override the values to
+     retheme; the components reach for `font-sans` / `font-mono` only. */
+  --font-sans: "Lato", sans-serif;
+  --font-mono: "Kode Mono", monospace;
+
+  /* Font Weights */
+  --font-style-regular: 400;
+  --font-style-medium: 500;
+  --font-style-semibold: 600;
+  --font-style-bold: 700;
+
+  /* Font Sizes */
+  --text-xs: 0.75rem; /* 12px */
+  --text-sm: 0.875rem; /* 14px */
+  --text-md: 1rem; /* 16px */
+  --text-lg: 1.125rem; /* 18px */
+  --text-xl: 1.25rem; /* 20px */
+  --text-display-xs: 1.5rem; /* 24px */
+  --text-display-sm: 1.875rem; /* 30px */
+  --text-display-md: 2.25rem; /* 36px */
+  --text-display-lg: 3rem; /* 48px */
+  --text-display-xl: 3.75rem; /* 60px */
+  --text-display-2xl: 4.5rem; /* 72px */
+
+  /* Line Heights */
+  --line-height-text-xs: 1.125rem; /* 18px */
+  --line-height-text-sm: 1.25rem; /* 20px */
+  --line-height-text-md: 1.5rem; /* 24px */
+  --line-height-text-lg: 1.75rem; /* 28px */
+  --line-height-text-xl: 1.875rem; /* 30px */
+  --line-height-display-xs: 2rem; /* 32px */
+  --line-height-display-sm: 2.375rem; /* 38px */
+  --line-height-display-md: 2.75rem; /* 44px */
+  --line-height-display-lg: 3.75rem; /* 60px */
+  --line-height-display-xl: 4.5rem; /* 72px */
+  --line-height-display-2xl: 5.625rem; /* 90px */
+
+  /* ==========================================
+     LAYOUT CONTAINERS
+     ========================================== */
+  --container-padding-mobile: 1rem; /* 16px */
+  --container-padding-desktop: 2rem; /* 32px */
+  --container-max-width-desktop: 80rem; /* 1280px */
+}
+
+/* ==========================================
+   OVERLAY ANIMATIONS (Modal + Drawer)
+   ==========================================
+   Ark sets `data-state="open" | "closed"` on the backdrop/content; the kit's
+   `data-[state=…]:animate-*` utilities reference these tokens. Exit animations
+   use `forwards` so the element holds its final (hidden) frame until Ark's
+   presence machine unmounts it on `animationend`. Registered as a second
+   `@theme static` block — Tailwind v4 merges theme blocks. */
+@theme static {
+  --animate-fade-in: fade-in 200ms ease-out;
+  --animate-fade-out: fade-out 150ms ease-in forwards;
+  --animate-modal-in: modal-in 150ms cubic-bezier(0.18, -0.04, 0.55, 1);
+  --animate-modal-out: modal-out 130ms ease-in forwards;
+  --animate-drawer-in: drawer-in 180ms cubic-bezier(0.18, -0.04, 0.55, 1);
+  --animate-drawer-out: drawer-out 150ms ease-in forwards;
+  --animate-popover-in: popover-in 100ms cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-popover-out: popover-out 90ms ease-in forwards;
+  --animate-toast-in: toast-in 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-toast-out: toast-out 150ms ease-in forwards;
+  --animate-progress-indeterminate: progress-indeterminate 1.5s ease-in-out infinite;
+  --animate-progress-spin: progress-spin 0.9s linear infinite;
+}
+
+*,
+:root {
+  --tw-scrollbar-thumb: color-mix(in oklab, var(--color-gray-light-300) 60%, transparent);
+  --tw-scrollbar-track: transparent;
+  scrollbar-color: var(--tw-scrollbar-thumb) var(--tw-scrollbar-track);
+}
+
+@media (hover: hover) {
+  :is(*, :root):hover {
+    --tw-scrollbar-thumb: var(--color-gray-light-300);
+    scrollbar-color: var(--tw-scrollbar-thumb) var(--tw-scrollbar-track);
+  }
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  :is(*, :root):where([data-theme="dark"], [data-theme="dark"] *) {
+    --tw-scrollbar-thumb: color-mix(in oklab, var(--color-gray-dark-500) 60%, transparent);
+  }
+}
+
+:is(*, :root):where([data-theme="dark"], [data-theme="dark"] *) {
+  scrollbar-color: var(--tw-scrollbar-thumb) var(--tw-scrollbar-track);
+}
+
+@media (hover: hover) {
+  :is(*, :root):where([data-theme="dark"], [data-theme="dark"] *):hover {
+    --tw-scrollbar-thumb: var(--color-gray-dark-500);
+    scrollbar-color: var(--tw-scrollbar-thumb) var(--tw-scrollbar-track);
+  }
+}
+
+/* Default body text color — matches Figma's text-primary tier (same values
+   as Title). Without this, unstyled text (including Text's `default` shade,
+   which intentionally has no color class of its own) inherits the browser's
+   plain black in both themes and goes near-invisible in dark mode. */
+body {
+  color: var(--color-gray-light-900);
+}
+[data-theme="dark"] body {
+  color: var(--color-gray-dark-50);
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes modal-out {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.97) translateY(100%);
+  }
+}
+
+/* Popover pop — scales from the edge nearest the trigger (`transform-origin`
+   is set per `data-placement` on the panel), so it grows out of the control. */
+@keyframes popover-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes popover-out {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+}
+
+/* Toast enter/exit — slides from the anchored edge (`--toast-from` is set on the
+   region: +100% for bottom placements, -100% for top). Uses `transform` so it
+   composes with the stacking `translate`/`scale` properties. Exit uses
+   `forwards` so it holds the hidden frame until Presence unmounts on
+   `animationend`. */
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(var(--toast-from, 100%)) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@keyframes toast-out {
+  /* `opacity` is intentionally omitted from `from`: CSS then synthesizes the
+     start frame from the element's *underlying* opacity (`--swipe-opacity`), so
+     a swipe-dismissed toast keeps fading from wherever the drag left it (e.g.
+     0.3) instead of blinking back to 1 before fading. A button/auto dismiss
+     still starts at 1 (the var's default). */
+  from {
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(var(--toast-from, 100%)) scale(0.9);
+  }
+}
+
+/* Indeterminate progress sweep — a partial bar (Range pinned to `w-2/5`) slides
+   across the track. The track's `overflow-x-clip` hides it at the edges. The
+   sweep is symmetric (off-screen left → off-screen right), so it reads the same
+   under `dir="rtl"` without a direction-specific keyframe. */
+@keyframes progress-indeterminate {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(350%);
+  }
+}
+
+/* Indeterminate circular progress: a fixed arc rotates continuously (same
+   family as Spinner's `animate-spin`, but its own token so reduced-motion can
+   disable just this one). */
+@keyframes progress-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* A single keyframe pair covers all four drawer edges: the off-screen start
+   frame is parameterised by `--drawer-from`, set per `data-placement` below
+   (RTL-aware — `start`/`end` flip under `dir="rtl"`). */
+@keyframes drawer-in {
+  from {
+    opacity: 0.4;
+    transform: var(--drawer-from);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes drawer-out {
+  from {
+    opacity: 1;
+    /* No transform here as it will break the gesture with grabber */
+  }
+  to {
+    opacity: 0;
+    transform: var(--drawer-from);
+  }
+}
+
+[data-placement="start"] {
+  --drawer-from: translateX(-100%);
+}
+[data-placement="end"] {
+  --drawer-from: translateX(100%);
+}
+[data-placement="top"] {
+  --drawer-from: translateY(-100%);
+  --modal-from: translateY(-100%);
+}
+[data-placement="bottom"] {
+  --drawer-from: translateY(100%);
+  --modal-from: translateY(100%);
+}
+[dir="rtl"] [data-placement="start"] {
+  --drawer-from: translateX(100%);
+}
+[dir="rtl"] [data-placement="end"] {
+  --drawer-from: translateX(-100%);
+}
+
+/* Respect reduced-motion: collapse enter/exit to a 1ms opacity tween so the
+   presence machine still fires `animationend` (and overlays still unmount). */
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in,
+  .animate-modal-in,
+  .animate-drawer-in,
+  .animate-popover-in,
+  .animate-toast-in {
+    /* biome-ignore lint/complexity/noImportantStyles: meaningful here */
+    animation: fade-in 1ms ease-out !important;
+  }
+  .animate-fade-out,
+  .animate-modal-out,
+  .animate-drawer-out,
+  .animate-popover-out,
+  .animate-toast-out {
+    /* Keep a 1ms keyframe (not `none`) so Ark Presence's `animationend` still
+       fires and the toast unmounts. */
+    /* biome-ignore lint/complexity/noImportantStyles: meaningful here */
+    animation: fade-out 1ms ease-in forwards !important;
+  }
+  /* The indeterminate animations loop forever, so drop them under reduced
+     motion — the bar/arc rests in place, still reading as an in-progress
+     affordance. */
+  .animate-progress-indeterminate,
+  .animate-progress-spin {
+    /* biome-ignore lint/complexity/noImportantStyles: meaningful here */
+    animation: none !important;
+  }
+  /* Collapse the toast stacking transitions too. */
+  [data-scope="notifications"] [data-part="stack"],
+  [data-scope="notifications"] [data-part="toast"] {
+    /* biome-ignore lint/complexity/noImportantStyles: meaningful here */
+    transition: none !important;
+  }
+}
+
+/* ==========================================
+   Utilities
+   ==========================================
+   Various utilities to use in the UI kit's components or even for users
+   */
+
+/* Two-layer mask that shows only the border strip of a pseudo-element.
+   Apply alongside mask-exclude and a bg-linear-* + p-px on the pseudo-element. */
+@utility mask {
+  mask-image: linear-gradient(black, black), linear-gradient(black, black);
+  mask-origin: content-box, border-box;
+  mask-clip: content-box, border-box;
+}
+
+/* Pairs with mask: XORs the two mask layers so only the padding strip remains. */
+@utility mask-exclude {
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+}
+@utility transition-colors-radius {
+  transition-property: color, background-color, border-color, outline-color, border-radius;
+  transition-timing-function: var(
+    --tw-ease,
+    var(--default-transition-timing-function) /* cubic-bezier(0.4, 0, 0.2, 1) */
+  );
+  transition-duration: var(--tw-duration, var(--default-transition-duration) /* 150ms */);
+}
+
+/* Trim the line-box leading so a text element's box hugs its cap height / baseline
+   instead of the font's full line-height. Writing-mode aware (RTL-safe).
+   Progressive enhancement: Chrome/Edge 133+, Safari 18.2+; Firefox keeps normal
+   leading (graceful no-op). */
+@utility text-trim {
+  text-box-trim: trim-both;
+  text-box-edge: cap alphabetic;
+}
+
+/* ==========================================
+   TEXTAREA — resize grip icon
+   ==========================================
+   Restyles the native resize handle (`::-webkit-resizer` — Chrome/Edge/Safari
+   only; Firefox has no equivalent hook and keeps its own plain native grip)
+   with two diagonal strokes matching the kit's Figma redesign, in place of
+   the browser's default gray triangle. Stroke width matches the shell's own
+   `border` (1px); an explicit `width`/`height` on the SVG root fixes its
+   intrinsic size so that 1 viewBox unit renders as exactly 1 CSS px.
+
+   `::-webkit-resizer` only honors `background-*` (confirmed: `mask-image`
+   renders as a solid filled box here, not a mask — this pseudo-element
+   doesn't support CSS masking), so the color can't come from a real
+   `background-color` + a shape mask the way an ordinary element would. The
+   stroke color is instead baked directly into the SVG, matching
+   `shellVariants.default`'s border color (`input.tsx`) exactly —
+   `#0a1e41` (`--color-brand-900`) at 20% opacity for light,
+   white at 15% opacity for dark — so the grip always reads as the same
+   color as the shell's own border instead of an independently-chosen gray.
+   Since a `url()` data URI can't reference a CSS custom property, the two
+   theme variants are separate baked-in images swapped via
+   `--textarea-resizer-icon`, the same swap pattern the scrollbar theming
+   above uses. */
+:root {
+  --textarea-resizer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M10 2 2 10' stroke='%230a1e41' stroke-opacity='0.2' stroke-width='1' stroke-linecap='round'/%3E%3Cpath d='M10 6 6 10' stroke='%230a1e41' stroke-opacity='0.2' stroke-width='1' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+[data-theme="dark"] {
+  --textarea-resizer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M10 2 2 10' stroke='white' stroke-opacity='0.15' stroke-width='1' stroke-linecap='round'/%3E%3Cpath d='M10 6 6 10' stroke='white' stroke-opacity='0.15' stroke-width='1' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+@utility textarea-resizer {
+  &::-webkit-resizer {
+    background-image: var(--textarea-resizer-icon);
+    background-repeat: no-repeat;
+    background-position: calc(100% - 3px) calc(100% - 3px);
+  }
+}
+
+/* ==========================================
+   TABLE — horizontal scroll affordance
+   ==========================================
+   `Table.Content` shows a soft shadow on each horizontal side that still has
+   content to scroll to. Pure CSS (so `Table` stays a Server Component) and
+   transparent-bg friendly: the shadow is a translucent overlay revealed/hidden
+   by scroll position via a scroll-driven animation. The scroll region publishes
+   an inline-axis timeline (`--table-scroll-x`, scoped by `.table-scroll-frame`)
+   that the two edge overlays animate their opacity against.
+
+   Progressive enhancement (Chrome/Edge 115+, Safari 26+): browsers without
+   scroll-driven animations (Firefox today) keep the overlays at opacity 0 — no
+   fade, no breakage. When the axis can't scroll the timeline is inactive, so
+   the overlays also stay hidden. */
+:root {
+  --table-scroll-fade: color-mix(in oklab, var(--color-gray-light-950) 14%, transparent);
+}
+:where([data-theme="dark"]) {
+  --table-scroll-fade: color-mix(in oklab, var(--color-black) 60%, transparent);
+}
+
+@keyframes table-fade-reveal-start {
+  0% {
+    opacity: 0;
+  }
+  6%,
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes table-fade-reveal-end {
+  0%,
+  94% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.table-scroll-frame {
+  position: relative;
+  timeline-scope: --table-scroll-x;
+}
+.table-scroll-x {
+  scroll-timeline-name: --table-scroll-x;
+  scroll-timeline-axis: x;
+}
+/* Hidden by default → graceful no-op where scroll-driven animations are absent. */
+.table-fade-start,
+.table-fade-end {
+  opacity: 0;
+}
+.table-fade-start {
+  background-image: linear-gradient(to right, var(--table-scroll-fade), transparent);
+}
+.table-fade-end {
+  background-image: linear-gradient(to left, var(--table-scroll-fade), transparent);
+}
+@supports (animation-timeline: scroll()) {
+  .table-fade-start {
+    animation: table-fade-reveal-start linear both;
+    animation-timeline: --table-scroll-x;
+  }
+  .table-fade-end {
+    animation: table-fade-reveal-end linear both;
+    animation-timeline: --table-scroll-x;
+  }
+}
+
+/* ==========================================
+   TOAST STACKING
+   ==========================================
+   The custom toaster drives the deck↔column morph in CSS from per-toast vars
+   set by `create-notifier`: `--index` (0 = front), `--offset` (Σ heights+gaps
+   of the newer toasts, px), `--height` (own, px), `--front-height` (front, px);
+   the stack element carries `--stack-collapsed-h` / `--stack-expanded-h`.
+   Position uses the `translate`/`scale` *properties* so it composes with the
+   enter/exit keyframes (which use `transform`). `--peek` is the visible sliver
+   of each toast behind the front. */
+[data-scope="notifications"] {
+  --peek: 0.9rem;
+}
+
+/* The stack sizes to the front toast (collapsed) and grows to the full column
+   on hover/focus (when `data-expand` is set), so the hover target follows it. */
+[data-scope="notifications"] [data-part="stack"] {
+  height: var(--stack-collapsed-h, auto);
+  transition: height 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+[data-scope="notifications"][data-expand] [data-part="stack"]:hover,
+[data-scope="notifications"][data-expand] [data-part="stack"]:focus-within {
+  height: var(--stack-expanded-h, auto);
+}
+
+[data-scope="notifications"] [data-part="toast"] {
+  position: absolute;
+  inset-inline: 0;
+  /* Front (index 0) on top, older toasts stacked behind. */
+  z-index: calc(100 - var(--index, 0));
+  /* `--swipe-*` are set imperatively while dragging (see notification.tsx). */
+  opacity: var(--swipe-opacity, 1);
+  transition:
+    translate 300ms cubic-bezier(0.16, 1, 0.3, 1),
+    scale 300ms cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 300ms ease;
+}
+
+/* Ghost hover-bridge (bottom placements). A taller toast behind a shorter front
+   one overflows below it (toward the bottom edge); that strip is hoverable while
+   collapsed but slides into the column on expand as the stack grows *upward* —
+   stranding the pointer over a gap so :hover flip-flops and the deck blinks. The
+   front toast renders this invisible box glued just below itself (`--ghost-h` =
+   the overflow px), so hover stays put through the morph. It only covers where a
+   toast already sat, so it steals no page clicks. */
+[data-scope="notifications"][data-placement^="bottom"] [data-part="ghost"] {
+  position: absolute;
+  inset-inline: 0;
+  bottom: calc(-1 * var(--ghost-h, 0px));
+  height: var(--ghost-h, 0px);
+  pointer-events: auto;
+}
+
+/* Bottom placements: anchor the bottom edge; the height term aligns the *tops*
+   so the peeks stagger evenly regardless of each toast's height. */
+[data-scope="notifications"][data-placement^="bottom"] [data-part="toast"] {
+  bottom: 0;
+  transform-origin: top center;
+  translate: var(--swipe-x, 0)
+    calc((var(--height, 0px) - var(--front-height, 0px)) - var(--index, 0) * var(--peek));
+  scale: calc(1 - var(--index, 0) * 0.05);
+}
+/* Top placements: anchor the top edge (tops already aligned); peek downward. */
+[data-scope="notifications"][data-placement^="top"] [data-part="toast"] {
+  top: 0;
+  transform-origin: bottom center;
+  translate: var(--swipe-x, 0) calc(var(--index, 0) * var(--peek));
+  scale: calc(1 - var(--index, 0) * 0.05);
+}
+
+/* Expanded: fan into a real column at each toast's measured offset. */
+[data-scope="notifications"][data-expand][data-placement^="bottom"]
+  [data-part="stack"]:hover
+  [data-part="toast"],
+[data-scope="notifications"][data-expand][data-placement^="bottom"]
+  [data-part="stack"]:focus-within
+  [data-part="toast"] {
+  translate: var(--swipe-x, 0) calc(-1 * var(--offset, 0px));
+  scale: 1;
+}
+[data-scope="notifications"][data-expand][data-placement^="top"]
+  [data-part="stack"]:hover
+  [data-part="toast"],
+[data-scope="notifications"][data-expand][data-placement^="top"]
+  [data-part="stack"]:focus-within
+  [data-part="toast"] {
+  translate: var(--swipe-x, 0) var(--offset, 0px);
+  scale: 1;
+}
+
+/* ==========================================
+   OVERLAY STACKING (nested Popover / Select / Combobox / Menu / Tooltip)
+   ==========================================
+   Ark's floating-position machinery (Popover, Select, Combobox, Menu,
+   Tooltip) anchors each panel via a "positioner" part carrying an inline
+   `z-index: var(--z-index)` from `@zag-js/popper` — but `--z-index` is only
+   ever populated through each machine's own opt-in `layerStyleTargets`,
+   which none of them wire up here, so it resolves to `auto` on every one of
+   them. Two `auto` positioners portaled to `<body>` (the default,
+   unconfigured portal target — see `popover.tsx` / `select.tsx`) then stack
+   by DOM/mount order alone, which isn't nesting-aware: a `Select` opened
+   *inside* an already-open `Popover` (e.g. a `DataTable` filter's operator
+   picker) can just as easily paint behind it as in front. `--popover-z` /
+   `--modal-z` (referenced on Content/backdrop elements elsewhere in this
+   file) don't help either — Content sits *inside* its own Positioner's
+   isolated stacking context, so its z-index never competes cross-portal.
+
+   Fix: populate `--z-index` (and `--modal-z`, which *does* apply directly to
+   Modal/Drawer's own fixed backdrop+content, no Positioner indirection)
+   explicitly, tiered so a "picker" opened inside a "container" overlay
+   always wins, and a Tooltip — which can appear over anything being
+   hovered, including an open picker — always wins over both. */
+:root {
+  --modal-z: 50;
+}
+[data-scope="popover"] [data-part="positioner"],
+[data-scope="menu"] [data-part="positioner"] {
+  --z-index: 50;
+}
+[data-scope="select"] [data-part="positioner"],
+[data-scope="combobox"] [data-part="positioner"] {
+  --z-index: 60;
+}
+[data-scope="tooltip"] [data-part="positioner"] {
+  --z-index: 70;
+}
+
+/* ==========================================
+   AMBIENT BACKGROUND (see components/ambient-background)
+   ==========================================
+   Two CSS-var-driven layers a consumer app can drop behind its page content
+   for a considered, brand-tinted surface instead of a flat fill: a soft
+   radial glow (plain alpha compositing, tinted with the brand scale) and a
+   textured noise (feTurbulence, colored with a brand tone directly in the
+   filter and alpha-contrasted via a gamma curve, rather than desaturated
+   grayscale blended with `mix-blend-mode: overlay`). Overlay blending is
+   mathematically weak against a very dark (or very light) backdrop - it
+   approaches multiply/screen at the extremes, so no amount of opacity makes
+   it read as more than a faint wash on brand-950/brand-50. Baking the actual
+   brand tone into the noise and compositing it with plain alpha sidesteps
+   that entirely, which is why (unlike the glow) this needs a per-theme
+   override: a light backdrop wants a darker speckle (brand-700) and a dark
+   backdrop wants a lighter one (brand-400).
+   Values live here (not hardcoded in the component) so a consumer can
+   override either variable for their own brand color without forking the
+   component. */
+:root {
+  --ambient-glow: radial-gradient(
+    circle 65vmin at 50% 50%,
+    color-mix(in oklch, var(--color-brand-200) 9%, transparent),
+    transparent 70%
+  );
+  --ambient-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.4' numOctaves='2' stitchTiles='stitch' result='t'/%3E%3CfeColorMatrix in='t' type='matrix' values='0 0 0 0 0.212 0 0 0 0 0.325 0 0 0 0 0.6 0 0 0 1 0' result='c'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='gamma' amplitude='0.08' exponent='2' offset='0'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+[data-theme="dark"] {
+  --ambient-glow: radial-gradient(
+    circle 65vmin at 50% 50%,
+    color-mix(in oklch, var(--color-brand-700) 13%, transparent),
+    transparent 70%
+  );
+  --ambient-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.4' numOctaves='2' stitchTiles='stitch' result='t'/%3E%3CfeColorMatrix in='t' type='matrix' values='0 0 0 0 0.573 0 0 0 0 0.69 0 0 0 0 0.98 0 0 0 1 0' result='c'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='gamma' amplitude='0.09' exponent='2' offset='0'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Variants to use with slider's values */
+@custom-variant state-under-or-at (&:is([data-state="under-value"], [data-state="at-value"]));
+
+*,
+:root {
+  @apply scrollbar-thumb-gray-300/60 hover:scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-500/60 dark:hover:scrollbar-thumb-gray-500 scrollbar-track-transparent;
+}

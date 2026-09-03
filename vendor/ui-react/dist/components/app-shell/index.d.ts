@@ -1,0 +1,2 @@
+export { AppShell, type AppShellAsideProps, type AppShellHeaderProps, type AppShellMainProps, type AppShellProps, type AppShellSidebarBodyProps, type AppShellSidebarFooterProps, type AppShellSidebarHeaderProps, type AppShellSidebarProps, type AppShellSidebarTriggerProps, } from "./app-shell";
+//# sourceMappingURL=index.d.ts.map

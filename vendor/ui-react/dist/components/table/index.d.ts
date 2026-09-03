@@ -1,0 +1,2 @@
+export { Table, type TableBodyProps, type TableCellProps, type TableContentProps, type TableFootProps, type TableHeaderCellProps, type TableHeadProps, type TableProps, type TableRowProps, type TableSize, type TableTitleProps, type TableToolbarProps, } from "./table";
+//# sourceMappingURL=index.d.ts.map

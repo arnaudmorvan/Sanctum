@@ -1,0 +1,2 @@
+export { PillOverflowCounter, type PillOverflowCounterProps, PillsInput, type PillsInputFieldProps, type PillsInputProps, pillsContent, pillsShell, usePillOverflow, } from "./pills-input";
+//# sourceMappingURL=index.d.ts.map

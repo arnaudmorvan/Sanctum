@@ -1,0 +1,2 @@
+export { Breadcrumb, type BreadcrumbDataItem, type BreadcrumbHomeProps, type BreadcrumbItemProps, type BreadcrumbLinkComponent, type BreadcrumbProps, type BreadcrumbRootProps, } from "./breadcrumb";
+//# sourceMappingURL=index.d.ts.map

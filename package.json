@@ -1,0 +1,27 @@
+{
+  "name": "protos-42",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "dev": "vite --port 4244",
+    "build": "node scripts/build-all.mjs",
+    "start": "node server.mjs"
+  },
+  "dependencies": {
+    "@42/ui-react": "file:./vendor/ui-react",
+    "@ark-ui/react": "^5.37.2",
+    "@tanstack/react-table": "^8.21.3",
+    "lucide-react": "^1.21.0",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.1",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.0",
+    "tailwindcss": "^4.3.1",
+    "vite": "^7.3.0"
+  }
+}
