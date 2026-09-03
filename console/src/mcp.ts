@@ -79,6 +79,12 @@ export type Metriques = {
   sequences?: Paire[]
   clientsList?: string[]
   recent?: Array<{ t: string; n: string; lat: number; ok: boolean }>
+  series?: { calls?: number[]; sessions?: number[]; errors?: number[] }
+  heatmap?: number[][]
+  payloadTop?: Paire[]
+  aliases?: Array<{ searched: string; suggested: string; count: number; score: number }>
+  requested?: Array<{ group: string; items: Paire[] }>
+  matrix?: Array<{ tool: string; row: number[] }>
 }
 
 export type Session = {

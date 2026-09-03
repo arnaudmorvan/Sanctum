@@ -1,5 +1,6 @@
 import { Alert } from "@42/ui-react/alert"
 import { Button } from "@42/ui-react/button"
+import { Input } from "@42/ui-react/input"
 import { Spinner } from "@42/ui-react/spinner"
 import { Text } from "@42/ui-react/text"
 import { Title } from "@42/ui-react/title"
@@ -11,15 +12,26 @@ import { type Arbre, type Fichier, lire } from "../mcp"
  *  inventés ici : skills/ (les modes opératoires servis aux agents), foundations/ (les
  *  règles de goût), produit/ (la spec de 42next) et reports/ (la matière pas encore
  *  consolidée). */
-const CORPUS = [
-  { cle: "skills", label: "Skills", dir: "skills", quoi: "Les modes opératoires servis aux agents." },
+export const CORPUS = [
+  { cle: "composants", label: "Composants", dir: "context/components/items", quoi: "Le catalogue exporté de Figma : axes, variantes, slots. Généré, jamais édité à la main." },
   { cle: "foundations", label: "Foundations", dir: "context/foundations", quoi: "Les règles de goût — ce qu'aucun catalogue ne porte." },
+  { cle: "skills", label: "Skills", dir: "skills", quoi: "Les modes opératoires servis aux agents." },
   { cle: "produit", label: "Produit", dir: "context/produit", quoi: "La spec de 42next : ce que l'écran raconte." },
   { cle: "reports", label: "Reports", dir: "context/reports", quoi: "La matière déposée, pas encore consolidée." },
 ]
 
-export const VueContexte = ({ cle }: { cle: string }) => {
-  const [corpus, setCorpus] = useState(CORPUS[0])
+export const VueContexte = ({ cle, corpusInitial }: { cle: string; corpusInitial?: string }) => {
+  const [corpus, setCorpus] = useState(
+    () => CORPUS.find((c) => c.cle === corpusInitial) ?? CORPUS[0],
+  )
+  const [filtre, setFiltre] = useState("")
+
+  // Le corpus peut être imposé de l'extérieur : les compteurs de l'en-tête ouvrent
+  // directement le bon dossier.
+  useEffect(() => {
+    const c = CORPUS.find((x) => x.cle === corpusInitial)
+    if (c) setCorpus(c)
+  }, [corpusInitial])
   const [arbre, setArbre] = useState<Arbre | null>(null)
   const [fichier, setFichier] = useState<Fichier | null>(null)
   const [erreur, setErreur] = useState("")
@@ -44,7 +56,12 @@ export const VueContexte = ({ cle }: { cle: string }) => {
       .finally(() => setChargeFichier(false))
   }
 
-  const fichiers = (arbre?.entrees ?? []).filter((e) => e.type !== "dir")
+  const tous = (arbre?.entrees ?? []).filter((e) => e.type !== "dir")
+  // Le catalogue de composants dépasse la cinquantaine d'entrées : sans filtre, la colonne
+  // devient un mur qu'on parcourt à la molette.
+  const fichiers = filtre
+    ? tous.filter((e) => e.nom.toLowerCase().includes(filtre.toLowerCase()))
+    : tous
 
   if (!cle) return <SansCle />
 
@@ -70,7 +87,16 @@ export const VueContexte = ({ cle }: { cle: string }) => {
       ) : null}
 
       <div className="grid gap-5 lg:grid-cols-[minmax(0,18rem)_1fr]">
-        <div className="flex max-h-[32rem] flex-col gap-1 overflow-auto rounded-xl border border-white/12 p-2">
+        <div className="flex max-h-[32rem] flex-col gap-1 rounded-xl border border-white/12 p-2">
+          <div className="px-1 pb-1">
+            <Input
+              size="sm"
+              value={filtre}
+              placeholder={`Filtrer (${tous.length})`}
+              onChange={(e) => setFiltre(e.currentTarget.value)}
+            />
+          </div>
+          <div className="flex flex-col gap-1 overflow-auto">
           {!arbre ? (
             <div className="flex items-center gap-2 p-3">
               <Spinner size="xs" />
@@ -98,6 +124,7 @@ export const VueContexte = ({ cle }: { cle: string }) => {
               </button>
             ))
           )}
+          </div>
         </div>
 
         <div className="min-w-0 rounded-xl border border-white/12 p-4">
