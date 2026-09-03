@@ -1,13 +1,12 @@
 /** Le client du serveur MCP.
  *
- *  La console est un site statique servi par Railway ; le MCP est un autre service. Les
- *  routes d'observabilité exposent `Access-Control-Allow-Origin: *`, donc l'appel direct
- *  passe — pas de proxy à écrire.
+ *  La console est un site statique servi par Railway ; le MCP est un autre service. Ses
+ *  routes exposent `Access-Control-Allow-Origin: *`, donc l'appel direct passe — pas de
+ *  proxy à écrire.
  *
- *  ⚠️ `DASHBOARD_KEY` est un secret PARTAGÉ, saisi par la personne et gardé dans son
- *  navigateur. Ce n'est pas une identité : ça ne dit pas QUI regarde. La vraie auth par
- *  personne existe côté MCP (access/users.json, jetons 42ds_…) mais aucune route HTTP ne
- *  l'expose encore — c'est ce que dit l'onglet Accès.
+ *  ⚠️ `DASHBOARD_KEY` est un secret PARTAGÉ, saisi une fois et gardé dans le navigateur.
+ *  Ce n'est pas une identité : ça ne dit pas QUI regarde. L'auth par personne existe côté
+ *  serveur (access/users.json, jetons 42ds_…) — l'onglet Accès la montre.
  */
 const BASE = (
   import.meta.env.VITE_MCP_URL ?? "https://mcp-42-production.up.railway.app"
@@ -19,7 +18,7 @@ export const lireCle = (): string => {
   try {
     return localStorage.getItem(CLE) ?? ""
   } catch {
-    return "" // navigation privée, stockage bloqué : on demande la clé à chaque fois
+    return "" // navigation privée, stockage bloqué : on redemande la clé
   }
 }
 
@@ -49,3 +48,70 @@ export async function lireProtos<T>(): Promise<T> {
 }
 
 export const URL_MCP = BASE
+
+// ---------------------------------------------------------------- formes servies
+
+export type Paire = { n: string; v: number }
+
+export type Metriques = {
+  meta?: { range?: string; updated?: string; period?: string }
+  totalCalls?: number
+  activeTools?: number
+  clients?: number
+  errorRate?: number
+  latencyMs?: number
+  tokensServed?: number
+  creditsSaved?: number
+  thinkMs?: number
+  topTools?: Paire[]
+  gaps?: Paire[]
+  gapsTotal?: number
+  sequences?: Paire[]
+  clientsList?: string[]
+  recent?: Array<{ t: string; n: string; lat: number; ok: boolean }>
+}
+
+export type Session = {
+  id: string
+  client: string
+  calls: number
+  errors: number
+  misses: number
+  loops: number
+  repeats: number
+  durationS: number
+  tokens: number
+  friction: number
+}
+
+export type Qualite = {
+  points?: Array<Record<string, unknown>>
+  empty?: boolean
+}
+
+export type Entree = { nom: string; type: string; taille: number }
+export type Arbre = { dir: string; entrees: Entree[] }
+export type Fichier = { path: string; contenu: string; tronque?: boolean }
+
+export type Acces = {
+  utilisateurs: Array<{
+    id?: string
+    nom?: string
+    email?: string
+    role?: string
+    actif?: boolean
+    ajoute_le?: string
+  }>
+  roles: Record<string, string>
+  regime?: string
+  lecture_seule?: boolean
+  erreur?: string
+}
+
+export type Resume = {
+  skills?: number
+  foundations?: number
+  produit?: number
+  reports?: number
+  composants?: number
+}
