@@ -1,0 +1,14 @@
+{
+  "slug": "42next-home",
+  "titre": "42next - Home learner",
+  "auteur": "Arnaud",
+  "resume": "L'accueil du learner : sa prochaine quete, ses projets en cours, ses reviews et son temps disponible.",
+  "cree_le": "2026-09-03",
+  "maj_le": "2026-09-03",
+  "fichiers": [
+    "data/home.ts",
+    "pages/home.tsx",
+    "pages/rush.tsx",
+    "views.tsx"
+  ]
+}
