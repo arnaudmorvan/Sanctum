@@ -4,6 +4,7 @@ import { Card } from "@42/ui-react/card"
 import { Progress } from "@42/ui-react/progress"
 import { Text } from "@42/ui-react/text"
 import { Title } from "@42/ui-react/title"
+import { Ecran } from "../components/sidebar"
 import { ACTIVITES, EN_COURS, LEARNER } from "../data/profile"
 
 export const Activity = ({ slug }: { slug?: string }) => {
@@ -12,26 +13,28 @@ export const Activity = ({ slug }: { slug?: string }) => {
 
   if (!enCours && !validee) {
     return (
-      <Card variant="outline" padding="lg">
-        <Card.Content>
-          <div className="flex flex-col gap-3">
-            <Title order={2} size="lg">No activity under this name</Title>
-            <Text c="secondary">It may have been retired from the program.</Text>
-            <div>
-              <Button size="sm" variant="outline" asChild>
-                <a href={`#/profile/${LEARNER.login}`}>Back to the profile</a>
-              </Button>
+      <Ecran actif="Learn">
+        <Card variant="outline" padding="lg">
+          <Card.Content>
+            <div className="flex flex-col gap-3">
+              <Title order={2} size="lg">No activity under this name</Title>
+              <Text c="secondary">It may have been retired from the program.</Text>
+              <div>
+                <Button size="sm" variant="outline" asChild>
+                  <a href={`#/profile/${LEARNER.login}`}>Back to the profile</a>
+                </Button>
+              </div>
             </div>
-          </div>
-        </Card.Content>
-      </Card>
+          </Card.Content>
+        </Card>
+      </Ecran>
     )
   }
 
   const pct = Math.round((EN_COURS.faites / EN_COURS.total) * 100)
 
   return (
-    <div className="flex flex-col gap-10">
+    <Ecran actif="Learn">
       <div className="flex flex-col gap-4">
         <div>
           <Button size="sm" variant="subtle" asChild>
@@ -111,6 +114,6 @@ export const Activity = ({ slug }: { slug?: string }) => {
           </section>
         </aside>
       </div>
-    </div>
+    </Ecran>
   )
 }

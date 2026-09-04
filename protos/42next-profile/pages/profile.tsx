@@ -8,6 +8,7 @@ import { SegmentGroup } from "@42/ui-react/segment-group"
 import { Text } from "@42/ui-react/text"
 import { Timeline } from "@42/ui-react/timeline"
 import { Title } from "@42/ui-react/title"
+import { Ecran } from "../components/sidebar"
 import { ACTIVITES, AILLEURS, CLASSE_NIVEAU, EN_COURS, LEARNER, MILESTONE, PRESENCE_LECTURE, PRESENCE_NOTE, PRESENCE_TOTAL, PROGRAMMES, STATS, VUES_PRESENCE, construirePresence } from "../data/profile"
 
 /** Le titre de section vit au-dessus de la card - confirme sur 5 sections au run Figma.
@@ -30,7 +31,7 @@ export const Profile = ({ login }: { login?: string }) => {
   const exigencesPct = Math.round((EN_COURS.faites / EN_COURS.total) * 100)
 
   return (
-    <div className="flex flex-col gap-10">
+    <Ecran actif="My activities">
       <div className="flex flex-col gap-1">
         <Title order={1} size="2xl">{login ?? LEARNER.login}</Title>
         <Text c="secondary">{LEARNER.nom} - learner profile</Text>
@@ -216,6 +217,6 @@ export const Profile = ({ login }: { login?: string }) => {
           </Section>
         </aside>
       </div>
-    </div>
+    </Ecran>
   )
 }
