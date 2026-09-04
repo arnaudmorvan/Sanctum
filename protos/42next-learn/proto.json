@@ -1,0 +1,16 @@
+{
+  "slug": "42next-learn",
+  "titre": "42next - Learn",
+  "auteur": "Arnaud",
+  "resume": "Le parcours Learn : mon programme, un module en cours, un projet valide avec ses tentatives et ses peer reviews.",
+  "cree_le": "2026-09-04",
+  "maj_le": "2026-09-04",
+  "fichiers": [
+    "components/sidebar.tsx",
+    "data/learn.ts",
+    "pages/module.tsx",
+    "pages/program.tsx",
+    "pages/project.tsx",
+    "views.tsx"
+  ]
+}
