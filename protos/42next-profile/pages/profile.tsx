@@ -1,4 +1,5 @@
 import type { ReactNode } from "react"
+import { Avatar } from "@42/ui-react/avatar"
 import { Badge } from "@42/ui-react/badge"
 import { Button } from "@42/ui-react/button"
 import { Card } from "@42/ui-react/card"
@@ -12,7 +13,8 @@ import { Ecran } from "../components/sidebar"
 import { ACTIVITES, AILLEURS, CLASSE_NIVEAU, EN_COURS, LEARNER, MILESTONE, PRESENCE_LECTURE, PRESENCE_NOTE, PRESENCE_TOTAL, PROGRAMMES, STATS, VUES_PRESENCE, construirePresence } from "../data/profile"
 
 /** Le titre de section vit au-dessus de la card - confirme sur 5 sections au run Figma.
- *  SectionTitle existe dans le DS Figma mais n'est pas expose par @42/ui-react. */
+ *  SectionTitle existe dans le DS Figma mais n'est pas expose par @42/ui-react.
+ *  Vrai manque, consigne dans ds-actions.yaml (2e occurrence React). */
 const Section = ({ titre, children }: { titre: string; children: ReactNode }) => (
   <section className="flex flex-col gap-4">
     <Title order={2} size="lg">{titre}</Title>
@@ -43,7 +45,13 @@ export const Profile = ({ login }: { login?: string }) => {
             <Card.Content>
               <div className="flex flex-col gap-5">
                 <div className="flex items-center gap-4">
-                  <Badge variant="gradient" size="lg">{LEARNER.initiales}</Badge>
+                  {/* CORRIGE le 2026-09-04 : Avatar EST expose par @42/ui-react
+                      (import "@42/ui-react/avatar"). Le report du matin le declarait
+                      COMPOSANT_MANQUANT et posait un Badge variant="gradient" a la
+                      place — c'etait faux. Le fallback initiales est automatique a
+                      partir de `name` ; la photo de la maquette ne peut pas transiter
+                      par publish_proto, donc `src` reste vide, volontairement. */}
+                  <Avatar size="lg" name={LEARNER.nom} color="initials" />
                   <div className="flex flex-col">
                     <Text>{LEARNER.nom}</Text>
                     <Text size="sm" c="muted">{LEARNER.presence}</Text>
