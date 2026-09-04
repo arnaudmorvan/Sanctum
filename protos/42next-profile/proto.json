@@ -6,7 +6,6 @@
   "cree_le": "2026-09-04",
   "maj_le": "2026-09-04",
   "fichiers": [
-    "components/sidebar.tsx",
     "pages/profile.tsx",
     "views.tsx"
   ]
