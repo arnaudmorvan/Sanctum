@@ -61,6 +61,24 @@ for (const proto of lireProtos()) {
 fs.rmSync(SRC_PROTO, { recursive: true, force: true })
 
 fs.mkdirSync(DIST, { recursive: true })
+
+// « Quel commit est déployé ? » doit être un curl, pas une fouille dans Railway : un
+// redéploiement manuel rejoue le snapshot du déploiement cliqué, pas le HEAD du repo,
+// et sans ce tampon l'écart est invisible de l'extérieur.
+const sha =
+  process.env.RAILWAY_GIT_COMMIT_SHA ??
+  (() => {
+    try {
+      return execFileSync("git", ["rev-parse", "HEAD"], { cwd: RACINE }).toString().trim()
+    } catch {
+      return null
+    }
+  })()
+fs.writeFileSync(
+  path.join(DIST, "version.json"),
+  `${JSON.stringify({ commit: sha, construit_le: new Date().toISOString() }, null, 2)}\n`,
+)
+
 // Lu par la console au chargement (même origine, aucune clé). Écrit AVANT son build pour
 // qu'un `vite preview` local trouve le fichier tout de suite.
 fs.writeFileSync(
