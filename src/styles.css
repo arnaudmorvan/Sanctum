@@ -22,6 +22,18 @@ body {
   background: color-mix(in srgb, var(--color-brand-500, #6388e3) 35%, transparent);
 }
 
+/* Surlignage de l'inspecteur (barre du bas → « Composants »). Les marques `data-42`
+   sont posées à la compilation par scripts/babel-origine.mjs, sur les seuls fichiers
+   du parcours. `outline` et non `border` : ça ne déplace rien dans la mise en page. */
+[data-42-inspect] [data-42^="kit:"] {
+  outline: 1px solid color-mix(in srgb, var(--color-green-400, #3fbf7f) 70%, transparent);
+  outline-offset: -1px;
+}
+[data-42-inspect] [data-42^="dom:"] {
+  outline: 1px dashed color-mix(in srgb, var(--color-pink-400, #ec4899) 55%, transparent);
+  outline-offset: -1px;
+}
+
 /* Scrollbars discrètes sur les surfaces sombres (la scrollbar système blanche
    est le premier détail qui fait « pas fini » sur un écran dark). */
 * {
