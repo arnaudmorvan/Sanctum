@@ -6,7 +6,6 @@ import { Card } from "@42/ui-react/card"
 import { Progress } from "@42/ui-react/progress"
 import { Text } from "@42/ui-react/text"
 import { Title } from "@42/ui-react/title"
-import { Ecran } from "../components/sidebar"
 import { BADGE_STATUT, MODULE } from "../data/learn"
 
 const Section = ({ titre, aside, children }: { titre: string; aside?: ReactNode; children: ReactNode }) => (
@@ -33,7 +32,7 @@ export const Module = ({ slug }: { slug?: string }) => {
   const exigPct = Math.round((m.exigences.faites / m.exigences.total) * 100)
 
   return (
-    <Ecran>
+    <div className="flex flex-col gap-10">
       <Breadcrumb data={[{ label: "Learn", href: "#/learn/program" }, { label: "My program", href: "#/learn/program" }, { label: m.nom }]} />
 
       <div className="flex flex-col gap-3">
@@ -148,6 +147,6 @@ export const Module = ({ slug }: { slug?: string }) => {
           </Section>
         </aside>
       </div>
-    </Ecran>
+    </div>
   )
 }

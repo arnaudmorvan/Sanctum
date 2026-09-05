@@ -4,8 +4,10 @@
   "auteur": "Arnaud",
   "resume": "Le profil d'un learner : niveau, activites, programmes, presence sur le campus.",
   "cree_le": "2026-09-04",
-  "maj_le": "2026-09-04",
+  "maj_le": "2026-09-05",
   "fichiers": [
+    "data/profile.ts",
+    "pages/activity.tsx",
     "pages/profile.tsx",
     "views.tsx"
   ]

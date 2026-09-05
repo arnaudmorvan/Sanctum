@@ -4,7 +4,6 @@ import { Card } from "@42/ui-react/card"
 import { Progress } from "@42/ui-react/progress"
 import { Text } from "@42/ui-react/text"
 import { Title } from "@42/ui-react/title"
-import { Ecran } from "../components/sidebar"
 import { ACTIVITES, EN_COURS, LEARNER } from "../data/profile"
 
 export const Activity = ({ slug }: { slug?: string }) => {
@@ -13,7 +12,7 @@ export const Activity = ({ slug }: { slug?: string }) => {
 
   if (!enCours && !validee) {
     return (
-      <Ecran actif="Learn">
+      <div className="flex flex-col gap-10">
         <Card variant="outline" padding="lg">
           <Card.Content>
             <div className="flex flex-col gap-3">
@@ -27,14 +26,14 @@ export const Activity = ({ slug }: { slug?: string }) => {
             </div>
           </Card.Content>
         </Card>
-      </Ecran>
+      </div>
     )
   }
 
   const pct = Math.round((EN_COURS.faites / EN_COURS.total) * 100)
 
   return (
-    <Ecran actif="Learn">
+    <div className="flex flex-col gap-10">
       <div className="flex flex-col gap-4">
         <div>
           <Button size="sm" variant="subtle" asChild>
@@ -114,6 +113,6 @@ export const Activity = ({ slug }: { slug?: string }) => {
           </section>
         </aside>
       </div>
-    </Ecran>
+    </div>
   )
 }

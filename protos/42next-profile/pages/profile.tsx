@@ -8,7 +8,6 @@ import { SegmentGroup } from "@42/ui-react/segment-group"
 import { Text } from "@42/ui-react/text"
 import { Timeline } from "@42/ui-react/timeline"
 import { Title } from "@42/ui-react/title"
-import { Ecran } from "../components/sidebar"
 import { ACTIVITES, AILLEURS, CLASSE_NIVEAU, EN_COURS, LEARNER, MILESTONE, PRESENCE_LECTURE, PRESENCE_NOTE, PRESENCE_TOTAL, PROGRAMMES, STATS, VUES_PRESENCE, construirePresence } from "../data/profile"
 
 /** REPASSE DE CONFORMITE 2026-09-04, contre la frame 22489:9756.
@@ -44,7 +43,7 @@ export const Profile = ({ login }: { login?: string }) => {
   const exigencesPct = Math.round((EN_COURS.faites / EN_COURS.total) * 100)
 
   return (
-    <Ecran actif="My activities">
+    <div className="flex flex-col gap-10">
       {/* PageHeader Figma : V gap 6, titre en Display sm/Bold (30px). */}
       <div className="flex flex-col gap-1.5">
         <Title order={1} size="2xl">{login ?? LEARNER.login}</Title>
@@ -251,6 +250,6 @@ export const Profile = ({ login }: { login?: string }) => {
           </Section>
         </aside>
       </div>
-    </Ecran>
+    </div>
   )
 }

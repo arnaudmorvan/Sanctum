@@ -5,7 +5,6 @@ import { Progress } from "@42/ui-react/progress"
 import { SegmentGroup } from "@42/ui-react/segment-group"
 import { Text } from "@42/ui-react/text"
 import { Title } from "@42/ui-react/title"
-import { Ecran } from "../components/sidebar"
 import { BADGE_STATUT, MODULES, PROGRAMME, VUES_PROGRAMME } from "../data/learn"
 
 /** Ecran 1 — learn.modules du proto : grille 2 colonnes de module cards.
@@ -13,7 +12,7 @@ import { BADGE_STATUT, MODULES, PROGRAMME, VUES_PROGRAMME } from "../data/learn"
  *  du parcours, les autres restent inertes plutot que d'ouvrir un ecran vide.
  *  Rythme repris du releve de 42next-profile : sections 16, cards 16, contenu 12. */
 export const Program = () => (
-  <Ecran>
+  <div className="flex flex-col gap-10">
     <Breadcrumb data={[{ label: "Learn", href: "#/learn/program" }, { label: "My program" }]} />
 
     <div className="flex flex-wrap items-center justify-between gap-3">
@@ -56,5 +55,5 @@ export const Program = () => (
         )
       })}
     </div>
-  </Ecran>
+  </div>
 )

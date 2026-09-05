@@ -6,7 +6,6 @@ import { Card } from "@42/ui-react/card"
 import { SegmentGroup } from "@42/ui-react/segment-group"
 import { Text } from "@42/ui-react/text"
 import { Title } from "@42/ui-react/title"
-import { Ecran } from "../components/sidebar"
 import { MODULE, PROJET } from "../data/learn"
 
 const Section = ({ titre, children }: { titre: string; children: ReactNode }) => (
@@ -30,7 +29,7 @@ export const Project = ({ slug }: { slug?: string }) => {
   const p = PROJET
 
   return (
-    <Ecran>
+    <div className="flex flex-col gap-10">
       <Breadcrumb data={[
         { label: "Learn", href: "#/learn/program" },
         { label: "My program", href: "#/learn/program" },
@@ -141,6 +140,6 @@ export const Project = ({ slug }: { slug?: string }) => {
           </Card>
         </div>
       </Section>
-    </Ecran>
+    </div>
   )
 }

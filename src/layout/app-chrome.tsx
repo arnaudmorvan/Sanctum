@@ -48,12 +48,15 @@ export const AppChrome = ({
         <AppShell.SidebarBody className="flex flex-col gap-1">
           {nav.map((item) => {
             const href = cible(item)
+            const current =
+              (item.path !== undefined && item.path === currentPath) ||
+              (item.match !== undefined && currentPath?.startsWith(item.match) === true)
             return (
               <NavLink
                 key={item.label}
                 label={item.label}
                 icon={item.icon}
-                current={item.path !== undefined && item.path === currentPath}
+                current={current}
                 {...(href ? { linkComponent: "a" as const, linkOptions: { href } } : {})}
               />
             )

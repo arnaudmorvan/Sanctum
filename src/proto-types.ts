@@ -24,12 +24,15 @@ export type ProtoView = {
  *  - `path` : le `path` d'un écran de `VIEWS` — la cible ET le critère d'état courant.
  *  - `href` : cible explicite (route paramétrée : "#/profile/aserrano"). Prime sur `path`.
  *  - ni `path` ni `href` : rangée de catégorie sans lien (rendue non cliquable).
- *  - `icon` : un ReactNode, typiquement une icône lucide (`<House size={16} />`). */
+ *  - `icon` : un ReactNode, typiquement une icône lucide (`<House size={16} />`).
+ *  - `match` : préfixe de path qui rend AUSSI l'entrée courante — pour qu'une section
+ *    reste allumée sur ses écrans profonds (`match: "learn/"` couvre `learn/module/:slug`). */
 export type ProtoNavItem = {
   label: string
   path?: string
   href?: string
   icon?: ReactNode
+  match?: string
 }
 
 export const hrefOf = (view: ProtoView): string => view.href ?? `#/${view.path}`
