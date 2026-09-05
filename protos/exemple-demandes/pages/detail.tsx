@@ -3,6 +3,7 @@ import { Button } from "@42/ui-react/button"
 import { Card } from "@42/ui-react/card"
 import { Text } from "@42/ui-react/text"
 import { Title } from "@42/ui-react/title"
+import { TYPO } from "../../../src/typo"
 import { LIBELLE, parId } from "../data/demandes"
 
 export const Detail = ({ id }: { id: string }) => {
@@ -16,7 +17,7 @@ export const Detail = ({ id }: { id: string }) => {
       </Button>
 
       <div className="flex items-center gap-3">
-        <Title order={1} size="2xl">
+        <Title order={1} size="2xl" className={TYPO.titre}>
           {d.etudiant}
         </Title>
         <Badge color={d.statut === "acceptee" ? "green" : d.statut === "refusee" ? "red" : "blue"}>

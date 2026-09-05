@@ -6,12 +6,13 @@ import { Card } from "@42/ui-react/card"
 import { Progress } from "@42/ui-react/progress"
 import { Text } from "@42/ui-react/text"
 import { Title } from "@42/ui-react/title"
+import { TYPO } from "../../../src/typo"
 import { BADGE_STATUT, MODULE } from "../data/learn"
 
 const Section = ({ titre, aside, children }: { titre: string; aside?: ReactNode; children: ReactNode }) => (
   <section className="flex flex-col gap-4">
     <div className="flex items-baseline justify-between gap-3">
-      <Title order={2} size="md">{titre}</Title>
+      <Title order={2} size="md" className={TYPO.titre}>{titre}</Title>
       {aside}
     </div>
     {children}
@@ -37,7 +38,7 @@ export const Module = ({ slug }: { slug?: string }) => {
 
       <div className="flex flex-col gap-3">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <Title order={1} size="2xl">{m.nom}</Title>
+          <Title order={1} size="2xl" className={TYPO.titre}>{m.nom}</Title>
           <div className="flex flex-wrap items-center gap-3">
             <Text size="sm" c="muted">Started {m.debut}</Text>
             <Badge variant="light" color="gray">{m.version}</Badge>
@@ -87,7 +88,7 @@ export const Module = ({ slug }: { slug?: string }) => {
                         <div className="flex flex-wrap items-center justify-between gap-3">
                           <div className="flex flex-col gap-1">
                             <div className="flex items-center gap-2">
-                              <Title order={3} size="sm">{a.nom}</Title>
+                              <Title order={3} size="sm" className={TYPO.titre}>{a.nom}</Title>
                               <Badge variant="light" color={b.color}>{b.libelle}</Badge>
                             </div>
                             <Text size="xs" c="muted">{a.type}</Text>
@@ -130,12 +131,14 @@ export const Module = ({ slug }: { slug?: string }) => {
               <Card.Content>
                 <div className="flex flex-col gap-3">
                   <div className="flex items-center justify-between gap-3">
-                    <Title order={3} size="sm">Exam</Title>
+                    <Title order={3} size="sm" className={TYPO.titre}>Exam</Title>
                     <Badge variant="light" color="red">{m.exam.statut}</Badge>
                   </div>
                   <div className="flex items-baseline justify-between gap-3">
                     <Text size="xs" c="muted">{m.exam.derniere}</Text>
-                    <Text size="sm">{m.exam.note} / {m.exam.bareme}</Text>
+                    {/* Une note est un compteur : registre machine (Kode Mono Bold),
+                        comme les scores de la frame profil. */}
+                    <Text size="sm" className={TYPO.machine}>{m.exam.note} / {m.exam.bareme}</Text>
                   </div>
                   <div className="flex flex-wrap gap-2">
                     <Button size="sm" variant="outline">Attempt history</Button>

@@ -6,11 +6,12 @@ import { Card } from "@42/ui-react/card"
 import { SegmentGroup } from "@42/ui-react/segment-group"
 import { Text } from "@42/ui-react/text"
 import { Title } from "@42/ui-react/title"
+import { TYPO } from "../../../src/typo"
 import { MODULE, PROJET } from "../data/learn"
 
 const Section = ({ titre, children }: { titre: string; children: ReactNode }) => (
   <section className="flex flex-col gap-4">
-    <Title order={2} size="md">{titre}</Title>
+    <Title order={2} size="md" className={TYPO.titre}>{titre}</Title>
     {children}
   </section>
 )
@@ -39,7 +40,7 @@ export const Project = ({ slug }: { slug?: string }) => {
 
       <div className="flex flex-col gap-3">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <Title order={1} size="2xl">{p.nom}</Title>
+          <Title order={1} size="2xl" className={TYPO.titre}>{p.nom}</Title>
           <div className="flex items-center gap-2">
             <Badge variant="light" color="green">Validated</Badge>
             <Text size="sm" c="muted">{p.fin}</Text>
@@ -61,7 +62,7 @@ export const Project = ({ slug }: { slug?: string }) => {
                   <Card variant="default" padding="md">
                     <Card.Content>
                       <div className="flex flex-col gap-2">
-                        <Title order={3} size="sm">Project details</Title>
+                        <Title order={3} size="sm" className={TYPO.titre}>Project details</Title>
                         {p.details.map((d) => <Ligne key={d.cle} cle={d.cle} valeur={d.valeur} />)}
                       </div>
                     </Card.Content>
@@ -69,7 +70,7 @@ export const Project = ({ slug }: { slug?: string }) => {
                   <Card variant="default" padding="md">
                     <Card.Content>
                       <div className="flex flex-col gap-2">
-                        <Title order={3} size="sm">Subject & resources</Title>
+                        <Title order={3} size="sm" className={TYPO.titre}>Subject & resources</Title>
                         {p.ressources.map((r) => (
                           <div key={r.titre} className="flex flex-col gap-1">
                             <Text size="sm">{r.titre}</Text>
@@ -115,7 +116,7 @@ export const Project = ({ slug }: { slug?: string }) => {
                         <div className="flex flex-col gap-2">
                           <div className="flex flex-wrap items-center justify-between gap-3">
                             <div className="flex items-center gap-2">
-                              <Title order={3} size="sm">{r.etape}</Title>
+                              <Title order={3} size="sm" className={TYPO.titre}>{r.etape}</Title>
                               <Text size="xs" c="secondary">{r.par}</Text>
                             </div>
                             <div className="flex items-center gap-2">

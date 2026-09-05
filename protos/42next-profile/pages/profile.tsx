@@ -1,4 +1,5 @@
 import type { ReactNode } from "react"
+import { Clock3, Flame, FolderCheck, GraduationCap, Grid2x2, Milestone } from "lucide-react"
 import { Avatar } from "@42/ui-react/avatar"
 import { Badge } from "@42/ui-react/badge"
 import { Button } from "@42/ui-react/button"
@@ -8,6 +9,7 @@ import { SegmentGroup } from "@42/ui-react/segment-group"
 import { Text } from "@42/ui-react/text"
 import { Timeline } from "@42/ui-react/timeline"
 import { Title } from "@42/ui-react/title"
+import { TYPO } from "../../../src/typo"
 import { ACTIVITES, AILLEURS, CLASSE_NIVEAU, EN_COURS, LEARNER, MILESTONE, PRESENCE_LECTURE, PRESENCE_NOTE, PRESENCE_TOTAL, PROGRAMMES, STATS, VUES_PRESENCE, construirePresence } from "../data/profile"
 
 /** REPASSE DE CONFORMITE 2026-09-04, contre la frame 22489:9756.
@@ -19,15 +21,29 @@ import { ACTIVITES, AILLEURS, CLASSE_NIVEAU, EN_COURS, LEARNER, MILESTONE, PRESE
  *  Correspondance des gaps Figma -> Tailwind : 4=gap-1, 8=gap-2, 12=gap-3,
  *  16=gap-4, 20=gap-5, 24=gap-6, 40=gap-10.
  *  Le padding interne d'une card est porte par la prop `padding` (lg=24, md=16,
- *  sm=12) : ne jamais le reposer a la main sur Card.Content. */
+ *  sm=12) : ne jamais le reposer a la main sur Card.Content.
+ *
+ *  PASSE TYPO 2026-09-05, contre le releve des 91 textes de la meme frame.
+ *  La regle du DS : Lato porte le texte ET les titres ; Kode Mono porte LA
+ *  MACHINE (niveau, compteurs, scores). Le kit fait l'inverse — `Title` force
+ *  `font-mono` — d'ou les `className={TYPO.*}` ci-dessous, qui nomment chacun le
+ *  style Figma reproduit. Ils disparaitront quand le kit exposera les axes. */
 
 /** SectionTitle du DS Figma : size=sm, titre en Typography-1/Text md/Bold (16px),
- *  icone en tete, gap 6 entre les deux. L'icone est absente ici — aucun asset ne
- *  transite par publish_proto. size="md" mappe le cran Figma `Text md` par son nom.
- *  L'echelle etait auparavant size="lg" : titres trop gros, signal de rejet 9. */
-const Section = ({ titre, children }: { titre: string; children: ReactNode }) => (
+ *  icone en tete, gap 6 entre les deux. size="md" mappe le cran Figma `Text md`
+ *  par son nom. L'echelle etait auparavant size="lg" : titres trop gros, rejet 9.
+ *  TYPO.titre : la frame les pose en Lato Bold, le kit les rendait en Kode Mono.
+ *
+ *  L'icone n'est PLUS absente (2026-09-05) : elle etait tombee sur la croyance
+ *  qu'« aucun asset ne transite par publish_proto ». Une icone n'est pas un asset,
+ *  c'est un import lucide — et les noms sont RELEVES sur la frame, pas choisis
+ *  (folder-check, milestone, clock-3, grid-2x2, flame, graduation-cap). */
+const Section = ({ titre, icone, children }: { titre: string; icone: ReactNode; children: ReactNode }) => (
   <section className="flex flex-col gap-4">
-    <Title order={2} size="md">{titre}</Title>
+    <div className="flex items-center gap-1.5 text-gray-dark-400">
+      {icone}
+      <Title order={2} size="md" className={TYPO.titre}>{titre}</Title>
+    </div>
     {children}
   </section>
 )
@@ -44,9 +60,10 @@ export const Profile = ({ login }: { login?: string }) => {
 
   return (
     <div className="flex flex-col gap-10">
-      {/* PageHeader Figma : V gap 6, titre en Display sm/Bold (30px). */}
+      {/* PageHeader Figma : V gap 6, titre en Display sm/Bold — Lato Bold 30.
+          Etait size="2xl" (24) en Kode Mono : deux ecarts a la fois. */}
       <div className="flex flex-col gap-1.5">
-        <Title order={1} size="2xl">{login ?? LEARNER.login}</Title>
+        <Title order={1} size="3xl" className={TYPO.titre}>{login ?? LEARNER.login}</Title>
         <Text size="sm" c="secondary">{LEARNER.nom} - learner profile</Text>
       </div>
 
@@ -59,16 +76,28 @@ export const Profile = ({ login }: { login?: string }) => {
               <div className="flex flex-col gap-2">
                 <div className="flex items-center gap-5">
                   {/* Avatar Figma : size=2xl, shape=circle. Le kit plafonne a xl.
-                      src vide : la photo ne peut pas transiter par publish_proto. */}
-                  <Avatar size="xl" name={LEARNER.nom} color="initials" />
+                      La photo est celle de la frame (_Avatar photos, photo=Olivia
+                      Rhye), servie par le site : /avatars/<slug>.webp. `name` reste
+                      pose — c'est le repli en initiales si le fichier manque. */}
+                  <Avatar
+                    size="xl"
+                    src="/avatars/olivia-rhye.webp"
+                    alt=""
+                    name={LEARNER.nom}
+                    color="initials"
+                  />
                   <div className="flex flex-col gap-3">
                     <div className="flex flex-col gap-1">
-                      <Text size="sm">{LEARNER.nom}</Text>
+                      {/* Text sm/Bold — Lato Bold 14. */}
+                      <Text size="sm" className={TYPO.titre}>{LEARNER.nom}</Text>
                       <Text size="xs" c="muted">{LEARNER.presence}</Text>
                     </div>
                     <div className="flex flex-wrap items-baseline justify-between gap-3">
-                      <Title order={2} size="xl">LEVEL {LEARNER.level}</Title>
-                      <Text size="xs" c="muted">{MILESTONE.nom}</Text>
+                      {/* Typography-2/Display xs/Bold — Kode Mono Bold 24 : c'est
+                          LE registre machine, et le seul endroit du bloc ou il sert.
+                          Etait size="xl" (20) en SemiBold. */}
+                      <Title order={2} size="2xl" className={TYPO.machine}>LEVEL {LEARNER.level}</Title>
+                      <Text size="xs" c="muted" className={TYPO.medium}>{MILESTONE.nom}</Text>
                     </div>
                     <div className="flex items-center gap-4">
                       {/* Progress Figma : axe Color=Pink. En React le degrade
@@ -76,7 +105,7 @@ export const Profile = ({ login }: { login?: string }) => {
                           purple-300 -> pink-400). review:color exige le degrade,
                           jamais une couleur unie. */}
                       <div className="grow"><Progress variant="gradient" value={LEARNER.levelPct} size="sm" /></div>
-                      <Text size="sm">{LEARNER.xp}</Text>
+                      <Text size="sm" className={TYPO.medium}>{LEARNER.xp}</Text>
                     </div>
                     <Text size="xs" c="muted">{LEARNER.parcours}</Text>
                   </div>
@@ -85,7 +114,7 @@ export const Profile = ({ login }: { login?: string }) => {
             </Card.Content>
           </Card>
 
-          <Section titre="Activities">
+          <Section titre="Activities" icone={<FolderCheck size={16} />}>
             <div className="flex flex-col gap-4">
               {/* Current activity : releve gradient/md. Etait gradient/lg. */}
               <Card variant="gradient" padding="md">
@@ -95,13 +124,13 @@ export const Profile = ({ login }: { login?: string }) => {
                       <Badge variant="light" color="blue">In progress</Badge>
                       <Badge variant="light" color="gray">{EN_COURS.tentative}</Badge>
                     </div>
-                    {/* Figma : Text sm/Bold (14px). Etait Title sans size, donc
-                        au defaut par order — plusieurs crans trop gros. */}
-                    <Title order={3} size="sm">{EN_COURS.nom}</Title>
+                    {/* Figma : Text sm/Bold (Lato Bold 14). Etait Title sans size,
+                        donc au defaut par order — plusieurs crans trop gros. */}
+                    <Title order={3} size="sm" className={TYPO.titre}>{EN_COURS.nom}</Title>
                     <Text size="xs" c="muted">{EN_COURS.contexte}</Text>
                     <div className="flex items-baseline justify-between gap-3">
-                      <Text size="sm">{EN_COURS.libelle}</Text>
-                      <Text size="sm" c="muted">{EN_COURS.faites} / {EN_COURS.total}</Text>
+                      <Text size="sm" className={TYPO.medium}>{EN_COURS.libelle}</Text>
+                      <Text size="sm" c="muted" className={TYPO.medium}>{EN_COURS.faites} / {EN_COURS.total}</Text>
                     </div>
                     <Progress variant="gradient" value={exigencesPct} size="sm" />
                     <div>
@@ -120,11 +149,13 @@ export const Profile = ({ login }: { login?: string }) => {
                   <Card.Content>
                     <div className="flex flex-wrap items-center justify-between gap-3">
                       <div className="flex flex-col gap-1">
-                        <Title order={3} size="sm">{a.nom}</Title>
+                        <Title order={3} size="sm" className={TYPO.titre}>{a.nom}</Title>
                         <Text size="xs" c="muted">{a.contexte}</Text>
                       </div>
                       <div className="flex items-center gap-3">
-                        <Text size="sm">{a.note} / {a.bareme}</Text>
+                        {/* Typography-2/Text sm/Bold — Kode Mono Bold 14. Une note
+                            est un compteur : elle appartient au registre machine. */}
+                        <Text size="sm" className={TYPO.machine}>{a.note} / {a.bareme}</Text>
                         <Badge variant="light" color="green">Validated</Badge>
                       </div>
                     </div>
@@ -134,14 +165,34 @@ export const Profile = ({ login }: { login?: string }) => {
             </div>
           </Section>
 
-          <Section titre="Programs">
+          <Section titre="Programs" icone={<Milestone size={16} />}>
             <Card variant="default" padding="md">
               <Card.Content>
+                {/* CORRIGE le 2026-09-05. La version precedente passait le nom du
+                    programme en `title={...}` — or Timeline.Item n'a PAS de prop
+                    `title` : il tombait dans l'attribut HTML `title`, donc en
+                    infobulle, invisible a l'ecran. Les trois noms de programmes
+                    manquaient purement et simplement. L'API reelle est
+                    Item > Label + Content > Title (JSDoc du composant).
+                    La colonne de gauche de la frame porte debut (Lato Bold 16) au
+                    dessus de fin (Lato Regular 14) ; le titre est Text xl/Bold. */}
                 <Timeline size="md" lineVariant="solid">
                   {PROGRAMMES.map((p) => (
-                    <Timeline.Item key={p.nom} title={p.nom}>
-                      <Text size="md" c="muted">{p.detail}</Text>
-                      <Text size="sm" c="muted">{p.debut} - {p.fin}</Text>
+                    <Timeline.Item
+                      key={p.nom}
+                      color={p.actif ? "green" : undefined}
+                      variant={p.actif ? undefined : "outline"}
+                    >
+                      <Timeline.Label>
+                        <span className="flex flex-col">
+                          <span className={TYPO.titre}>{p.debut}</span>
+                          <span className="text-gray-dark-400">{p.fin}</span>
+                        </span>
+                      </Timeline.Label>
+                      <Timeline.Content>
+                        <Timeline.Title className={`${TYPO.titre} text-xl`}>{p.nom}</Timeline.Title>
+                        <Text size="md" c="muted">{p.detail}</Text>
+                      </Timeline.Content>
                     </Timeline.Item>
                   ))}
                 </Timeline>
@@ -149,13 +200,13 @@ export const Profile = ({ login }: { login?: string }) => {
             </Card>
           </Section>
 
-          <Section titre="Attendance">
+          <Section titre="Attendance" icone={<Clock3 size={16} />}>
             <Card variant="default" padding="md">
               <Card.Content>
                 {/* attendance-body V gap 16, grid-row H gap 24. */}
                 <div className="flex flex-col gap-4">
                   <div className="flex flex-col gap-1">
-                    <Text size="sm" c="secondary">Attendance view</Text>
+                    <Text size="sm" c="secondary" className={TYPO.medium}>Attendance view</Text>
                     <SegmentGroup size="sm" data={VUES_PRESENCE} defaultValue="Monthly" />
                   </div>
                   <div className="flex flex-wrap items-center gap-6">
@@ -167,7 +218,9 @@ export const Profile = ({ login }: { login?: string }) => {
                       ))}
                     </div>
                     <div className="flex flex-col gap-2">
-                      <Title order={3} size="xl">{PRESENCE_TOTAL}</Title>
+                      {/* 312H : Typography-2/Display xs/Bold — un compteur d'heures,
+                          registre machine. Etait size="xl" en SemiBold. */}
+                      <Title order={3} size="2xl" className={TYPO.machine}>{PRESENCE_TOTAL}</Title>
                       <Text size="xs" c="muted">{PRESENCE_NOTE}</Text>
                       <div className="flex items-center gap-2">
                         <Text size="xs" c="muted">Less</Text>
@@ -192,17 +245,18 @@ export const Profile = ({ login }: { login?: string }) => {
         <aside className="flex flex-col gap-10">
           {/* Stats : releve default/md, stats-body V gap 16, stat-row H gap 12,
               AUCUN divider. Etait outline/lg avec des Divider inventes. */}
-          <Section titre="Stats">
+          <Section titre="Stats" icone={<Grid2x2 size={16} />}>
             <Card variant="default" padding="md">
               <Card.Content>
                 <div className="flex flex-col gap-4">
                   {STATS.map((s) => (
                     <div key={s.libelle} className="flex items-center justify-between gap-3">
                       <div className="flex flex-col">
-                        <Text size="sm">{s.libelle}</Text>
+                        <Text size="sm" className={TYPO.medium}>{s.libelle}</Text>
                         <Text size="xs" c="muted">{s.precision}</Text>
                       </div>
-                      <Title order={3} size="xl">{s.valeur}</Title>
+                      {/* 47 / 12 / 3 : Typography-2/Display xs/Bold, comme LEVEL. */}
+                      <Title order={3} size="2xl" className={TYPO.machine}>{s.valeur}</Title>
                     </div>
                   ))}
                 </div>
@@ -212,14 +266,14 @@ export const Profile = ({ login }: { login?: string }) => {
 
           {/* Current milestone : releve gradient/sm, milestone-body V gap 12.
               Etait outline/lg — c'est l'autre card a contour rose du side rail. */}
-          <Section titre="Current milestone">
+          <Section titre="Current milestone" icone={<Flame size={16} />}>
             <Card variant="gradient" padding="sm">
               <Card.Content>
                 <div className="flex flex-col gap-3">
-                  <Text size="sm">{MILESTONE.nom}</Text>
+                  <Text size="sm" className={TYPO.titre}>{MILESTONE.nom}</Text>
                   <div className="flex items-baseline justify-between gap-3">
-                    <Text size="sm" c="secondary">{MILESTONE.libelle}</Text>
-                    <Text size="sm" c="muted">{MILESTONE.validees} / {MILESTONE.requises}</Text>
+                    <Text size="sm" c="secondary" className={TYPO.medium}>{MILESTONE.libelle}</Text>
+                    <Text size="sm" c="muted" className={TYPO.medium}>{MILESTONE.validees} / {MILESTONE.requises}</Text>
                   </div>
                   <Progress variant="gradient" value={milestonePct} size="sm" />
                   <Text size="xs" c="muted">{MILESTONE.note}</Text>
@@ -234,13 +288,13 @@ export const Profile = ({ login }: { login?: string }) => {
               Ils sont inertes (decision designer), donc rendus en texte : le kit
               n'a ni composant Link ni prop de couleur sur Text, donc la couleur
               d'interactif du DS n'est pas atteignable ici. Consigne au report. */}
-          <Section titre="Elsewhere on this profile">
+          <Section titre="Elsewhere on this profile" icone={<GraduationCap size={16} />}>
             <Card variant="default" padding="md">
               <Card.Content>
                 <div className="flex flex-col gap-4">
                   {AILLEURS.map((l) => (
                     <div key={l.libelle} className="flex flex-col gap-1">
-                      <Text size="sm">{l.libelle}</Text>
+                      <Text size="sm" className={TYPO.renvoi}>{l.libelle}</Text>
                       <Text size="xs" c="muted">{l.note}</Text>
                     </div>
                   ))}

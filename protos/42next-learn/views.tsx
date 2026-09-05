@@ -1,11 +1,11 @@
 import {
   Calendar,
-  ChartLine,
   ClipboardCheck,
   FileCheck,
+  FolderCheck,
   GraduationCap,
   House,
-  User,
+  LayoutDashboard,
   Users,
 } from "lucide-react"
 import type { ProtoNavItem, ProtoView } from "../../src/proto-types"
@@ -18,17 +18,19 @@ import { Project } from "./pages/project"
  *  les rangées sans cible sont des catégories sans lien mort — comme avant.
  *  `match: "learn/"` garde « Learn » courant sur module et project, ce que faisait
  *  l'ancien Ecran avec son actif="Learn" figé.
- *  ⚠️ Icônes : choix lucide raisonnés, PAS relevés sur la frame Figma de la nav
- *  (22489:9757) — à confronter à la maquette à la prochaine passe Figma. */
+ *  Icônes : celles que la frame 22489:9756 porte réellement (relevé du 2026-09-05)
+ *  — house, layout-dashboard, graduation-cap, calendar, folder-check. Les rangées de
+ *  la maquette sont libellées « LOREM IPSUM », donc `Review`, `Exams` et `Community`
+ *  gardent un choix raisonné, faute d'icône dédiée dans la frame. */
 export const NAV: ProtoNavItem[] = [
   { label: "Home", icon: <House size={16} /> },
-  { label: "My progression", icon: <ChartLine size={16} /> },
+  { label: "My progression", icon: <LayoutDashboard size={16} /> },
   { label: "Learn", path: "learn/program", match: "learn/", icon: <GraduationCap size={16} /> },
   { label: "Review", icon: <ClipboardCheck size={16} /> },
   { label: "Exams", icon: <FileCheck size={16} /> },
   { label: "Agenda", icon: <Calendar size={16} /> },
   { label: "Community", icon: <Users size={16} /> },
-  { label: "My activities", icon: <User size={16} /> },
+  { label: "My activities", icon: <FolderCheck size={16} /> },
 ]
 
 export const VIEWS: ProtoView[] = [

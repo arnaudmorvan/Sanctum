@@ -4,6 +4,7 @@ import { Card } from "@42/ui-react/card"
 import { Progress } from "@42/ui-react/progress"
 import { Text } from "@42/ui-react/text"
 import { Title } from "@42/ui-react/title"
+import { TYPO } from "../../../src/typo"
 import { ACTIVITES, EN_COURS, LEARNER } from "../data/profile"
 
 export const Activity = ({ slug }: { slug?: string }) => {
@@ -16,7 +17,7 @@ export const Activity = ({ slug }: { slug?: string }) => {
         <Card variant="outline" padding="lg">
           <Card.Content>
             <div className="flex flex-col gap-3">
-              <Title order={2} size="lg">No activity under this name</Title>
+              <Title order={2} size="lg" className={TYPO.titre}>No activity under this name</Title>
               <Text c="secondary">It may have been retired from the program.</Text>
               <div>
                 <Button size="sm" variant="outline" asChild>
@@ -43,7 +44,7 @@ export const Activity = ({ slug }: { slug?: string }) => {
         <div className="flex flex-col gap-1">
           <Text size="sm" c="muted">{validee ? validee.contexte : EN_COURS.contexte}</Text>
           <div className="flex flex-wrap items-center gap-3">
-            <Title order={1} size="2xl">{validee ? validee.nom : EN_COURS.nom}</Title>
+            <Title order={1} size="2xl" className={TYPO.titre}>{validee ? validee.nom : EN_COURS.nom}</Title>
             {validee ? (
               <Badge variant="light" color="green">Validated</Badge>
             ) : (
@@ -58,7 +59,7 @@ export const Activity = ({ slug }: { slug?: string }) => {
 
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1fr)_340px]">
         <section className="flex flex-col gap-4">
-          <Title order={2} size="lg">Validation requirements</Title>
+          <Title order={2} size="lg" className={TYPO.titre}>Validation requirements</Title>
           <Card variant="gradient" padding="lg">
             <Card.Content>
               <div className="flex flex-col gap-4">
@@ -84,7 +85,7 @@ export const Activity = ({ slug }: { slug?: string }) => {
 
         <aside className="flex flex-col gap-10">
           <section className="flex flex-col gap-4">
-            <Title order={2} size="lg">Team</Title>
+            <Title order={2} size="lg" className={TYPO.titre}>Team</Title>
             <Card variant="outline" padding="lg">
               <Card.Content>
                 <div className="flex flex-col gap-3">
@@ -101,7 +102,7 @@ export const Activity = ({ slug }: { slug?: string }) => {
           </section>
 
           <section className="flex flex-col gap-4">
-            <Title order={2} size="lg">Attempts</Title>
+            <Title order={2} size="lg" className={TYPO.titre}>Attempts</Title>
             <Card variant="outline" padding="lg">
               <Card.Content>
                 <div className="flex flex-col gap-3">

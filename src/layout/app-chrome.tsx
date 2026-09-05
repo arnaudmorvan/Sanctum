@@ -2,8 +2,9 @@ import type { ReactNode } from "react"
 import { AmbientBackground } from "@42/ui-react/ambient-background"
 import { AppShell } from "@42/ui-react/app-shell"
 import { NavLink } from "@42/ui-react/nav-link"
-import { Title } from "@42/ui-react/title"
 import { hrefOf, type ProtoNavItem, type ProtoView } from "../proto-types"
+import { TYPO } from "../typo"
+import { Logo42 } from "./logo-42"
 
 /** Le CHROME de l'app : sidebar produit + fond ambiant, rendus par le SQUELETTE.
  *
@@ -37,10 +38,10 @@ export const AppChrome = ({
   return (
     <AppShell className="h-full bg-transparent">
       <AppShell.Sidebar size="xs">
-        <AppShell.SidebarHeader>
-          <Title order={1} size="xl">
-            42
-          </Title>
+        {/* Le logomark, pas un « 42 » typographié : c'est la marque, et la frame
+            la pose en haut de la colonne de nav (LogoContainer, 200×48). */}
+        <AppShell.SidebarHeader className="gap-3 px-4">
+          <Logo42 className="h-6 w-auto shrink-0" />
           {titre ? (
             <span className="truncate text-gray-dark-400 text-xs">{titre}</span>
           ) : null}
@@ -57,6 +58,9 @@ export const AppChrome = ({
                 label={item.label}
                 icon={item.icon}
                 current={current}
+                // Kode Mono SemiBold capitales : c'est le seul endroit du chrome
+                // où la frame pose le mono (12 nœuds relevés sur 22489:9756).
+                classNames={{ row: TYPO.nav }}
                 {...(href ? { linkComponent: "a" as const, linkOptions: { href } } : {})}
               />
             )
