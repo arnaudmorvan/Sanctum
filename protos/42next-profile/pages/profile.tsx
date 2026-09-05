@@ -32,7 +32,7 @@ import { ACTIVITES, AILLEURS, CLASSE_NIVEAU, EN_COURS, LEARNER, MILESTONE, PRESE
 /** SectionTitle du DS Figma : size=sm, titre en Typography-1/Text md/Bold (16px),
  *  icone en tete, gap 6 entre les deux. size="md" mappe le cran Figma `Text md`
  *  par son nom. L'echelle etait auparavant size="lg" : titres trop gros, rejet 9.
- *  TYPO.titre : la frame les pose en Lato Bold, le kit les rendait en Kode Mono.
+ *  TYPO.texte() : la frame les pose en Lato Bold, le kit les rendait en Kode Mono.
  *
  *  L'icone n'est PLUS absente (2026-09-05) : elle etait tombee sur la croyance
  *  qu'« aucun asset ne transite par publish_proto ». Une icone n'est pas un asset,
@@ -42,7 +42,7 @@ const Section = ({ titre, icone, children }: { titre: string; icone: ReactNode; 
   <section className="flex flex-col gap-4">
     <div className="flex items-center gap-1.5 text-gray-dark-400">
       {icone}
-      <Title order={2} size="md" className={TYPO.titre}>{titre}</Title>
+      <Title order={2} size="md" className={TYPO.texte()}>{titre}</Title>
     </div>
     {children}
   </section>
@@ -63,7 +63,7 @@ export const Profile = ({ login }: { login?: string }) => {
       {/* PageHeader Figma : V gap 6, titre en Display sm/Bold — Lato Bold 30.
           Etait size="2xl" (24) en Kode Mono : deux ecarts a la fois. */}
       <div className="flex flex-col gap-1.5">
-        <Title order={1} size="3xl" className={TYPO.titre}>{login ?? LEARNER.login}</Title>
+        <Title order={1} size="3xl" className={TYPO.texte()}>{login ?? LEARNER.login}</Title>
         <Text size="sm" c="secondary">{LEARNER.nom} - learner profile</Text>
       </div>
 
@@ -89,15 +89,15 @@ export const Profile = ({ login }: { login?: string }) => {
                   <div className="flex flex-col gap-3">
                     <div className="flex flex-col gap-1">
                       {/* Text sm/Bold — Lato Bold 14. */}
-                      <Text size="sm" className={TYPO.titre}>{LEARNER.nom}</Text>
+                      <Text size="sm" className={TYPO.texte()}>{LEARNER.nom}</Text>
                       <Text size="xs" c="muted">{LEARNER.presence}</Text>
                     </div>
                     <div className="flex flex-wrap items-baseline justify-between gap-3">
                       {/* Typography-2/Display xs/Bold — Kode Mono Bold 24 : c'est
                           LE registre machine, et le seul endroit du bloc ou il sert.
                           Etait size="xl" (20) en SemiBold. */}
-                      <Title order={2} size="2xl" className={TYPO.machine}>LEVEL {LEARNER.level}</Title>
-                      <Text size="xs" c="muted" className={TYPO.medium}>{MILESTONE.nom}</Text>
+                      <Title order={2} size="2xl" className={TYPO.machine()}>LEVEL {LEARNER.level}</Title>
+                      <Text size="xs" c="muted" className={TYPO.texte("medium")}>{MILESTONE.nom}</Text>
                     </div>
                     <div className="flex items-center gap-4">
                       {/* Progress Figma : axe Color=Pink. En React le degrade
@@ -105,7 +105,7 @@ export const Profile = ({ login }: { login?: string }) => {
                           purple-300 -> pink-400). review:color exige le degrade,
                           jamais une couleur unie. */}
                       <div className="grow"><Progress variant="gradient" value={LEARNER.levelPct} size="sm" /></div>
-                      <Text size="sm" className={TYPO.medium}>{LEARNER.xp}</Text>
+                      <Text size="sm" className={TYPO.texte("medium")}>{LEARNER.xp}</Text>
                     </div>
                     <Text size="xs" c="muted">{LEARNER.parcours}</Text>
                   </div>
@@ -126,11 +126,11 @@ export const Profile = ({ login }: { login?: string }) => {
                     </div>
                     {/* Figma : Text sm/Bold (Lato Bold 14). Etait Title sans size,
                         donc au defaut par order — plusieurs crans trop gros. */}
-                    <Title order={3} size="sm" className={TYPO.titre}>{EN_COURS.nom}</Title>
+                    <Title order={3} size="sm" className={TYPO.texte()}>{EN_COURS.nom}</Title>
                     <Text size="xs" c="muted">{EN_COURS.contexte}</Text>
                     <div className="flex items-baseline justify-between gap-3">
-                      <Text size="sm" className={TYPO.medium}>{EN_COURS.libelle}</Text>
-                      <Text size="sm" c="muted" className={TYPO.medium}>{EN_COURS.faites} / {EN_COURS.total}</Text>
+                      <Text size="sm" className={TYPO.texte("medium")}>{EN_COURS.libelle}</Text>
+                      <Text size="sm" c="muted" className={TYPO.texte("medium")}>{EN_COURS.faites} / {EN_COURS.total}</Text>
                     </div>
                     <Progress variant="gradient" value={exigencesPct} size="sm" />
                     <div>
@@ -149,13 +149,13 @@ export const Profile = ({ login }: { login?: string }) => {
                   <Card.Content>
                     <div className="flex flex-wrap items-center justify-between gap-3">
                       <div className="flex flex-col gap-1">
-                        <Title order={3} size="sm" className={TYPO.titre}>{a.nom}</Title>
+                        <Title order={3} size="sm" className={TYPO.texte()}>{a.nom}</Title>
                         <Text size="xs" c="muted">{a.contexte}</Text>
                       </div>
                       <div className="flex items-center gap-3">
                         {/* Typography-2/Text sm/Bold — Kode Mono Bold 14. Une note
                             est un compteur : elle appartient au registre machine. */}
-                        <Text size="sm" className={TYPO.machine}>{a.note} / {a.bareme}</Text>
+                        <Text size="sm" className={TYPO.machine()}>{a.note} / {a.bareme}</Text>
                         <Badge variant="light" color="green">Validated</Badge>
                       </div>
                     </div>
@@ -185,12 +185,12 @@ export const Profile = ({ login }: { login?: string }) => {
                     >
                       <Timeline.Label>
                         <span className="flex flex-col">
-                          <span className={TYPO.titre}>{p.debut}</span>
+                          <span className={TYPO.texte()}>{p.debut}</span>
                           <span className="text-gray-dark-400">{p.fin}</span>
                         </span>
                       </Timeline.Label>
                       <Timeline.Content>
-                        <Timeline.Title className={`${TYPO.titre} text-xl`}>{p.nom}</Timeline.Title>
+                        <Timeline.Title className={`${TYPO.texte()} text-xl`}>{p.nom}</Timeline.Title>
                         <Text size="md" c="muted">{p.detail}</Text>
                       </Timeline.Content>
                     </Timeline.Item>
@@ -206,7 +206,7 @@ export const Profile = ({ login }: { login?: string }) => {
                 {/* attendance-body V gap 16, grid-row H gap 24. */}
                 <div className="flex flex-col gap-4">
                   <div className="flex flex-col gap-1">
-                    <Text size="sm" c="secondary" className={TYPO.medium}>Attendance view</Text>
+                    <Text size="sm" c="secondary" className={TYPO.texte("medium")}>Attendance view</Text>
                     <SegmentGroup size="sm" data={VUES_PRESENCE} defaultValue="Monthly" />
                   </div>
                   <div className="flex flex-wrap items-center gap-6">
@@ -220,7 +220,7 @@ export const Profile = ({ login }: { login?: string }) => {
                     <div className="flex flex-col gap-2">
                       {/* 312H : Typography-2/Display xs/Bold — un compteur d'heures,
                           registre machine. Etait size="xl" en SemiBold. */}
-                      <Title order={3} size="2xl" className={TYPO.machine}>{PRESENCE_TOTAL}</Title>
+                      <Title order={3} size="2xl" className={TYPO.machine()}>{PRESENCE_TOTAL}</Title>
                       <Text size="xs" c="muted">{PRESENCE_NOTE}</Text>
                       <div className="flex items-center gap-2">
                         <Text size="xs" c="muted">Less</Text>
@@ -252,11 +252,11 @@ export const Profile = ({ login }: { login?: string }) => {
                   {STATS.map((s) => (
                     <div key={s.libelle} className="flex items-center justify-between gap-3">
                       <div className="flex flex-col">
-                        <Text size="sm" className={TYPO.medium}>{s.libelle}</Text>
+                        <Text size="sm" className={TYPO.texte("medium")}>{s.libelle}</Text>
                         <Text size="xs" c="muted">{s.precision}</Text>
                       </div>
                       {/* 47 / 12 / 3 : Typography-2/Display xs/Bold, comme LEVEL. */}
-                      <Title order={3} size="2xl" className={TYPO.machine}>{s.valeur}</Title>
+                      <Title order={3} size="2xl" className={TYPO.machine()}>{s.valeur}</Title>
                     </div>
                   ))}
                 </div>
@@ -270,10 +270,10 @@ export const Profile = ({ login }: { login?: string }) => {
             <Card variant="gradient" padding="sm">
               <Card.Content>
                 <div className="flex flex-col gap-3">
-                  <Text size="sm" className={TYPO.titre}>{MILESTONE.nom}</Text>
+                  <Text size="sm" className={TYPO.texte()}>{MILESTONE.nom}</Text>
                   <div className="flex items-baseline justify-between gap-3">
-                    <Text size="sm" c="secondary" className={TYPO.medium}>{MILESTONE.libelle}</Text>
-                    <Text size="sm" c="muted" className={TYPO.medium}>{MILESTONE.validees} / {MILESTONE.requises}</Text>
+                    <Text size="sm" c="secondary" className={TYPO.texte("medium")}>{MILESTONE.libelle}</Text>
+                    <Text size="sm" c="muted" className={TYPO.texte("medium")}>{MILESTONE.validees} / {MILESTONE.requises}</Text>
                   </div>
                   <Progress variant="gradient" value={milestonePct} size="sm" />
                   <Text size="xs" c="muted">{MILESTONE.note}</Text>
@@ -294,7 +294,7 @@ export const Profile = ({ login }: { login?: string }) => {
                 <div className="flex flex-col gap-4">
                   {AILLEURS.map((l) => (
                     <div key={l.libelle} className="flex flex-col gap-1">
-                      <Text size="sm" className={TYPO.renvoi}>{l.libelle}</Text>
+                      <Text size="sm" className={TYPO.texte() + " uppercase"}>{l.libelle}</Text>
                       <Text size="xs" c="muted">{l.note}</Text>
                     </div>
                   ))}

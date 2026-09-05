@@ -9,7 +9,7 @@ import { DEMANDES, LIBELLE } from "../data/demandes"
 export const Liste = () => (
   <div className="flex flex-col gap-6">
     <div className="flex flex-col gap-1">
-      <Title order={1} size="2xl" className={TYPO.titre}>
+      <Title order={1} size="2xl" className={TYPO.texte()}>
         Demandes de transformation d'heures
       </Title>
       <Text c="secondary">{DEMANDES.length} demandes déposées ce mois-ci.</Text>

@@ -12,7 +12,7 @@ import { FEEDBACK, LEARNER, PROJETS, REVIEWS, RUSHES, TEMPS, enHeures } from "..
 
 const Section = ({ titre, children }: { titre: string; children: ReactNode }) => (
   <section className="flex flex-col gap-4">
-    <Title order={2} size="lg" className={TYPO.titre}>{titre}</Title>
+    <Title order={2} size="lg" className={TYPO.texte()}>{titre}</Title>
     {children}
   </section>
 )
@@ -25,7 +25,7 @@ export const Home = () => {
   return (
     <div className="flex flex-col gap-10">
       <div className="flex flex-col gap-1">
-        <Title order={1} size="2xl" className={TYPO.titre}>Welcome home, {LEARNER.prenom}</Title>
+        <Title order={1} size="2xl" className={TYPO.texte()}>Welcome home, {LEARNER.prenom}</Title>
         <Text c="secondary">
           Il te reste {REVIEWS.attendues - REVIEWS.faites} reviews et un rush avant la fin de ta semaine de selection.
         </Text>
@@ -47,7 +47,7 @@ export const Home = () => {
               <Card.Content>
                 <div className="flex flex-col gap-4">
                   <div className="flex flex-wrap items-center gap-3">
-                    <Title order={3} size="xl" className={TYPO.titre}>{rush.nom}</Title>
+                    <Title order={3} size="xl" className={TYPO.texte()}>{rush.nom}</Title>
                     <Badge variant="light" color="pink">
                       {rush.inscrit ? "Inscrite" : "Inscriptions ouvertes"}
                     </Badge>
@@ -77,7 +77,7 @@ export const Home = () => {
                     <div className="flex flex-col gap-3">
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex flex-col gap-1">
-                          <Title order={3} size="md" className={TYPO.titre}>{p.nom}</Title>
+                          <Title order={3} size="md" className={TYPO.texte()}>{p.nom}</Title>
                           <Text size="sm" c="muted">{p.module}</Text>
                         </div>
                         <Badge variant="light" color="gray">En cours</Badge>
@@ -99,7 +99,7 @@ export const Home = () => {
               <Card variant="outline" padding="lg">
                 <Card.Content>
                   <div className="flex flex-col gap-3">
-                    <Title order={3} size="md" className={TYPO.titre}>Feedback a donner</Title>
+                    <Title order={3} size="md" className={TYPO.texte()}>Feedback a donner</Title>
                     <Text c="secondary">
                       {FEEDBACK.learner} t'a fait passer une review sur {FEEDBACK.activite}.
                     </Text>
@@ -114,7 +114,7 @@ export const Home = () => {
               <Card variant="outline" padding="lg">
                 <Card.Content>
                   <div className="flex flex-col gap-3">
-                    <Title order={3} size="md" className={TYPO.titre}>Rush Review a faire</Title>
+                    <Title order={3} size="md" className={TYPO.texte()}>Rush Review a faire</Title>
                     <Text c="secondary">Une equipe de {rush.nom} attend sa Rush Review.</Text>
                     <Text size="sm" c="muted">Une seule review par equipe - elle ne se repasse pas.</Text>
                     <div>
@@ -157,7 +157,7 @@ export const Home = () => {
           <Card variant="outline" padding="lg">
             <Card.Content>
               <div className="flex flex-col items-center gap-4">
-                <Title order={3} size="md" className={TYPO.titre}>Temps disponible aujourd'hui</Title>
+                <Title order={3} size="md" className={TYPO.texte()}>Temps disponible aujourd'hui</Title>
                 <CircularProgress variant="gradient" value={tempsPct} />
                 <div className="flex flex-col items-center gap-1">
                   <Text>{enHeures(TEMPS.restantMinutes)} restantes</Text>
@@ -170,7 +170,7 @@ export const Home = () => {
           <Card variant="outline" padding="lg">
             <Card.Content>
               <div className="flex flex-col gap-3">
-                <Title order={3} size="md" className={TYPO.titre}>Mes reviews du jour</Title>
+                <Title order={3} size="md" className={TYPO.texte()}>Mes reviews du jour</Title>
                 <Progress value={reviewsPct} size="sm" />
                 <Text size="sm" c="muted">{REVIEWS.faites} faites sur {REVIEWS.attendues} attendues</Text>
                 <div>

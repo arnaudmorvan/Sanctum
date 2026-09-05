@@ -17,7 +17,7 @@ export const Program = () => (
     <Breadcrumb data={[{ label: "Learn", href: "#/learn/program" }, { label: "My program" }]} />
 
     <div className="flex flex-wrap items-center justify-between gap-3">
-      <Title order={1} size="2xl" className={TYPO.titre}>{PROGRAMME.nom}</Title>
+      <Title order={1} size="2xl" className={TYPO.texte()}>{PROGRAMME.nom}</Title>
       <div className="flex items-center gap-3">
         <Text size="sm" c="muted">program</Text>
         <Badge variant="light" color="gray">{PROGRAMME.version}</Badge>
@@ -32,7 +32,7 @@ export const Program = () => (
           <Card.Content>
             <div className="flex flex-col gap-3">
               <div className="flex items-start justify-between gap-3">
-                <Title order={2} size="sm" className={TYPO.titre}>{m.nom}</Title>
+                <Title order={2} size="sm" className={TYPO.texte()}>{m.nom}</Title>
                 <Badge variant="light" color={b.color}>{b.libelle}</Badge>
               </div>
               <div className="flex items-center justify-between gap-3">

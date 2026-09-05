@@ -17,7 +17,7 @@ export const Detail = ({ id }: { id: string }) => {
       </Button>
 
       <div className="flex items-center gap-3">
-        <Title order={1} size="2xl" className={TYPO.titre}>
+        <Title order={1} size="2xl" className={TYPO.texte()}>
           {d.etudiant}
         </Title>
         <Badge color={d.statut === "acceptee" ? "green" : d.statut === "refusee" ? "red" : "blue"}>

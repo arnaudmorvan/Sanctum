@@ -1,0 +1,15 @@
+{
+  "slug": "42next-quest-map",
+  "titre": "42next - Quest map",
+  "auteur": "Arnaud",
+  "resume": "L'accueil du learner en carte de quete : ses territoires, ses competences, ses quetes actives et ses hauts faits.",
+  "cree_le": "2026-09-06",
+  "maj_le": "2026-09-06",
+  "figma": "22505:9532",
+  "fichiers": [
+    "data/quest-map.ts",
+    "figma-source.json",
+    "pages/quest-map.tsx",
+    "views.tsx"
+  ]
+}
