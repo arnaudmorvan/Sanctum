@@ -44,7 +44,8 @@ const construire = (proto) => {
   // lui-même) se bundle sans broncher puis plante à l'ouverture. Sans cette étape, la console
   // afficherait des parcours verts qui sont cassés.
   npx(["tsc", "--noEmit", "-p", "tsconfig.json"])
-  npx(["vite", "build"], { PROTO_SLUG: proto.slug })
+  // VITE_PROTO_TITRE : affiché par le chrome partagé (sidebar) sous le logo 42.
+  npx(["vite", "build"], { PROTO_SLUG: proto.slug, VITE_PROTO_TITRE: proto.titre ?? "" })
 }
 
 const resultats = []

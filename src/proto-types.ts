@@ -13,6 +13,25 @@ export type ProtoView = {
   render: (params: Record<string, string>) => ReactNode
 }
 
+/** Une entrée de la navigation latérale — le CHROME de l'app, rendu par le squelette.
+ *
+ *  `views.tsx` peut exporter `NAV: ProtoNavItem[]` en plus de `VIEWS` : le squelette rend
+ *  alors la sidebar produit (AppShell + NavLink du kit) et le fond ambiant, et les écrans
+ *  n'écrivent QUE la zone centrale. Sans export `NAV`, rien ne change : le parcours garde
+ *  le cadre nu historique (les parcours qui dessinent leur propre chrome continuent de
+ *  marcher — mais un NOUVEAU parcours ne doit plus le faire).
+ *
+ *  - `path` : le `path` d'un écran de `VIEWS` — la cible ET le critère d'état courant.
+ *  - `href` : cible explicite (route paramétrée : "#/profile/aserrano"). Prime sur `path`.
+ *  - ni `path` ni `href` : rangée de catégorie sans lien (rendue non cliquable).
+ *  - `icon` : un ReactNode, typiquement une icône lucide (`<House size={16} />`). */
+export type ProtoNavItem = {
+  label: string
+  path?: string
+  href?: string
+  icon?: ReactNode
+}
+
 export const hrefOf = (view: ProtoView): string => view.href ?? `#/${view.path}`
 
 export type ViewMatch = { view: ProtoView; params: Record<string, string> }

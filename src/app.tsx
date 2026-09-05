@@ -1,9 +1,16 @@
 import { useEffect, useState } from "react"
+import { AppChrome } from "./layout/app-chrome"
 import { AppLayout } from "./layout/app-layout"
 import { ProtoViewBar } from "./layout/proto-view-bar"
 // Le parcours du PO. `scripts/build-all.mjs` recopie protos/<slug>/ ici avant le build.
-import { VIEWS } from "./proto/views"
-import { hrefOf, matchView } from "./proto-types"
+// Import en espace de noms : `NAV` est un export OPTIONNEL (voir proto-types.ts) — les
+// parcours d'avant le chrome partagé ne l'ont pas, et doivent continuer de compiler.
+import * as proto from "./proto/views"
+import { hrefOf, matchView, type ProtoNavItem } from "./proto-types"
+
+const VIEWS = proto.VIEWS
+const NAV = (proto as Record<string, unknown>).NAV as ProtoNavItem[] | undefined
+const TITRE = (import.meta.env.VITE_PROTO_TITRE as string | undefined) || undefined
 
 const Inconnue = ({ hash }: { hash: string }) => (
   <div className="flex flex-col items-start gap-4">
@@ -37,11 +44,18 @@ export const App = () => {
   }, [])
 
   const match = matchView(VIEWS, hash)
+  const ecran = match ? match.view.render(match.params) : <Inconnue hash={hash} />
 
   return (
     <div className="flex h-dvh flex-col">
       <div className="min-h-0 flex-1">
-        <AppLayout>{match ? match.view.render(match.params) : <Inconnue hash={hash} />}</AppLayout>
+        {NAV ? (
+          <AppChrome nav={NAV} views={VIEWS} currentPath={match?.view.path} titre={TITRE}>
+            {ecran}
+          </AppChrome>
+        ) : (
+          <AppLayout>{ecran}</AppLayout>
+        )}
       </div>
       <ProtoViewBar views={VIEWS} current={match?.view} />
     </div>

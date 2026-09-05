@@ -7,8 +7,24 @@
 @source "../node_modules/@42/ui-react/dist/**/*.js";
 
 html, body, #root { height: 100%; }
+html { color-scheme: dark; }
 body {
   margin: 0;
   background: var(--color-brand-950);
   font-family: var(--font-sans);
+  /* Le rendu type du DS : Lato passe mal en subpixel sur fond sombre. */
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Sélection aux couleurs de la marque plutôt que le bleu système. */
+::selection {
+  background: color-mix(in srgb, var(--color-brand-500, #6388e3) 35%, transparent);
+}
+
+/* Scrollbars discrètes sur les surfaces sombres (la scrollbar système blanche
+   est le premier détail qui fait « pas fini » sur un écran dark). */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--color-gray-dark-600, #61656c) 60%, transparent) transparent;
 }
