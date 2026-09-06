@@ -1,5 +1,6 @@
 import { hrefOf, type ProtoView } from "../proto-types"
 import { Inspecteur } from "./inspecteur"
+import { Retours } from "./retours"
 
 /** La barre du bas : un lien par écran déclaré dans VIEWS. C'est ce qui rend le parcours
  *  NAVIGABLE sans que le PO n'ait à câbler quoi que ce soit — il ajoute une entrée, elle
@@ -38,5 +39,6 @@ export const ProtoViewBar = ({
         )
       })}
     <Inspecteur />
+    <Retours ecran={current?.label} />
   </nav>
 )

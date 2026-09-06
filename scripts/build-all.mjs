@@ -45,7 +45,13 @@ const construire = (proto) => {
   // afficherait des parcours verts qui sont cassés.
   npx(["tsc", "--noEmit", "-p", "tsconfig.json"])
   // VITE_PROTO_TITRE : affiché par le chrome partagé (sidebar) sous le logo 42.
-  npx(["vite", "build"], { PROTO_SLUG: proto.slug, VITE_PROTO_TITRE: proto.titre ?? "" })
+  // VITE_PROTO_SLUG : le widget « Retour » l'attache à chaque dépôt — c'est lui qui dit au
+  // serveur MCP dans quelle file (`context/retours-parcours/<slug>.md`) le retour tombe.
+  npx(["vite", "build"], {
+    PROTO_SLUG: proto.slug,
+    VITE_PROTO_SLUG: proto.slug,
+    VITE_PROTO_TITRE: proto.titre ?? "",
+  })
 }
 
 const resultats = []
