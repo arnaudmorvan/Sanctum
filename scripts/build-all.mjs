@@ -72,18 +72,50 @@ fs.mkdirSync(DIST, { recursive: true })
 // « Quel commit est déployé ? » doit être un curl, pas une fouille dans Railway : un
 // redéploiement manuel rejoue le snapshot du déploiement cliqué, pas le HEAD du repo,
 // et sans ce tampon l'écart est invisible de l'extérieur.
-const sha =
-  process.env.RAILWAY_GIT_COMMIT_SHA ??
-  (() => {
-    try {
-      return execFileSync("git", ["rev-parse", "HEAD"], { cwd: RACINE }).toString().trim()
-    } catch {
-      return null
+const git = (...args) => {
+  try {
+    return execFileSync("git", args, { cwd: RACINE, stdio: ["ignore", "pipe", "ignore"] })
+      .toString()
+      .trim()
+  } catch {
+    return null
+  }
+}
+const sha = process.env.RAILWAY_GIT_COMMIT_SHA ?? git("rev-parse", "HEAD")
+
+// D'où vient le code : c'est ce que la console montre à un dev qui veut cloner un parcours.
+// Railway pose owner/nom/branche en variables (le build tourne sur un snapshot sans remote) ;
+// en local on lit le remote. Sans rien, `depot` vaut null et la console dit seulement le
+// dossier — elle n'invente pas d'URL.
+const depuisRailway =
+  process.env.RAILWAY_GIT_REPO_OWNER && process.env.RAILWAY_GIT_REPO_NAME
+    ? {
+        proprietaire: process.env.RAILWAY_GIT_REPO_OWNER,
+        nom: process.env.RAILWAY_GIT_REPO_NAME,
+        branche: process.env.RAILWAY_GIT_BRANCH ?? "main",
+      }
+    : null
+const depuisRemote = (() => {
+  const m = git("remote", "get-url", "origin")?.match(
+    /github\.com[:/]([^/]+)\/([^/\s]+?)(?:\.git)?$/,
+  )
+  return m
+    ? { proprietaire: m[1], nom: m[2], branche: git("rev-parse", "--abbrev-ref", "HEAD") ?? "main" }
+    : null
+})()
+const origine = depuisRailway ?? depuisRemote
+const depot = origine
+  ? {
+      ...origine,
+      url: `https://github.com/${origine.proprietaire}/${origine.nom}`,
+      clone: `git@github.com:${origine.proprietaire}/${origine.nom}.git`,
+      dossier_protos: "protos",
     }
-  })()
+  : null
+
 fs.writeFileSync(
   path.join(DIST, "version.json"),
-  `${JSON.stringify({ commit: sha, construit_le: new Date().toISOString() }, null, 2)}\n`,
+  `${JSON.stringify({ commit: sha, construit_le: new Date().toISOString(), depot }, null, 2)}\n`,
 )
 
 // Lu par la console au chargement (même origine, aucune clé). Écrit AVANT son build pour

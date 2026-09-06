@@ -3,4 +3,6 @@ node_modules/
 # Ancrés à la racine, EXPRÈS : un `dist/` non ancré matcherait aussi vendor/ui-react/dist,
 # c'est-à-dire le kit vendoré — que le build exige. Sans l'ancre, un clone neuf ne construit pas.
 /dist/
-/src/proto/
+# Sans slash final, exprès : `npm run dev <slug>` pose un LIEN symbolique vers protos/<slug>/,
+# et git voit un lien comme un fichier — `/src/proto/` ne l'aurait pas ignoré.
+/src/proto

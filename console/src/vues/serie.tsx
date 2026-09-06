@@ -10,6 +10,10 @@
  *  validation daltonisme (ΔE 4,1 en deutéranopie). Le rouge ne sert donc que de STATUT, sur
  *  les erreurs, toujours accompagné de son libellé.
  */
+import { Card } from "@42/ui-react/card"
+import { Text } from "@42/ui-react/text"
+import { TYPO } from "../../../src/typo"
+
 export const Serie = ({
   titre,
   valeurs,
@@ -25,10 +29,12 @@ export const Serie = ({
   const teinte = statut ? "var(--color-red-400)" : "var(--color-brand-400)"
 
   return (
-    <div className="flex flex-col gap-2 rounded-xl border border-white/12 bg-white/4 px-4 py-3">
+    <Card variant="outline" padding="sm" className="flex flex-col gap-2">
       <div className="flex items-baseline justify-between gap-2">
-        <span className="text-gray-dark-400 text-sm">{titre}</span>
-        <span className="font-mono text-white text-xl">{total}</span>
+        <Text c="secondary" size="sm">
+          {titre}
+        </Text>
+        <span className={`${TYPO.machine()} text-white text-xl`}>{total}</span>
       </div>
       {v.length ? (
         <div className="flex h-10 items-end gap-[2px]" aria-hidden="true">
@@ -47,8 +53,10 @@ export const Serie = ({
       ) : (
         <div className="h-10" />
       )}
-      <span className="text-gray-dark-500 text-xs">{v.length} derniers jours</span>
-    </div>
+      <Text c="muted" size="xs">
+        {v.length} derniers jours
+      </Text>
+    </Card>
   )
 }
 

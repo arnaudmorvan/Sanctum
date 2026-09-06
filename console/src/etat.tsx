@@ -1,8 +1,10 @@
 import { Alert } from "@42/ui-react/alert"
+import { Card } from "@42/ui-react/card"
 import { Spinner } from "@42/ui-react/spinner"
 import { Text } from "@42/ui-react/text"
 import { type ReactNode, useEffect, useState } from "react"
 import { ErreurAcces, lire } from "./mcp"
+import { TYPO } from "../../src/typo"
 
 /** Un chargement, une erreur, un rendu — la même mécanique dans les cinq onglets qui lisent
  *  le serveur. Sans ça, chaque vue réinventerait son état et afficherait ses erreurs
@@ -44,14 +46,12 @@ export function useRoute<T>(route: string, cle: string) {
 }
 
 export const SansCle = () => (
-  <div className="rounded-xl border border-white/12 border-dashed px-5 py-8 text-center">
-    <Text c="secondary">
-      Saisis la clé de lecture en haut à droite pour afficher cette section.
-    </Text>
-    <Text c="muted" size="sm">
-      C'est la variable DASHBOARD_KEY du service MCP. Elle reste dans ton navigateur.
-    </Text>
-  </div>
+  <Alert
+    type="info"
+    variant="outline"
+    title="Cette section lit le serveur MCP : il faut la clé de lecture."
+    description="C'est la variable DASHBOARD_KEY du service MCP. Elle reste dans ton navigateur."
+  />
 )
 
 export const Etat = ({
@@ -83,11 +83,13 @@ export const Etat = ({
   return <>{enfants}</>
 }
 
+/** Un compteur. La VALEUR est en Kode Mono — c'est la machine qui parle (règle typo du
+ *  DS : les compteurs, scores et niveaux sont mono ; le texte reste en Lato). */
 export const Chiffre = ({ label, valeur }: { label: string; valeur: ReactNode }) => (
-  <div className="rounded-xl border border-white/12 bg-white/4 px-4 py-3">
+  <Card variant="outline" padding="sm">
     <Text c="muted" size="sm">
       {label}
     </Text>
-    <div className="font-mono text-2xl text-white">{valeur}</div>
-  </div>
+    <div className={`${TYPO.machine()} text-2xl text-white`}>{valeur}</div>
+  </Card>
 )

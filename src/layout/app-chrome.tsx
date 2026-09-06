@@ -1,7 +1,9 @@
 import type { ReactNode } from "react"
+import { ActionIcon } from "@42/ui-react/action-icon"
 import { AmbientBackground } from "@42/ui-react/ambient-background"
 import { AppShell } from "@42/ui-react/app-shell"
 import { NavLink } from "@42/ui-react/nav-link"
+import { Menu as MenuIcon } from "lucide-react"
 import { hrefOf, type ProtoNavItem, type ProtoView } from "../proto-types"
 import { TYPO } from "../typo"
 import { Logo42 } from "./logo-42"
@@ -69,7 +71,16 @@ export const AppChrome = ({
       </AppShell.Sidebar>
       <AppShell.Main>
         <AmbientBackground />
-        <div className="mx-auto w-full max-w-6xl px-6 py-8">{children}</div>
+        <div className="mx-auto w-full max-w-6xl px-6 py-8">
+          {/* Sous le point de rupture, la sidebar devient un tiroir : sans ce bouton (nul
+              partout ailleurs), la navigation du parcours n'existerait plus en mobile. */}
+          <AppShell.SidebarTrigger asChild>
+            <ActionIcon variant="subtle" size="md" className="mb-4" aria-label="Ouvrir la navigation">
+              <MenuIcon size={18} />
+            </ActionIcon>
+          </AppShell.SidebarTrigger>
+          {children}
+        </div>
       </AppShell.Main>
     </AppShell>
   )

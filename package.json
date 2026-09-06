@@ -6,7 +6,7 @@
     "node": ">=22"
   },
   "scripts": {
-    "dev": "vite --port 4244",
+    "dev": "node scripts/dev-proto.mjs",
     "build": "node scripts/build-all.mjs",
     "start": "node server.mjs"
   },

@@ -47,6 +47,38 @@ export async function lireProtos<T>(): Promise<T> {
   return (await r.json()) as T
 }
 
+/** Le tampon du build : quel commit est servi, et d'où vient le code. Même origine, pas de
+ *  clé. C'est ce qui permet à la console de dire à un dev COMMENT cloner un parcours sans
+ *  qu'aucune URL de dépôt ne soit écrite en dur ici. */
+export async function lireVersion(): Promise<Version> {
+  const r = await fetch("/version.json")
+  if (!r.ok) throw new Error(`version.json → HTTP ${r.status}`)
+  return (await r.json()) as Version
+}
+
+/** Retire un parcours du repo des protos — un commit, réversible par `git revert`. Le
+ *  serveur MCP tient le PAT ; la console ne fait que présenter la clé. Le parcours ne
+ *  disparaît du site qu'au prochain déploiement : `protos.json` est écrit par le build. */
+export async function supprimerProto(slug: string): Promise<Suppression> {
+  const cle = lireCle()
+  const r = await fetch(`${BASE}/console/protos/${encodeURIComponent(slug)}`, {
+    method: "DELETE",
+    headers: cle ? { "X-DS-Key": cle } : {},
+  })
+  if (r.status === 401) throw new ErreurAcces("Clé refusée par le serveur.")
+  if (r.status === 404) throw new Error("Le serveur ne sait pas supprimer les parcours (route absente ou parcours déjà retiré).")
+  if (!r.ok) {
+    let detail = `HTTP ${r.status}`
+    try {
+      detail = ((await r.json()) as { error?: string }).error ?? detail
+    } catch {
+      /* corps non JSON : le statut suffit */
+    }
+    throw new Error(detail)
+  }
+  return (await r.json()) as Suppression
+}
+
 /** Teste une clé SANS la stocker : c'est ce qui permet à l'écran de connexion de dire
  *  « refusée » plutôt que d'enregistrer une clé fausse et de laisser six onglets échouer
  *  chacun de leur côté. Rend le résumé en cas de succès — l'appel sert deux fois. */
@@ -131,3 +163,22 @@ export type Resume = {
   reports?: number
   composants?: number
 }
+
+/** Écrit par `scripts/build-all.mjs`. `depot` est null quand le build n'a trouvé ni
+ *  variables Railway ni remote git — la console dit alors le dossier, pas l'URL. */
+export type Depot = {
+  proprietaire: string
+  nom: string
+  branche: string
+  url: string
+  clone: string
+  dossier_protos: string
+}
+
+export type Version = {
+  commit: string | null
+  construit_le: string
+  depot?: Depot | null
+}
+
+export type Suppression = { ok: true; slug: string; commit: string; fichiers: number }

@@ -10,7 +10,10 @@ Le repo s'appelle `Sanctum` ; le serveur MCP qui écrit dedans, `mcp-Omniscient`
 Un parcours est déposé **depuis une conversation Claude** (connecteur 42 Design), pas par
 git : le PO décrit son parcours, le serveur MCP commit ici, Railway construit et déploie.
 
-- **Console** : `/` — onglets Prototypes, Observabilité, Accès
+- **Console** : `/` — sections Prototypes, Contexte, Observabilité, Sessions, Qualité,
+  Accès. Une seule navigation, la sidebar (AppShell + NavLink du kit) ; l'URL porte la
+  section (`#/contexte/skills`). La galerie est publique ; les autres sections demandent
+  la clé de lecture (`DASHBOARD_KEY` du service MCP).
 - **Un parcours** : `/p/<slug>/`
 
 ## Pour un PO : ajouter ou faire évoluer un parcours
@@ -24,6 +27,31 @@ Rien à installer, rien à cloner. Dans une conversation avec le connecteur **42
 
 Republier avec le **même slug** met le parcours à jour. Un slug nouveau crée un parcours de plus.
 
+**Supprimer un parcours** se fait depuis la console (menu `⋯` de la carte → Supprimer…,
+clé de lecture requise, slug à retaper). C'est un commit dans ce repo, exécuté par le
+serveur MCP (`DELETE /console/protos/<slug>`) : le parcours reste dans l'historique git, et
+il disparaît du site **au déploiement suivant** — la carte reste visible en « suppression
+en cours » d'ici là.
+
+## Pour un dev : récupérer le code d'un parcours
+
+Menu `⋯` de la carte → **Récupérer le code** : la modale donne le `git clone` du dépôt, le
+dossier `protos/<slug>/`, et le lien GitHub. Le build écrit l'origine dans
+`dist/version.json` (`depot`, depuis les variables Railway ou le remote git) — aucune URL
+n'est en dur dans la console. Puis, en local :
+
+```bash
+npm install
+npm run dev <slug>       # http://localhost:4244
+```
+
+`npm run dev` **exige** un slug (`scripts/dev-proto.mjs` liste les parcours disponibles si
+on l'oublie) : le squelette importe `./proto/views`, donc `src/proto/` doit pointer quelque
+part avant que Vite démarre. Le script y pose un **lien symbolique** vers `protos/<slug>/`,
+là où `build-all.mjs` fait une copie — en dev, une copie ferait éditer un dossier ignoré par
+git, et le travail serait perdu au build suivant. Ce qu'on modifie à l'écran est bien le
+parcours.
+
 ## Structure
 
 ```
@@ -34,14 +62,18 @@ protos/<slug>/
 ├── data/*.ts        ← les données de démo
 └── proto.json       ← titre, auteur, dates (écrit par le MCP)
 
-src/                 ← le squelette, commun à tous les parcours (routage, barre de vues)
+src/                 ← le squelette, commun à tous les parcours (routage, chrome, barre d'outils)
 vendor/ui-react/     ← snapshot CONSTRUIT de @42/ui-react
 scripts/build-all.mjs ← un build par parcours, puis la galerie
+scripts/dev-proto.mjs ← `npm run dev <slug>` : un parcours en local
 server.mjs           ← service statique de dist/ (Railway)
 ```
 
-`views.tsx` est le contrat : la barre de navigation du bas **et** le routage par hash s'en
-déduisent tous les deux. Un écran qui n'y figure pas est inatteignable.
+`views.tsx` est le contrat : la barre du bas **et** le routage par hash s'en déduisent tous
+les deux. Un écran qui n'y figure pas est inatteignable. Quand `views.tsx` exporte aussi
+`NAV`, le squelette rend la sidebar produit — et la barre du bas ne reliste **pas** les
+écrans qu'une entrée de `NAV` vise déjà : elle ne garde que les écrans profonds (module,
+projet, détail…), ceux qu'on ne peut atteindre qu'en traversant le produit.
 
 ## Deux contraintes porteuses — ne pas les défaire
 

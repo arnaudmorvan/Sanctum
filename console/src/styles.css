@@ -1,8 +1,27 @@
 /* Même contrat que les protos : le kit ne livre pas de CSS compilé, ses classes
-   se génèrent par un scan de son dist. Sans ce @source, la console s'affiche nue. */
+   se génèrent par un scan de son dist. Sans ce @source, la console s'affiche nue.
+   Le second @source couvre ce que la console partage avec le squelette (typo.ts, le
+   logomark) : la racine Vite est console/, la détection automatique s'arrête là. */
 @import "tailwindcss";
 @import "@42/ui-react/theme.css";
 @source "../../node_modules/@42/ui-react/dist/**/*.js";
+@source "../../src";
 
 html, body, #root { height: 100%; }
-body { margin: 0; background: var(--color-brand-950); font-family: var(--font-sans); }
+html { color-scheme: dark; }
+body {
+  margin: 0;
+  background: var(--color-brand-950);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--color-brand-500, #6388e3) 35%, transparent);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--color-gray-dark-600, #61656c) 60%, transparent) transparent;
+}
