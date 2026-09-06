@@ -2,6 +2,7 @@ import { Button } from "@42/ui-react/button"
 import { ArrowLeft } from "lucide-react"
 import { hrefOf, type ProtoNavItem, type ProtoView } from "../proto-types"
 import { TYPO } from "../typo"
+import { MARQUE_UI } from "./cible"
 import { Inspecteur } from "./inspecteur"
 import { Retours } from "./retours"
 
@@ -38,6 +39,7 @@ export const ProtoViewBar = ({
 
   return (
     <nav
+      {...{ [MARQUE_UI]: "" }}
       aria-label="Outils du prototype"
       className="flex shrink-0 flex-wrap items-center gap-1 border-white/10 border-t bg-gray-dark-950 px-2 py-1.5"
     >

@@ -1,4 +1,8 @@
 import { useEffect, useState } from "react"
+import type { Cible } from "./cible"
+import { MARQUE_UI } from "./cible"
+import { Ciblage, CibleChoisie } from "./ciblage"
+import { decrireElement } from "./cible"
 
 /** Le widget « Retour » : la bouche par laquelle un spectateur du parcours parle au système.
  *
@@ -11,6 +15,12 @@ import { useEffect, useState } from "react"
  *     panneau d'accueil du MCP et traitée par le geste « Traiter les retours » ;
  *   • « une règle »    → un report `context/reports/`, qui suit la consolidation normale
  *     des foundations. Le widget est une bouche de plus du pipeline existant.
+ *
+ *  Depuis le 2026-09-06, un retour peut porter une CIBLE : l'élément désigné ou la zone
+ *  entourée. Elle voyage avec plusieurs preuves (origine kit/main, nom, rôle, chemin,
+ *  sélecteur, rectangle) — voir `cible.ts`. Ce que ça change pour qui traite le retour :
+ *  « c'est trop serré » devient « le padding de cette `Card` du kit est trop serré », donc
+ *  une tâche kit, ou « la div de mise en page qui l'entoure », donc une tâche parcours.
  *
  *  Fail-closed : sans `VITE_RETOURS_KEY` posée au build, le bouton N'EXISTE PAS — le même
  *  défaut sûr que la route serveur sans `RETOURS_KEY`. La clé embarquée n'est pas un
@@ -47,6 +57,9 @@ export const Retours = ({ ecran }: { ecran?: string }) => {
   const [auteur, setAuteur] = useState("")
   const [etat, setEtat] = useState<Etat>("saisie")
   const [erreur, setErreur] = useState("")
+  const [cible, setCible] = useState<Cible | null>(null)
+  const [elementCible, setElementCible] = useState<Element | null>(null)
+  const [mode, setMode] = useState<"element" | "zone" | null>(null)
 
   // L'auteur se demande UNE fois par navigateur : un retour anonyme est un retour qu'on ne
   // peut pas aller requestionner.
@@ -72,7 +85,7 @@ export const Retours = ({ ecran }: { ecran?: string }) => {
       const r = await fetch(`${URL_MCP}/retours/deposer.json`, {
         method: "POST",
         headers: { "Content-Type": "application/json", "X-Retours-Key": CLE },
-        body: JSON.stringify({ nature, texte, slug: SLUG, ecran: ecran ?? "", auteur }),
+        body: JSON.stringify({ nature, texte, slug: SLUG, ecran: ecran ?? "", auteur, cible }),
       })
       if (!r.ok) {
         const corps = (await r.json().catch(() => null)) as { error?: string } | null
@@ -80,6 +93,8 @@ export const Retours = ({ ecran }: { ecran?: string }) => {
       }
       setEtat("merci")
       setTexte("")
+      setCible(null)
+      setElementCible(null)
     } catch (e) {
       setEtat("erreur")
       setErreur(e instanceof Error ? e.message : String(e))
@@ -90,12 +105,33 @@ export const Retours = ({ ecran }: { ecran?: string }) => {
     setOuvert(false)
     setEtat("saisie")
     setErreur("")
+    setMode(null)
+    setCible(null)
+    setElementCible(null)
+  }
+
+  const viser = (el: Element) => {
+    setElementCible(el)
+    setCible(decrireElement(el))
   }
 
   const pretAEnvoyer = texte.trim().length >= 10 && texte.length <= TEXTE_MAX
 
   return (
     <>
+      {mode && (
+        <Ciblage
+          mode={mode}
+          onAnnuler={() => setMode(null)}
+          onCible={(c) => {
+            setCible(c)
+            // En mode zone, l'élément porteur n'est pas ce qu'on a montré : le fil
+            // d'Ariane n'aurait pas de sens, on ne le propose donc pas.
+            setElementCible(c.type === "element" ? document.querySelector(c.selecteur) : null)
+            setMode(null)
+          }}
+        />
+      )}
       <button
         type="button"
         onClick={() => (ouvert ? fermer() : setOuvert(true))}
@@ -111,6 +147,7 @@ export const Retours = ({ ecran }: { ecran?: string }) => {
 
       {ouvert && (
         <div
+          {...{ [MARQUE_UI]: "" }}
           className="fixed inset-x-0 bottom-11 z-50 max-h-[60vh] overflow-y-auto border-gray-dark-800 border-t bg-gray-dark-950/98 px-4 py-4 backdrop-blur"
           role="dialog"
           aria-label="Déposer un retour"
@@ -174,6 +211,37 @@ export const Retours = ({ ecran }: { ecran?: string }) => {
                 <p className="text-gray-dark-500 text-xs">
                   {NATURES.find((n) => n.cle === nature)?.aide}
                 </p>
+
+                {cible ? (
+                  <CibleChoisie
+                    cible={cible}
+                    element={elementCible}
+                    onRevoir={viser}
+                    onEffacer={() => {
+                      setCible(null)
+                      setElementCible(null)
+                    }}
+                  />
+                ) : (
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-gray-dark-500 text-xs">Montrer où :</span>
+                    <button
+                      type="button"
+                      onClick={() => setMode("element")}
+                      className="rounded-md border border-gray-dark-800 px-2.5 py-1.5 text-gray-dark-300 text-xs hover:border-white/30 hover:text-white"
+                    >
+                      Désigner un élément
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setMode("zone")}
+                      className="rounded-md border border-gray-dark-800 px-2.5 py-1.5 text-gray-dark-300 text-xs hover:border-white/30 hover:text-white"
+                    >
+                      Entourer une zone
+                    </button>
+                    <span className="text-gray-dark-600 text-[11px]">facultatif</span>
+                  </div>
+                )}
 
                 <textarea
                   value={texte}

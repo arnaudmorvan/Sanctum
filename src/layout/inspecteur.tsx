@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react"
 import { IMPORTS_KIT } from "virtual:42-imports-kit"
+import { MARQUE_UI } from "./cible"
 
 /** L'inspecteur d'origine : ce que l'écran doit VRAIMENT au kit.
  *
@@ -86,6 +87,7 @@ export const Inspecteur = () => {
 
       {ouvert && (
         <div
+          {...{ [MARQUE_UI]: "" }}
           className="fixed inset-x-0 bottom-11 z-50 max-h-[60vh] overflow-y-auto border-gray-dark-800 border-t bg-gray-dark-950/98 px-4 py-4 backdrop-blur"
           role="dialog"
           aria-label="Origine des composants de l'écran"
