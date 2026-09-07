@@ -3,13 +3,15 @@ import { ArrowLeft } from "lucide-react"
 import { hrefOf, type ProtoNavItem, type ProtoView } from "../proto-types"
 import { TYPO } from "../typo"
 import { Feedback } from "./feedback"
+import { FlowMap } from "./flow-map"
 import { Inspector } from "./inspector"
 import { UI_MARK } from "./target"
 
 /** The bottom bar: the prototype's TOOLING, not its product. It leads back to the gallery
  *  and gives direct access to the screens declared in VIEWS — without the PO having to
  *  wire anything: they add an entry, it shows up here. On the right, the review tools: the
- *  origin inspector (kit or written by hand) and the feedback widget.
+ *  origin inspector (kit or written by hand), the map (the whole flow, zoomed out) and the
+ *  feedback widget.
  *
  *  When the flow exports `NAV`, the product sidebar already carries some of the screens.
  *  Relisting them here made two navigations for the same target ("Learn" on the left,
@@ -69,9 +71,10 @@ export const ProtoViewBar = ({
           })}
         </span>
       ) : null}
-      {/* The inspector carries its own `ms-auto`: it and the feedback button form the right
-          block, the review tools — the navigation stays on the left. */}
+      {/* The inspector carries its own `ms-auto`: it, the map and the feedback button form
+          the right block, the review tools — the navigation stays on the left. */}
       <Inspector />
+      <FlowMap views={views} nav={nav} title={title} current={current} />
       <Feedback screen={current?.label} />
     </nav>
   )

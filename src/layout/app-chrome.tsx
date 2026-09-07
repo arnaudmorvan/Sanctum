@@ -22,12 +22,18 @@ export const AppChrome = ({
   views,
   currentPath,
   title,
+  breakpoint,
   children,
 }: {
   nav: ProtoNavItem[]
   views: ProtoView[]
   currentPath?: string
   title?: string
+  /** Width below which `AppShell` turns the sidebar into a drawer. Left to the kit's default
+   *  (768) by the app; forced to 0 by the MAP, and only there — the shell measures its own
+   *  RENDERED width, so a miniature reduced to ~340 px would show every screen in its mobile
+   *  state. A miniature is a desktop screenshot. */
+  breakpoint?: number
   children: ReactNode
 }) => {
   const targetOf = (item: ProtoNavItem): string | undefined => {
@@ -72,7 +78,7 @@ export const AppChrome = ({
   }
 
   return (
-    <AppShell className="h-full bg-transparent">
+    <AppShell className="h-full bg-transparent" breakpoint={breakpoint}>
       <AppShell.Sidebar size="xs">
         {/* The logomark, not a typeset "42": this is the brand, and the frame puts it at
             the top of the nav column (LogoContainer, 200×48). */}
