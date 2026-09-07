@@ -1,0 +1,30 @@
+{
+  "slug": "42next-lms",
+  "title": "42next - LMS",
+  "author": "Arnaud",
+  "summary": "The whole 42next LMS as one flow: home, progression, learn, review, exams, agenda, community and profile — 25 screens, folded out of the eight HTML prototypes that were really one app.",
+  "created_at": "2026-09-07",
+  "updated_at": "2026-09-07",
+  "files": [
+    "data/learn.ts",
+    "data/lms.ts",
+    "data/profile.ts",
+    "data/quest-map.ts",
+    "figma-source.json",
+    "pages/activity.tsx",
+    "pages/agenda.tsx",
+    "pages/community.tsx",
+    "pages/dashboard.tsx",
+    "pages/exams.tsx",
+    "pages/me.tsx",
+    "pages/module.tsx",
+    "pages/profile.tsx",
+    "pages/program.tsx",
+    "pages/progression.tsx",
+    "pages/project.tsx",
+    "pages/quest-map.tsx",
+    "pages/review.tsx",
+    "pages/shell.tsx",
+    "views.tsx"
+  ]
+}
