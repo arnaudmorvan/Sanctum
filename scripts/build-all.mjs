@@ -136,8 +136,10 @@ fs.writeFileSync(
 fs.writeFileSync(
   path.join(DIST, "protos.json"),
   `${JSON.stringify(
-    results.map(({ slug, title, author, summary, created_at, updated_at, ok }) => ({
-      slug, title, author, summary, created_at, updated_at, ok,
+    // `files` travels too: it is what lets the console list a flow's screens — and
+    // therefore offer ONE of them — without a call to the MCP just to draw a list.
+    results.map(({ slug, title, author, summary, created_at, updated_at, ok, files }) => ({
+      slug, title, author, summary, created_at, updated_at, ok, files: files ?? [],
     })),
     null,
     2,

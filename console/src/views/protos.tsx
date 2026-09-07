@@ -10,7 +10,14 @@ import { Modal } from "@42/ui-react/modal"
 import { Text } from "@42/ui-react/text"
 import { Code2, Copy, Ellipsis, ExternalLink, Trash2 } from "lucide-react"
 import { useEffect, useState } from "react"
-import { AccessError, type Deletion, deleteFlow, getFlows, type Repo } from "../mcp"
+import {
+  AccessError,
+  type Deletion,
+  deleteFlow,
+  getFlows,
+  getScreenSource,
+  type Repo,
+} from "../mcp"
 import { notify } from "../notifier"
 
 export type Flow = {
@@ -21,6 +28,9 @@ export type Flow = {
   created_at?: string
   updated_at?: string
   ok?: boolean
+  /** The flow's files, as `proto.json` lists them. Absent from a `protos.json` written
+   *  before the screen list travelled: the modal then says so instead of showing nothing. */
+  files?: string[]
 }
 
 // ------------------------------------------------------------ pending deletions
@@ -95,17 +105,108 @@ const Command = ({ label, text }: { label: string; text: string }) => (
 
 // ------------------------------------------------------------ "get the code" modal
 
+/** A flow's screens, read from the file list `proto.json` carries. `pages/` is the
+ *  convention every flow follows — the same one the MCP panel names its screens from. */
+const screensOf = (files?: string[]) =>
+  (files ?? [])
+    .filter((f) => /^pages\/.+\.tsx?$/.test(f))
+    .map((path) => ({
+      path,
+      label: path.slice("pages/".length).replace(/\.tsx?$/, "").replace(/[-_]/g, " "),
+    }))
+
+type Screen = ReturnType<typeof screensOf>[number]
+
+/** One screen, and the two ways to leave with it: the code in the clipboard, or the file on
+ *  GitHub. The source travels through the server — the flows repo is private — so without
+ *  the console key the copy is closed, and says so rather than failing on click. */
+const ScreenRow = ({
+  flow,
+  screen,
+  repo,
+  signedIn,
+}: {
+  flow: Flow
+  screen: Screen
+  repo?: Repo | null
+  signedIn: boolean
+}) => {
+  const [busy, setBusy] = useState(false)
+  const url = repo
+    ? `${repo.url}/blob/${repo.branch}/${repo.protos_dir}/${flow.slug}/${screen.path}`
+    : null
+
+  const take = async () => {
+    setBusy(true)
+    try {
+      const src = await getScreenSource(flow.slug, screen.path)
+      // Several files land in one paste, each under its path: the dev splits them where they
+      // belong. A block comment, not `//` — a stylesheet may be in there.
+      const text =
+        src.files.length === 1
+          ? src.files[0].content
+          : src.files.map((f) => `/* ── ${f.path} ── */\n${f.content}`).join("\n")
+      const n = src.files.length
+      await copy(text, `“${screen.label}” (${n} file${n > 1 ? "s" : ""})`)
+      if (src.truncated) {
+        notify.error({
+          title: "Screen truncated",
+          description:
+            "It pulls in more of the flow than a copy can carry. Open the folder on GitHub.",
+          duration: 8000,
+        })
+      }
+    } catch (e) {
+      notify.error({
+        title: "Screen unavailable",
+        description:
+          e instanceof AccessError
+            ? "The console key is required: the flows repo is private."
+            : (e as Error).message,
+      })
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  return (
+    <div className="flex items-center gap-1 rounded-md border border-white/12 bg-white/4 ps-3 pe-1 py-1">
+      <span className="min-w-0 flex-1 truncate text-gray-dark-100 text-sm">{screen.label}</span>
+      {url ? (
+        <ActionIcon variant="subtle" size="sm" aria-label={`View on GitHub: ${screen.label}`} asChild>
+          <a href={url} target="_blank" rel="noreferrer">
+            <ExternalLink size={14} />
+          </a>
+        </ActionIcon>
+      ) : null}
+      <ActionIcon
+        variant="subtle"
+        size="sm"
+        aria-label={`Copy the code: ${screen.label}`}
+        loading={busy}
+        disabled={!signedIn}
+        onClick={take}
+      >
+        <Copy size={14} />
+      </ActionIcon>
+    </div>
+  )
+}
+
 const CodeModal = ({
   flow,
   repo,
+  signedIn,
   onClose,
 }: {
   flow: Flow | null
   repo?: Repo | null
+  signedIn: boolean
   onClose: () => void
 }) => {
   const dir = `${repo?.protos_dir ?? "protos"}/${flow?.slug ?? ""}`
   const dirUrl = repo ? `${repo.url}/tree/${repo.branch}/${dir}` : null
+  const screens = screensOf(flow?.files)
   return (
     <Modal
       open={flow !== null}
@@ -114,16 +215,51 @@ const CodeModal = ({
       description={flow?.title}
       size="md"
     >
-      <div className="flex flex-col gap-4 pt-1">
+      <div className="flex flex-col gap-5 pt-1">
+        {/* One screen first: nine times out of ten what is wanted is a screen to port into
+            the product, not a prototype to run — and that need cost a full clone. */}
+        <div className="flex flex-col gap-2">
+          <Text c="muted" size="xs">
+            Take one screen
+          </Text>
+          {flow && screens.length > 0 ? (
+            <>
+              {/* A flow can carry twenty-six screens: the list scrolls rather than pushing
+                  the rest of the modal out of view. */}
+              <div className="flex max-h-64 flex-col gap-1 overflow-y-auto">
+                {screens.map((sc) => (
+                  <ScreenRow key={sc.path} flow={flow} screen={sc} repo={repo} signedIn={signedIn} />
+                ))}
+              </div>
+              <Text c="muted" size="xs">
+                Copies the screen and the flow files it imports (its fixtures, a shared block).
+                The kit does not travel: it is imported by subpath from{" "}
+                <span className="font-mono">@42/ui-react</span>, and the colours are the theme's
+                CSS variables.
+                {signedIn ? null : " Signing in with the console key unlocks the copy."}
+              </Text>
+            </>
+          ) : (
+            <Text c="muted" size="xs">
+              {flow?.files
+                ? "This flow declares no screen under pages/."
+                : "The screen list arrives with the next deployment of the site."}
+            </Text>
+          )}
+        </div>
+
+        <div className="h-px bg-white/10" />
+
         <Text size="sm" c="secondary">
-          The flow lives in <span className="font-mono">{dir}/</span>. It depends on the
-          skeleton (<span className="font-mono">src/</span>) and on the kit shipped with the
-          repo (<span className="font-mono">vendor/ui-react/</span>): you clone the whole
-          repo, then run this flow alone.
+          To RUN it, the flow needs more than itself: it lives in{" "}
+          <span className="font-mono">{dir}/</span> and depends on the skeleton (
+          <span className="font-mono">src/</span>) and on the kit shipped with the repo (
+          <span className="font-mono">vendor/ui-react/</span>). You clone the whole repo, then
+          run this flow alone.
         </Text>
 
         {repo ? (
-          <>
+          <div className="flex flex-col gap-4">
             <Command label="Clone the repo" text={`git clone ${repo.clone}`} />
             <Command
               label="Install, then open this flow"
@@ -134,7 +270,7 @@ const CodeModal = ({
               you edit really is <span className="font-mono">{dir}/</span> — the script puts a
               link there from <span className="font-mono">src/proto/</span>, not a copy.
             </Text>
-          </>
+          </div>
         ) : (
           <Alert
             type="warning"
@@ -402,7 +538,12 @@ export const FlowsView = ({ signedIn, repo }: { signedIn: boolean; repo?: Repo |
         })}
       </div>
 
-      <CodeModal flow={codeOf} repo={repo} onClose={() => setCodeOf(null)} />
+      <CodeModal
+        flow={codeOf}
+        repo={repo}
+        signedIn={signedIn}
+        onClose={() => setCodeOf(null)}
+      />
       <DeleteModal flow={deleteOf} onClose={() => setDeleteOf(null)} onDeleted={markDeleted} />
     </>
   )

@@ -189,3 +189,24 @@ export type Version = {
 }
 
 export type Deletion = { ok: true; slug: string; commit: string; files: number }
+
+/** The source of ONE screen: the file asked for, and the flow files it imports — its
+ *  fixtures, a block it shares. A `pages/x.tsx` alone imports things that exist nowhere
+ *  else and ports nowhere, which is what made "clone the repo" the only answer until now.
+ *
+ *  `truncated`: the bundle hit the server's cap (a screen that pulls the whole flow). What
+ *  came back is complete for what it contains — the rest is in the repo. */
+export type ScreenSource = {
+  slug: string
+  path: string
+  files: Array<{ path: string; content: string }>
+  truncated: boolean
+}
+
+/** Read through the MCP server: the flows repo is private, and the console key is the door.
+ *  The sources are deliberately NOT published next to the site — a proto URL circulates. */
+export async function getScreenSource(slug: string, path: string): Promise<ScreenSource> {
+  return get<ScreenSource>(
+    `/console/protos/file.json?slug=${encodeURIComponent(slug)}&path=${encodeURIComponent(path)}`,
+  )
+}
