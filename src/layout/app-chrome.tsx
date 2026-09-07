@@ -36,6 +36,41 @@ export const AppChrome = ({
     const view = views.find((v) => v.path === item.path)
     return view ? hrefOf(view) : `#/${item.path}`
   }
+
+  const isCurrent = (item: ProtoNavItem): boolean =>
+    (item.path !== undefined && item.path === currentPath) ||
+    (item.match !== undefined && currentPath?.startsWith(item.match) === true)
+
+  /** A section is open when it holds the current screen. `defaultOpen` is uncontrolled, so
+   *  the open-ness is folded into the `key`: entering a section remounts it open, leaving
+   *  it remounts it closed, and a manual collapse survives as long as you stay inside —
+   *  which is the behaviour the HTML prototype had (its tree started open and remembered
+   *  what you folded). */
+  const renderItem = (item: ProtoNavItem, depth: number) => {
+    const href = targetOf(item)
+    const kids = item.children
+    const holdsCurrent = kids?.some((k) => isCurrent(k)) === true
+    // A parent that holds the current child is not itself lit: the deepest row wins,
+    // otherwise a section and its page both read as current.
+    const current = holdsCurrent ? false : isCurrent(item)
+    return (
+      <NavLink
+        key={`${item.label}-${holdsCurrent}`}
+        label={item.label}
+        icon={item.icon}
+        current={current}
+        {...(kids ? { defaultOpen: holdsCurrent } : {})}
+        // Kode Mono SemiBold uppercase: this is the only place in the chrome where
+        // the frame uses mono (12 nodes observed on 22489:9756). Sub-rows stay in Lato —
+        // the frame's mono is the register of the top-level nav, not of everything in it.
+        classNames={{ row: depth === 0 ? TYPO.nav : undefined }}
+        {...(href ? { linkComponent: "a" as const, linkOptions: { href } } : {})}
+      >
+        {kids?.map((kid) => renderItem(kid, depth + 1))}
+      </NavLink>
+    )
+  }
+
   return (
     <AppShell className="h-full bg-transparent">
       <AppShell.Sidebar size="xs">
@@ -48,24 +83,7 @@ export const AppChrome = ({
           ) : null}
         </AppShell.SidebarHeader>
         <AppShell.SidebarBody className="flex flex-col gap-1">
-          {nav.map((item) => {
-            const href = targetOf(item)
-            const current =
-              (item.path !== undefined && item.path === currentPath) ||
-              (item.match !== undefined && currentPath?.startsWith(item.match) === true)
-            return (
-              <NavLink
-                key={item.label}
-                label={item.label}
-                icon={item.icon}
-                current={current}
-                // Kode Mono SemiBold uppercase: this is the only place in the chrome where
-                // the frame uses mono (12 nodes observed on 22489:9756).
-                classNames={{ row: TYPO.nav }}
-                {...(href ? { linkComponent: "a" as const, linkOptions: { href } } : {})}
-              />
-            )
-          })}
+          {nav.map((item) => renderItem(item, 0))}
         </AppShell.SidebarBody>
       </AppShell.Sidebar>
       <AppShell.Main>

@@ -27,13 +27,20 @@ export type ProtoView = {
  *  - neither `path` nor `href`: a category row with no link (rendered non-clickable).
  *  - `icon`  : a ReactNode, typically a lucide icon (`<House size={16} />`).
  *  - `match` : a path prefix that ALSO marks the entry as current — so that a section stays
- *    lit on its deep screens (`match: "learn/"` covers `learn/module/:slug`). */
+ *    lit on its deep screens (`match: "learn/"` covers `learn/module/:slug`).
+ *  - `children` : the section's sub-pages. The kit's `NavLink` self-nests, so the skeleton
+ *    renders them indented behind a chevron. A row that has children AND a target renders
+ *    the link and the toggle as two separate controls (a link inside a button is not valid
+ *    HTML); a row with children and NO target is a pure toggle — which is what a section
+ *    heading is. Added 2026-09-07: without it a flow could only expose one page per
+ *    section, and every other screen was reachable only from the bottom bar. */
 export type ProtoNavItem = {
   label: string
   path?: string
   href?: string
   icon?: ReactNode
   match?: string
+  children?: ProtoNavItem[]
 }
 
 export const hrefOf = (view: ProtoView): string => view.href ?? `#/${view.path}`
