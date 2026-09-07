@@ -4,7 +4,7 @@ import { App } from "./app"
 import "./styles.css"
 
 const root = document.getElementById("root")
-if (!root) throw new Error("#root introuvable")
+if (!root) throw new Error("#root not found")
 
 createRoot(root).render(
   <StrictMode>

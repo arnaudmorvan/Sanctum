@@ -12,16 +12,16 @@ import type { ProtoNavItem, ProtoView } from "../../src/proto-types"
 import { Activity } from "./pages/activity"
 import { Profile } from "./pages/profile"
 
-/** Le CHROME est rendu par le squelette (migration NAV du 2026-09-05 : l'ancien
- *  components/sidebar.tsx est retiré). Mêmes entrées que l'ancienne sidebar :
- *  « Learn » cible l'écran d'activité (match sur activities/), « My activities »
- *  cible le profil (match sur profile/) — les autres sont des catégories sans lien.
+/** The CHROME is rendered by the skeleton (NAV migration of 2026-09-05: the former
+ *  components/sidebar.tsx is gone). Same entries as the former sidebar:
+ *  « Learn » targets the activity screen (match on activities/), « My activities »
+ *  targets the profile (match on profile/) — the others are categories with no link.
  *
- *  Icônes : celles que la frame 22489:9756 porte réellement (relevé du 2026-09-05)
- *  — house, layout-dashboard, graduation-cap, calendar, folder-check. Les rangées
- *  de la maquette sont libellées « LOREM IPSUM », donc l'appariement libellé→icône
- *  ne peut pas venir d'elle : `Review`, `Exams` et `Community` gardent un choix
- *  raisonné, faute d'icône dédiée dans la frame. */
+ *  Icons: the ones frame 22489:9756 actually carries (lifted on 2026-09-05)
+ *  — house, layout-dashboard, graduation-cap, calendar, folder-check. The mockup's
+ *  rows are all labelled « LOREM IPSUM », so the label→icon pairing cannot come from
+ *  it: `Review`, `Exams` and `Community` keep a reasoned choice, for want of a
+ *  dedicated icon in the frame. */
 export const NAV: ProtoNavItem[] = [
   { label: "Home", icon: <House size={16} /> },
   { label: "My progression", icon: <LayoutDashboard size={16} /> },

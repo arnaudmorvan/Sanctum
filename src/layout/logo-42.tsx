@@ -1,13 +1,13 @@
-/** Le logomark 42, exporté de la librairie Figma (`Logomark`, composant
- *  14573:187141, clé 45953d55adb…) le 2026-09-05.
+/** The 42 logomark, exported from the Figma library (`Logomark`, component
+ *  14573:187141, key 45953d55adb…) on 2026-09-05.
  *
- *  Les quatre `fill="white"` de l'export d'origine sont passés en `currentColor` :
- *  le logo suit alors la couleur de son conteneur (la sidebar la pose déjà) et
- *  reste juste si le thème bascule. Inline plutôt qu'un `<img>` : 500 octets, une
- *  requête en moins, et il devient colorable.
+ *  The four `fill="white"` of the original export were switched to `currentColor`:
+ *  the logo then follows the color of its container (the sidebar already sets it)
+ *  and stays correct if the theme flips. Inline rather than an `<img>`: 500 bytes,
+ *  one request fewer, and it becomes colorable.
  *
- *  Le fichier autonome existe aussi, pour ce qui ne peut pas prendre du JSX
- *  (favicon, image de partage) : `/brand/logo-42.svg`. */
+ *  The standalone file exists too, for whatever cannot take JSX (favicon, share
+ *  image): `/brand/logo-42.svg`. */
 export const Logo42 = ({ className }: { className?: string }) => (
   <svg
     viewBox="0 0 70 48"

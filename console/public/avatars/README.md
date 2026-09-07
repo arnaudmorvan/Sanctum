@@ -1,22 +1,22 @@
-# Avatars partagés — les photos du DS, servies à `/avatars/<slug>.webp`
+# Shared avatars — the DS photos, served at `/avatars/<slug>.webp`
 
-Le DS Figma porte 246 photos d'avatar (page `↳ Avatars` : `abraham-baker`,
-`anita-cruz`…) et `publish_proto` ne fait transiter aucun binaire : sans ce dossier,
-chaque parcours retombait sur des initiales là où la maquette montre une photo.
+The Figma DS carries 246 avatar photos (page `↳ Avatars`: `abraham-baker`,
+`anita-cruz`…) and `publish_proto` transfers no binary at all: without this folder,
+every flow fell back to initials where the mockup shows a photo.
 
-**Le contrat** :
+**The contract**:
 
-- Déposer ici (un commit humain, une fois) les photos exportées du fichier Figma
-  `yoP06GsdWscdgqpJMV2YuN`, nommées par le slug de leur fiche : `anita-cruz.webp`.
-  Export conseillé : WebP, 128×128 (l'`Avatar` du kit plafonne à `xl`).
-- Elles sont copiées à la racine du site par le build console (`vite.console.config.ts`,
-  `root: console/` → `dist/`) et servies à **`/avatars/<slug>.webp`** — une seule copie
-  pour tous les parcours (les builds de parcours ont `publicDir: false`).
-- Dans un écran : `<Avatar src="/avatars/anita-cruz.webp" name="Anita Cruz" />` — le
-  `name` reste obligatoire : c'est le repli (initiales) si la photo n'est pas déposée,
-  et l'accessibilité dans tous les cas.
-- Une photo absente n'est **pas** un bug du parcours : l'`Avatar` retombe sur les
-  initiales. Le parcours note dans son report quelles photos manquent ici.
+- Drop the photos here (one human commit, once), exported from the Figma file
+  `yoP06GsdWscdgqpJMV2YuN`, named after the slug of their entry: `anita-cruz.webp`.
+  Recommended export: WebP, 128×128 (the kit's `Avatar` caps out at `xl`).
+- They are copied to the root of the site by the console build (`vite.console.config.ts`,
+  `root: console/` → `dist/`) and served at **`/avatars/<slug>.webp`** — a single copy
+  for every flow (flow builds have `publicDir: false`).
+- In a screen: `<Avatar src="/avatars/anita-cruz.webp" name="Anita Cruz" />` — the
+  `name` stays mandatory: it is the fallback (initials) when the photo has not been
+  dropped here, and the accessibility name in every case.
+- A missing photo is **not** a bug in the flow: the `Avatar` falls back to initials.
+  The flow notes in its report which photos are missing here.
 
-Les illustrations et logos **vectoriels**, eux, n'ont pas besoin de ce dossier :
-`publish_proto` accepte les `.svg` (texte, assaini côté serveur) dans le parcours.
+**Vector** illustrations and logos, on the other hand, do not need this folder:
+`publish_proto` accepts `.svg` files (text, sanitized server-side) inside the flow.

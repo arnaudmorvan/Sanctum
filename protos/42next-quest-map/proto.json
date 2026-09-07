@@ -1,12 +1,12 @@
 {
   "slug": "42next-quest-map",
-  "titre": "42next - Quest map",
-  "auteur": "Arnaud",
-  "resume": "L'accueil du learner en carte de quete : ses territoires, ses competences, ses quetes actives et ses hauts faits.",
-  "cree_le": "2026-09-06",
-  "maj_le": "2026-09-06",
+  "title": "42next - Quest map",
+  "author": "Arnaud",
+  "summary": "The learner home screen as a quest map: their territories, their skills, their active quests and their achievements.",
+  "created_at": "2026-09-06",
+  "updated_at": "2026-09-06",
   "figma": "22505:9532",
-  "fichiers": [
+  "files": [
     "data/quest-map.ts",
     "figma-source.json",
     "pages/quest-map.tsx",

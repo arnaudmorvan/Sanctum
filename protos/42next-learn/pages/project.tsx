@@ -7,51 +7,51 @@ import { SegmentGroup } from "@42/ui-react/segment-group"
 import { Text } from "@42/ui-react/text"
 import { Title } from "@42/ui-react/title"
 import { TYPO } from "../../../src/typo"
-import { MODULE, PROJET } from "../data/learn"
+import { MODULE, PROJECT } from "../data/learn"
 
-const Section = ({ titre, children }: { titre: string; children: ReactNode }) => (
+const Section = ({ title, children }: { title: string; children: ReactNode }) => (
   <section className="flex flex-col gap-4">
-    <Title order={2} size="md" className={TYPO.texte()}>{titre}</Title>
+    <Title order={2} size="md" className={TYPO.title()}>{title}</Title>
     {children}
   </section>
 )
 
-const Ligne = ({ cle, valeur }: { cle: string; valeur: string }) => (
+const Row = ({ label, value }: { label: string; value: string }) => (
   <div className="flex items-baseline justify-between gap-3">
-    <Text size="xs" c="muted">{cle}</Text>
-    <Text size="sm">{valeur}</Text>
+    <Text size="xs" c="muted">{label}</Text>
+    <Text size="sm">{value}</Text>
   </div>
 )
 
-/** Ecran 3 — learn.project du proto, tentative 4 (validee). Une card
- *  d'attempt en padding lg, tout le reste en md. Les 4 onglets d'attempt sont
- *  un SegmentGroup ; seule la 4e a des donnees dans ce parcours. */
+/** Screen 3 — learn.project of the prototype, attempt 4 (validated). One attempt
+ *  card in padding lg, everything else in md. The 4 attempt tabs are a
+ *  SegmentGroup; only the 4th carries data in this flow. */
 export const Project = ({ slug }: { slug?: string }) => {
-  const p = PROJET
+  const p = PROJECT
 
   return (
     <div className="flex flex-col gap-10">
       <Breadcrumb data={[
         { label: "Learn", href: "#/learn/program" },
         { label: "My program", href: "#/learn/program" },
-        { label: MODULE.nom, href: `#/learn/module/${MODULE.slug}` },
-        { label: p.nom },
+        { label: MODULE.name, href: `#/learn/module/${MODULE.slug}` },
+        { label: p.name },
       ]} />
 
       <div className="flex flex-col gap-3">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <Title order={1} size="2xl" className={TYPO.texte()}>{p.nom}</Title>
+          <Title order={1} size="2xl" className={TYPO.title()}>{p.name}</Title>
           <div className="flex items-center gap-2">
             <Badge variant="light" color="green">Validated</Badge>
-            <Text size="sm" c="muted">{p.fin}</Text>
+            <Text size="sm" c="muted">{p.end}</Text>
           </div>
         </div>
         <Text size="sm" c="secondary">{p.abstract}</Text>
       </div>
 
-      <Section titre="My attempts">
+      <Section title="My attempts">
         <div className="flex flex-col gap-4">
-          <SegmentGroup size="sm" data={p.tentatives} defaultValue={p.tentativeCourante} />
+          <SegmentGroup size="sm" data={p.attempts} defaultValue={p.currentAttempt} />
 
           <Card variant="gradient" padding="lg">
             <Card.Content>
@@ -62,18 +62,18 @@ export const Project = ({ slug }: { slug?: string }) => {
                   <Card variant="default" padding="md">
                     <Card.Content>
                       <div className="flex flex-col gap-2">
-                        <Title order={3} size="sm" className={TYPO.texte()}>Project details</Title>
-                        {p.details.map((d) => <Ligne key={d.cle} cle={d.cle} valeur={d.valeur} />)}
+                        <Title order={3} size="sm" className={TYPO.title()}>Project details</Title>
+                        {p.details.map((d) => <Row key={d.key} label={d.key} value={d.value} />)}
                       </div>
                     </Card.Content>
                   </Card>
                   <Card variant="default" padding="md">
                     <Card.Content>
                       <div className="flex flex-col gap-2">
-                        <Title order={3} size="sm" className={TYPO.texte()}>Subject & resources</Title>
-                        {p.ressources.map((r) => (
-                          <div key={r.titre} className="flex flex-col gap-1">
-                            <Text size="sm">{r.titre}</Text>
+                        <Title order={3} size="sm" className={TYPO.title()}>Subject & resources</Title>
+                        {p.resources.map((r) => (
+                          <div key={r.title} className="flex flex-col gap-1">
+                            <Text size="sm">{r.title}</Text>
                             <Text size="xs" c="muted">{r.note}</Text>
                           </div>
                         ))}
@@ -83,10 +83,10 @@ export const Project = ({ slug }: { slug?: string }) => {
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-                  {p.chrono.map((c) => (
-                    <div key={c.cle} className="flex flex-col gap-1">
-                      <Text size="xs" c="muted">{c.cle}</Text>
-                      <Text size="sm">{c.valeur}</Text>
+                  {p.timings.map((t) => (
+                    <div key={t.key} className="flex flex-col gap-1">
+                      <Text size="xs" c="muted">{t.key}</Text>
+                      <Text size="sm">{t.value}</Text>
                     </div>
                   ))}
                 </div>
@@ -94,38 +94,38 @@ export const Project = ({ slug }: { slug?: string }) => {
                 <div className="flex flex-col gap-1">
                   <Text size="xs" c="muted">Git repository</Text>
                   <div className="flex flex-wrap items-center justify-between gap-3">
-                    {/* Adresse git : mono dans le proto, famille inatteignable ici. */}
+                    {/* Git address: mono in the prototype, family unreachable here. */}
                     <Text size="sm" span>{p.repo}</Text>
                     <Button size="xs" variant="outline">Copy</Button>
                   </div>
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2">
-                  {p.etapes.map((e, i) => (
+                  {p.steps.map((s, i) => (
                     <div key={i} className="flex items-center gap-2">
                       {i > 0 && <Text size="sm" c="muted">›</Text>}
-                      <Badge variant="light" color="green">{i + 1} · {e} · Passed</Badge>
+                      <Badge variant="light" color="green">{i + 1} · {s} · Passed</Badge>
                     </div>
                   ))}
                 </div>
 
                 <div className="flex flex-col gap-3">
                   {p.reviews.map((r) => (
-                    <Card key={r.etape} variant="default" padding="md">
+                    <Card key={r.step} variant="default" padding="md">
                       <Card.Content>
                         <div className="flex flex-col gap-2">
                           <div className="flex flex-wrap items-center justify-between gap-3">
                             <div className="flex items-center gap-2">
-                              <Title order={3} size="sm" className={TYPO.texte()}>{r.etape}</Title>
-                              <Text size="xs" c="secondary">{r.par}</Text>
+                              <Title order={3} size="sm" className={TYPO.title()}>{r.step}</Title>
+                              <Text size="xs" c="secondary">{r.by}</Text>
                             </div>
                             <div className="flex items-center gap-2">
-                              <Text size="xs" c="muted">{r.jour}</Text>
+                              <Text size="xs" c="muted">{r.day}</Text>
                               <Badge variant="light" color="green">{r.verdict}</Badge>
                             </div>
                           </div>
-                          <Text size="xs" c="muted">{r.creneau}</Text>
-                          <Text size="sm">{r.texte}</Text>
+                          <Text size="xs" c="muted">{r.slot}</Text>
+                          <Text size="sm">{r.text}</Text>
                         </div>
                       </Card.Content>
                     </Card>

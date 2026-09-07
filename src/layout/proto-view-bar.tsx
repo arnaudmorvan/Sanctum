@@ -2,62 +2,62 @@ import { Button } from "@42/ui-react/button"
 import { ArrowLeft } from "lucide-react"
 import { hrefOf, type ProtoNavItem, type ProtoView } from "../proto-types"
 import { TYPO } from "../typo"
-import { MARQUE_UI } from "./cible"
-import { Inspecteur } from "./inspecteur"
-import { Retours } from "./retours"
+import { Feedback } from "./feedback"
+import { Inspector } from "./inspector"
+import { UI_MARK } from "./target"
 
-/** La barre du bas : l'OUTILLAGE du prototype, pas son produit. Elle ramène à la galerie
- *  et donne accès direct aux écrans déclarés dans VIEWS — sans que le PO n'ait rien à
- *  câbler : il ajoute une entrée, elle apparaît ici. À droite, les outils de revue :
- *  l'inspecteur d'origine (kit ou écrit à la main) et le dépôt d'un retour.
+/** The bottom bar: the prototype's TOOLING, not its product. It leads back to the gallery
+ *  and gives direct access to the screens declared in VIEWS — without the PO having to
+ *  wire anything: they add an entry, it shows up here. On the right, the review tools: the
+ *  origin inspector (kit or written by hand) and the feedback widget.
  *
- *  Quand le parcours exporte `NAV`, la sidebar produit porte déjà une partie des écrans.
- *  Les relister ici faisait deux navigations pour la même cible (« Learn » à gauche,
- *  « My program » en bas). Règle : un écran qu'une entrée de NAV vise n'apparaît pas dans
- *  la barre ; restent les écrans PROFONDS (module, projet, détail…) qu'on ne peut atteindre
- *  qu'en traversant le produit — c'est exactement ce dont un PO a besoin en revue. */
+ *  When the flow exports `NAV`, the product sidebar already carries some of the screens.
+ *  Relisting them here made two navigations for the same target ("Learn" on the left,
+ *  "My program" at the bottom). Rule: a screen that a NAV entry targets does not appear in
+ *  the bar; what remains are the DEEP screens (module, project, detail…) that can only be
+ *  reached by walking through the product — exactly what a PO needs during a review. */
 export const ProtoViewBar = ({
   views,
   current,
   nav,
-  titre,
+  title,
 }: {
   views: ProtoView[]
   current?: ProtoView
   nav?: ProtoNavItem[]
-  titre?: string
+  title?: string
 }) => {
-  const visesParNav = new Set(
+  const targetedByNav = new Set(
     (nav ?? []).flatMap((item) => {
-      const cibles: string[] = []
-      if (item.path) cibles.push(`#/${item.path}`)
-      if (item.href) cibles.push(item.href)
-      return cibles
+      const targets: string[] = []
+      if (item.path) targets.push(`#/${item.path}`)
+      if (item.href) targets.push(item.href)
+      return targets
     }),
   )
-  const ecrans = views.filter((v) => !v.hidden && !visesParNav.has(hrefOf(v)))
+  const screens = views.filter((v) => !v.hidden && !targetedByNav.has(hrefOf(v)))
 
   return (
     <nav
-      {...{ [MARQUE_UI]: "" }}
-      aria-label="Outils du prototype"
+      {...{ [UI_MARK]: "" }}
+      aria-label="Prototype tools"
       className="flex shrink-0 flex-wrap items-center gap-1 border-white/10 border-t bg-gray-dark-950 px-2 py-1.5"
     >
       <Button variant="subtle" size="xs" asChild>
         <a href="/">
           <ArrowLeft size={14} aria-hidden="true" />
-          Tous les protos
+          All prototypes
         </a>
       </Button>
-      {titre ? (
-        <span className={`${TYPO.nav} ms-2 truncate text-[11px] text-gray-dark-500`}>{titre}</span>
+      {title ? (
+        <span className={`${TYPO.nav} ms-2 truncate text-[11px] text-gray-dark-500`}>{title}</span>
       ) : null}
-      {ecrans.length > 0 ? (
+      {screens.length > 0 ? (
         <span className="ms-3 flex flex-wrap items-center gap-1">
           <span className="me-1 text-gray-dark-500 text-xs">
-            {nav ? "Écrans profonds" : "Écrans"}
+            {nav ? "Deep screens" : "Screens"}
           </span>
-          {ecrans.map((v) => {
+          {screens.map((v) => {
             const on = v === current
             return (
               <Button key={v.path} variant={on ? "light" : "subtle"} size="xs" asChild>
@@ -69,10 +69,10 @@ export const ProtoViewBar = ({
           })}
         </span>
       ) : null}
-      {/* L'inspecteur porte son propre `ms-auto` : lui et le retour forment le bloc de
-          droite, les outils de revue — la navigation reste à gauche. */}
-      <Inspecteur />
-      <Retours ecran={current?.label} />
+      {/* The inspector carries its own `ms-auto`: it and the feedback button form the right
+          block, the review tools — the navigation stays on the left. */}
+      <Inspector />
+      <Feedback screen={current?.label} />
     </nav>
   )
 }

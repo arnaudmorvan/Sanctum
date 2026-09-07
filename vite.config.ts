@@ -1,22 +1,21 @@
 import tailwindcss from "@tailwindcss/vite"
 import react from "@vitejs/plugin-react"
 import { defineConfig } from "vite"
-import origine from "./scripts/babel-origine.mjs"
+import origin from "./scripts/babel-origin.mjs"
 import importsKit from "./scripts/vite-imports-kit.mjs"
 
-/** Un build par parcours. `scripts/build-all.mjs` pose PROTO_SLUG et recopie le parcours
- *  dans src/proto/ ; ici on ne fait que viser le bon sous-dossier de sortie. */
+/** One build per flow. `scripts/build-all.mjs` sets PROTO_SLUG and copies the flow into
+ *  src/proto/; here we only aim at the right output sub-directory. */
 const slug = process.env.PROTO_SLUG ?? ""
 
 export default defineConfig({
-  // `origine` tague chaque élément des écrans avec sa provenance (kit / écrit à la main).
-  // C'est ce que lit l'inspecteur de la barre du bas — voir scripts/babel-origine.mjs.
-  plugins: [react({ babel: { plugins: [origine] } }), tailwindcss(), importsKit()],
+  // `origin` tags every element of the screens with where it comes from (kit / written by
+  // hand). This is what the bottom bar's inspector reads — see scripts/babel-origin.mjs.
+  plugins: [react({ babel: { plugins: [origin] } }), tailwindcss(), importsKit()],
   base: slug ? `/p/${slug}/` : "/",
-  // Les assets partagés (public/ : avatars, illustrations) ne sont copiés qu'une fois, par
-  // le build console (racine du site) — un parcours les référence en URL ABSOLUE
-  // (`/avatars/<nom>.webp`). Les recopier dans chaque dist/p/<slug>/ multiplierait chaque
-  // photo par le nombre de parcours.
+  // Shared assets (public/: avatars, illustrations) are copied only once, by the console
+  // build (site root) — a flow references them by ABSOLUTE URL (`/avatars/<name>.webp`).
+  // Copying them into every dist/p/<slug>/ would multiply each photo by the number of flows.
   publicDir: slug ? false : "public",
   build: { outDir: slug ? `dist/p/${slug}` : "dist/preview", emptyOutDir: true },
 })

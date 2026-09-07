@@ -8,49 +8,48 @@ import { hrefOf, type ProtoNavItem, type ProtoView } from "../proto-types"
 import { TYPO } from "../typo"
 import { Logo42 } from "./logo-42"
 
-/** Le CHROME de l'app : sidebar produit + fond ambiant, rendus par le SQUELETTE.
+/** The app CHROME: product sidebar + ambient background, rendered by the SKELETON.
  *
- *  C'est la contrepartie de la règle des skills (« le chrome appartient au squelette,
- *  pas au parcours ») : tant que le squelette n'offrait qu'un cadre nu, chaque parcours
- *  réécrivait sa propre sidebar — deux copies divergentes dès le deuxième parcours.
- *  Ici : AppShell du kit (drawer automatique en mobile), NavLink pour les rangées,
- *  AmbientBackground pour la matière (halo + grain — `foundations-context`). Les écrans
- *  n'écrivent QUE la zone centrale.
+ *  This is the counterpart of the skills rule ("the chrome belongs to the skeleton, not to
+ *  the flow"): as long as the skeleton only offered a bare frame, every flow rewrote its
+ *  own sidebar — two diverging copies as soon as there was a second flow. Here: the kit's
+ *  AppShell (automatic drawer on mobile), NavLink for the rows, AmbientBackground for the
+ *  material (halo + grain — `foundations-context`). The screens write ONLY the central area.
  *
- *  S'active quand `views.tsx` exporte `NAV` (voir proto-types.ts). */
+ *  Activated when `views.tsx` exports `NAV` (see proto-types.ts). */
 export const AppChrome = ({
   nav,
   views,
   currentPath,
-  titre,
+  title,
   children,
 }: {
   nav: ProtoNavItem[]
   views: ProtoView[]
   currentPath?: string
-  titre?: string
+  title?: string
   children: ReactNode
 }) => {
-  const cible = (item: ProtoNavItem): string | undefined => {
+  const targetOf = (item: ProtoNavItem): string | undefined => {
     if (item.href) return item.href
     if (!item.path) return undefined
-    const vue = views.find((v) => v.path === item.path)
-    return vue ? hrefOf(vue) : `#/${item.path}`
+    const view = views.find((v) => v.path === item.path)
+    return view ? hrefOf(view) : `#/${item.path}`
   }
   return (
     <AppShell className="h-full bg-transparent">
       <AppShell.Sidebar size="xs">
-        {/* Le logomark, pas un « 42 » typographié : c'est la marque, et la frame
-            la pose en haut de la colonne de nav (LogoContainer, 200×48). */}
+        {/* The logomark, not a typeset "42": this is the brand, and the frame puts it at
+            the top of the nav column (LogoContainer, 200×48). */}
         <AppShell.SidebarHeader className="gap-3 px-4">
           <Logo42 className="h-6 w-auto shrink-0" />
-          {titre ? (
-            <span className="truncate text-gray-dark-400 text-xs">{titre}</span>
+          {title ? (
+            <span className="truncate text-gray-dark-400 text-xs">{title}</span>
           ) : null}
         </AppShell.SidebarHeader>
         <AppShell.SidebarBody className="flex flex-col gap-1">
           {nav.map((item) => {
-            const href = cible(item)
+            const href = targetOf(item)
             const current =
               (item.path !== undefined && item.path === currentPath) ||
               (item.match !== undefined && currentPath?.startsWith(item.match) === true)
@@ -60,8 +59,8 @@ export const AppChrome = ({
                 label={item.label}
                 icon={item.icon}
                 current={current}
-                // Kode Mono SemiBold capitales : c'est le seul endroit du chrome
-                // où la frame pose le mono (12 nœuds relevés sur 22489:9756).
+                // Kode Mono SemiBold uppercase: this is the only place in the chrome where
+                // the frame uses mono (12 nodes observed on 22489:9756).
                 classNames={{ row: TYPO.nav }}
                 {...(href ? { linkComponent: "a" as const, linkOptions: { href } } : {})}
               />
@@ -72,10 +71,10 @@ export const AppChrome = ({
       <AppShell.Main>
         <AmbientBackground />
         <div className="mx-auto w-full max-w-6xl px-6 py-8">
-          {/* Sous le point de rupture, la sidebar devient un tiroir : sans ce bouton (nul
-              partout ailleurs), la navigation du parcours n'existerait plus en mobile. */}
+          {/* Below the breakpoint the sidebar becomes a drawer: without this button (a
+              no-op everywhere else), the flow's navigation would not exist on mobile. */}
           <AppShell.SidebarTrigger asChild>
-            <ActionIcon variant="subtle" size="md" className="mb-4" aria-label="Ouvrir la navigation">
+            <ActionIcon variant="subtle" size="md" className="mb-4" aria-label="Open navigation">
               <MenuIcon size={18} />
             </ActionIcon>
           </AppShell.SidebarTrigger>

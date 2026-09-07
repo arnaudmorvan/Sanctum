@@ -1,101 +1,108 @@
-/** Le client du serveur MCP.
+/** The MCP server client.
  *
- *  La console est un site statique servi par Railway ; le MCP est un autre service. Ses
- *  routes exposent `Access-Control-Allow-Origin: *`, donc l'appel direct passe — pas de
- *  proxy à écrire.
+ *  The console is a static site served by Railway; the MCP is another service. Its routes
+ *  expose `Access-Control-Allow-Origin: *`, so calling it directly works — no proxy to
+ *  write.
  *
- *  ⚠️ `DASHBOARD_KEY` est un secret PARTAGÉ, saisi une fois et gardé dans le navigateur.
- *  Ce n'est pas une identité : ça ne dit pas QUI regarde. L'auth par personne existe côté
- *  serveur (access/users.json, jetons 42ds_…) — l'onglet Accès la montre.
+ *  ⚠️ `DASHBOARD_KEY` is a SHARED secret, typed once and kept in the browser. It is not an
+ *  identity: it does not say WHO is looking. Per-person auth exists on the server side
+ *  (access/users.json, `42ds_…` tokens) — the Access tab shows it.
  */
 const BASE = (
   import.meta.env.VITE_MCP_URL ?? "https://mcp-42-production.up.railway.app"
 ).replace(/\/$/, "")
 
-const CLE = "42ds.console.cle"
+const KEY = "42ds.console.key"
+/** Deployment shim: the key used to live under this name. We read it once so nobody who
+ *  already signed in gets kicked out by the rename — we never write it back. Delete once
+ *  every browser has rolled over. */
+const LEGACY_KEY = "42ds.console.cle"
 
-export const lireCle = (): string => {
+export const readKey = (): string => {
   try {
-    return localStorage.getItem(CLE) ?? ""
+    return localStorage.getItem(KEY) ?? localStorage.getItem(LEGACY_KEY) ?? ""
   } catch {
-    return "" // navigation privée, stockage bloqué : on redemande la clé
+    return "" // private browsing, storage blocked: we ask for the key again
   }
 }
 
-export const ecrireCle = (v: string): void => {
+export const writeKey = (v: string): void => {
   try {
-    v ? localStorage.setItem(CLE, v) : localStorage.removeItem(CLE)
+    v ? localStorage.setItem(KEY, v) : localStorage.removeItem(KEY)
+    // Whatever happens, the old entry stops being a second source of truth.
+    localStorage.removeItem(LEGACY_KEY)
   } catch {
-    /* sans stockage, la clé vit le temps de la session — le reste fonctionne */
+    /* without storage the key lives for the session — everything else still works */
   }
 }
 
-export class ErreurAcces extends Error {}
+export class AccessError extends Error {}
 
-export async function lire<T>(route: string): Promise<T> {
-  const cle = lireCle()
-  const r = await fetch(`${BASE}${route}`, { headers: cle ? { "X-DS-Key": cle } : {} })
-  if (r.status === 401) throw new ErreurAcces("Clé refusée par le serveur.")
+export async function get<T>(route: string): Promise<T> {
+  const key = readKey()
+  const r = await fetch(`${BASE}${route}`, { headers: key ? { "X-DS-Key": key } : {} })
+  if (r.status === 401) throw new AccessError("Key rejected by the server.")
   if (!r.ok) throw new Error(`${route} → HTTP ${r.status}`)
   return (await r.json()) as T
 }
 
-/** Les protos sont écrits par le build, à côté de la console : même origine, pas de clé. */
-export async function lireProtos<T>(): Promise<T> {
+/** The flows are written by the build, next to the console: same origin, no key. */
+export async function getFlows<T>(): Promise<T> {
   const r = await fetch("/protos.json")
   if (!r.ok) throw new Error(`protos.json → HTTP ${r.status}`)
   return (await r.json()) as T
 }
 
-/** Le tampon du build : quel commit est servi, et d'où vient le code. Même origine, pas de
- *  clé. C'est ce qui permet à la console de dire à un dev COMMENT cloner un parcours sans
- *  qu'aucune URL de dépôt ne soit écrite en dur ici. */
-export async function lireVersion(): Promise<Version> {
+/** The build stamp: which commit is being served, and where the code comes from. Same
+ *  origin, no key. This is what lets the console tell a dev HOW to clone a flow without a
+ *  single repo URL being hard-coded here. */
+export async function getVersion(): Promise<Version> {
   const r = await fetch("/version.json")
   if (!r.ok) throw new Error(`version.json → HTTP ${r.status}`)
   return (await r.json()) as Version
 }
 
-/** Retire un parcours du repo des protos — un commit, réversible par `git revert`. Le
- *  serveur MCP tient le PAT ; la console ne fait que présenter la clé. Le parcours ne
- *  disparaît du site qu'au prochain déploiement : `protos.json` est écrit par le build. */
-export async function supprimerProto(slug: string): Promise<Suppression> {
-  const cle = lireCle()
+/** Removes a flow from the flows repo — one commit, reversible with `git revert`. The MCP
+ *  server holds the PAT; the console only presents the key. The flow only disappears from
+ *  the site at the next deployment: `protos.json` is written by the build. */
+export async function deleteFlow(slug: string): Promise<Deletion> {
+  const key = readKey()
   const r = await fetch(`${BASE}/console/protos/${encodeURIComponent(slug)}`, {
     method: "DELETE",
-    headers: cle ? { "X-DS-Key": cle } : {},
+    headers: key ? { "X-DS-Key": key } : {},
   })
-  if (r.status === 401) throw new ErreurAcces("Clé refusée par le serveur.")
-  if (r.status === 404) throw new Error("Le serveur ne sait pas supprimer les parcours (route absente ou parcours déjà retiré).")
+  if (r.status === 401) throw new AccessError("Key rejected by the server.")
+  if (r.status === 404)
+    throw new Error("The server cannot delete flows (route missing, or flow already removed).")
   if (!r.ok) {
     let detail = `HTTP ${r.status}`
     try {
       detail = ((await r.json()) as { error?: string }).error ?? detail
     } catch {
-      /* corps non JSON : le statut suffit */
+      /* non-JSON body: the status is enough */
     }
     throw new Error(detail)
   }
-  return (await r.json()) as Suppression
+  return (await r.json()) as Deletion
 }
 
-/** Teste une clé SANS la stocker : c'est ce qui permet à l'écran de connexion de dire
- *  « refusée » plutôt que d'enregistrer une clé fausse et de laisser six onglets échouer
- *  chacun de leur côté. Rend le résumé en cas de succès — l'appel sert deux fois. */
-export async function verifierCle(cle: string): Promise<Resume> {
-  const r = await fetch(`${BASE}/console/resume.json`, { headers: { "X-DS-Key": cle } })
-  if (r.status === 401) throw new ErreurAcces("Clé refusée par le serveur.")
-  if (!r.ok) throw new Error(`Serveur injoignable (HTTP ${r.status}).`)
-  return (await r.json()) as Resume
+/** Tests a key WITHOUT storing it: this is what lets the sign-in screen say "rejected"
+ *  instead of saving a wrong key and letting six tabs fail one by one. Returns the summary
+ *  on success — the call does double duty. */
+export async function checkKey(key: string): Promise<Summary> {
+  const r = await fetch(`${BASE}/console/summary.json`, { headers: { "X-DS-Key": key } })
+  if (r.status === 401) throw new AccessError("Key rejected by the server.")
+  if (!r.ok) throw new Error(`Server unreachable (HTTP ${r.status}).`)
+  return (await r.json()) as Summary
 }
 
-export const URL_MCP = BASE
+export const MCP_URL = BASE
 
-// ---------------------------------------------------------------- formes servies
+// ---------------------------------------------------------------- served shapes
 
-export type Paire = { n: string; v: number }
+export type Pair = { n: string; v: number }
 
-export type Metriques = {
+export type Metrics = {
   meta?: { range?: string; updated?: string; period?: string }
   totalCalls?: number
   activeTools?: number
@@ -105,17 +112,17 @@ export type Metriques = {
   tokensServed?: number
   creditsSaved?: number
   thinkMs?: number
-  topTools?: Paire[]
-  gaps?: Paire[]
+  topTools?: Pair[]
+  gaps?: Pair[]
   gapsTotal?: number
-  sequences?: Paire[]
+  sequences?: Pair[]
   clientsList?: string[]
   recent?: Array<{ t: string; n: string; lat: number; ok: boolean }>
   series?: { calls?: number[]; sessions?: number[]; errors?: number[] }
   heatmap?: number[][]
-  payloadTop?: Paire[]
+  payloadTop?: Pair[]
   aliases?: Array<{ searched: string; suggested: string; count: number; score: number }>
-  requested?: Array<{ group: string; items: Paire[] }>
+  requested?: Array<{ group: string; items: Pair[] }>
   matrix?: Array<{ tool: string; row: number[] }>
 }
 
@@ -132,53 +139,53 @@ export type Session = {
   friction: number
 }
 
-export type Qualite = {
+export type Quality = {
   points?: Array<Record<string, unknown>>
   empty?: boolean
 }
 
-export type Entree = { nom: string; type: string; taille: number }
-export type Arbre = { dir: string; entrees: Entree[] }
-export type Fichier = { path: string; contenu: string; tronque?: boolean }
+export type Entry = { name: string; type: string; size: number }
+export type Tree = { dir: string; entries: Entry[] }
+export type FileContent = { path: string; content: string; truncated?: boolean }
 
-export type Acces = {
-  utilisateurs: Array<{
+export type Access = {
+  users: Array<{
     id?: string
-    nom?: string
+    name?: string
     email?: string
     role?: string
-    actif?: boolean
-    ajoute_le?: string
+    active?: boolean
+    added_at?: string
   }>
   roles: Record<string, string>
   regime?: string
-  lecture_seule?: boolean
-  erreur?: string
+  read_only?: boolean
+  error?: string
 }
 
-export type Resume = {
+export type Summary = {
   skills?: number
   foundations?: number
-  produit?: number
+  product?: number
   reports?: number
-  composants?: number
+  components?: number
 }
 
-/** Écrit par `scripts/build-all.mjs`. `depot` est null quand le build n'a trouvé ni
- *  variables Railway ni remote git — la console dit alors le dossier, pas l'URL. */
-export type Depot = {
-  proprietaire: string
-  nom: string
-  branche: string
+/** Written by `scripts/build-all.mjs`. `repo` is null when the build found neither Railway
+ *  variables nor a git remote — the console then names the folder, not the URL. */
+export type Repo = {
+  owner: string
+  name: string
+  branch: string
   url: string
   clone: string
-  dossier_protos: string
+  protos_dir: string
 }
 
 export type Version = {
   commit: string | null
-  construit_le: string
-  depot?: Depot | null
+  built_at: string
+  repo?: Repo | null
 }
 
-export type Suppression = { ok: true; slug: string; commit: string; fichiers: number }
+export type Deletion = { ok: true; slug: string; commit: string; files: number }

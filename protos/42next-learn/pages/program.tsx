@@ -6,53 +6,53 @@ import { SegmentGroup } from "@42/ui-react/segment-group"
 import { Text } from "@42/ui-react/text"
 import { Title } from "@42/ui-react/title"
 import { TYPO } from "../../../src/typo"
-import { BADGE_STATUT, MODULES, PROGRAMME, VUES_PROGRAMME } from "../data/learn"
+import { MODULES, PROGRAM, PROGRAM_VIEWS, STATUS_BADGE } from "../data/learn"
 
-/** Ecran 1 — learn.modules du proto : grille 2 colonnes de module cards.
- *  Seule la card "In progress" mene a l'ecran module : c'est le chemin nominal
- *  du parcours, les autres restent inertes plutot que d'ouvrir un ecran vide.
- *  Rythme repris du releve de 42next-profile : sections 16, cards 16, contenu 12. */
+/** Screen 1 — learn.modules of the prototype: a 2-column grid of module cards.
+ *  Only the "In progress" card leads to the module screen: that is the nominal path
+ *  through the flow, the others stay inert rather than opening an empty screen.
+ *  Rhythm reused from the 42next-profile survey: sections 16, cards 16, content 12. */
 export const Program = () => (
   <div className="flex flex-col gap-10">
     <Breadcrumb data={[{ label: "Learn", href: "#/learn/program" }, { label: "My program" }]} />
 
     <div className="flex flex-wrap items-center justify-between gap-3">
-      <Title order={1} size="2xl" className={TYPO.texte()}>{PROGRAMME.nom}</Title>
+      <Title order={1} size="2xl" className={TYPO.title()}>{PROGRAM.name}</Title>
       <div className="flex items-center gap-3">
         <Text size="sm" c="muted">program</Text>
-        <Badge variant="light" color="gray">{PROGRAMME.version}</Badge>
-        <SegmentGroup size="sm" data={VUES_PROGRAMME} defaultValue="Cards" />
+        <Badge variant="light" color="gray">{PROGRAM.version}</Badge>
+        <SegmentGroup size="sm" data={PROGRAM_VIEWS} defaultValue="Cards" />
       </div>
     </div>
 
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
       {MODULES.map((m) => {
-        const b = BADGE_STATUT[m.statut]
-        const corps = (
+        const b = STATUS_BADGE[m.status]
+        const body = (
           <Card.Content>
             <div className="flex flex-col gap-3">
               <div className="flex items-start justify-between gap-3">
-                <Title order={2} size="sm" className={TYPO.texte()}>{m.nom}</Title>
-                <Badge variant="light" color={b.color}>{b.libelle}</Badge>
+                <Title order={2} size="sm" className={TYPO.title()}>{m.name}</Title>
+                <Badge variant="light" color={b.color}>{b.label}</Badge>
               </div>
               <div className="flex items-center justify-between gap-3">
                 <Text size="xs" c="secondary">{m.skills}</Text>
                 <Text size="xs" c="muted">{m.pct}%</Text>
               </div>
               <Progress variant="gradient" value={m.pct} size="sm" />
-              <Text size="xs" c="muted">{m.activites}</Text>
+              <Text size="xs" c="muted">{m.activities}</Text>
             </div>
           </Card.Content>
         )
-        /* Le contour rose signature va a la seule card en cours : c'est elle qui
-           "ouvre" l'ecran. Les cards verrouillees restent en default, sans grisage
-           invente — le badge Locked porte l'etat. */
-        return m.ouvert ? (
+        /* The signature pink outline goes to the single card in progress: that is the
+           one that "opens" the screen. Locked cards stay in default, with no invented
+           greying out — the Locked badge carries the state. */
+        return m.open ? (
           <a key={m.slug} href={`#/learn/module/${m.slug}`} className="block">
-            <Card variant="gradient" padding="md">{corps}</Card>
+            <Card variant="gradient" padding="md">{body}</Card>
           </a>
         ) : (
-          <Card key={m.slug} variant="default" padding="md">{corps}</Card>
+          <Card key={m.slug} variant="default" padding="md">{body}</Card>
         )
       })}
     </div>

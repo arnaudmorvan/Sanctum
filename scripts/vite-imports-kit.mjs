@@ -2,53 +2,53 @@ import fs from "node:fs"
 import path from "node:path"
 
 /**
- * Expose la liste des composants du kit RÉELLEMENT importés par le parcours, lue dans
- * ses sources au moment du build (`virtual:42-imports-kit`).
+ * Exposes the list of kit components the flow ACTUALLY imports, read from its sources at
+ * build time (`virtual:42-imports-kit`).
  *
- * Pourquoi elle est nécessaire alors que `babel-origine` tague déjà le DOM : tous les
- * composants du kit ne propagent pas leurs props inconnues jusqu'à leur élément racine.
- * `SegmentGroup`, par exemple, passe des props explicites à `Ark.Root` sans `...rest` :
- * le `data-42` posé sur son JSX n'atteint jamais le DOM, et l'inspecteur ne le voyait pas.
- * Un composant du kit qui disparaît d'un compteur de couverture est exactement le genre
- * de mensonge silencieux qu'on cherche à éliminer — donc on croise deux sources :
+ * Why it is needed even though `babel-origin` already tags the DOM: not every kit component
+ * forwards its unknown props down to its root element. `SegmentGroup`, for instance, passes
+ * explicit props to `Ark.Root` with no `...rest`: the `data-42` stamped on its JSX never
+ * reaches the DOM, and the inspector could not see it. A kit component that disappears from
+ * a coverage counter is exactly the kind of silent lie we are trying to eliminate — so we
+ * cross two sources:
  *
- *   ce que le DOM montre  (précis, mais aveugle aux composants non instrumentés)
- *   ce que le code importe (exhaustif, mais sans les quantités)
+ *   what the DOM shows   (precise, but blind to uninstrumented components)
+ *   what the code imports (exhaustive, but without the quantities)
  *
- * L'inspecteur affiche l'écart au lieu de le taire.
+ * The inspector displays the gap instead of hiding it.
  */
-export default function importsKit(racine = "src/proto") {
+export default function importsKit(root = "src/proto") {
   const ID = "virtual:42-imports-kit"
-  const RESOLU = `\0${ID}`
-  const IMPORT_KIT = /import\s+(?:type\s+)?\{([^}]+)\}\s+from\s+["']@42\/ui-react[^"']*["']/g
+  const RESOLVED = `\0${ID}`
+  const KIT_IMPORT = /import\s+(?:type\s+)?\{([^}]+)\}\s+from\s+["']@42\/ui-react[^"']*["']/g
 
   return {
     name: "42-imports-kit",
-    resolveId: (id) => (id === ID ? RESOLU : null),
+    resolveId: (id) => (id === ID ? RESOLVED : null),
     load(id) {
-      if (id !== RESOLU) return null
-      const noms = new Set()
-      const parcourir = (dossier) => {
-        if (!fs.existsSync(dossier)) return
-        for (const e of fs.readdirSync(dossier, { withFileTypes: true })) {
-          const p = path.join(dossier, e.name)
+      if (id !== RESOLVED) return null
+      const names = new Set()
+      const walk = (dir) => {
+        if (!fs.existsSync(dir)) return
+        for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+          const p = path.join(dir, e.name)
           if (e.isDirectory()) {
-            parcourir(p)
+            walk(p)
           } else if (/\.tsx?$/.test(e.name)) {
             const source = fs.readFileSync(p, "utf8")
-            for (const m of source.matchAll(IMPORT_KIT)) {
-              for (const brut of m[1].split(",")) {
-                // `X as Y` : c'est le nom LOCAL qui est écrit dans le JSX.
-                const nom = brut.split(" as ").pop().trim()
-                // Majuscule : un composant. Le reste (types, constantes) n'est pas rendu.
-                if (/^[A-Z]/.test(nom)) noms.add(nom)
+            for (const m of source.matchAll(KIT_IMPORT)) {
+              for (const raw of m[1].split(",")) {
+                // `X as Y`: it is the LOCAL name that is written in the JSX.
+                const name = raw.split(" as ").pop().trim()
+                // Capitalized: a component. The rest (types, constants) is not rendered.
+                if (/^[A-Z]/.test(name)) names.add(name)
               }
             }
           }
         }
       }
-      parcourir(racine)
-      return `export const IMPORTS_KIT = ${JSON.stringify([...noms].sort())}\n`
+      walk(root)
+      return `export const IMPORTS_KIT = ${JSON.stringify([...names].sort())}\n`
     },
   }
 }

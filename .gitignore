@@ -1,8 +1,9 @@
 node_modules/
 
-# Ancrés à la racine, EXPRÈS : un `dist/` non ancré matcherait aussi vendor/ui-react/dist,
-# c'est-à-dire le kit vendoré — que le build exige. Sans l'ancre, un clone neuf ne construit pas.
+# Anchored at the root, ON PURPOSE: an unanchored `dist/` would also match
+# vendor/ui-react/dist, that is the vendored kit — which the build requires. Without the
+# anchor, a fresh clone does not build.
 /dist/
-# Sans slash final, exprès : `npm run dev <slug>` pose un LIEN symbolique vers protos/<slug>/,
-# et git voit un lien comme un fichier — `/src/proto/` ne l'aurait pas ignoré.
+# No trailing slash, on purpose: `npm run dev <slug>` places a SYMLINK to protos/<slug>/,
+# and git sees a link as a file — `/src/proto/` would not have ignored it.
 /src/proto

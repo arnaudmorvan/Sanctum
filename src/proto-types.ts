@@ -1,32 +1,33 @@
 import type { ReactNode } from "react"
 
-/** Un écran du parcours. C'est le SEUL contrat que le PO doit connaître. */
+/** One screen of the flow. This is the ONLY contract the PO has to know. */
 export type ProtoView = {
-  /** Motif de hash, sans le `#/`. Un segment `:param` capture une valeur. */
+  /** Hash pattern, without the leading `#/`. A `:param` segment captures a value. */
   path: string
-  /** Libellé affiché dans la barre de navigation, en bas. */
+  /** Label shown in the navigation bar at the bottom. */
   label: string
-  /** Lien concret ouvert par la barre. Obligatoire dès que `path` porte un `:param`. */
+  /** Concrete link opened by the bar. Required as soon as `path` carries a `:param`. */
   href?: string
-  /** Retire l'entrée de la barre sans la retirer du routage. */
+  /** Removes the entry from the bar without removing it from the routing. */
   hidden?: boolean
   render: (params: Record<string, string>) => ReactNode
 }
 
-/** Une entrée de la navigation latérale — le CHROME de l'app, rendu par le squelette.
+/** One entry of the side navigation — the app CHROME, rendered by the skeleton.
  *
- *  `views.tsx` peut exporter `NAV: ProtoNavItem[]` en plus de `VIEWS` : le squelette rend
- *  alors la sidebar produit (AppShell + NavLink du kit) et le fond ambiant, et les écrans
- *  n'écrivent QUE la zone centrale. Sans export `NAV`, rien ne change : le parcours garde
- *  le cadre nu historique (les parcours qui dessinent leur propre chrome continuent de
- *  marcher — mais un NOUVEAU parcours ne doit plus le faire).
+ *  `views.tsx` may export `NAV: ProtoNavItem[]` alongside `VIEWS`: the skeleton then
+ *  renders the product sidebar (AppShell + the kit's NavLink) and the ambient background,
+ *  and the screens write ONLY the central area. Without a `NAV` export nothing changes:
+ *  the flow keeps the historical bare frame (flows that draw their own chrome keep
+ *  working — but a NEW flow must no longer do that).
  *
- *  - `path` : le `path` d'un écran de `VIEWS` — la cible ET le critère d'état courant.
- *  - `href` : cible explicite (route paramétrée : "#/profile/aserrano"). Prime sur `path`.
- *  - ni `path` ni `href` : rangée de catégorie sans lien (rendue non cliquable).
- *  - `icon` : un ReactNode, typiquement une icône lucide (`<House size={16} />`).
- *  - `match` : préfixe de path qui rend AUSSI l'entrée courante — pour qu'une section
- *    reste allumée sur ses écrans profonds (`match: "learn/"` couvre `learn/module/:slug`). */
+ *  - `path`  : the `path` of a screen in `VIEWS` — both the target AND the current-state
+ *    criterion.
+ *  - `href`  : explicit target (parameterized route: "#/profile/aserrano"). Wins over `path`.
+ *  - neither `path` nor `href`: a category row with no link (rendered non-clickable).
+ *  - `icon`  : a ReactNode, typically a lucide icon (`<House size={16} />`).
+ *  - `match` : a path prefix that ALSO marks the entry as current — so that a section stays
+ *    lit on its deep screens (`match: "learn/"` covers `learn/module/:slug`). */
 export type ProtoNavItem = {
   label: string
   path?: string
@@ -39,9 +40,9 @@ export const hrefOf = (view: ProtoView): string => view.href ?? `#/${view.path}`
 
 export type ViewMatch = { view: ProtoView; params: Record<string, string> }
 
-/** Première vue dont le motif couvre `hash`, paramètres capturés au passage.
- *  Comparaison segment à segment : un motif ne matche qu'à longueur égale, ce qui laisse
- *  `demandes` et `demandes/:id` coexister sans que le premier n'avale le second. */
+/** First view whose pattern covers `hash`, with the parameters captured along the way.
+ *  Segment-by-segment comparison: a pattern only matches at equal length, which lets
+ *  `requests` and `requests/:id` coexist without the first swallowing the second. */
 export const matchView = (views: ProtoView[], hash: string): ViewMatch | undefined => {
   const segments = hash.replace(/^#\/?/, "").split("/").filter(Boolean)
   for (const view of views) {

@@ -19,180 +19,216 @@ import {
 import { type ReactNode, useEffect, useState } from "react"
 import { Logo42 } from "../../src/layout/logo-42"
 import { TYPO } from "../../src/typo"
-import { Connexion } from "./connexion"
+import { Login } from "./login"
 import {
-  ecrireCle,
-  ErreurAcces,
-  lireCle,
-  lireProtos,
-  lireVersion,
-  type Resume,
+  AccessError,
+  checkKey,
+  getFlows,
+  getVersion,
+  readKey,
+  type Summary,
   type Version,
-  verifierCle,
+  writeKey,
 } from "./mcp"
 import { Notifications } from "./notifier"
-import { VueAcces } from "./vues/acces"
-import { CORPUS, type CorpusCle, corpusDe, VueContexte } from "./vues/contexte"
-import { VueObservabilite } from "./vues/observabilite"
-import { VueProtos } from "./vues/protos"
-import { VueQualite } from "./vues/qualite"
-import { VueSessions } from "./vues/sessions"
+import { AccessView } from "./views/access"
+import { ContextView, CORPORA, type CorpusKey, corpusOf } from "./views/context"
+import { ObservabilityView } from "./views/observability"
+import { FlowsView } from "./views/protos"
+import { QualityView } from "./views/quality"
+import { SessionsView } from "./views/sessions"
 
-type Statut = "verification" | "dehors" | "dedans"
+type Status = "checking" | "out" | "in"
 
-/** Les sections de la console. UNE navigation — la sidebar — et rien d'autre : la version
- *  précédente empilait trois chemins vers le même endroit (les compteurs de l'en-tête, les
- *  onglets, puis la rangée de corpus dans Contexte). Ici la sidebar porte tout, corpus et
- *  comptes compris, et l'URL (`#/contexte/skills`) dit où l'on est. */
+/** The sections of the console. ONE navigation — the sidebar — and nothing else: the previous
+ *  version stacked three paths to the same place (the header counters, the tabs, then the row
+ *  of corpora inside Context). Here the sidebar carries everything, corpora and counts
+ *  included, and the URL (`#/context/skills`) says where you are. */
 type Section = {
   v: string
   label: string
   icon: ReactNode
-  /** Cette section lit le serveur MCP : sans clé, elle montre l'écran de connexion. */
-  cleRequise: boolean
-  sous: string
+  /** This section reads the MCP server: with no key, it shows the sign-in screen. */
+  keyRequired: boolean
+  sub: string
 }
 
 const SECTIONS: Section[] = [
-  { v: "protos", label: "Prototypes", icon: <LayoutGrid size={16} />, cleRequise: false, sous: "Les parcours cliquables déposés par les PO. Ouverts à qui a l'URL." },
-  { v: "contexte", label: "Contexte", icon: <BookOpen size={16} />, cleRequise: true, sous: "Ce que le serveur sert aux agents : le catalogue, les règles, les skills, la spec produit." },
-  { v: "observabilite", label: "Observabilité", icon: <Activity size={16} />, cleRequise: true, sous: "L'usage du serveur MCP : appels, outils, clients, latence." },
-  { v: "sessions", label: "Sessions", icon: <Users size={16} />, cleRequise: true, sous: "Chaque conversation qui a parlé au serveur, et sa friction." },
-  { v: "qualite", label: "Qualité", icon: <ListChecks size={16} />, cleRequise: true, sous: "La courbe des générations : ce que le gate a mesuré, report après report." },
-  { v: "acces", label: "Accès", icon: <ShieldCheck size={16} />, cleRequise: true, sous: "Qui a le droit d'écrire, et sous quel régime." },
+  {
+    v: "protos",
+    label: "Prototypes",
+    icon: <LayoutGrid size={16} />,
+    keyRequired: false,
+    sub: "The clickable flows published by the POs. Open to anyone with the URL.",
+  },
+  {
+    v: "context",
+    label: "Context",
+    icon: <BookOpen size={16} />,
+    keyRequired: true,
+    sub: "What the server serves to agents: the catalogue, the rules, the skills, the product spec.",
+  },
+  {
+    v: "observability",
+    label: "Observability",
+    icon: <Activity size={16} />,
+    keyRequired: true,
+    sub: "Usage of the MCP server: calls, tools, clients, latency.",
+  },
+  {
+    v: "sessions",
+    label: "Sessions",
+    icon: <Users size={16} />,
+    keyRequired: true,
+    sub: "Every conversation that talked to the server, and its friction.",
+  },
+  {
+    v: "quality",
+    label: "Quality",
+    icon: <ListChecks size={16} />,
+    keyRequired: true,
+    sub: "The curve of generations: what the gate measured, report after report.",
+  },
+  {
+    v: "access",
+    label: "Access",
+    icon: <ShieldCheck size={16} />,
+    keyRequired: true,
+    sub: "Who is allowed to write, and under which regime.",
+  },
 ]
 
-/** Le hash est l'état de navigation : `#/contexte/skills`. Un rechargement, un lien
- *  partagé, un « ← Tous les protos » depuis un parcours retombent tous au bon endroit. */
-const lireRoute = (): { section: string; param?: string } => {
+/** The hash is the navigation state: `#/context/skills`. A reload, a shared link, a "← All
+ *  the flows" from inside a flow all land back in the right place. */
+const readRoute = (): { section: string; param?: string } => {
   const [section, param] = window.location.hash.replace(/^#\/?/, "").split("/")
   return { section: section || "protos", param: param || undefined }
 }
 
-const Compte = ({ n }: { n?: number }) => (
-  <span className={`${TYPO.machine()} text-gray-dark-400 text-xs`}>{n ?? "—"}</span>
+const Count = ({ n }: { n?: number }) => (
+  <span className={`${TYPO.mono()} text-gray-dark-400 text-xs`}>{n ?? "—"}</span>
 )
 
 export const App = () => {
-  const [cle, setCle] = useState(lireCle())
-  // On part de `verification` s'il y a une clé en mémoire : elle a pu être révoquée depuis.
-  // La vérification ne bloque pas la page — elle ne ferme que les sections qui lisent le
-  // serveur, le temps de l'aller-retour.
-  const [statut, setStatut] = useState<Statut>(lireCle() ? "verification" : "dehors")
-  const [resume, setResume] = useState<Resume | null>(null)
-  const [erreur, setErreur] = useState("")
-  const [route, setRoute] = useState(lireRoute)
-  const [nbProtos, setNbProtos] = useState<number | undefined>(undefined)
+  const [apiKey, setApiKey] = useState(readKey())
+  // We start in `checking` when a key is already stored: it may have been revoked since. The
+  // check does not block the page — it only keeps the sections that read the server closed
+  // for the duration of the round trip.
+  const [status, setStatus] = useState<Status>(readKey() ? "checking" : "out")
+  const [summary, setSummary] = useState<Summary | null>(null)
+  const [error, setError] = useState("")
+  const [route, setRoute] = useState(readRoute)
+  const [flowCount, setFlowCount] = useState<number | undefined>(undefined)
   const [version, setVersion] = useState<Version | null>(null)
 
   useEffect(() => {
-    const onHash = () => setRoute(lireRoute())
+    const onHash = () => setRoute(readRoute())
     window.addEventListener("hashchange", onHash)
     if (!window.location.hash) window.location.hash = "#/protos"
     return () => window.removeEventListener("hashchange", onHash)
   }, [])
 
-  // Même origine, aucune clé : le nombre de parcours et le tampon du build sont des
-  // fichiers écrits par le build. Ils n'ont pas à attendre la connexion.
+  // Same origin, no key: the number of flows and the build stamp are files written by the
+  // build. They have no reason to wait for sign-in.
   useEffect(() => {
-    lireProtos<unknown[]>()
-      .then((l) => setNbProtos(l.length))
-      .catch(() => setNbProtos(undefined))
-    lireVersion()
+    getFlows<unknown[]>()
+      .then((l) => setFlowCount(l.length))
+      .catch(() => setFlowCount(undefined))
+    getVersion()
       .then(setVersion)
       .catch(() => setVersion(null))
   }, [])
 
-  const entrer = (candidate: string) => {
-    setErreur("")
-    setStatut("verification")
-    verifierCle(candidate)
+  const signIn = (candidate: string) => {
+    setError("")
+    setStatus("checking")
+    checkKey(candidate)
       .then((r) => {
-        ecrireCle(candidate)
-        setCle(candidate)
-        setResume(r)
-        setStatut("dedans")
+        writeKey(candidate)
+        setApiKey(candidate)
+        setSummary(r)
+        setStatus("in")
       })
       .catch((e: Error) => {
-        setErreur(
-          e instanceof ErreurAcces
-            ? "Cette clé n'est pas celle du serveur. C'est la variable DASHBOARD_KEY, pas son nom."
+        setError(
+          e instanceof AccessError
+            ? "This is not the server's key. It is the DASHBOARD_KEY variable, not its name."
             : e.message,
         )
-        setStatut("dehors")
+        setStatus("out")
       })
   }
 
-  // Vérification au chargement quand une clé est déjà mémorisée.
+  // Check on load when a key is already stored.
   useEffect(() => {
-    if (statut === "verification" && !resume && cle) entrer(cle)
+    if (status === "checking" && !summary && apiKey) signIn(apiKey)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const sortir = () => {
-    ecrireCle("")
-    setCle("")
-    setResume(null)
-    setErreur("")
-    setStatut("dehors")
+  const signOut = () => {
+    writeKey("")
+    setApiKey("")
+    setSummary(null)
+    setError("")
+    setStatus("out")
   }
 
-  const dedans = statut === "dedans"
+  const signedIn = status === "in"
   const section = SECTIONS.find((s) => s.v === route.section) ?? SECTIONS[0]
-  const corpus = corpusDe(route.param).cle as CorpusCle
+  const corpus = corpusOf(route.param).key as CorpusKey
 
-  // Le groupe Contexte s'ouvre quand on y entre (par lien, par URL, par le pied de page) et
-  // reste repliable à la main ensuite. `defaultOpen` ne suffirait pas : il ne joue qu'au
-  // premier rendu, pas quand on arrive dans la section depuis une autre.
-  const [contexteOuvert, setContexteOuvert] = useState(section.v === "contexte")
+  // The Context group opens when you enter it (by link, by URL, by the footer) and stays
+  // collapsible by hand afterwards. `defaultOpen` would not be enough: it only applies on the
+  // first render, not when you reach the section from another one.
+  const [contextOpen, setContextOpen] = useState(section.v === "context")
   useEffect(() => {
-    if (section.v === "contexte") setContexteOuvert(true)
+    if (section.v === "context") setContextOpen(true)
   }, [section.v])
 
-  const vue = (): ReactNode => {
+  const view = (): ReactNode => {
     switch (section.v) {
       case "protos":
-        return <VueProtos dedans={dedans} depot={version?.depot} />
-      case "contexte":
-        return <VueContexte cle={cle} corpus={corpus} />
-      case "observabilite":
-        return <VueObservabilite cle={cle} />
+        return <FlowsView signedIn={signedIn} repo={version?.repo} />
+      case "context":
+        return <ContextView apiKey={apiKey} corpus={corpus} />
+      case "observability":
+        return <ObservabilityView apiKey={apiKey} />
       case "sessions":
-        return <VueSessions cle={cle} />
-      case "qualite":
-        return <VueQualite cle={cle} />
-      case "acces":
-        return <VueAcces cle={cle} />
+        return <SessionsView apiKey={apiKey} />
+      case "quality":
+        return <QualityView apiKey={apiKey} />
+      case "access":
+        return <AccessView apiKey={apiKey} />
       default:
         return null
     }
   }
 
-  // L'écran de connexion prend la place de la section demandée : il occupe le champ de
-  // vision là où il manque quelque chose, sans confisquer le reste de la console.
-  const contenu = (): ReactNode => {
-    if (!section.cleRequise || dedans) return vue()
-    if (statut === "verification")
+  // The sign-in screen takes the place of the requested section: it occupies the field of
+  // vision where something is missing, without confiscating the rest of the console.
+  const content = (): ReactNode => {
+    if (!section.keyRequired || signedIn) return view()
+    if (status === "checking")
       return (
         <div className="flex items-center gap-2 py-8">
           <Spinner size="sm" />
-          <Text c="secondary">Vérification de la clé…</Text>
+          <Text c="secondary">Checking the key…</Text>
         </div>
       )
-    return <Connexion onValider={entrer} erreur={erreur} occupe={false} />
+    return <Login onSubmit={signIn} error={error} busy={false} />
   }
 
-  const lien = (section: string, param?: string) => ({
+  const link = (section: string, param?: string) => ({
     linkComponent: "a" as const,
     linkOptions: { href: param ? `#/${section}/${param}` : `#/${section}` },
   })
 
-  const comptes: Partial<Record<CorpusCle, number | undefined>> = {
-    composants: resume?.composants,
-    foundations: resume?.foundations,
-    skills: resume?.skills,
-    produit: resume?.produit,
-    reports: resume?.reports,
+  const counts: Partial<Record<CorpusKey, number | undefined>> = {
+    components: summary?.components,
+    foundations: summary?.foundations,
+    skills: summary?.skills,
+    product: summary?.product,
+    reports: summary?.reports,
   }
 
   return (
@@ -205,27 +241,27 @@ export const App = () => {
 
         <AppShell.SidebarBody className="flex flex-col gap-1">
           {SECTIONS.map((s) =>
-            s.v === "contexte" ? (
-              // Les corpus sont des SOUS-ENTRÉES, avec leur compte : ce que les compteurs de
-              // l'en-tête montraient sans permettre d'y aller, et que la rangée de boutons de
-              // la vue répétait. Les comptes n'existent qu'avec la clé.
+            s.v === "context" ? (
+              // The corpora are SUB-ENTRIES, with their count: what the header counters showed
+              // without letting you go there, and what the row of buttons in the view
+              // repeated. The counts only exist once you have the key.
               <NavLink
                 key={s.v}
                 label={s.label}
                 icon={s.icon}
                 current={section.v === s.v}
-                open={contexteOuvert}
-                onOpenChange={setContexteOuvert}
+                open={contextOpen}
+                onOpenChange={setContextOpen}
                 classNames={{ row: TYPO.nav }}
-                {...lien(s.v)}
+                {...link(s.v)}
               >
-                {CORPUS.map((c) => (
+                {CORPORA.map((c) => (
                   <NavLink
-                    key={c.cle}
+                    key={c.key}
                     label={c.label}
-                    current={section.v === "contexte" && corpus === c.cle}
-                    suffix={dedans ? <Compte n={comptes[c.cle]} /> : undefined}
-                    {...lien("contexte", c.cle)}
+                    current={section.v === "context" && corpus === c.key}
+                    suffix={signedIn ? <Count n={counts[c.key]} /> : undefined}
+                    {...link("context", c.key)}
                   />
                 ))}
               </NavLink>
@@ -235,41 +271,40 @@ export const App = () => {
                 label={s.label}
                 icon={s.icon}
                 current={section.v === s.v}
-                suffix={s.v === "protos" ? <Compte n={nbProtos} /> : undefined}
+                suffix={s.v === "protos" ? <Count n={flowCount} /> : undefined}
                 classNames={{ row: TYPO.nav }}
-                {...lien(s.v)}
+                {...link(s.v)}
               />
             ),
           )}
         </AppShell.SidebarBody>
 
         <AppShell.SidebarFooter className="flex flex-col gap-2 border-white/10 border-t">
-          {dedans ? (
+          {signedIn ? (
             <NavLink
-              label="Se déconnecter"
+              label="Sign out"
               icon={<LogOut size={16} />}
               linkComponent="button"
-              linkOptions={{ type: "button", onClick: sortir }}
+              linkOptions={{ type: "button", onClick: signOut }}
             />
           ) : (
             <NavLink
-              label="Clé de lecture"
+              label="Read key"
               icon={<KeyRound size={16} />}
-              suffix={
-                statut === "verification" ? <Spinner size="xs" /> : undefined
-              }
-              // Une section fermée : l'écran de connexion s'affiche à sa place.
-              {...lien("contexte")}
+              suffix={status === "checking" ? <Spinner size="xs" /> : undefined}
+              // A closed section: the sign-in screen shows up in its place.
+              {...link("context")}
             />
           )}
-          {/* Le tampon du build, en pied : « quel commit est servi ? » ne doit pas demander
-              un curl. C'est ce qui trahit un Redeploy Railway qui a rejoué un vieux snapshot. */}
+          {/* The build stamp, in the footer: "which commit is being served?" must not require
+              a curl. This is what gives away a Railway Redeploy that replayed an old
+              snapshot. */}
           {version ? (
             <Text c="muted" size="xs" className="px-2.5">
-              Déployé{" "}
-              {version.depot && version.commit ? (
+              Deployed{" "}
+              {version.repo && version.commit ? (
                 <a
-                  href={`${version.depot.url}/commit/${version.commit}`}
+                  href={`${version.repo.url}/commit/${version.commit}`}
                   target="_blank"
                   rel="noreferrer"
                   className="font-mono underline-offset-2 hover:underline"
@@ -280,7 +315,7 @@ export const App = () => {
                 <span className="font-mono">{version.commit?.slice(0, 7) ?? "—"}</span>
               )}
               {" · "}
-              <span className="font-mono">{version.construit_le.slice(0, 10)}</span>
+              <span className="font-mono">{version.built_at.slice(0, 10)}</span>
             </Text>
           ) : null}
         </AppShell.SidebarFooter>
@@ -290,20 +325,20 @@ export const App = () => {
         <AmbientBackground />
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-6 py-8">
           <header className="flex items-start gap-3">
-            {/* N'existe qu'en dessous du point de rupture : la sidebar y devient un tiroir. */}
+            {/* Only exists below the breakpoint: the sidebar becomes a drawer there. */}
             <AppShell.SidebarTrigger asChild>
-              <ActionIcon variant="subtle" size="md" aria-label="Ouvrir la navigation">
+              <ActionIcon variant="subtle" size="md" aria-label="Open the navigation">
                 <MenuIcon size={18} />
               </ActionIcon>
             </AppShell.SidebarTrigger>
             <div className="flex flex-col gap-1">
-              <Title order={1} size="2xl" className={TYPO.texte()}>
-                {section.v === "contexte" ? corpusDe(corpus).label : section.label}
+              <Title order={1} size="2xl" className={TYPO.title()}>
+                {section.v === "context" ? corpusOf(corpus).label : section.label}
               </Title>
-              <Text c="secondary">{section.sous}</Text>
+              <Text c="secondary">{section.sub}</Text>
             </div>
           </header>
-          {contenu()}
+          {content()}
         </div>
       </AppShell.Main>
 

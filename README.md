@@ -1,125 +1,123 @@
-# Sanctum — la console 42
+# Sanctum — the 42 console
 
-Un site, deux choses : **la console d'administration** à la racine, et **N parcours
-cliquables** sous `/p/<slug>/`. Tout est construit avec les vrais composants de
-`@42/ui-react` — y compris la console, qui est donc le premier vrai test du kit sur une
-application non triviale.
+One site, two things: **the admin console** at the root, and **N clickable flows** under
+`/p/<slug>/`. Everything is built with the real `@42/ui-react` components — including the
+console, which is therefore the first genuine test of the kit on a non-trivial application.
 
-Le repo s'appelle `Sanctum` ; le serveur MCP qui écrit dedans, `mcp-Omniscient`.
+The repo is called `Sanctum`; the MCP server that writes into it, `mcp-Omniscient`.
 
-Un parcours est déposé **depuis une conversation Claude** (connecteur 42 Design), pas par
-git : le PO décrit son parcours, le serveur MCP commit ici, Railway construit et déploie.
+A flow is published **from a Claude conversation** (42 Design connector), not through git:
+the PO describes their flow, the MCP server commits here, Railway builds and deploys.
 
-- **Console** : `/` — sections Prototypes, Contexte, Observabilité, Sessions, Qualité,
-  Accès. Une seule navigation, la sidebar (AppShell + NavLink du kit) ; l'URL porte la
-  section (`#/contexte/skills`). La galerie est publique ; les autres sections demandent
-  la clé de lecture (`DASHBOARD_KEY` du service MCP).
-- **Un parcours** : `/p/<slug>/`
+- **Console**: `/` — Prototypes, Context, Observability, Sessions, Quality, Access
+  sections. A single navigation, the sidebar (the kit's AppShell + NavLink); the URL carries
+  the section (`#/context/skills`). The gallery is public; the other sections ask for the
+  read key (the MCP service's `DASHBOARD_KEY`).
+- **A flow**: `/p/<slug>/`
 
-## Pour un PO : ajouter ou faire évoluer un parcours
+## For a PO: adding or evolving a flow
 
-Rien à installer, rien à cloner. Dans une conversation avec le connecteur **42 Design** :
+Nothing to install, nothing to clone. In a conversation with the **42 Design** connector:
 
-- « Fais-moi un parcours de demande de transformation d'heures : la liste, le détail,
-  la confirmation. » → l'agent le génère et appelle `publish_proto`.
-- « Reprends le parcours `exemple-demandes` et ajoute un écran de refus motivé. »
-  → l'agent appelle `list_protos("exemple-demandes")`, modifie, republie.
+- "Build me a flow for requesting an hours transformation: the list, the detail, the
+  confirmation." → the agent generates it and calls `publish_proto`.
+- "Take the `example-requests` flow and add a screen for a motivated rejection."
+  → the agent calls `list_protos("example-requests")`, edits, republishes.
 
-Republier avec le **même slug** met le parcours à jour. Un slug nouveau crée un parcours de plus.
+Republishing with the **same slug** updates the flow. A new slug creates one more flow.
 
-**Supprimer un parcours** se fait depuis la console (menu `⋯` de la carte → Supprimer…,
-clé de lecture requise, slug à retaper). C'est un commit dans ce repo, exécuté par le
-serveur MCP (`DELETE /console/protos/<slug>`) : le parcours reste dans l'historique git, et
-il disparaît du site **au déploiement suivant** — la carte reste visible en « suppression
-en cours » d'ici là.
+**Deleting a flow** is done from the console (the card's `⋯` menu → Delete…, read key
+required, slug to retype). It is a commit in this repo, executed by the MCP server
+(`DELETE /console/protos/<slug>`): the flow stays in the git history, and it disappears from
+the site **at the next deploy** — the card stays visible as "deletion in progress" until
+then.
 
-## Pour un dev : récupérer le code d'un parcours
+## For a dev: getting a flow's code
 
-Menu `⋯` de la carte → **Récupérer le code** : la modale donne le `git clone` du dépôt, le
-dossier `protos/<slug>/`, et le lien GitHub. Le build écrit l'origine dans
-`dist/version.json` (`depot`, depuis les variables Railway ou le remote git) — aucune URL
-n'est en dur dans la console. Puis, en local :
+The card's `⋯` menu → **Get the code**: the modal gives the repo's `git clone`, the
+`protos/<slug>/` directory, and the GitHub link. The build writes the origin into
+`dist/version.json` (`repo`, from the Railway variables or the git remote) — no URL is
+hard-coded in the console. Then, locally:
 
 ```bash
 npm install
 npm run dev <slug>       # http://localhost:4244
 ```
 
-`npm run dev` **exige** un slug (`scripts/dev-proto.mjs` liste les parcours disponibles si
-on l'oublie) : le squelette importe `./proto/views`, donc `src/proto/` doit pointer quelque
-part avant que Vite démarre. Le script y pose un **lien symbolique** vers `protos/<slug>/`,
-là où `build-all.mjs` fait une copie — en dev, une copie ferait éditer un dossier ignoré par
-git, et le travail serait perdu au build suivant. Ce qu'on modifie à l'écran est bien le
-parcours.
+`npm run dev` **requires** a slug (`scripts/dev-proto.mjs` lists the available flows if you
+forget it): the skeleton imports `./proto/views`, so `src/proto/` must point somewhere
+before Vite starts. The script places a **symlink** there to `protos/<slug>/`, where
+`build-all.mjs` makes a copy — in dev, a copy would mean editing a git-ignored directory,
+and the work would be lost at the next build. What you change on screen really is the flow.
 
 ## Structure
 
 ```
-console/             ← la console React (@42/ui-react) : galerie, métriques, rôles
+console/             ← the React console (@42/ui-react): gallery, metrics, roles
 protos/<slug>/
-├── views.tsx        ← LE PARCOURS : une entrée par écran. Obligatoire.
-├── pages/*.tsx      ← les écrans
-├── data/*.ts        ← les données de démo
-└── proto.json       ← titre, auteur, dates (écrit par le MCP)
+├── views.tsx        ← THE FLOW: one entry per screen. Mandatory.
+├── pages/*.tsx      ← the screens
+├── data/*.ts        ← the demo data
+└── proto.json       ← title, author, dates (written by the MCP)
 
-src/                 ← le squelette, commun à tous les parcours (routage, chrome, barre d'outils)
-vendor/ui-react/     ← snapshot CONSTRUIT de @42/ui-react
-scripts/build-all.mjs ← un build par parcours, puis la galerie
-scripts/dev-proto.mjs ← `npm run dev <slug>` : un parcours en local
-server.mjs           ← service statique de dist/ (Railway)
+src/                 ← the skeleton, shared by every flow (routing, chrome, toolbar)
+vendor/ui-react/     ← a BUILT snapshot of @42/ui-react
+scripts/build-all.mjs ← one build per flow, then the gallery
+scripts/dev-proto.mjs ← `npm run dev <slug>`: one flow locally
+server.mjs           ← static serving of dist/ (Railway)
 ```
 
-`views.tsx` est le contrat : la barre du bas **et** le routage par hash s'en déduisent tous
-les deux. Un écran qui n'y figure pas est inatteignable. Quand `views.tsx` exporte aussi
-`NAV`, le squelette rend la sidebar produit — et la barre du bas ne reliste **pas** les
-écrans qu'une entrée de `NAV` vise déjà : elle ne garde que les écrans profonds (module,
-projet, détail…), ceux qu'on ne peut atteindre qu'en traversant le produit.
+`views.tsx` is the contract: the bottom bar **and** the hash routing are both derived from
+it. A screen that is not listed there is unreachable. When `views.tsx` also exports `NAV`,
+the skeleton renders the product sidebar — and the bottom bar does **not** relist the
+screens a `NAV` entry already targets: it keeps only the deep screens (module, project,
+detail…), the ones you can reach only by walking through the product.
 
-## Deux contraintes porteuses — ne pas les défaire
+## Two load-bearing constraints — do not undo them
 
-**1. `@42/ui-react` n'est publié nulle part.** Ni sur npm, ni installable par git : le package
-à la racine de `42staff/kit` est `@42/ui` (racine de workspace privée), et `@42/ui-react` vit
-dans `packages/react/` — npm ne sait pas installer un sous-dossier d'un dépôt git, et le
-package n'a pas de script `prepare`. D'où `vendor/ui-react/` : une copie du package
-**construit**, branchée en `file:`.
+**1. `@42/ui-react` is published nowhere.** Not on npm, not installable from git: the package
+at the root of `42staff/kit` is `@42/ui` (a private workspace root), and `@42/ui-react` lives
+in `packages/react/` — npm cannot install a sub-directory of a git repo, and the package has
+no `prepare` script. Hence `vendor/ui-react/`: a copy of the **built** package, wired in with
+`file:`.
 
-Rafraîchir après une évolution du kit :
+Refreshing it after the kit evolves:
 
 ```bash
 cd <kit>/packages/react && pnpm build
-rm -rf <ici>/vendor/ui-react/dist
-cp -R dist <ici>/vendor/ui-react/dist
-find <ici>/vendor/ui-react -name '*.map' -delete   # inutiles, et ça divise le poids par deux
+rm -rf <here>/vendor/ui-react/dist
+cp -R dist <here>/vendor/ui-react/dist
+find <here>/vendor/ui-react -name '*.map' -delete   # useless, and it halves the weight
 ```
 
-**2. Le CSS du kit n'existe pas compilé.** `@42/ui-react/styles.css` ne contient que des
-directives ; les classes des composants sont générées par un **scan de son `dist`**. C'est
-`src/styles.css` qui le déclare :
+**2. The kit's CSS does not exist compiled.** `@42/ui-react/styles.css` contains only
+directives; the components' classes are generated by a **scan of its `dist`**. It is
+`src/styles.css` that declares it:
 
 ```css
 @source "../node_modules/@42/ui-react/dist/**/*.js";
 ```
 
-Sans cette ligne : 0 classe générée, composants entièrement nus. Avec : ~1600 règles.
-Mesuré le 2026-09-03.
+Without this line: 0 classes generated, components entirely bare. With it: ~1600 rules.
+Measured on 2026-09-03.
 
 ## Build
 
 ```bash
 npm install
-npm run build     # dist/ (la console) + dist/p/<slug>/ (un par parcours)
-npm start         # sert dist/ sur $PORT
+npm run build     # dist/ (the console) + dist/p/<slug>/ (one per flow)
+npm start         # serves dist/ on $PORT
 ```
 
-**Chaque build est précédé d'un `tsc --noEmit`**, et ce n'est pas du zèle : Vite/esbuild
-retirent les types sans les vérifier. Un parcours qui écrit `Table.Root` (la racine est
-`Table` lui-même) se bundle sans broncher puis plante à l'ouverture — la console afficherait
-un parcours vert et cassé. Le typecheck est la seule chose qui attrape ça.
+**Every build is preceded by a `tsc --noEmit`**, and that is not zeal: Vite/esbuild strip
+the types without checking them. A flow that writes `Table.Root` (the root is `Table` itself)
+bundles without a complaint, then blows up on open — the console would show a green, broken
+flow. The typecheck is the only thing that catches this.
 
-Un build **par parcours**, volontairement : le code vient d'agents pilotés par des PO, et un
-parcours qui ne compile pas ne doit pas emporter ceux des autres. Il est marqué « build en
-échec » dans la galerie, les autres restent en ligne.
+One build **per flow**, deliberately: the code comes from agents driven by POs, and a flow
+that does not compile must not take the others down with it. It is marked "build failed" in
+the gallery, the others stay online.
 
-> ⚠️ npm ≥ 11 bloque les scripts d'installation par défaut ; esbuild (via Vite) en a un.
-> Si le build échoue sur esbuild, lancer `npm approve-scripts --allow-scripts-pending`
-> en local, ou poser `NPM_CONFIG_ALLOW_SCRIPTS_PENDING=true` côté hébergeur.
+> ⚠️ npm ≥ 11 blocks install scripts by default; esbuild (via Vite) has one.
+> If the build fails on esbuild, run `npm approve-scripts --allow-scripts-pending`
+> locally, or set `NPM_CONFIG_ALLOW_SCRIPTS_PENDING=true` on the host.

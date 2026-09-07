@@ -1,35 +1,37 @@
 /**
- * Les deux registres typographiques du DS 42 — RELEVÉS sur les frames, pas choisis.
+ * The two typographic registers of the 42 DS — OBSERVED on the frames, not chosen.
  *
- *   Lato       porte le texte ET les titres de contenu.
- *   Kode Mono  porte LA MACHINE : niveau, compteurs, scores, pourcentages, nav.
+ *   Lato       carries the body text AND the content titles.
+ *   Kode Mono  carries THE MACHINE: level, counters, scores, percentages, nav.
  *
- * Pourquoi ce module existe — le kit inverse la règle :
- *   • `Title` émet `font-mono font-semibold` EN DUR (`titleVariants`) : tout titre
- *     de contenu sort en Kode Mono, là où les frames veulent du Lato.
- *   • `Text` n'expose aucune graisse (`size` et `c` seulement) : Bold, Semibold et
- *     Medium sont inatteignables sans `className`.
+ * Why this module exists — the kit inverts the rule:
+ *   • `Title` emits `font-mono font-semibold` HARD-CODED (`titleVariants`): every content
+ *     title comes out in Kode Mono, where the frames want Lato.
+ *   • `Text` exposes no weight at all (`size` and `c` only): Bold, Semibold and Medium are
+ *     unreachable without a `className`.
  *
- * Ce ne sont pas une seconde grammaire mais des CORRECTIFS : ils disparaissent le
- * jour où le kit expose les axes (→ `ds-actions.yaml`, `kit-title-force-mono` et
- * `kit-text-sans-graisse`).
+ * These are not a second grammar but FIXES: they disappear the day the kit exposes the
+ * axes (→ `ds-actions.yaml`, `kit-title-force-mono` and `kit-text-sans-graisse`).
  *
- * ⚠️ **La graisse est un paramètre, pas un rôle figé.** La première version de ce
- * module offrait `TYPO.titre` = Lato Bold, construit sur une seule frame. La frame
- * `22505:9532` (Home v3) a montré la limite : elle pose son titre de page et ses 12
- * noms de compétences en **Semibold**, et son `50%` en **Kode Mono Medium**. Un rôle
- * fige une graisse ; deux familles × quatre graisses en demandent seize. D'où deux
- * fonctions, orthogonales et complètes.
+ * ⚠️ **Weight is a parameter, not a frozen role.** The first version of this module offered
+ * `TYPO.title` = Lato Bold, built on a single frame. Frame `22505:9532` (Home v3) showed
+ * the limit: it sets its page title and its 12 skill names in **Semibold**, and its `50%`
+ * in **Kode Mono Medium**. A role freezes a weight; two families × four weights need
+ * sixteen. Hence two functions, orthogonal and complete.
  *
- * Les TAILLES restent la prop `size` : l'échelle du kit tombe exactement sur celle du
- * DS (xs=12, sm=14, md=16, lg=18, xl=20, 2xl=24, 3xl=30).
+ * `title` is therefore the LATO register, not "the helper for `<Title>`": it is just as
+ * right on a `<Text>` that needs a weight (`TYPO.title("medium")`), and `<Title>` elements
+ * that carry a number take `mono`.
  *
- *   <Title size="3xl" className={TYPO.texte("semibold")}>Welcome back, Amanda</Title>
- *   <Text size="sm" className={TYPO.machine("semibold")}>+120 XP</Text>
+ * SIZES stay the `size` prop: the kit's scale lands exactly on the DS one
+ * (xs=12, sm=14, md=16, lg=18, xl=20, 2xl=24, 3xl=30).
+ *
+ *   <Title size="3xl" className={TYPO.title("semibold")}>Welcome back, Amanda</Title>
+ *   <Text size="sm" className={TYPO.mono("semibold")}>+120 XP</Text>
  */
-export type Poids = "regular" | "medium" | "semibold" | "bold"
+export type Weight = "regular" | "medium" | "semibold" | "bold"
 
-const POIDS: Record<Poids, string> = {
+const WEIGHTS: Record<Weight, string> = {
   regular: "font-normal",
   medium: "font-medium",
   semibold: "font-semibold",
@@ -37,10 +39,10 @@ const POIDS: Record<Poids, string> = {
 }
 
 export const TYPO = {
-  /** Lato — le texte et les titres de contenu. `Typography-1/*`. */
-  texte: (poids: Poids = "bold") => `font-sans ${POIDS[poids]}`,
-  /** Kode Mono — LA MACHINE : niveau, compteurs, scores, %, décomptes. `Typography-2/*`. */
-  machine: (poids: Poids = "bold") => `font-mono ${POIDS[poids]}`,
-  /** Kode Mono SemiBold capitales — les libellés de navigation du chrome. */
+  /** Lato — body text and content titles. `Typography-1/*`. */
+  title: (weight: Weight = "bold") => `font-sans ${WEIGHTS[weight]}`,
+  /** Kode Mono — THE MACHINE: level, counters, scores, %, countdowns. `Typography-2/*`. */
+  mono: (weight: Weight = "bold") => `font-mono ${WEIGHTS[weight]}`,
+  /** Kode Mono SemiBold uppercase — the chrome's navigation labels. */
   nav: "font-mono font-semibold uppercase",
 } as const

@@ -2,14 +2,14 @@ import { GraduationCap, House, LayoutDashboard, Rocket } from "lucide-react"
 import type { ProtoNavItem, ProtoView } from "../../src/proto-types"
 import { QuestMap } from "./pages/quest-map"
 
-/** Le CHROME est rendu par le squelette. Libellés ET icônes RELEVÉS sur la frame
- *  22505:9532 : Home/house, MODULES/layout-dashboard, RUSHES/rocket, EXAMS/graduation-cap.
+/** The CHROME is rendered by the skeleton. Labels AND icons LIFTED from frame
+ *  22505:9532: Home/house, MODULES/layout-dashboard, RUSHES/rocket, EXAMS/graduation-cap.
  *
- *  ⚠️ La frame porte une cinquième entrée, « Menu Open », dépliée sur sept enfants tous
- *  intitulés « Lorem Ipsum » : c'est une DÉMO de l'état ouvert du composant, pas du
- *  contenu. Sept liens morts vers des écrans inexistants ne sont pas un parcours
- *  cliquable — l'entrée n'est donc pas reprise, et l'écart est consigné au report.
- *  (`NavLink` sait s'auto-imbriquer via ses enfants, le jour où ces libellés existent.) */
+ *  ⚠️ The frame carries a fifth entry, « Menu Open », expanded over seven children all
+ *  titled « Lorem Ipsum »: that is a DEMO of the component's open state, not content.
+ *  Seven dead links to screens that do not exist are not a clickable flow — so the
+ *  entry is not carried over, and the deviation is filed to the report.
+ *  (`NavLink` knows how to self-nest through its children, the day those labels exist.) */
 export const NAV: ProtoNavItem[] = [
   { label: "Home", path: "home", icon: <House size={16} /> },
   { label: "Modules", icon: <LayoutDashboard size={16} /> },

@@ -13,15 +13,15 @@ import { Program } from "./pages/program"
 import { Module } from "./pages/module"
 import { Project } from "./pages/project"
 
-/** Le CHROME est rendu par le squelette (migration NAV du 2026-09-05 : l'ancien
- *  components/sidebar.tsx est retiré). La nav reproduit l'architecture produit 42next ;
- *  les rangées sans cible sont des catégories sans lien mort — comme avant.
- *  `match: "learn/"` garde « Learn » courant sur module et project, ce que faisait
- *  l'ancien Ecran avec son actif="Learn" figé.
- *  Icônes : celles que la frame 22489:9756 porte réellement (relevé du 2026-09-05)
- *  — house, layout-dashboard, graduation-cap, calendar, folder-check. Les rangées de
- *  la maquette sont libellées « LOREM IPSUM », donc `Review`, `Exams` et `Community`
- *  gardent un choix raisonné, faute d'icône dédiée dans la frame. */
+/** The CHROME is rendered by the skeleton (NAV migration of 2026-09-05: the former
+ *  components/sidebar.tsx is gone). The nav mirrors the 42next product architecture;
+ *  the rows without a target are categories with no dead link — as before.
+ *  `match: "learn/"` keeps « Learn » current on module and project, which is what the
+ *  former Screen component did with its hard-coded active="Learn".
+ *  Icons: the ones frame 22489:9756 actually carries (lifted on 2026-09-05)
+ *  — house, layout-dashboard, graduation-cap, calendar, folder-check. The mockup's rows
+ *  are all labelled « LOREM IPSUM », so `Review`, `Exams` and `Community` keep a
+ *  reasoned choice, for want of a dedicated icon in the frame. */
 export const NAV: ProtoNavItem[] = [
   { label: "Home", icon: <House size={16} /> },
   { label: "My progression", icon: <LayoutDashboard size={16} /> },
