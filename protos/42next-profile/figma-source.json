@@ -1,9 +1,16 @@
 {
   "figma_file_key": "yoP06GsdWscdgqpJMV2YuN",
   "ds_sync": "2026-09-03",
-  "translated_on": "2026-09-08",
+  "translated_on": "2026-09-04",
+  "note": "Extracted from the 42next-lms flow on 2026-09-08, unchanged. The frame was re-checked against the code that day — every value still matches, so nothing was re-lifted. The conformance passes are documented at the top of pages/profile.tsx: layout 2026-09-04, typography 2026-09-05 (survey of the frame's 91 texts and 18 styles).",
   "screens": {
-    "profile/:login": { "node": "22489:9756", "frame": "42next — Profile v2" },
-    "activities/:slug": { "node": null, "frame": null }
+    "profile/:login": {
+      "node": "22489:9756",
+      "frame": "42next — Profile v2 · A. Serrano (Dark 1500)"
+    },
+    "activities/:slug": {
+      "node": null,
+      "frame": "No frame — the drill-down behind « Open the activity », composed with the kit to keep the profile's only control alive."
+    }
   }
 }

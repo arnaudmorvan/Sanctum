@@ -2,14 +2,10 @@
   "slug": "42next-profile",
   "title": "42next - Learner profile",
   "author": "Arnaud",
-  "summary": "New proposal on the profile of frame 22489:9756 — the screen leads with what is left to conquer (minishell, the only gradient card, with the primary action), the four validated activities collapse into one card, and the rail is reordered milestone → stats → elsewhere → agenda. Ships the activity detail the primary action opens.",
+  "summary": "One screen on its own: a learner profile from frame 22489:9756 — level and XP, the activity in progress, validated activities, programs, attendance on campus, and the learner's month in the rail. Also reachable inside the 42next-lms flow; extracted here to be shown alone.",
   "created_at": "2026-09-08",
   "updated_at": "2026-09-08",
   "files": [
-    "data/agenda.ts",
-    "data/profile.ts",
-    "figma-source.json",
-    "pages/activity.tsx",
     "pages/profile.tsx",
     "views.tsx"
   ]
