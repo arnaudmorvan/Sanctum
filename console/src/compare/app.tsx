@@ -15,6 +15,7 @@ import {
   useRef,
   useState,
 } from "react"
+import { PREV } from "../../../src/layout/compare-link"
 import { TYPO } from "../../../src/typo"
 import { AccessError, get, getFlows, MCP_URL, readKey, writeKey } from "../mcp"
 
@@ -27,8 +28,11 @@ import { AccessError, get, getFlows, MCP_URL, readKey, writeKey } from "../mcp"
  *   • "do these two screens agree?" — two SCREENS of a flow, same version or not, or two
  *     flows altogether.
  *
- *  Each side is a LOCATOR in the URL — `?a=<slug>[@<sha7>][#/screen]&b=…` — so a
- *  comparison is a link one pastes in a message. The frames are the flows themselves,
+ *  Each side is a LOCATOR in the URL — `?a=<slug>[@<sha7>|@prev][#/screen]&b=…` — so a
+ *  comparison is a link one pastes in a message. `@prev` is the one version that cannot be
+ *  written as a sha: it is what the Compare tile of a flow points at ("this screen against
+ *  the previous publication"), and it is resolved here, against the flow's history, the
+ *  moment that history arrives — after which the URL carries the sha it found. The frames are the flows themselves,
  *  rendered `?bare` (no bottom bar, no side panel: the tooling of a tab, drawn twice it
  *  would drive nothing), and they TALK: a frame says which screens it declares and where
  *  it is (`sanctum:state`), the page tells it where to go (`sanctum:navigate`) — see
@@ -64,6 +68,8 @@ type EmbedState = {
 
 type Status =
   | { kind: "idle" }
+  /** `@prev` is waiting for the flow's history to say which commit it names. */
+  | { kind: "resolving" }
   | { kind: "checking" }
   | { kind: "needs-key" }
   | { kind: "building" }
@@ -86,7 +92,7 @@ type Side = "a" | "b"
 const SLUG_RE = /^[a-z0-9][a-z0-9-]{0,63}$/
 const SHA_RE = /^[0-9a-f]{7,40}$/
 
-/** `<slug>[@<sha>][#/screen]` → a locator, or null when the string is not one. */
+/** `<slug>[@<sha>|@prev][#/screen]` → a locator, or null when the string is not one. */
 const parseLocator = (raw: string | null): Locator | null => {
   if (!raw) return null
   const hashAt = raw.indexOf("#")
@@ -94,8 +100,8 @@ const parseLocator = (raw: string | null): Locator | null => {
   const hash = hashAt >= 0 ? raw.slice(hashAt) : ""
   const [slug, sha = ""] = head.split("@")
   if (!SLUG_RE.test(slug)) return null
-  if (sha && !SHA_RE.test(sha)) return null
-  return { slug, sha: sha.slice(0, 7), hash }
+  if (sha && sha !== PREV && !SHA_RE.test(sha)) return null
+  return { slug, sha: sha === PREV ? PREV : sha.slice(0, 7), hash }
 }
 
 const formatLocator = (l: Locator) => `${l.slug}${l.sha ? `@${l.sha}` : ""}${l.hash}`
@@ -181,6 +187,12 @@ const usePane = (initial: Locator | null, key: string): PaneHandle => {
     let alive = true
     if (!slug) {
       setStatus({ kind: "idle" })
+      return
+    }
+    // `@prev` names no commit yet: the page resolves it from the flow's history. Asking
+    // the server to build "prev" would be a 4xx, and probing `/v/<slug>/prev/` a 404.
+    if (sha === PREV) {
+      setStatus(key ? { kind: "resolving" } : { kind: "needs-key" })
       return
     }
     const l = { slug, sha, hash: "" }
@@ -287,6 +299,11 @@ const Frame = ({
           {pane.status.kind === "idle" ? (
             <p className="text-gray-dark-500 text-sm">Pick a flow above.</p>
           ) : null}
+          {pane.status.kind === "resolving" ? (
+            <p className="text-gray-dark-400 text-sm">
+              Looking up the version before the live one…
+            </p>
+          ) : null}
           {pane.status.kind === "checking" ? (
             <p className="text-gray-dark-400 text-sm">Looking for this version on the site…</p>
           ) : null}
@@ -302,8 +319,9 @@ const Frame = ({
           ) : null}
           {pane.status.kind === "needs-key" ? (
             <p className="max-w-sm text-center text-gray-dark-400 text-sm">
-              This version is not built on the site yet. Building it goes through the MCP
-              server: enter the console's read key above.
+              {pane.loc.sha === PREV
+                ? "Which version comes before the live one is read from the flow's history: enter the console's read key above."
+                : "This version is not built on the site yet. Building it goes through the MCP server: enter the console's read key above."}
             </p>
           ) : null}
           {pane.status.kind === "error" ? (
@@ -383,7 +401,9 @@ const SideHeader = ({
             {v.author ? ` · ${v.author}` : ""}
           </option>
         ))}
-        {loc.sha && !version ? <option value={loc.sha}>{loc.sha}</option> : null}
+        {loc.sha && !version ? (
+          <option value={loc.sha}>{loc.sha === PREV ? "previous version…" : loc.sha}</option>
+        ) : null}
       </select>
       <select
         aria-label={`Screen of side ${side.toUpperCase()}`}
@@ -458,7 +478,9 @@ export const CompareApp = () => {
 
   // The versions of every flow on screen, once, behind the key. `null` marks "asked and
   // refused" so a rejected key does not retry on every render.
-  const slugs = [a.loc.slug, b.loc.slug].filter(Boolean)
+  // Deduplicated: the two sides are the SAME flow whenever one arrives from a flow's
+  // Compare tile, and that asked the history twice.
+  const slugs = [...new Set([a.loc.slug, b.loc.slug].filter(Boolean))]
   const wanted = slugs.filter((s) => !(s in histories)).join(",")
   useEffect(() => {
     if (!key || !wanted) return
@@ -474,6 +496,23 @@ export const CompareApp = () => {
         })
     }
   }, [key, wanted])
+
+  // `@prev` becomes a sha as soon as the flow's history is in. A flow with one single
+  // version has nothing before it: the side falls back to the live flow rather than
+  // staying blank on a comparison that cannot exist. A history that was REFUSED (no key,
+  // `null`) leaves the name in place — the side then says it needs the key, which is the
+  // truth, and resolves itself the moment one is entered.
+  useEffect(() => {
+    for (const [pane, set] of [
+      [a, setA],
+      [b, setB],
+    ] as const) {
+      if (pane.loc.sha !== PREV) continue
+      const versions = histories[pane.loc.slug]
+      if (!versions) continue
+      set({ ...pane.loc, sha: versions[1]?.short ?? "" })
+    }
+  }, [a, b, histories, setA, setB])
 
   // The URL is the state: a comparison is a link.
   useEffect(() => {

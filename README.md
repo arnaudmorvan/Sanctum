@@ -80,8 +80,11 @@ navigation, the rail is what one does WITH the flow:
   that HAS a frame — which is itself an answer to "was this one designed, or composed?".
   The link is free; the render needs a `FIGMA_TOKEN` on the MCP, and says so when there is
   none.
-- **Compare** — this screen twice on `/compare/`, where either side can become another
-  screen, another version, or another flow. See "Two versions, two screens" below.
+- **Compare** — this screen as it is now, next to **the same screen in the previous
+  version** (`/compare/`): the question one opens that page with, ready without a click.
+  Either side can then become another screen, another version or another flow. From a
+  past version, the right side is that version and the left the live flow. See "Two
+  versions, two screens" below.
 
 ## Two versions, two screens — `/v/<slug>/<sha7>/` and `/compare/` (since 2026-09-08)
 
@@ -103,9 +106,15 @@ recently opened are kept, the rest pruned, and a redeploy wipes them all — whi
 the page always asks again instead of remembering a URL (a version already built answers
 in 0 ms, `cached: true`).
 
-**`/compare/?a=<slug>[@<sha7>][#/screen]&b=…`** puts two of these side by side — two
+**`/compare/?a=<slug>[@<sha7>|@prev][#/screen]&b=…`** puts two of these side by side — two
 versions of one screen, two screens of one flow, or two flows. Each side is a locator
-in the URL, so a comparison is a link. The frames are the flows themselves, rendered
+in the URL, so a comparison is a link. `@prev` — "the version before the live one" — is
+the one that cannot be written as a sha: a flow's Compare tile hands out the same link
+whatever gets published next, and the page resolves it against the flow's history the
+moment that history arrives (it needs the read key, and says so otherwise), then rewrites
+the URL with the sha it found — so what one copies from the address bar is a fixed
+comparison. A flow with a single version has nothing before it: the side falls back to
+the live flow. The frames are the flows themselves, rendered
 `?bare` (no bottom bar, no side panel — the tooling of a tab, drawn twice it would
 drive nothing), and they talk to the page (`src/layout/embed.ts`: `sanctum:state` in,
 `sanctum:navigate` out): that is what fills the screen picker of each side and drives
