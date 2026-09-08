@@ -182,6 +182,30 @@ export const Profile = ({ login }: { login?: string }) => {
             </div>
           </Section>
 
+          {/* Current milestone — MOVED 2026-09-08 out of the side rail into the MAIN
+              column, under Activities. foundations-layout: the centre carries what is
+              to be conquered, the rail carries « me » — a milestone is the next thing
+              to attack, not a readout. Was gradient/sm, now default/md: the centre
+              already has its entry point (the minishell card just above), and
+              foundations-composants allows ONE gradient card per screen — a second pink
+              outline directly under the first cancels the signal. Padding md is the
+              column's step; sm was the 340px rail's. */}
+          <Section title="Current milestone" icon={<Flame size={16} />}>
+            <Card variant="default" padding="md">
+              <Card.Content>
+                <div className="flex flex-col gap-3">
+                  <Text size="sm" className={TYPO.title()}>{MILESTONE.name}</Text>
+                  <div className="flex items-baseline justify-between gap-3">
+                    <Text size="sm" c="secondary" className={TYPO.title("medium")}>{MILESTONE.label}</Text>
+                    <Text size="sm" c="muted" className={TYPO.title("medium")}>{MILESTONE.validated} / {MILESTONE.required}</Text>
+                  </div>
+                  <Progress variant="gradient" value={milestonePct} size="sm" />
+                  <Text size="xs" c="muted">{MILESTONE.note}</Text>
+                </div>
+              </Card.Content>
+            </Card>
+          </Section>
+
           <Section title="Programs" icon={<Milestone size={16} />}>
             <Card variant="default" padding="md">
               <Card.Content>
@@ -276,24 +300,6 @@ export const Profile = ({ login }: { login?: string }) => {
                       <Title order={3} size="2xl" className={TYPO.mono()}>{s.value}</Title>
                     </div>
                   ))}
-                </div>
-              </Card.Content>
-            </Card>
-          </Section>
-
-          {/* Current milestone: lifted as gradient/sm, milestone-body V gap 12.
-              Used to be outline/lg — this is the side rail's other pink-outlined card. */}
-          <Section title="Current milestone" icon={<Flame size={16} />}>
-            <Card variant="gradient" padding="sm">
-              <Card.Content>
-                <div className="flex flex-col gap-3">
-                  <Text size="sm" className={TYPO.title()}>{MILESTONE.name}</Text>
-                  <div className="flex items-baseline justify-between gap-3">
-                    <Text size="sm" c="secondary" className={TYPO.title("medium")}>{MILESTONE.label}</Text>
-                    <Text size="sm" c="muted" className={TYPO.title("medium")}>{MILESTONE.validated} / {MILESTONE.required}</Text>
-                  </div>
-                  <Progress variant="gradient" value={milestonePct} size="sm" />
-                  <Text size="xs" c="muted">{MILESTONE.note}</Text>
                 </div>
               </Card.Content>
             </Card>

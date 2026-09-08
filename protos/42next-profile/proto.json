@@ -2,9 +2,10 @@
   "slug": "42next-profile",
   "title": "42next - Learner profile",
   "author": "Arnaud",
-  "summary": "One screen on its own: a learner profile from frame 22489:9756 — level and XP, the activity in progress, validated activities, programs, attendance on campus, and the learner's month in the rail. Also reachable inside the 42next-lms flow; extracted here to be shown alone.",
+  "summary": "A learner profile from frame 22489:9756 — level and XP, the activity in progress, the current milestone, validated activities, programs, attendance on campus, and the learner's month in the rail.",
   "created_at": "2026-09-08",
   "updated_at": "2026-09-08",
+  "published_at": "2026-09-08T21:47:38Z",
   "files": [
     "data/agenda.ts",
     "data/profile.ts",
