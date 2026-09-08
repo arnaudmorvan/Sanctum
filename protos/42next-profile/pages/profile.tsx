@@ -60,13 +60,13 @@ const Cell = ({ intensity }: { intensity: keyof typeof INTENSITY_CLASS }) => (
 )
 
 /** Agenda dot. It rides in `Calendar`'s renderDay slot, which appends INSIDE the day
- *  cell, next to the number: a plain dot therefore pushes the digit and breaks the
- *  column alignment (seen on the 2026-09-08 publish). The zero-size wrapper takes no
- *  room in the flow and hangs the dot under the baseline. */
+ *  cell — so a dot in the flow pushes the digit and breaks the column alignment
+ *  (measured on the first 2026-09-08 publish, then again with a zero-width wrapper:
+ *  the dot then landed ON the digit). The cell is `relative flex items-center
+ *  justify-center` (read off the deployed DOM), so the only correct treatment is an
+ *  absolute dot centred under the number: no flow, no shift. */
 const AgendaDot = () => (
-  <span className="relative inline-block h-0 w-0 align-baseline">
-    <span className="absolute -bottom-1 left-0 block size-1 -translate-x-1/2 rounded-full bg-pink-400" />
-  </span>
+  <span className="pointer-events-none absolute inset-x-0 bottom-0.5 mx-auto block size-1 rounded-full bg-pink-400" />
 )
 
 const ATTENDANCE = buildAttendance()
