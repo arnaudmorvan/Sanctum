@@ -2,6 +2,8 @@
  *  needs a plausible record, not a dataset: the list page that would feed it is not part
  *  of this flow (deliberate scope, settled with the PO on 2026-09-08). */
 
+export type TransformationType = "Time off" | "Time shift"
+
 export type TimeTransformationRequest = {
   login: string
   name: string
@@ -12,7 +14,7 @@ export type TimeTransformationRequest = {
   lastReviewedBy: string
   changesRequested: string
   form: {
-    type: "Time off" | "Time shift"
+    type: TransformationType
     startDate: string
     durationDays: number
     deductFromTimeBank: boolean

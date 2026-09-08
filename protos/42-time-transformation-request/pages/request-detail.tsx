@@ -20,12 +20,17 @@ import { Title } from "@42/ui-react/title"
 import { ChevronDown, ChevronLeft, Download, FileText } from "lucide-react"
 import { type ReactNode, useState } from "react"
 import { TYPO } from "../../../src/typo"
-import { REASONS, REQUESTS } from "../data/requests"
+import { REASONS, REQUESTS, type TransformationType } from "../data/requests"
 
 const CRUMBS = [
   { label: "Learners" },
   { label: "Time transformation", href: "#/learners/time-transformation/elmorel" },
 ]
+
+/** The two options of the type radio. Declared `as const` so the union the kit narrows
+ *  from `data` is the SAME union the state carries — a bare `string[]` widens it and the
+ *  controlled `value` no longer typechecks. */
+const TYPES = ["Time off", "Time shift"] as const
 
 /** One metadata row of the "Request informations" panel. The label stays Lato; the value
  *  goes mono ONLY when it is something the machine counts — a login, a date. A program
@@ -52,7 +57,7 @@ const Meta = ({ label, children }: { label: string; children: ReactNode }) => (
 export const RequestDetail = ({ login }: { login: string }) => {
   const request = REQUESTS[login] ?? REQUESTS.elmorel
   const [infoOpen, setInfoOpen] = useState(true)
-  const [type, setType] = useState<string>(request.form.type)
+  const [type, setType] = useState<TransformationType>(request.form.type)
   const [blockAccess, setBlockAccess] = useState(request.form.blockWorkstations)
 
   return (
@@ -166,9 +171,9 @@ export const RequestDetail = ({ login }: { login: string }) => {
             <RadioGroup
               label="Time transformation type"
               orientation="horizontal"
-              data={["Time off", "Time shift"]}
+              data={TYPES}
               value={type}
-              onChange={(value) => setType(String(value))}
+              onChange={setType}
             />
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
