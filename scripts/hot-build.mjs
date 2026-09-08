@@ -162,13 +162,31 @@ const writeFiles = (root, files) => {
   }
 }
 
+/** Every flow file under `root`, relative and `/`-separated, sorted — `proto.json` left
+ *  out, and only what a flow may carry (same filter as the payload). */
+const listFlowFiles = (root) =>
+  fs
+    .readdirSync(root, { recursive: true })
+    .map((p) => String(p).split(path.sep).join("/"))
+    .filter((p) => p !== "proto.json" && EXTENSIONS.some((ext) => p.endsWith(ext)))
+    .filter((p) => fs.statSync(path.join(root, p)).isFile())
+    .sort()
+
 /** Writes the flow on disk the way the commit did: add and replace, never delete. The
  *  container's `protos/<slug>/` is a copy of git at deploy time; overlaying the published
- *  files reproduces exactly what git holds after the commit. */
+ *  files reproduces exactly what git holds after the commit.
+ *
+ *  Returns the metadata as written, with `files` read from the FOLDER after the overlay —
+ *  not from the payload. An update sends only what changed (four files of a twenty-file
+ *  flow): listing those four in `proto.json` and `protos.json` made the other sixteen
+ *  vanish from the console and the panel while git, and the build, still had them all
+ *  (2026-09-08). The MCP now writes the full list too; the folder is the truth here. */
 const writeFlow = (slug, files, meta) => {
   const root = path.join(PROTOS, slug)
   writeFiles(root, files)
-  fs.writeFileSync(path.join(root, "proto.json"), `${JSON.stringify(meta, null, 2)}\n`)
+  const full = { ...meta, files: listFlowFiles(root) }
+  fs.writeFileSync(path.join(root, "proto.json"), `${JSON.stringify(full, null, 2)}\n`)
+  return full
 }
 
 /** The source of a PAST version: a scratch directory, wiped before and after the build.
@@ -229,14 +247,14 @@ const runBuild = (slug, files, meta) =>
     queue = queue.then(() => {
       let result
       try {
-        writeFlow(slug, files, meta)
+        const full = writeFlow(slug, files, meta)
         const tmp = path.join(DIST, ".build", `${slug}-${Date.now()}`)
         result = buildFlow({ slug, title: meta.title }, { outDir: path.relative(ROOT, tmp) })
         if (result.ok) swapIn(path.join(DIST, "p", slug), tmp)
         else fs.rmSync(tmp, { recursive: true, force: true })
         // A failed build is written to the index too: the console shows the red card
         // straight away instead of a "deploying" one that never resolves.
-        updateIndex(toEntry({ ...meta, slug, ok: result.ok }))
+        updateIndex(toEntry({ ...full, slug, ok: result.ok }))
       } catch (e) {
         result = { ok: false, error: e.message, ms: 0, log: "" }
       }
@@ -320,6 +338,8 @@ const readMeta = (slug, raw, files) => ({
   // Stamped by the MCP at publication (to the second); the console's History tab
   // reads it. Passed through so a hot-built flow shows the same as a CI-built one.
   published_at: raw?.published_at,
+  // The files of THIS payload. Right for a preview (the whole version travels); for a
+  // live build `writeFlow` replaces it with the folder's listing — see there.
   files: Object.keys(files).sort(),
 })
 

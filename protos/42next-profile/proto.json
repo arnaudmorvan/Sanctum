@@ -6,6 +6,10 @@
   "created_at": "2026-09-08",
   "updated_at": "2026-09-08",
   "files": [
+    "data/agenda.ts",
+    "data/profile.ts",
+    "figma-source.json",
+    "pages/activity.tsx",
     "pages/profile.tsx",
     "views.tsx"
   ]
