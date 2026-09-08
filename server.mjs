@@ -1,8 +1,13 @@
 /** Static server for dist/ on Railway. No dependency: adding `serve` or express would pull
- *  a whole npm tree in just to read files off disk. */
+ *  a whole npm tree in just to read files off disk.
+ *
+ *  Plus ONE route that is not static: `POST /build/<slug>` (scripts/hot-build.mjs) rebuilds
+ *  a single flow inside this container, seconds after `publish_proto`, instead of making the
+ *  PO wait for the Railway redeploy. Mounted only when `BUILD_KEY` is set. */
 import fs from "node:fs"
 import http from "node:http"
 import path from "node:path"
+import { handleBuild, selfCheck } from "./scripts/hot-build.mjs"
 
 const DIST = path.join(import.meta.dirname, "dist")
 const PORT = process.env.PORT || 3000
@@ -15,8 +20,9 @@ const TYPES = {
 }
 
 http
-  .createServer((req, res) => {
+  .createServer(async (req, res) => {
     const url = decodeURIComponent((req.url || "/").split("?")[0])
+    if (await handleBuild(req, res, url)) return
     // Traversal: we resolve first, then check we stayed under dist/.
     let target = path.join(DIST, url)
     if (!target.startsWith(DIST)) {
@@ -47,4 +53,4 @@ http
     res.writeHead(200, { "content-type": type, "cache-control": cache })
     fs.createReadStream(target).pipe(res)
   })
-  .listen(PORT, () => console.log(`Sanctum on :${PORT}`))
+  .listen(PORT, () => console.log(`Sanctum on :${PORT} · ${selfCheck()}`))

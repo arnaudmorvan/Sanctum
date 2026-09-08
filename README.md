@@ -62,9 +62,11 @@ protos/<slug>/
 
 src/                 ← the skeleton, shared by every flow (routing, chrome, toolbar)
 vendor/ui-react/     ← a BUILT snapshot of @42/ui-react
-scripts/build-all.mjs ← one build per flow, then the gallery
+scripts/build-flow.mjs ← ONE flow: copy → tsc → vite (shared by the CI and the hot build)
+scripts/build-all.mjs ← every flow, then the gallery (the CI)
+scripts/hot-build.mjs ← POST /build/<slug>: rebuild one flow in the running container
 scripts/dev-proto.mjs ← `npm run dev <slug>`: one flow locally
-server.mjs           ← static serving of dist/ (Railway)
+server.mjs           ← static serving of dist/ (Railway) + the hot build route
 ```
 
 `views.tsx` is the contract: the bottom bar **and** the hash routing are both derived from
@@ -121,3 +123,36 @@ the gallery, the others stay online.
 > ⚠️ npm ≥ 11 blocks install scripts by default; esbuild (via Vite) has one.
 > If the build fails on esbuild, run `npm approve-scripts --allow-scripts-pending`
 > locally, or set `NPM_CONFIG_ALLOW_SCRIPTS_PENDING=true` on the host.
+
+## The hot build — a flow is live seconds after `publish_proto` (since 2026-09-08)
+
+The commit `publish_proto` makes triggers a Railway redeploy: clone, `npm ci`, build,
+image, swap — **minutes**, for a per-flow build that takes ~3 s (`tsc` 0.9 s + `vite`
+1.6 s measured locally). During those minutes the PO looks at a "published · deploying"
+card and nothing else.
+
+`server.mjs` therefore carries ONE non-static route, `POST /build/<slug>`
+(`scripts/hot-build.mjs`): the MCP server posts it the files it has just committed, the
+running container rebuilds **that one flow** with the same `buildFlow` as the CI
+(`scripts/build-flow.mjs`), swaps it into `dist/p/<slug>/` with two renames (a viewer
+refreshing mid-build never gets a 404) and rewrites `dist/protos.json` — the console's
+card flips within seconds. A flow that does not compile answers **422 with the tsc
+diagnostics**, which the MCP hands back to the agent in the same answer as the commit
+sha: the fix is a republish, not a new conversation.
+
+- **Fail-closed**: the route exists only when `BUILD_KEY` is set (Railway → Variables on
+  this service). The same value goes on the MCP service as `SANCTUM_BUILD_KEY`, with
+  `SANCTUM_BUILD_URL=https://<this site>`.
+- **Not a second truth**: the commit remains the flow. The hot build is a fast-forward of
+  what the next redeploy produces from git anyway; if the hook is down or absent, the
+  publication behaves exactly as before.
+- **Same bounds as the MCP** (slug shape, 40 files, 200 KB/file, 1 MB, 3 levels,
+  extension allowlist, no path escape), re-checked here: a route that trusts its
+  caller's validation has none.
+- **Serialized**: `src/proto/` is a single working directory, builds queue up.
+- The redeploy that follows the commit still happens today — it is the safety net. Once
+  the hook has proven itself, add `"watchPatterns": ["!protos/**"]`-style rules to
+  `railway.json` so a publication no longer redeploys the whole site at all.
+
+Try it locally: `BUILD_KEY=x PORT=4299 npm start`, then POST `{files, meta}` with the
+header `X-Build-Key: x` to `http://localhost:4299/build/<slug>`.
