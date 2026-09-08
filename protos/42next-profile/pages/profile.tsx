@@ -1,8 +1,9 @@
 import type { ReactNode } from "react"
-import { Clock3, Flame, FolderCheck, GraduationCap, Grid2x2, Milestone } from "lucide-react"
+import { CalendarDays, Clock3, Flame, FolderCheck, GraduationCap, Grid2x2, Milestone } from "lucide-react"
 import { Avatar } from "@42/ui-react/avatar"
 import { Badge } from "@42/ui-react/badge"
 import { Button } from "@42/ui-react/button"
+import { Calendar } from "@42/ui-react/calendar"
 import { Card } from "@42/ui-react/card"
 import { Progress } from "@42/ui-react/progress"
 import { SegmentGroup } from "@42/ui-react/segment-group"
@@ -10,6 +11,7 @@ import { Text } from "@42/ui-react/text"
 import { Timeline } from "@42/ui-react/timeline"
 import { Title } from "@42/ui-react/title"
 import { TYPO } from "../../../src/typo"
+import { AGENDA_LEGEND, NEXT_EVENT, hasAgenda } from "../data/agenda"
 import { ACTIVITIES, ATTENDANCE_LEGEND, ATTENDANCE_NOTE, ATTENDANCE_TOTAL, ATTENDANCE_VIEWS, CURRENT, ELSEWHERE, INTENSITY_CLASS, LEARNER, MILESTONE, PROGRAMS, STATS, buildAttendance } from "../data/profile"
 
 /** CONFORMANCE PASS 2026-09-04, against frame 22489:9756.
@@ -26,7 +28,11 @@ import { ACTIVITIES, ATTENDANCE_LEGEND, ATTENDANCE_NOTE, ATTENDANCE_TOTAL, ATTEN
  *  The DS rule: Lato carries the text AND the titles; Kode Mono carries THE
  *  MACHINE (level, counters, scores). The kit does the opposite — `Title` forces
  *  `font-mono` — hence the `className={TYPO.*}` below, each of which names the
- *  Figma style it reproduces. They will disappear once the kit exposes the axes. */
+ *  Figma style it reproduces. They will disappear once the kit exposes the axes.
+ *
+ *  ADDITION 2026-09-08 — the « Agenda » block at the foot of the rail (next item,
+ *  month grid, event dots) does NOT come from the frame: it was asked for after the
+ *  lift. Do not read its presence as a survey, and do not re-lift it from here. */
 
 /** SectionTitle from the Figma DS: size=sm, title in Typography-1/Text md/Bold (16px),
  *  icon leading, gap 6 between the two. size="md" maps the Figma `Text md` step by its
@@ -36,7 +42,9 @@ import { ACTIVITIES, ATTENDANCE_LEGEND, ATTENDANCE_NOTE, ATTENDANCE_TOTAL, ATTEN
  *  The icon is NO LONGER missing (2026-09-05): it had been dropped on the belief
  *  that « no asset travels through publish_proto ». An icon is not an asset,
  *  it is a lucide import — and the names are LIFTED from the frame, not chosen
- *  (folder-check, milestone, clock-3, grid-2x2, flame, graduation-cap). */
+ *  (folder-check, milestone, clock-3, grid-2x2, flame, graduation-cap).
+ *  ⚠️ calendar-days, on the Agenda block, is the ONE reasoned choice: the frame
+ *  carries no such section. Declared as a gap in the report, not passed off as a lift. */
 const Section = ({ title, icon, children }: { title: string; icon: ReactNode; children: ReactNode }) => (
   <section className="flex flex-col gap-4">
     <div className="flex items-center gap-1.5 text-gray-dark-400">
@@ -297,6 +305,41 @@ export const Profile = ({ login }: { login?: string }) => {
                       <Text size="xs" c="muted">{l.note}</Text>
                     </div>
                   ))}
+                </div>
+              </Card.Content>
+            </Card>
+          </Section>
+
+          {/* Agenda — ADDED 2026-09-08, not in frame 22489:9756. The rail's job is to
+              carry what accompanies the reading and to say what comes next, so the
+              block LEADS with the next item (stamp in Kode Mono: a date measures)
+              and only then shows the month. `Calendar` carries the grid and its own
+              event-dot slot (`renderDay`) — the dot is the one hand-written scrap.
+              default/md, NOT gradient: the screen already has its entry point.
+              Inert, like the Elsewhere block: this proto holds no agenda screen and a
+              dead control is worse than no control. */}
+          <Section title="Agenda" icon={<CalendarDays size={16} />}>
+            <Card variant="default" padding="md">
+              <Card.Content>
+                <div className="flex flex-col gap-4">
+                  <div className="flex flex-col gap-1">
+                    <div className="flex flex-wrap items-baseline gap-2">
+                      {/* Typography-2/Text sm/Bold — a date measures, so Kode Mono. */}
+                      <Text size="sm" className={TYPO.mono()}>{NEXT_EVENT.stamp}</Text>
+                      <Text size="sm" className={TYPO.title("medium")}>{NEXT_EVENT.label}</Text>
+                    </div>
+                    <Text size="xs" c="muted">Next on your agenda.</Text>
+                  </div>
+                  <Calendar
+                    size="sm"
+                    fixedWeeks
+                    renderDay={(date) =>
+                      hasAgenda(date)
+                        ? <span className="mx-auto mt-0.5 block size-1 rounded-full bg-pink-400" />
+                        : null
+                    }
+                  />
+                  <Text size="xs" c="muted">{AGENDA_LEGEND}</Text>
                 </div>
               </Card.Content>
             </Card>
