@@ -1,0 +1,14 @@
+{
+  "slug": "42-time-transformation-request",
+  "title": "42 — Time transformation request",
+  "author": "Arnaud",
+  "summary": "Staff back-office: the detail of a learner's time transformation request, with the validation form and the approve / deny decision.",
+  "created_at": "2026-09-08",
+  "updated_at": "2026-09-08",
+  "published_at": "2026-09-08T15:29:28Z",
+  "files": [
+    "data/requests.ts",
+    "pages/request-detail.tsx",
+    "views.tsx"
+  ]
+}
