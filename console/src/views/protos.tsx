@@ -12,13 +12,16 @@ import { Code2, Copy, Ellipsis, ExternalLink, Trash2 } from "lucide-react"
 import { useEffect, useState } from "react"
 import {
   AccessError,
+  type Building,
   type Deletion,
   deleteFlow,
   getFlows,
   getScreenSource,
+  getWorkshop,
   type Repo,
 } from "../mcp"
 import { notify } from "../notifier"
+import { WorkshopCard } from "./workshop"
 
 export type Flow = {
   slug: string
@@ -413,8 +416,9 @@ export const FlowsView = ({ signedIn, repo }: { signedIn: boolean; repo?: Repo |
   const [pending, setPending] = useState<Pending>(readDeletions)
   const [codeOf, setCodeOf] = useState<Flow | null>(null)
   const [deleteOf, setDeleteOf] = useState<Flow | null>(null)
+  const [building, setBuilding] = useState<Building[]>([])
 
-  useEffect(() => {
+  const load = () =>
     getFlows<Flow[]>()
       .then((list) => {
         setFlows(list)
@@ -426,9 +430,46 @@ export const FlowsView = ({ signedIn, repo }: { signedIn: boolean; repo?: Repo |
           writeDeletions(left)
           return left
         })
+        return list
       })
-      .catch((e: Error) => setError(e.message))
+      .catch((e: Error) => {
+        setError(e.message)
+        return [] as Flow[]
+      })
+
+  useEffect(() => {
+    load()
   }, [])
+
+  // The construction sites: what an agent is building at this second, which the deployed
+  // `protos.json` cannot know — it is written by the build. Polled while this tab is open,
+  // and only with the key: the route is on the MCP server, like everything else here.
+  //
+  // A card announced as published keeps its place until the flow REALLY appears in the
+  // list: that is the deployment gap, the few minutes during which a PO who sees nothing
+  // concludes the publication failed. Hence the reload of `protos.json` while one is
+  // waiting — this is the only moment the list can change under our feet.
+  useEffect(() => {
+    if (!signedIn) return
+    let alive = true
+    const tick = () =>
+      getWorkshop()
+        .then((r) => {
+          if (!alive) return
+          setBuilding(r.building)
+          if (r.building.some((b) => b.shipped)) load()
+        })
+        .catch(() => {
+          /* the construction site is a comfort: a card that does not appear, never a
+             tab that fails */
+        })
+    tick()
+    const id = setInterval(tick, 5000)
+    return () => {
+      alive = false
+      clearInterval(id)
+    }
+  }, [signedIn])
 
   const markDeleted = (s: Deletion) => {
     setPending((prev) => {
@@ -443,11 +484,17 @@ export const FlowsView = ({ signedIn, repo }: { signedIn: boolean; repo?: Repo |
     })
   }
 
-  if (error)
-    return <Alert type="error" variant="light" title="List unavailable" description={error} />
-  if (!flows) return <Text c="secondary">Loading…</Text>
+  // A construction site whose flow is already in the list has landed: the build is through,
+  // the real card says it better than the animated one.
+  const sites = building.filter(
+    (b) => !(b.shipped && b.slug && (flows ?? []).some((f) => f.slug === b.slug)),
+  )
 
-  if (flows.length === 0)
+  if (error && sites.length === 0)
+    return <Alert type="error" variant="light" title="List unavailable" description={error} />
+  if (!flows && sites.length === 0) return <Text c="secondary">Loading…</Text>
+
+  if ((flows ?? []).length === 0 && sites.length === 0)
     return (
       <Card variant="outline" padding="xl">
         <Card.Header>
@@ -463,7 +510,10 @@ export const FlowsView = ({ signedIn, repo }: { signedIn: boolean; repo?: Repo |
   return (
     <>
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {flows.map((p) => {
+        {sites.map((b) => (
+          <WorkshopCard key={b.id} card={b} />
+        ))}
+        {(flows ?? []).map((p) => {
           const broken = p.ok === false
           const deleted = pending[p.slug]
           return (

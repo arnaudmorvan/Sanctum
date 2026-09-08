@@ -25,3 +25,42 @@ body {
   scrollbar-width: thin;
   scrollbar-color: color-mix(in srgb, var(--color-gray-dark-600, #61656c) 60%, transparent) transparent;
 }
+
+/* ------------------------------------------------------------------ the workshop card
+   A flow being built: three pixel agents, and the one at work moves. Sprite animation, so
+   `steps(1)` and never a fade — a cross-fade between two frames turns pixel art into mush.
+
+   Everything here is scoped to the construction-site card, which only exists while an agent
+   is building: nothing on this console animates permanently. */
+
+@keyframes ds-frame-a { 0%, 49% { opacity: 1 } 50%, 100% { opacity: 0 } }
+@keyframes ds-frame-b { 0%, 49% { opacity: 0 } 50%, 100% { opacity: 1 } }
+.ds-frame-a { animation: ds-frame-a 0.9s steps(1, end) infinite; }
+.ds-frame-b { animation: ds-frame-b 0.9s steps(1, end) infinite; }
+
+/* The working light under whoever is at work: it breathes, it does not blink. */
+@keyframes ds-worklight { 0%, 100% { opacity: 0.25 } 50% { opacity: 0.9 } }
+.ds-worklight { animation: ds-worklight 2.4s ease-in-out infinite; }
+
+/* The dots that follow the activity line — typed, one after the other. `content` is not
+   animatable: what moves is the width that reveals them. */
+.ds-ellipsis { display: inline-block; overflow: hidden; vertical-align: bottom; white-space: nowrap; }
+.ds-ellipsis::after { content: "..."; }
+@keyframes ds-ellipsis { from { width: 0 } to { width: 1.6em } }
+.ds-ellipsis { animation: ds-ellipsis 1.8s steps(4, end) infinite; }
+
+/* The card itself, alive at the edge: a construction site is not a published flow, and you
+   see it before reading a single word. */
+@keyframes ds-worksite {
+  0%, 100% { box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-brand-400) 18%, transparent); }
+  50%      { box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-brand-400) 55%, transparent); }
+}
+.ds-worksite { animation: ds-worksite 3.2s ease-in-out infinite; }
+
+/* Asked to hold still, everything holds still: frame A alone, full light, no breathing.
+   The card still says what is happening — the motion was never what carried the message. */
+@media (prefers-reduced-motion: reduce) {
+  .ds-frame-a, .ds-frame-b, .ds-worklight, .ds-ellipsis, .ds-worksite { animation: none; }
+  .ds-frame-b { opacity: 0; }
+  .ds-ellipsis { width: 1.6em; }
+}

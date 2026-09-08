@@ -190,6 +190,34 @@ export type Version = {
 
 export type Deletion = { ok: true; slug: string; commit: string; files: number }
 
+/** One flow being built at this second. `role` says which of the three little agents is at
+ *  work — the server names it (`workshop.py`), the console only draws it: a phase added over
+ *  there must not need a deployment over here. */
+export type Building = {
+  id: string
+  slug: string
+  title: string
+  author: string
+  client: string
+  phase: string
+  role: "po" | "designer" | "dev" | string
+  activity: string
+  shipped: boolean
+  calls: number
+  seconds: number
+  idle: number
+}
+
+/** The flows being built RIGHT NOW, and what the agent is doing on them. Read from the MCP
+ *  server's memory (`workshop.py`), which deduces it from the tool calls themselves — so the
+ *  card lights up without anything being asked of the agent or of the connector.
+ *
+ *  Polled while the Prototypes tab is open: the answer costs no GitHub call, which is what
+ *  makes a five-second cadence acceptable. */
+export async function getWorkshop(): Promise<{ building: Building[] }> {
+  return get<{ building: Building[] }>("/console/workshop.json")
+}
+
 /** The source of ONE screen: the file asked for, and the flow files it imports — its
  *  fixtures, a block it shares. A `pages/x.tsx` alone imports things that exist nowhere
  *  else and ports nowhere, which is what made "clone the repo" the only answer until now.
