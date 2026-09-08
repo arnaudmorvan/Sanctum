@@ -23,9 +23,11 @@ const Row = ({ label, value }: { label: string; value: string }) => (
   </div>
 )
 
-/** Screen 3 — learn.project of the prototype, attempt 4 (validated). One attempt
- *  card in padding lg, everything else in md. The 4 attempt tabs are a
- *  SegmentGroup; only the 4th carries data in this flow. */
+/** Screen 3 — learn.project of the prototype, attempt 4 (validated). The 4 attempt tabs
+ *  are a SegmentGroup; only the 4th carries data in this flow.
+ *
+ *  2026-09-08 — flat surfaces and no green: every "Passed" / "Validated" badge is an
+ *  uncoloured outline, the word carries the verdict. */
 export const Project = ({ slug }: { slug?: string }) => {
   const p = PROJECT
 
@@ -42,7 +44,7 @@ export const Project = ({ slug }: { slug?: string }) => {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <Title order={1} size="2xl" className={TYPO.title()}>{p.name}</Title>
           <div className="flex items-center gap-2">
-            <Badge variant="light" color="green">Validated</Badge>
+            <Badge variant="outline">Validated</Badge>
             <Text size="sm" c="muted">{p.end}</Text>
           </div>
         </div>
@@ -53,13 +55,13 @@ export const Project = ({ slug }: { slug?: string }) => {
         <div className="flex flex-col gap-4">
           <SegmentGroup size="sm" data={p.attempts} defaultValue={p.currentAttempt} />
 
-          <Card variant="gradient" padding="lg">
+          <Card variant="outline" padding="lg">
             <Card.Content>
               <div className="flex flex-col gap-5">
-                <div><Badge variant="light" color="green">Success</Badge></div>
+                <div><Badge variant="outline">Success</Badge></div>
 
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                  <Card variant="default" padding="md">
+                  <Card variant="outline" padding="md">
                     <Card.Content>
                       <div className="flex flex-col gap-2">
                         <Title order={3} size="sm" className={TYPO.title()}>Project details</Title>
@@ -67,7 +69,7 @@ export const Project = ({ slug }: { slug?: string }) => {
                       </div>
                     </Card.Content>
                   </Card>
-                  <Card variant="default" padding="md">
+                  <Card variant="outline" padding="md">
                     <Card.Content>
                       <div className="flex flex-col gap-2">
                         <Title order={3} size="sm" className={TYPO.title()}>Subject & resources</Title>
@@ -104,14 +106,14 @@ export const Project = ({ slug }: { slug?: string }) => {
                   {p.steps.map((s, i) => (
                     <div key={i} className="flex items-center gap-2">
                       {i > 0 && <Text size="sm" c="muted">›</Text>}
-                      <Badge variant="light" color="green">{i + 1} · {s} · Passed</Badge>
+                      <Badge variant="outline">{i + 1} · {s} · Passed</Badge>
                     </div>
                   ))}
                 </div>
 
                 <div className="flex flex-col gap-3">
                   {p.reviews.map((r) => (
-                    <Card key={r.step} variant="default" padding="md">
+                    <Card key={r.step} variant="outline" padding="md">
                       <Card.Content>
                         <div className="flex flex-col gap-2">
                           <div className="flex flex-wrap items-center justify-between gap-3">
@@ -121,7 +123,7 @@ export const Project = ({ slug }: { slug?: string }) => {
                             </div>
                             <div className="flex items-center gap-2">
                               <Text size="xs" c="muted">{r.day}</Text>
-                              <Badge variant="light" color="green">{r.verdict}</Badge>
+                              <Badge variant="outline">{r.verdict}</Badge>
                             </div>
                           </div>
                           <Text size="xs" c="muted">{r.slot}</Text>

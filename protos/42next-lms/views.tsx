@@ -35,33 +35,13 @@ import {
   ReviewReceived,
 } from "./pages/review"
 
-/** 42next — the LMS, as ONE flow.
+/** 42next — the LMS, as ONE flow. The eight HTML files of `_oldProto/` were eight copies
+ *  of the SAME app, differing only by their initial route; they collapse here into one
+ *  flow whose ~25 screens are deep links a PO can send to someone.
  *
- *  WHERE THIS COMES FROM. `_oldProto/` held eight HTML files of ~1.5 MB each. They were
- *  not eight prototypes: they were eight copies of the SAME app, identical byte for byte
- *  apart from their `<title>` and the initial value of a `route` variable. The app had no
- *  hash routing at all — `go()` mutated a variable and re-rendered — so the eight files
- *  were the only way to open it on a screen other than the home page. That is the whole
- *  reason they existed, and it is why they collapse into a single flow here: the eight
- *  entry points become eight routes of one app, and the ~24 screens the sidebar reached
- *  become deep links a PO can actually send to someone.
- *
- *  WHAT IT SUPERSEDES. `42next-learn`, `42next-profile` and `42next-quest-map` covered six
- *  of these screens each in their own flow. Their pages are folded in here unchanged
- *  (program, module, project, profile, activity, quest-map) rather than rewritten: they
- *  were already composed with the kit, and a port that threw them away would lose work
- *  and drift from what was reviewed.
- *
- *  The CHROME is the skeleton's (`NAV` below). The HTML prototype drew its own sidebar —
- *  a nested, collapsible tree — and the skeleton's nav was flat, so the first version of
- *  this flow could only expose ONE page per section and everything else lived in the
- *  bottom bar. `ProtoNavItem.children` was added on 2026-09-07 to close that gap: the
- *  kit's `NavLink` already self-nests, only the skeleton did not use it.
- *
- *  The prototype's own rule is kept: a section WITH sub-pages is a toggle, not a link
- *  (its heading folds the group rather than navigating), and a section without them —
- *  Home, Exams — is a plain link. `match` keeps a section lit on its deep screens
- *  (`learn/module/:slug` lights "My program"). */
+ *  The CHROME is the skeleton's (`NAV` below): a section WITH sub-pages is a toggle, a
+ *  section without them — Home, Exams — is a plain link, and `match` keeps a section lit
+ *  on its deep screens (`learn/module/:slug` lights "My program"). */
 export const NAV: ProtoNavItem[] = [
   { label: "Home", path: "dashboard", icon: <House size={16} /> },
   {

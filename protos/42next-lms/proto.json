@@ -5,12 +5,12 @@
   "summary": "The whole 42next LMS as one flow — cards flattened to transparent outline surfaces, green and red status colours neutralised.",
   "created_at": "2026-09-07",
   "updated_at": "2026-09-08",
-  "published_at": "2026-09-08T20:41:20Z",
+  "published_at": "2026-09-08T20:43:36Z",
   "files": [
-    "pages/activity.tsx",
-    "pages/dashboard.tsx",
-    "pages/program.tsx",
-    "pages/shell.tsx",
+    "pages/agenda.tsx",
+    "pages/exams.tsx",
+    "pages/me.tsx",
+    "pages/project.tsx",
     "views.tsx"
   ]
 }

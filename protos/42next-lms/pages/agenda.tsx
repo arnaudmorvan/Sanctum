@@ -15,17 +15,19 @@ import { Legend, PageHead, Tag } from "./shell"
 
 const CRUMB = { label: "Agenda", href: "#/agenda/calendar" }
 
-/** One tone -> one surface. Declared once so a cell never picks its colour inline. */
+/** One tone -> one surface. Declared once so a cell never picks its colour inline.
+ *  2026-09-08 — `success` no longer renders green: it is a neutral translucent chip like
+ *  the rest, and the event label states what it is. */
 const EVENT_CLASS: Record<EventTone, string> = {
   brand: "bg-brand-500/25 text-brand-100",
-  success: "bg-green-500/25 text-green-100",
+  success: "bg-white/15 text-white",
   violet: "bg-purple-500/25 text-purple-100",
   warning: "bg-orange-500/25 text-orange-100",
 }
 
 const DOT_CLASS: Record<EventTone, string> = {
   brand: "bg-brand-500",
-  success: "bg-green-500",
+  success: "bg-white/50",
   violet: "bg-purple-400",
   warning: "bg-orange-500",
 }
@@ -44,7 +46,7 @@ export const AgendaCalendar = () => {
         sub="Everything with a date — reviews, exam sessions, rushes, events and your own slots."
         aside={
           <>
-            <Button variant="light" size="sm">{AGENDA_MONTH.label} ⌄</Button>
+            <Button variant="outline" size="sm">{AGENDA_MONTH.label} ⌄</Button>
             <Button variant="filled" size="sm" asChild>
               <a href="#/review/availability">+ Slot</a>
             </Button>
@@ -52,7 +54,7 @@ export const AgendaCalendar = () => {
         }
       />
 
-      <Card variant="default" padding="md">
+      <Card variant="outline" padding="md">
         <Card.Content>
           <div className="grid grid-cols-7 gap-1">
             {WEEKDAYS.map((d) => (
@@ -69,7 +71,7 @@ export const AgendaCalendar = () => {
                 <div
                   key={n}
                   className={`flex min-h-20 flex-col gap-1 rounded-md border p-1.5 ${
-                    today ? "border-brand-500 bg-brand-500/10" : "border-white/10"
+                    today ? "border-brand-500" : "border-white/10"
                   }`}
                 >
                   <span className={`text-xs ${TYPO.mono(today ? "bold" : "regular")}`}>{n}</span>
@@ -103,7 +105,7 @@ export const AgendaRegistrations = () => (
 
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
       {REGISTRATIONS.map((r) => (
-        <Card key={r.title} variant="default" padding="md">
+        <Card key={r.title} variant="outline" padding="md">
           <Card.Content>
             <div className="flex flex-col gap-3">
               <div className="flex flex-wrap items-start justify-between gap-3">
