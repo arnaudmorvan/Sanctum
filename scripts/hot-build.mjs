@@ -87,8 +87,13 @@ export const validateSlug = (slug) => {
   return slug
 }
 
-/** Returns the files as a clean `{path: content}` map, or throws a BuildError. */
-export const validateFiles = (files) => {
+/** Returns the files as a clean `{path: content}` map, or throws a BuildError.
+ *  `requireViews`: `views.tsx` IS the flow, so a payload without it is refused — unless the
+ *  flow is already on disk with one. Since 2026-09-08 an update sends only what changed
+ *  (edits on two screens, say), and a hook that demanded `views.tsx` every time would
+ *  answer 400 to every such update: the MCP would shrug and let the CI deploy, minutes
+ *  instead of seconds, for a file that had not moved. */
+export const validateFiles = (files, { requireViews = true } = {}) => {
   if (!files || typeof files !== "object" || Array.isArray(files) || !Object.keys(files).length) {
     throw new BuildError(400, "`files` must be a non-empty object {path: content}.")
   }
@@ -126,7 +131,7 @@ export const validateFiles = (files) => {
   if (total > MAX_TOTAL_BYTES) {
     throw new BuildError(400, `Flow of ${Math.round(total / 1000)} KB: maximum 1000 KB overall.`)
   }
-  if (!names.some((n) => n === "views.tsx" || n.endsWith("/views.tsx"))) {
+  if (requireViews && !names.some((n) => n === "views.tsx" || n.endsWith("/views.tsx"))) {
     throw new BuildError(400, "`views.tsx` is missing: it is the flow's screens registry.")
   }
   return clean
@@ -362,7 +367,10 @@ export async function handleBuild(req, res, url) {
   try {
     const slug = validateSlug((build ?? preview)[1])
     const body = JSON.parse(await readBody(req))
-    const files = validateFiles(body.files)
+    // A preview carries a whole version; a live build may carry an update of a flow
+    // that already has its `views.tsx` on disk (the overlay keeps it).
+    const onDisk = Boolean(build) && fs.existsSync(path.join(PROTOS, slug, "views.tsx"))
+    const files = validateFiles(body.files, { requireViews: !onDisk })
     const meta = readMeta(slug, body.meta, files)
     if (build) {
       const r = await runBuild(slug, files, meta)
