@@ -19,15 +19,17 @@ const Section = ({ title, aside, children }: { title: string; aside?: ReactNode;
   </section>
 )
 
-/** The prototype's tick / circle (✓ / ○): characters, not icons —
- *  they travel. */
+/** The prototype's tick / circle (✓ / ○): characters, not icons — they travel. */
 const Tick = ({ done }: { done: boolean }) => (
   <Text span size="sm" c={done ? "default" : "muted"}>{done ? "✓" : "○"}</Text>
 )
 
 /** Screen 2 — learn.module of the prototype. Two columns: requirements + activities on
- *  the left, skills + exam on the right. The version switch stays inert (the update
- *  flow is a separate pane in the prototype). */
+ *  the left, skills + exam on the right. The version switch stays inert.
+ *
+ *  2026-09-08 — flat surfaces, and no green/red status hue: the activity in progress is
+ *  no longer distinguished by a pink gradient card but by the fact that it is the only
+ *  one whose "Open" button works. */
 export const Module = ({ slug }: { slug?: string }) => {
   const m = MODULE
   const requirementsPct = Math.round((m.requirements.done / m.requirements.total) * 100)
@@ -41,7 +43,7 @@ export const Module = ({ slug }: { slug?: string }) => {
           <Title order={1} size="2xl" className={TYPO.title()}>{m.name}</Title>
           <div className="flex flex-wrap items-center gap-3">
             <Text size="sm" c="muted">Started {m.start}</Text>
-            <Badge variant="light" color="gray">{m.version}</Badge>
+            <Badge variant="outline">{m.version}</Badge>
             <Badge variant="light" color="blue">{m.nextVersion.number} · {m.nextVersion.note}</Badge>
             <Button size="sm" variant="outline">Update to {m.nextVersion.number}</Button>
           </div>
@@ -52,7 +54,7 @@ export const Module = ({ slug }: { slug?: string }) => {
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1fr)_340px]">
         <div className="flex flex-col gap-10">
           <Section title="Validation requirements" aside={<Text size="sm" c="muted">{m.requirements.done}/{m.requirements.total}</Text>}>
-            <Card variant="default" padding="md">
+            <Card variant="outline" padding="md">
               <Card.Content>
                 <div className="flex flex-col gap-3">
                   {/* The prototype renders this block as monospace YAML. The mono family
@@ -83,13 +85,13 @@ export const Module = ({ slug }: { slug?: string }) => {
                 return (
                   <div key={a.slug} className="flex flex-col gap-3">
                     {i > 0 && <Text size="sm" c="muted">↓</Text>}
-                    <Card variant={a.open ? "gradient" : "default"} padding="md">
+                    <Card variant="outline" padding="md">
                       <Card.Content>
                         <div className="flex flex-wrap items-center justify-between gap-3">
                           <div className="flex flex-col gap-1">
                             <div className="flex items-center gap-2">
                               <Title order={3} size="sm" className={TYPO.title()}>{a.name}</Title>
-                              <Badge variant="light" color={b.color}>{b.label}</Badge>
+                              <Badge variant="outline">{b.label}</Badge>
                             </div>
                             <Text size="xs" c="muted">{a.type}</Text>
                           </div>
@@ -112,7 +114,7 @@ export const Module = ({ slug }: { slug?: string }) => {
 
         <aside className="flex flex-col gap-10">
           <Section title="Skills" aside={<Text size="sm" c="muted">{m.skills.done}/{m.skills.total}</Text>}>
-            <Card variant="default" padding="md">
+            <Card variant="outline" padding="md">
               <Card.Content>
                 <div className="flex flex-col gap-2">
                   {m.skills.list.map((s) => (
@@ -127,17 +129,16 @@ export const Module = ({ slug }: { slug?: string }) => {
           </Section>
 
           <Section title="Exam">
-            <Card variant="default" padding="md">
+            <Card variant="outline" padding="md">
               <Card.Content>
                 <div className="flex flex-col gap-3">
                   <div className="flex items-center justify-between gap-3">
                     <Title order={3} size="sm" className={TYPO.title()}>Exam</Title>
-                    <Badge variant="light" color="red">{m.exam.status}</Badge>
+                    <Badge variant="outline">{m.exam.status}</Badge>
                   </div>
                   <div className="flex items-baseline justify-between gap-3">
                     <Text size="xs" c="muted">{m.exam.last}</Text>
-                    {/* A score is a counter: machine register (Kode Mono Bold),
-                        like the scores on the profile frame. */}
+                    {/* A score is a counter: machine register (Kode Mono Bold). */}
                     <Text size="sm" className={TYPO.mono()}>{m.exam.score} / {m.exam.outOf}</Text>
                   </div>
                   <div className="flex flex-wrap gap-2">

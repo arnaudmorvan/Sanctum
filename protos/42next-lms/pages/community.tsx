@@ -69,7 +69,7 @@ export const Friends = () => (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
       {FRIENDS.map((f) => (
         <a key={f.login} href={`#/profile/${f.login}`}>
-          <Card variant="default" padding="sm">
+          <Card variant="outline" padding="sm">
             <Card.Content>
               <div className="flex items-center gap-3">
                 <Avatar name={f.name} size="md" />
@@ -95,14 +95,14 @@ export const Clubs = () => (
 
     <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
       {CLUBS.map((c) => (
-        <Card key={c.title} variant="default" padding="md">
+        <Card key={c.title} variant="outline" padding="md">
           <Card.Content>
             <div className="flex flex-col gap-2">
               <Title order={2} size="sm" className={TYPO.title("semibold")}>{c.title}</Title>
               <Text size="xs" c="secondary">{c.cadence}</Text>
               <div className="flex items-center gap-3">
                 <Text size="xs" c="muted">{c.members}</Text>
-                <Button variant="light" size="xs" className="ms-auto">Join</Button>
+                <Button variant="outline" size="xs" className="ms-auto">Join</Button>
               </div>
             </div>
           </Card.Content>
@@ -154,17 +154,20 @@ export const Changelog = () => (
 )
 
 /** Cluster map — `P['community.cluster']`. 120 seats; seat 42 is mine, four are friends,
- *  and the rest follow the prototype's own `i * 7 % 3 === 0` occupancy rule. */
+ *  and the rest follow the prototype's own `i * 7 % 3 === 0` occupancy rule.
+ *
+ *  2026-09-08 — the friends' seats were green: they are purple now, which is a colour the
+ *  flow already carries (rushes, events) and is not a status hue. */
 export const ClusterMap = () => (
   <div className="flex flex-col gap-8">
     <Breadcrumb data={[CRUMB, { label: "Cluster Map" }]} />
     <PageHead
       title="Cluster Map — Paris e1"
       sub="Who is here, and where."
-      aside={<Button variant="light" size="sm">e1 ⌄</Button>}
+      aside={<Button variant="outline" size="sm">e1 ⌄</Button>}
     />
 
-    <Card variant="default" padding="md">
+    <Card variant="outline" padding="md">
       <Card.Content>
         <div className="grid grid-cols-12 gap-1.5 md:grid-cols-20">
           {Array.from({ length: CLUSTER_SEATS }, (_, i) => {
@@ -172,7 +175,7 @@ export const ClusterMap = () => (
               i === CLUSTER_ME
                 ? "bg-white"
                 : CLUSTER_FRIENDS.includes(i)
-                  ? "bg-green-500"
+                  ? "bg-purple-400"
                   : (i * 7) % 3 === 0
                     ? "bg-brand-500/60"
                     : "bg-white/10"
@@ -191,7 +194,7 @@ export const ClusterMap = () => (
     <Legend
       items={[
         { label: "You · seat 42", className: "bg-white" },
-        { label: "Friends", className: "bg-green-500" },
+        { label: "Friends", className: "bg-purple-400" },
         { label: "Occupied", className: "bg-brand-500/60" },
         { label: "Free", className: "bg-white/10" },
       ]}

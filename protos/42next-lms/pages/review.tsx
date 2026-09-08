@@ -23,7 +23,10 @@ import { Meter, PageHead, Section, StatGrid, Tag } from "./shell"
 const CRUMB = { label: "Review", href: "#/review/overview" }
 
 /** Review overview — `P['review.overview']`. The peer economy: what the learner puts in,
- *  what they take out, and the rules of the exchange. */
+ *  what they take out, and the rules of the exchange.
+ *
+ *  2026-09-08 — flat surfaces everywhere, and the score / on-time / flag badges no longer
+ *  carry green or red: the value and the word carry the verdict. */
 export const ReviewOverview = () => (
   <div className="flex flex-col gap-10">
     <Breadcrumb data={[CRUMB, { label: "Overview" }]} />
@@ -34,7 +37,7 @@ export const ReviewOverview = () => (
     <Section title="Rhythm">
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {REVIEW_RHYTHM.map((r) => (
-          <Card key={r.label} variant="default" padding="md">
+          <Card key={r.label} variant="outline" padding="md">
             <Card.Content>
               <div className="flex flex-col gap-3">
                 <Meter label={r.label} value={r.value} pct={r.pct} />
@@ -56,7 +59,7 @@ export const ReviewOverview = () => (
       <Button variant="filled" asChild>
         <a href="#/review/availability">Open a slot</a>
       </Button>
-      <Button variant="light" asChild>
+      <Button variant="outline" asChild>
         <a href="#/review/given">Reviews I owe</a>
       </Button>
     </div>
@@ -64,7 +67,7 @@ export const ReviewOverview = () => (
     <Section title="How a review runs">
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {REVIEW_RULES.map((r) => (
-          <Card key={r.title} variant="default" padding="md">
+          <Card key={r.title} variant="outline" padding="md">
             <Card.Content>
               <div className="flex flex-col gap-2">
                 <Title order={3} size="sm" className={TYPO.title("semibold")}>{r.title}</Title>
@@ -73,7 +76,7 @@ export const ReviewOverview = () => (
             </Card.Content>
           </Card>
         ))}
-        <Card variant="default" padding="md">
+        <Card variant="outline" padding="md">
           <Card.Content>
             <div className="flex flex-col gap-3">
               <Title order={3} size="sm" className={TYPO.title("semibold")}>Flags before you validate</Title>
@@ -96,7 +99,7 @@ export const ReviewReceived = () => (
     <Breadcrumb data={[CRUMB, { label: "Received" }]} />
     <PageHead title="Reviews received" sub="Everything peers have evaluated on your attempts, and what is still open." />
 
-    <Card variant="gradient" padding="md">
+    <Card variant="outline" padding="md">
       <Card.Content>
         <div className="flex flex-col gap-3">
           <div className="flex flex-wrap items-start justify-between gap-3">
@@ -168,7 +171,7 @@ export const ReviewGiven = () => (
     <Section title="Upcoming" right={<Text size="sm" c="secondary">2 owed</Text>}>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {UPCOMING_REVIEWS.map((u) => (
-          <Card key={u.title} variant={u.urgent ? "light" : "default"} color={u.urgent ? "orange" : undefined} padding="md">
+          <Card key={u.title} variant="outline" padding="md">
             <Card.Content>
               <div className="flex flex-col gap-3">
                 <div className="flex flex-wrap items-start justify-between gap-3">
@@ -179,7 +182,7 @@ export const ReviewGiven = () => (
                   <Tag color={u.color}>{u.badge}</Tag>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  <Button variant={u.urgent ? "filled" : "light"} size="sm">
+                  <Button variant={u.urgent ? "filled" : "outline"} size="sm">
                     {u.urgent ? "Start review" : "Opens 15 min before"}
                   </Button>
                   <Button variant="subtle" size="sm">Cancel / reschedule</Button>
@@ -214,7 +217,7 @@ export const ReviewGiven = () => (
                 <Table.Cell>{g.activity}</Table.Cell>
                 <Table.Cell><Tag color={g.scoreColor}>{g.score}</Tag></Table.Cell>
                 <Table.Cell><Tag color={g.onTimeColor}>{g.onTime}</Tag></Table.Cell>
-                <Table.Cell><Tag color="green">Given</Tag></Table.Cell>
+                <Table.Cell><Tag>Given</Tag></Table.Cell>
               </Table.Row>
             ))}
           </Table.Body>
