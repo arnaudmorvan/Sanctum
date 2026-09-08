@@ -1,40 +1,23 @@
-/** Agenda block of the profile rail — the learner's month, a dot on the days that
- *  carry something. Product source: 42next-lms-sitemap-as-built.md, section Agenda
- *  (Calendar + Registrations). The vocabulary is the product's: review, exam, rush,
- *  milestone.
+/** Agenda block of the rail — DEMO DATA.
  *
- *  The dates are built as OFFSETS FROM TODAY, not written down: a proto whose demo
- *  month has passed shows an empty calendar and says nothing. */
+ *  ⚠️ This block does NOT come from frame 22489:9756. It was asked for on
+ *  2026-09-08, after the lift. Do not read its presence as a survey. */
 
-export type AgendaEvent = { date: Date; stamp: string; label: string }
-
-const at = (offset: number) => {
-  const d = new Date()
-  d.setHours(0, 0, 0, 0)
-  d.setDate(d.getDate() + offset)
-  return d
+export const NEXT_EVENT = {
+  /** Kode Mono: a date measures. */
+  stamp: "12/09 · 14:00",
+  label: "Peer review — minishell",
 }
 
-const STAMP = new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "short" })
+export const AGENDA_LEGEND = "A dot marks a day with something booked."
 
-const build = (offset: number, label: string): AgendaEvent => {
-  const date = at(offset)
-  return { date, stamp: STAMP.format(date).toUpperCase(), label }
+/** Days of the displayed month carrying an event. */
+export const AGENDA_DAYS = [10, 12, 15, 18, 24]
+
+/** `Calendar`'s `renderDay` hands over its own date object (Ark's DateValue).
+ *  Typed loosely on purpose: the kit does not export that type through the
+ *  subpath, and guessing it would break the build for nothing. */
+export const hasAgenda = (date: unknown): boolean => {
+  const d = date as { day?: number } | null
+  return typeof d?.day === "number" && AGENDA_DAYS.includes(d.day)
 }
-
-export const AGENDA_EVENTS: AgendaEvent[] = [
-  build(1, "Review to give - philosophers"),
-  build(3, "Exam session - C exam 02"),
-  build(6, "Review to give - minishell"),
-  build(10, "Rush weekend - registration closes"),
-  build(17, "Milestone 3 checkpoint"),
-]
-
-const DAYS = new Set(AGENDA_EVENTS.map((e) => e.date.toDateString()))
-
-export const hasAgenda = (date: Date) => DAYS.has(date.toDateString())
-
-export const NEXT_EVENT = AGENDA_EVENTS[0]
-
-export const AGENDA_LEGEND =
-  "A dot marks a day that carries something - reviews to give, exam sessions, campus events."
