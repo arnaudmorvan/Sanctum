@@ -32,6 +32,39 @@ required, slug to retype). It is a commit in this repo, executed by the MCP serv
 the site **at the next deploy** — the card stays visible as "deletion in progress" until
 then.
 
+**Reviewing a flow** happens inside it, in the **side panel** — the rail in the
+bottom-right corner (`src/layout/side-panel.tsx`, since 2026-09-08). Four tabs, one
+floating/dockable panel, and the **pins**:
+
+- **Feedback** — say what should change, **to the system**: optionally pointing at an
+  element or circling an area. Goes to the MCP's feedback queue (this flow) or out as a
+  report (a system rule). The tab also lists what was filed, with where each item stands:
+  `open` until the agent handles it, `handled` after — the agent flips it, the page only
+  reads it back (`GET /feedback/list.json`).
+- **Comments** — say it **to the developers**. Same pointing, but a comment is never read
+  by the agent: it lives in the MCP repo under `comments/<slug>.json`, outside everything
+  the tools can read (`comments_api.py`). Edit, resolve, delete; author and time on each;
+  and every comment records the **version** of the flow it was made on (`published_at`,
+  see History) — the list is grouped by version, so a comment survives republications and
+  a dev still knows what it was about. Deleting removes it from the file; the repo's
+  history keeps it.
+- **Pins** — the comments and feedback of the screen on display, drawn where they were
+  left (`src/layout/pins.tsx`): blue for comments, purple for feedback, numbered like the
+  lists, dimmed once resolved or handled. A pin is placed by resolving the note's selector
+  in the current DOM, never by replaying old coordinates — a note whose element no longer
+  exists gets no pin. One switch shows or hides them, on the rail and in the panel header.
+- **Components** — what the screen owes to `@42/ui-react` and what is written by hand,
+  read from the compile-time origin marks, with a highlight mode.
+- **History** — every version of the flow, with the **date and time** it was generated and
+  by whom, and a **Restore** on each older one. Without a key the tab still shows when the
+  current version was generated (`published_at`, stamped by the MCP into `proto.json`);
+  the list and the restore need the console's read key — the same one, shared in the
+  browser. A restore is one commit executed by the MCP server
+  (`POST /console/protos/restore.json`) that makes `protos/<slug>/` identical to the
+  chosen version, a screen added since included; the version it replaces stays in the
+  list, and the site picks the restored one up **at the next deploy** (the entry reads
+  "deploying" until then).
+
 ## For a dev: getting a flow's code
 
 The card's `⋯` menu → **Get the code**: the modal gives the repo's `git clone`, the

@@ -34,6 +34,11 @@ export interface Target {
   rect: [number, number, number, number]
   /** Present only for a hand-drawn zone. */
   region?: { x: number; y: number; w: number; h: number; scrollX: number; scrollY: number }
+  /** Where the PIN sits, relative to the element's top-left corner (2026-09-08, the pins
+   *  layer). A zone's centre: without it the pin can only sit on the element's corner,
+   *  and a circled corner of a wide card would be marked at the wrong end of it. Absent
+   *  on an element target — the corner is the right place there. */
+  anchor?: { dx: number; dy: number }
 }
 
 export interface Zone {
@@ -174,16 +179,23 @@ export const describeElement = (el: Element): Target => ({
   rect: rectOf(el),
 })
 
-export const describeZone = (zone: Zone, holder: Element): Target => ({
-  ...describeElement(holder),
-  type: "zone",
-  // The name carries the GESTURE, not the element: saying "section" would suggest the
-  // feedback targets the whole section when the viewer circled one corner of it.
-  name: `Zone ${zone.w}×${zone.h} in ${nearestOrigin(holder).split(":")[1] || holder.tagName.toLowerCase()}`,
-  role: "region",
-  rect: [zone.x, zone.y, zone.w, zone.h],
-  region: zone,
-})
+export const describeZone = (zone: Zone, holder: Element): Target => {
+  const box = holder.getBoundingClientRect()
+  return {
+    ...describeElement(holder),
+    type: "zone",
+    // The name carries the GESTURE, not the element: saying "section" would suggest the
+    // feedback targets the whole section when the viewer circled one corner of it.
+    name: `Zone ${zone.w}×${zone.h} in ${nearestOrigin(holder).split(":")[1] || holder.tagName.toLowerCase()}`,
+    role: "region",
+    rect: [zone.x, zone.y, zone.w, zone.h],
+    region: zone,
+    anchor: {
+      dx: Math.round(zone.x + zone.w / 2 - box.left),
+      dy: Math.round(zone.y + zone.h / 2 - box.top),
+    },
+  }
+}
 
 /**
  * The element a zone hangs onto: the deepest one that CONTAINS it entirely.

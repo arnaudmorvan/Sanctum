@@ -1,11 +1,14 @@
-import { GripHorizontal, MessageSquarePlus, PanelRight, X } from "lucide-react"
-import { type CSSProperties, type PointerEvent as ReactPointerEvent, useCallback, useEffect, useRef, useState } from "react"
-import { describeElement, type Target, UI_MARK } from "./target"
+import { useEffect, useState } from "react"
+import { createPortal } from "react-dom"
+import { FEEDBACK_KEY, MCP_URL, SLUG } from "./env"
+import { numberOf, refreshNotes, useNotes } from "./notes"
+import { Bubble } from "./pins"
+import { describeElement, type Target } from "./target"
 import { ChosenTarget, Targeting } from "./targeting"
 
-/** The "Feedback" widget: the mouth through which a viewer of the flow talks to the system.
+/** The "Feedback" tab: the mouth through which a viewer of the flow talks to the system.
  *
- *  Nothing to install — it is compiled into the app like the rest of the skeleton. The panel
+ *  Nothing to install — it is compiled into the app like the rest of the skeleton. The tab
  *  asks for TWO things: the kind of feedback and the text. The context (flow slug, screen on
  *  display, author) attaches itself.
  *
@@ -21,92 +24,35 @@ import { ChosenTarget, Targeting } from "./targeting"
  *  "it is too tight" becomes "the padding of this kit `Card` is too tight", hence a kit
  *  task, or "the layout div around it", hence a flow task.
  *
- *  SINCE 2026-09-07 IT FLOATS, mechanism ported from the designBrain widget. It used to be a
- *  button in the bottom bar opening a full-width banner above it: writing about a screen
- *  covered the bottom third of that very screen. Now a launcher in the corner opens a 360 px
- *  panel one can DRAG out of the way of what is being criticised, plus a "dock" mode — a
- *  full-height rail against the right edge, for when there are several feedback items to
- *  write. Placement and mode are remembered per browser: someone who reviews often gets
- *  their panel back where they left it.
+ *  It floated on its own from 2026-09-07 (mechanism ported from the designBrain widget);
+ *  since 2026-09-08 it is one tab of the side panel (`side-panel.tsx`), which kept the
+ *  floating/docking container and gave it two neighbours. What is left here is the FORM.
  *
- *  It does NOT push the page (no `margin-right` on the app). Shifting the flow would break
- *  everything it holds in `position: fixed` — its own chrome first — and a feedback widget
- *  that deforms the screen under review is worse than one covering an edge of it.
+ *  Aiming: the targeting overlay is portalled to `body`. The panel hides itself entirely
+ *  while aiming (`onAiming`) so nothing of ours sits over what is being pointed at — and an
+ *  overlay rendered inside it would vanish with it.
  *
- *  Two things not to break:
- *   • launcher AND panel carry `UI_MARK`, otherwise the widget becomes a target of its own
- *     pointing (`isOurs` in `target.ts` reads that marker);
- *   • both stay at `z-50`, UNDER the `z-[60]` targeting overlay — and the panel hides itself
- *     entirely while aiming, so nothing of ours sits over what is being pointed at.
+ *  Since 2026-09-08 the tab also LISTS what was filed on this flow, with where each item
+ *  stands: `open` until the agent handles it, `handled` after — the flip is the agent's
+ *  (proto-build-flow skill, `— open` → `— handled` in the queue file), the page only reads
+ *  it back. Read-only on purpose: the queue is a promise made to the agent, and a PO who
+ *  could close an item by hand would be closing it in the agent's name.
  *
- *  Fail-closed: without the feedback key set at build time, the widget DOES NOT EXIST — the
- *  same safe default as the server route without its own key. The embedded key is not a
- *  secret (it is readable in the bundle): it stops drive-by spam, the real limits (size,
- *  closed set of kinds, server-computed paths) are on the server side. */
+ *  Fail-closed: without the feedback key set at build time, the tab DOES NOT EXIST (the
+ *  panel filters it out) — the same safe default as the server route without its own key.
+ *  The embedded key is not a secret (it is readable in the bundle): it stops drive-by spam,
+ *  the real limits (size, closed set of kinds, server-computed paths) are on the server. */
 
-// Deployment shim: the Railway build variable is still called VITE_RETOURS_KEY. Drop this
-// fallback once the variable is renamed to VITE_FEEDBACK_KEY on the service.
-const KEY =
-  (import.meta.env.VITE_FEEDBACK_KEY as string | undefined) ??
-  (import.meta.env.VITE_RETOURS_KEY as string | undefined) ??
-  ""
-const SLUG = (import.meta.env.VITE_PROTO_SLUG as string | undefined) ?? ""
-// Same deployment shim, for the MCP base URL: VITE_RETOURS_URL is still the name on
-// Railway. Drop the fallback once it is renamed to VITE_FEEDBACK_URL.
-const MCP_URL =
-  (import.meta.env.VITE_FEEDBACK_URL as string | undefined) ??
-  (import.meta.env.VITE_RETOURS_URL as string | undefined) ??
-  "https://mcp-42-production.up.railway.app"
+const withTime = new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" })
+/** The queue writes `YYYY-MM-DD HH:MM` in UTC; shown in the reader's own time. */
+const when = (s: string): string => {
+  const t = Date.parse(`${s.replace(" ", "T")}:00Z`)
+  return Number.isNaN(t) ? s : withTime.format(t)
+}
 
 const TEXT_MAX = 2000 // the server limit — refusing here saves a round trip for nothing
 
-const PANEL_W = 360
-const EDGE = 16 // the margin the panel keeps from the edges of the window
-const BAR_FALLBACK = 44 // one row of the bottom bar, used until it has been measured
-const PLACEMENT_KEY = "feedback-widget-placement"
-
 type State = "editing" | "sending" | "thanks" | "error"
-
-/** Where the panel sits. `x`/`y` are null as long as nobody has moved it: it then hangs from
- *  the bottom-right corner, which follows the window instead of being a frozen coordinate. */
-type Placement = { docked: boolean; x: number | null; y: number | null }
-
-const DEFAULT_PLACEMENT: Placement = { docked: false, x: null, y: null }
-
-const readPlacement = (): Placement => {
-  try {
-    const raw = localStorage.getItem(PLACEMENT_KEY)
-    if (!raw) return DEFAULT_PLACEMENT
-    const saved = JSON.parse(raw) as Partial<Placement>
-    return {
-      docked: saved.docked === true,
-      x: typeof saved.x === "number" ? saved.x : null,
-      y: typeof saved.y === "number" ? saved.y : null,
-    }
-  } catch {
-    return DEFAULT_PLACEMENT
-  }
-}
-
-/** The height of the bottom bar, MEASURED. The widget rests above it — and its height is
- *  not a constant: the bar wraps its list of deep screens, and goes from 44 px to 130 px
- *  depending on the flow and the width of the window. Assuming a value means the panel sits
- *  over the tooling on exactly the flows that have the most screens. The bar declares itself
- *  with `data-sanctum-bar`; without it (a flow rendered without the bar) the fallback is one
- *  row. */
-const useBottomBar = () => {
-  const [height, setHeight] = useState(BAR_FALLBACK)
-  useEffect(() => {
-    const bar = document.querySelector("[data-sanctum-bar]")
-    if (!bar) return
-    const measure = () => setHeight(Math.round(bar.getBoundingClientRect().height))
-    measure()
-    const observer = new ResizeObserver(measure)
-    observer.observe(bar)
-    return () => observer.disconnect()
-  }, [])
-  return height
-}
 
 const KINDS = [
   {
@@ -121,8 +67,22 @@ const KINDS = [
   },
 ] as const
 
-export const Feedback = ({ screen }: { screen?: string }) => {
-  const [open, setOpen] = useState(false)
+export const FeedbackBody = ({
+  screen,
+  docked,
+  active,
+  focus,
+  onAiming,
+}: {
+  screen?: string
+  docked: boolean
+  active: boolean
+  /** The feedback item a pin click asked for: scrolled into view and highlighted. */
+  focus: string | null
+  onAiming: (aiming: boolean) => void
+}) => {
+  const notes = useNotes()
+  const [showHandled, setShowHandled] = useState(false)
   const [kind, setKind] = useState<(typeof KINDS)[number]["key"]>("flow")
   const [text, setText] = useState("")
   const [author, setAuthor] = useState("")
@@ -131,11 +91,6 @@ export const Feedback = ({ screen }: { screen?: string }) => {
   const [target, setTarget] = useState<Target | null>(null)
   const [targetElement, setTargetElement] = useState<Element | null>(null)
   const [mode, setMode] = useState<"element" | "zone" | null>(null)
-  const [placement, setPlacement] = useState<Placement>(readPlacement)
-  const [dragging, setDragging] = useState(false)
-  const bar = useBottomBar()
-  const panel = useRef<HTMLDivElement | null>(null)
-  const grab = useRef<{ dx: number; dy: number } | null>(null)
 
   // The author is asked ONCE per browser: anonymous feedback is feedback nobody can go
   // back and question.
@@ -151,90 +106,28 @@ export const Feedback = ({ screen }: { screen?: string }) => {
     }
   }, [])
 
+  // The panel needs to know when we aim: it hides itself for the duration.
   useEffect(() => {
-    try {
-      localStorage.setItem(PLACEMENT_KEY, JSON.stringify(placement))
-    } catch {
-      /* same tolerance: the panel simply forgets where it was */
-    }
-  }, [placement])
+    onAiming(mode !== null)
+  }, [mode, onAiming])
 
-  /** Keeps the whole panel inside the window — a header dragged past the edge would be a
-   *  panel that can never be grabbed again. The bottom bar counts as an edge: the flow's
-   *  tooling stays reachable while the panel is open. */
-  const clamp = useCallback(
-    (x: number, y: number) => {
-      const box = panel.current?.getBoundingClientRect()
-      const w = box?.width ?? PANEL_W
-      const h = box?.height ?? 320
-      return {
-        x: Math.round(Math.max(EDGE, Math.min(x, window.innerWidth - w - EDGE))),
-        y: Math.round(Math.max(EDGE, Math.min(y, window.innerHeight - bar - h - 8))),
-      }
-    },
-    [bar],
-  )
-
-  const close = useCallback(() => {
-    setOpen(false)
-    setState("editing")
-    setError("")
-    setMode(null)
-    setTarget(null)
-    setTargetElement(null)
-  }, [])
-
-  // Esc closes the panel — except while aiming, where it belongs to the targeting overlay,
-  // which cancels the aim and leaves the half-written feedback alone.
+  // Leaving the tab (or the panel) mid-aim would leave an overlay over the flow with no
+  // way back to the button that cancels it.
   useEffect(() => {
-    if (!open || mode) return
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") close()
-    }
-    window.addEventListener("keydown", onKey)
-    return () => window.removeEventListener("keydown", onKey)
-  }, [open, mode, close])
+    if (!active) setMode(null)
+  }, [active])
 
-  // A window resized smaller must not leave the panel outside of it.
   useEffect(() => {
-    if (!open || placement.docked) return
-    const onResize = () =>
-      setPlacement((p) => (p.x === null || p.y === null ? p : { ...p, ...clamp(p.x, p.y) }))
-    window.addEventListener("resize", onResize)
-    return () => window.removeEventListener("resize", onResize)
-  }, [open, placement.docked, clamp])
+    if (!focus || !active) return
+    const f = notes.feedback.find((x) => x.id === focus)
+    if (f?.status === "handled") setShowHandled(true)
+    const t = window.setTimeout(() => {
+      document.getElementById(`feedback-${focus}`)?.scrollIntoView({ block: "center", behavior: "smooth" })
+    }, 50)
+    return () => window.clearTimeout(t)
+  }, [focus, active, notes.feedback])
 
-  if (!KEY || !SLUG) return null
-
-  const startDrag = (e: ReactPointerEvent<HTMLDivElement>) => {
-    if (placement.docked) return
-    // The header also carries the dock and close buttons. Capturing the pointer on a press
-    // that started on one of them routes the pointerup to the header, and the button never
-    // sees its click — it looks dead. What is grabbable is the header MINUS its controls.
-    if ((e.target as HTMLElement).closest("button")) return
-    const box = panel.current?.getBoundingClientRect()
-    if (!box) return
-    grab.current = { dx: e.clientX - box.left, dy: e.clientY - box.top }
-    // Freeze the panel on the box it currently occupies BEFORE the first move: until now it
-    // may have been hanging from `right`/`bottom`, and switching anchors mid-drag makes it
-    // jump under the cursor.
-    setPlacement((p) => ({ ...p, x: Math.round(box.left), y: Math.round(box.top) }))
-    e.currentTarget.setPointerCapture(e.pointerId)
-    setDragging(true)
-  }
-
-  const onDrag = (e: ReactPointerEvent<HTMLDivElement>) => {
-    const from = grab.current
-    if (!from) return
-    setPlacement((p) => ({ ...p, ...clamp(e.clientX - from.dx, e.clientY - from.dy) }))
-  }
-
-  const endDrag = (e: ReactPointerEvent<HTMLDivElement>) => {
-    if (!grab.current) return
-    grab.current = null
-    setDragging(false)
-    e.currentTarget.releasePointerCapture?.(e.pointerId)
-  }
+  if (!FEEDBACK_KEY || !SLUG) return null
 
   const send = async () => {
     setState("sending")
@@ -247,7 +140,7 @@ export const Feedback = ({ screen }: { screen?: string }) => {
     try {
       const r = await fetch(`${MCP_URL}/feedback/submit.json`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", "X-Feedback-Key": KEY },
+        headers: { "Content-Type": "application/json", "X-Feedback-Key": FEEDBACK_KEY },
         body: JSON.stringify({ kind, text, slug: SLUG, screen: screen ?? "", author, target }),
       })
       if (!r.ok) {
@@ -258,6 +151,9 @@ export const Feedback = ({ screen }: { screen?: string }) => {
       setText("")
       setTarget(null)
       setTargetElement(null)
+      // A flow item shows up in the list (and as a pin) right away; a rule went to the
+      // reports and has nothing to show here.
+      if (kind === "flow") void refreshNotes()
     } catch (e) {
       setState("error")
       setError(e instanceof Error ? e.message : String(e))
@@ -271,226 +167,229 @@ export const Feedback = ({ screen }: { screen?: string }) => {
 
   const readyToSend = text.trim().length >= 10 && text.length <= TEXT_MAX
 
-  const style: CSSProperties = placement.docked
-    ? // The rail takes all the height there is — down to the bar, not under it.
-      { top: 0, right: 0, bottom: bar, width: "min(400px, 100vw)" }
-    : {
-        width: `min(${PANEL_W}px, calc(100vw - ${EDGE * 2}px))`,
-        maxHeight: `min(70vh, calc(100vh - ${bar + 2 * EDGE}px), 620px)`,
-        ...(placement.x !== null && placement.y !== null
-          ? { left: placement.x, top: placement.y }
-          : { right: EDGE, bottom: bar + 12 }),
-      }
-
   return (
     <>
-      {mode && (
-        <Targeting
-          mode={mode}
-          onCancel={() => setMode(null)}
-          onTarget={(t) => {
-            setTarget(t)
-            // In zone mode, the holding element is not what was shown: the breadcrumb
-            // would make no sense, so we do not offer it.
-            setTargetElement(t.type === "element" ? document.querySelector(t.selector) : null)
-            setMode(null)
-          }}
-        />
-      )}
+      {mode &&
+        createPortal(
+          <Targeting
+            mode={mode}
+            onCancel={() => setMode(null)}
+            onTarget={(t) => {
+              setTarget(t)
+              // In zone mode, the holding element is not what was shown: the breadcrumb
+              // would make no sense, so we do not offer it.
+              setTargetElement(t.type === "element" ? document.querySelector(t.selector) : null)
+              setMode(null)
+            }}
+          />,
+          document.body,
+        )}
 
-      {!open && (
-        <button
-          {...{ [UI_MARK]: "" }}
-          type="button"
-          onClick={() => setOpen(true)}
-          style={{ right: EDGE, bottom: bar + 12 }}
-          className="fixed z-50 flex items-center gap-2 rounded-full border border-gray-dark-800 bg-gray-dark-950/95 px-3.5 py-2 text-white text-xs shadow-lg backdrop-blur transition-colors hover:border-white/30 hover:bg-gray-dark-900"
-        >
-          <MessageSquarePlus size={14} aria-hidden="true" />
-          Feedback
-        </button>
-      )}
+      <div className="flex min-h-0 flex-1 flex-col gap-3 px-3 py-3">
+        <div className="flex items-baseline gap-2 text-xs">
+          <span className="text-gray-dark-500">About</span>
+          <span className="truncate text-gray-dark-300">{screen ?? SLUG}</span>
+        </div>
 
-      {open && (
-        <div
-          {...{ [UI_MARK]: "" }}
-          ref={panel}
-          style={style}
-          className={`fixed z-50 flex flex-col overflow-hidden border border-gray-dark-800 bg-gray-dark-950/98 backdrop-blur ${
-            placement.docked
-              ? "rounded-none border-y-0 border-e-0 shadow-[-18px_0_48px_rgba(0,0,0,0.45)]"
-              : "rounded-lg shadow-[0_18px_48px_rgba(0,0,0,0.55)]"
-          } ${mode ? "hidden" : ""}`}
-          role="dialog"
-          aria-label="Submit feedback"
-        >
-          {/* The header is the handle. Docked, there is nowhere to take the panel: it stops
-              being grabbable rather than pretending. */}
-          <div
-            onPointerDown={startDrag}
-            onPointerMove={onDrag}
-            onPointerUp={endDrag}
-            onPointerCancel={endDrag}
-            className={`flex shrink-0 select-none items-center gap-2 border-gray-dark-800 border-b bg-white/2 px-3 py-2 ${
-              placement.docked ? "cursor-default" : dragging ? "cursor-grabbing" : "cursor-grab"
-            }`}
-          >
-            {!placement.docked && (
-              <GripHorizontal size={14} className="text-gray-dark-600" aria-hidden="true" />
-            )}
-            <span className="font-semibold text-sm text-white">Feedback</span>
-            <span className="truncate text-gray-dark-500 text-xs">{screen ?? SLUG}</span>
+        {state === "thanks" ? (
+          <div className="flex flex-col items-start gap-2">
+            <span className="font-semibold text-sm text-white">Thanks, it's in.</span>
+            <p className="text-gray-dark-400 text-xs leading-relaxed">
+              {kind === "flow"
+                ? "The feedback is in this flow's queue — it will be read the next time someone works on it."
+                : "The rule went out as a report: it will be reviewed and consolidated with the others."}
+            </p>
             <button
               type="button"
-              onClick={() => setPlacement((p) => ({ ...p, docked: !p.docked }))}
-              aria-pressed={placement.docked}
-              title={placement.docked ? "Float the panel" : "Dock it to the right edge"}
-              className="ms-auto rounded p-1 text-gray-dark-500 hover:bg-white/5 hover:text-white"
+              onClick={() => setState("editing")}
+              className="rounded-md bg-white/10 px-2.5 py-1.5 text-white text-xs hover:bg-white/15"
             >
-              <PanelRight size={14} aria-hidden="true" />
-              <span className="sr-only">
-                {placement.docked ? "Float the panel" : "Dock it to the right edge"}
-              </span>
-            </button>
-            <button
-              type="button"
-              onClick={close}
-              className="rounded p-1 text-gray-dark-500 hover:bg-white/5 hover:text-white"
-            >
-              <X size={14} aria-hidden="true" />
-              <span className="sr-only">Close</span>
+              Submit more feedback
             </button>
           </div>
+        ) : (
+          <>
+            <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Kind of feedback">
+              {KINDS.map((k) => {
+                const on = kind === k.key
+                return (
+                  <button
+                    key={k.key}
+                    type="button"
+                    role="radio"
+                    aria-checked={on}
+                    onClick={() => setKind(k.key)}
+                    className={`rounded-md border px-2.5 py-1.5 text-xs transition-colors ${
+                      on
+                        ? "border-white/30 bg-white/10 font-semibold text-white"
+                        : "border-gray-dark-800 text-gray-dark-400 hover:text-white"
+                    }`}
+                  >
+                    {k.label}
+                  </button>
+                )
+              })}
+            </div>
+            <p className="text-gray-dark-500 text-xs">{KINDS.find((k) => k.key === kind)?.help}</p>
 
-          <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-3 py-3">
-            {state === "thanks" ? (
-              <div className="flex flex-col items-start gap-2">
-                <span className="font-semibold text-sm text-white">Thanks, it's in.</span>
-                <p className="text-gray-dark-400 text-xs leading-relaxed">
-                  {kind === "flow"
-                    ? "The feedback is in this flow's queue — it will be read the next time someone works on it."
-                    : "The rule went out as a report: it will be reviewed and consolidated with the others."}
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setState("editing")}
-                    className="rounded-md bg-white/10 px-2.5 py-1.5 text-white text-xs hover:bg-white/15"
-                  >
-                    Submit more feedback
-                  </button>
-                  <button
-                    type="button"
-                    onClick={close}
-                    className="rounded-md px-2.5 py-1.5 text-gray-dark-400 text-xs hover:text-white"
-                  >
-                    Close
-                  </button>
-                </div>
-              </div>
+            {target ? (
+              <ChosenTarget
+                target={target}
+                element={targetElement}
+                onRetarget={aimAt}
+                onClear={() => {
+                  setTarget(null)
+                  setTargetElement(null)
+                }}
+              />
             ) : (
-              <>
-                <div
-                  className="flex flex-wrap gap-2"
-                  role="radiogroup"
-                  aria-label="Kind of feedback"
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-gray-dark-500 text-xs">Show where:</span>
+                <button
+                  type="button"
+                  onClick={() => setMode("element")}
+                  className="rounded-md border border-gray-dark-800 px-2.5 py-1.5 text-gray-dark-300 text-xs hover:border-white/30 hover:text-white"
                 >
-                  {KINDS.map((k) => {
-                    const on = kind === k.key
+                  Point at an element
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setMode("zone")}
+                  className="rounded-md border border-gray-dark-800 px-2.5 py-1.5 text-gray-dark-300 text-xs hover:border-white/30 hover:text-white"
+                >
+                  Circle an area
+                </button>
+                <span className="text-gray-dark-600 text-[11px]">optional</span>
+              </div>
+            )}
+
+            <textarea
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              maxLength={TEXT_MAX}
+              rows={docked ? 10 : 5}
+              placeholder={
+                kind === "flow"
+                  ? "What should change in this flow, and where…"
+                  : "The rule, and what makes you say it…"
+              }
+              // Docked, the field takes the height that was the reason for docking.
+              className={`w-full resize-y rounded-md border border-gray-dark-800 bg-white/2 px-3 py-2 text-sm text-white placeholder:text-gray-dark-500 focus:border-white/30 focus:outline-none ${
+                docked ? "min-h-40 flex-1" : ""
+              }`}
+            />
+
+            <div className="flex flex-wrap items-center gap-2">
+              <input
+                value={author}
+                onChange={(e) => setAuthor(e.target.value)}
+                maxLength={60}
+                placeholder="Your first name"
+                className="w-32 rounded-md border border-gray-dark-800 bg-white/2 px-3 py-1.5 text-white text-xs placeholder:text-gray-dark-500 focus:border-white/30 focus:outline-none"
+              />
+              <button
+                type="button"
+                disabled={!readyToSend || state === "sending"}
+                onClick={send}
+                className="rounded-md bg-white/10 px-3 py-1.5 font-semibold text-white text-xs hover:bg-white/15 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                {state === "sending" ? "Sending…" : "Send"}
+              </button>
+            </div>
+            {state === "error" && (
+              <span className="text-pink-400 text-xs">Could not submit: {error}</span>
+            )}
+          </>
+        )}
+
+        {(() => {
+          const nOpen = notes.feedback.filter((f) => f.status === "open").length
+          const nHandled = notes.feedback.length - nOpen
+          const shown = notes.feedback.filter((f) => showHandled || f.status !== "handled")
+          return (
+            <>
+              <div className="mt-1 flex items-baseline justify-between gap-2 border-gray-dark-800 border-t pt-3">
+                <span className="font-semibold text-sm text-white">
+                  {nOpen} open
+                  {nHandled ? (
+                    <span className="font-normal text-gray-dark-500"> · {nHandled} handled</span>
+                  ) : null}
+                </span>
+                {nHandled ? (
+                  <label className="flex cursor-pointer items-center gap-1.5 text-gray-dark-400 text-xs">
+                    <input
+                      type="checkbox"
+                      checked={showHandled}
+                      onChange={(e) => setShowHandled(e.target.checked)}
+                      className="accent-purple-400"
+                    />
+                    Show handled
+                  </label>
+                ) : null}
+              </div>
+              {!notes.loaded ? (
+                <span className="text-gray-dark-500 text-xs italic">Reading…</span>
+              ) : notes.feedback.length === 0 ? (
+                <span className="text-gray-dark-500 text-xs italic">
+                  No feedback filed on this flow yet.
+                </span>
+              ) : (
+                <ul className="flex flex-col gap-1.5">
+                  {shown.map((f) => {
+                    const done = f.status === "handled"
                     return (
-                      <button
-                        key={k.key}
-                        type="button"
-                        role="radio"
-                        aria-checked={on}
-                        onClick={() => setKind(k.key)}
-                        className={`rounded-md border px-2.5 py-1.5 text-xs transition-colors ${
-                          on
-                            ? "border-white/30 bg-white/10 font-semibold text-white"
-                            : "border-gray-dark-800 text-gray-dark-400 hover:text-white"
-                        }`}
+                      <li
+                        key={f.id}
+                        id={`feedback-${f.id}`}
+                        className={`flex flex-col gap-1.5 rounded-md border px-2.5 py-2 ${
+                          focus === f.id ? "border-purple-400/60 bg-purple-400/10" : "border-gray-dark-800"
+                        } ${done ? "opacity-70" : ""}`}
                       >
-                        {k.label}
-                      </button>
+                        <div className="flex items-start gap-2">
+                          <Bubble kind="feedback" n={numberOf(notes.feedback, f.id)} done={done} />
+                          <p className="min-w-0 flex-1 whitespace-pre-wrap text-gray-dark-100 text-sm leading-snug">
+                            {f.text}
+                          </p>
+                          <span
+                            className={`shrink-0 rounded-full border px-1.5 py-px text-[10px] ${
+                              done
+                                ? "border-green-400/40 text-green-200"
+                                : "border-purple-400/40 text-purple-200"
+                            }`}
+                          >
+                            {f.status}
+                          </span>
+                        </div>
+                        <div className="flex flex-wrap items-center gap-x-2 text-[11px] text-gray-dark-500">
+                          <span>{f.author}</span>
+                          <span>·</span>
+                          <span className="font-mono">{when(f.when)}</span>
+                          {f.screen ? (
+                            <>
+                              <span>·</span>
+                              <span>{f.screen}</span>
+                            </>
+                          ) : null}
+                        </div>
+                        {f.handled ? (
+                          <p className="text-[11px] text-green-200/80 leading-snug">
+                            <span className="text-gray-dark-500">Handled: </span>
+                            {f.handled}
+                          </p>
+                        ) : null}
+                      </li>
                     )
                   })}
-                </div>
-                <p className="text-gray-dark-500 text-xs">
-                  {KINDS.find((k) => k.key === kind)?.help}
-                </p>
-
-                {target ? (
-                  <ChosenTarget
-                    target={target}
-                    element={targetElement}
-                    onRetarget={aimAt}
-                    onClear={() => {
-                      setTarget(null)
-                      setTargetElement(null)
-                    }}
-                  />
-                ) : (
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-gray-dark-500 text-xs">Show where:</span>
-                    <button
-                      type="button"
-                      onClick={() => setMode("element")}
-                      className="rounded-md border border-gray-dark-800 px-2.5 py-1.5 text-gray-dark-300 text-xs hover:border-white/30 hover:text-white"
-                    >
-                      Point at an element
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setMode("zone")}
-                      className="rounded-md border border-gray-dark-800 px-2.5 py-1.5 text-gray-dark-300 text-xs hover:border-white/30 hover:text-white"
-                    >
-                      Circle an area
-                    </button>
-                    <span className="text-gray-dark-600 text-[11px]">optional</span>
-                  </div>
-                )}
-
-                <textarea
-                  value={text}
-                  onChange={(e) => setText(e.target.value)}
-                  maxLength={TEXT_MAX}
-                  rows={placement.docked ? 10 : 5}
-                  placeholder={
-                    kind === "flow"
-                      ? "What should change in this flow, and where…"
-                      : "The rule, and what makes you say it…"
-                  }
-                  // Docked, the field takes the height that was the reason for docking.
-                  className={`w-full resize-y rounded-md border border-gray-dark-800 bg-white/2 px-3 py-2 text-sm text-white placeholder:text-gray-dark-500 focus:border-white/30 focus:outline-none ${
-                    placement.docked ? "min-h-40 flex-1" : ""
-                  }`}
-                />
-
-                <div className="flex flex-wrap items-center gap-2">
-                  <input
-                    value={author}
-                    onChange={(e) => setAuthor(e.target.value)}
-                    maxLength={60}
-                    placeholder="Your first name"
-                    className="w-32 rounded-md border border-gray-dark-800 bg-white/2 px-3 py-1.5 text-white text-xs placeholder:text-gray-dark-500 focus:border-white/30 focus:outline-none"
-                  />
-                  <button
-                    type="button"
-                    disabled={!readyToSend || state === "sending"}
-                    onClick={send}
-                    className="rounded-md bg-white/10 px-3 py-1.5 font-semibold text-white text-xs hover:bg-white/15 disabled:cursor-not-allowed disabled:opacity-40"
-                  >
-                    {state === "sending" ? "Sending…" : "Send"}
-                  </button>
-                </div>
-                {state === "error" && (
-                  <span className="text-pink-400 text-xs">Could not submit: {error}</span>
-                )}
-              </>
-            )}
-          </div>
-        </div>
-      )}
+                </ul>
+              )}
+              <p className="text-[11px] text-gray-dark-600 leading-relaxed">
+                An item goes from open to handled when the agent works on this flow — it is the
+                agent's to close, the page only shows where it stands.
+              </p>
+            </>
+          )
+        })()}
+      </div>
     </>
   )
 }

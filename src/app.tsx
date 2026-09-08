@@ -4,8 +4,8 @@ import { Title } from "@42/ui-react/title"
 import { useEffect, useState } from "react"
 import { AppChrome } from "./layout/app-chrome"
 import { AppLayout } from "./layout/app-layout"
-import { Feedback } from "./layout/feedback"
 import { ProtoViewBar } from "./layout/proto-view-bar"
+import { SidePanel } from "./layout/side-panel"
 // The PO's flow. `scripts/build-all.mjs` copies protos/<slug>/ here before the build.
 // Namespace import: `NAV` is an OPTIONAL export (see proto-types.ts) — flows from before
 // the shared chrome do not have it, and must keep compiling.
@@ -62,9 +62,10 @@ export const App = () => {
         )}
       </div>
       <ProtoViewBar views={VIEWS} current={match?.view} nav={NAV} title={TITLE} />
-      {/* The feedback widget FLOATS over the flow: it is mounted here, beside the bar and
-          not inside it, because it is no longer one of the bar's buttons. */}
-      <Feedback screen={match?.view.label} />
+      {/* The side panel (Feedback · Components · History) FLOATS over the flow: it is
+          mounted here, beside the bar and not inside it — the bar is the flow's navigation,
+          the panel is what one says ABOUT the flow. */}
+      <SidePanel screen={match?.view.label} />
     </div>
   )
 }

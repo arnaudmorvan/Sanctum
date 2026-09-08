@@ -44,6 +44,10 @@ export const readMeta = (raw, slug) => ({
   summary: raw.summary ?? raw.resume,
   created_at: raw.created_at ?? raw.cree_le,
   updated_at: raw.updated_at ?? raw.maj_le,
+  // To the second, stamped by the MCP at publication (2026-09-08). The two dates above
+  // are days; this is what the flow's History tab shows before any key is typed. Absent
+  // on flows published before the stamp existed — the tab then shows the day.
+  published_at: raw.published_at,
   files: raw.files ?? raw.fichiers,
 })
 
@@ -67,8 +71,10 @@ export const readFlows = () => {
 
 /** The `protos.json` entry of a build result — what the console reads. `files` travels
  *  too: it is what lets the console list a flow's screens without a call to the MCP. */
-export const toEntry = ({ slug, title, author, summary, created_at, updated_at, ok, files }) => ({
-  slug, title, author, summary, created_at, updated_at, ok, files: files ?? [],
+export const toEntry = ({
+  slug, title, author, summary, created_at, updated_at, published_at, ok, files,
+}) => ({
+  slug, title, author, summary, created_at, updated_at, published_at, ok, files: files ?? [],
 })
 
 const run = (bin, args, env, log) => {

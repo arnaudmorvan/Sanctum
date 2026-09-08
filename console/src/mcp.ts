@@ -38,6 +38,32 @@ export const writeKey = (v: string): void => {
 
 export class AccessError extends Error {}
 
+/** The administration key was refused (or never typed). Separate from `AccessError`: the
+ *  console holds TWO keys and telling the person to re-type the wrong one is the fastest
+ *  way to make them think the server is broken. */
+export class AdminKeyError extends Error {}
+
+/** The access administration key — `ACCESS_ADMIN_KEY` on the MCP service. It is NOT the
+ *  console key: this one opens the registry, i.e. it can mint a token that writes into the
+ *  DS repo. Kept apart in storage for the same reason it is kept apart on the server. */
+const ADMIN_KEY = "42ds.console.access-key"
+
+export const readAdminKey = (): string => {
+  try {
+    return localStorage.getItem(ADMIN_KEY) ?? ""
+  } catch {
+    return ""
+  }
+}
+
+export const writeAdminKey = (v: string): void => {
+  try {
+    v ? localStorage.setItem(ADMIN_KEY, v) : localStorage.removeItem(ADMIN_KEY)
+  } catch {
+    /* without storage the key lives for the session — everything else still works */
+  }
+}
+
 export async function get<T>(route: string): Promise<T> {
   const key = readKey()
   const r = await fetch(`${BASE}${route}`, { headers: key ? { "X-DS-Key": key } : {} })
@@ -160,7 +186,74 @@ export type Access = {
   roles: Record<string, string>
   regime?: string
   read_only?: boolean
+  /** The server serves an administration route (ACCESS_ADMIN_KEY set, writing open). */
+  can_edit?: boolean
+  /** …and can derive a person's token (ACCESS_SECRET set). */
+  can_reveal?: boolean
   error?: string
+}
+
+export type AccessUser = Access["users"][number]
+
+export type AccessOp = "create" | "update" | "delete" | "token"
+
+export type AccessChange = {
+  ok: true
+  op?: AccessOp
+  id?: string
+  /** The commit message — what git will show. Displayed back so the person sees the
+   *  trace their click left. */
+  message?: string
+  commit?: string
+  /** The registry AS COMMITTED: the tab replaces its state with it instead of re-reading. */
+  users?: Access["users"]
+  /** Only on a creation, and on `op: "token"`. Never stored, never logged. */
+  token?: string
+}
+
+/** Opening an access, changing a role, revoking, removing — and reading back a token.
+ *
+ *  TWO keys travel: the console key (which opens every other route) and the administration
+ *  key. The server refuses them separately (401 / 403), and so do we: it is the only way
+ *  the tab can ask for the right one. */
+export async function accessAction(
+  op: AccessOp,
+  payload: {
+    id: string
+    name?: string
+    email?: string
+    role?: string
+    active?: boolean
+    /** Goes into the commit message: these commits are no longer only hand-made pushes. */
+    by?: string
+  },
+): Promise<AccessChange> {
+  const key = readKey()
+  const admin = readAdminKey()
+  if (!admin) throw new AdminKeyError("The access administration key is missing.")
+  const r = await fetch(`${BASE}/console/access/user.json`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...(key ? { "X-DS-Key": key } : {}),
+      "X-Access-Key": admin,
+    },
+    body: JSON.stringify({ op, ...payload }),
+  })
+  if (r.status === 401) throw new AccessError("Key rejected by the server.")
+  if (r.status === 403) throw new AdminKeyError("Administration key refused by the server.")
+  if (r.status === 404 && op !== "token")
+    throw new Error("The server does not serve access administration (ACCESS_ADMIN_KEY unset).")
+  if (!r.ok) {
+    let detail = `HTTP ${r.status}`
+    try {
+      detail = ((await r.json()) as { error?: string }).error ?? detail
+    } catch {
+      /* non-JSON body: the status is enough */
+    }
+    throw new Error(detail)
+  }
+  return (await r.json()) as AccessChange
 }
 
 export type Summary = {

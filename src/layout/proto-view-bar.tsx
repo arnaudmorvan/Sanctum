@@ -3,14 +3,15 @@ import { ArrowLeft } from "lucide-react"
 import { hrefOf, type ProtoNavItem, type ProtoView } from "../proto-types"
 import { TYPO } from "../typo"
 import { FlowMap } from "./flow-map"
-import { Inspector } from "./inspector"
+import { SourceFrame } from "./source-frame"
 import { UI_MARK } from "./target"
 
 /** The bottom bar: the prototype's TOOLING, not its product. It leads back to the gallery
  *  and gives direct access to the screens declared in VIEWS — without the PO having to
- *  wire anything: they add an entry, it shows up here. On the right, the review tools: the
- *  origin inspector (kit or written by hand) and the map (the whole flow, zoomed out). The
- *  feedback widget left the bar on 2026-09-07: it floats, and `app.tsx` mounts it.
+ *  wire anything: they add an entry, it shows up here. On the right, the map (the whole
+ *  flow, zoomed out). The feedback widget left the bar on 2026-09-07, the origin inspector
+ *  on 2026-09-08: both are tabs of the side panel now (`side-panel.tsx`, mounted by
+ *  `app.tsx`), with the flow's history as their third neighbour.
  *
  *  When the flow exports `NAV`, the product sidebar already carries some of the screens.
  *  Relisting them here made two navigations for the same target ("Learn" on the left,
@@ -72,10 +73,13 @@ export const ProtoViewBar = ({
           })}
         </span>
       ) : null}
-      {/* The inspector carries its own `ms-auto`: it and the map form the right block, the
-          review tools — the navigation stays on the left. */}
-      <Inspector />
-      <FlowMap views={views} nav={nav} title={title} current={current} />
+      {/* On the right, what one looks AT the flow with — the navigation stays on the left.
+          "Source" only appears on a screen translated from a Figma frame, which is itself
+          an answer to "was this one designed, or composed?". */}
+      <span className="ms-auto flex items-center">
+        <SourceFrame current={current} />
+        <FlowMap views={views} nav={nav} title={title} current={current} />
+      </span>
     </nav>
   )
 }

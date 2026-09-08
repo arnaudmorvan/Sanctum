@@ -22,7 +22,7 @@ body {
   background: color-mix(in srgb, var(--color-brand-500, #6388e3) 35%, transparent);
 }
 
-/* Inspector highlighting (bottom bar → "Components"). The `data-42` marks are stamped at
+/* Inspector highlighting (side panel → "Components"). The `data-42` marks are stamped at
    compile time by scripts/babel-origin.mjs, on the flow's files only. `outline` and not
    `border`: it shifts nothing in the layout. */
 [data-42-inspect] [data-42^="kit:"] {
