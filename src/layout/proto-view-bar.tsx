@@ -2,6 +2,7 @@ import { Button } from "@42/ui-react/button"
 import { ArrowLeft } from "lucide-react"
 import { hrefOf, type ProtoNavItem, type ProtoView } from "../proto-types"
 import { TYPO } from "../typo"
+import { CompareLink } from "./compare-link"
 import { FlowMap } from "./flow-map"
 import { SourceFrame } from "./source-frame"
 import { UI_MARK } from "./target"
@@ -75,9 +76,12 @@ export const ProtoViewBar = ({
       ) : null}
       {/* On the right, what one looks AT the flow with — the navigation stays on the left.
           "Source" only appears on a screen translated from a Figma frame, which is itself
-          an answer to "was this one designed, or composed?". */}
+          an answer to "was this one designed, or composed?". "Compare" opens this screen
+          twice on the compare page, where either side can become another screen or
+          another version. */}
       <span className="ms-auto flex items-center">
         <SourceFrame current={current} />
+        <CompareLink />
         <FlowMap views={views} nav={nav} title={title} current={current} />
       </span>
     </nav>

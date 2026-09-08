@@ -4,8 +4,11 @@ import { Title } from "@42/ui-react/title"
 import { useEffect, useState } from "react"
 import { AppChrome } from "./layout/app-chrome"
 import { AppLayout } from "./layout/app-layout"
+import { useEmbedBridge } from "./layout/embed"
+import { BARE, IS_PAST_VERSION } from "./layout/env"
 import { ProtoViewBar } from "./layout/proto-view-bar"
 import { SidePanel } from "./layout/side-panel"
+import { VersionBanner } from "./layout/version-banner"
 // The PO's flow. `scripts/build-all.mjs` copies protos/<slug>/ here before the build.
 // Namespace import: `NAV` is an OPTIONAL export (see proto-types.ts) — flows from before
 // the shared chrome do not have it, and must keep compiling.
@@ -50,8 +53,14 @@ export const App = () => {
   const match = matchView(VIEWS, hash)
   const screen = match ? match.view.render(match.params) : <Unknown hash={hash} />
 
+  // Inside a frame of the compare page: say where we are, follow where we are sent.
+  useEmbedBridge(BARE, VIEWS, hash)
+
   return (
     <div className="flex h-dvh flex-col">
+      {/* A past version says so before anything else — and not in a frame: the compare
+          page labels its two sides itself, and the banner would be drawn twice. */}
+      {IS_PAST_VERSION && !BARE ? <VersionBanner /> : null}
       <div className="min-h-0 flex-1">
         {NAV ? (
           <AppChrome nav={NAV} views={VIEWS} currentPath={match?.view.path} title={TITLE}>
@@ -61,11 +70,18 @@ export const App = () => {
           <AppLayout>{screen}</AppLayout>
         )}
       </div>
-      <ProtoViewBar views={VIEWS} current={match?.view} nav={NAV} title={TITLE} />
-      {/* The side panel (Feedback · Components · History) FLOATS over the flow: it is
-          mounted here, beside the bar and not inside it — the bar is the flow's navigation,
-          the panel is what one says ABOUT the flow. */}
-      <SidePanel screen={match?.view.label} />
+      {/* The bar and the panel are the tooling of ONE tab. In a frame (`?bare`, the
+          compare page) they would be drawn twice and drive nothing: the page holding the
+          frames carries its own. */}
+      {BARE ? null : (
+        <>
+          <ProtoViewBar views={VIEWS} current={match?.view} nav={NAV} title={TITLE} />
+          {/* The side panel (Feedback · Components · History) FLOATS over the flow: it is
+              mounted here, beside the bar and not inside it — the bar is the flow's
+              navigation, the panel is what one says ABOUT the flow. */}
+          <SidePanel screen={match?.view.label} />
+        </>
+      )}
     </div>
   )
 }

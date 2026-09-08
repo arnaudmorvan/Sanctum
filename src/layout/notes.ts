@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from "react"
-import { FEEDBACK_KEY, MCP_URL, SLUG } from "./env"
+import { FEEDBACK_KEY, IS_PAST_VERSION, MCP_URL, SLUG } from "./env"
 import type { Target } from "./target"
 
 /** The NOTES of a flow — the two things a viewer leaves on a screen, read by everyone who
@@ -66,7 +66,9 @@ const subscribe = (l: () => void) => {
 
 export const useNotes = (): Notes => useSyncExternalStore(subscribe, () => state)
 
-export const notesAvailable = Boolean(FEEDBACK_KEY && SLUG)
+// Off on a past version: the notes are the LIVE flow's, and drawing its pins over
+// yesterday's screens would put every one of them in the wrong place.
+export const notesAvailable = Boolean(FEEDBACK_KEY && SLUG) && !IS_PAST_VERSION
 
 const headers = { "Content-Type": "application/json", "X-Feedback-Key": FEEDBACK_KEY }
 

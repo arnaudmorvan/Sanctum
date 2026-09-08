@@ -1,6 +1,14 @@
-import { KeyRound, RotateCcw } from "lucide-react"
+import { Columns2, ExternalLink, KeyRound, RotateCcw } from "lucide-react"
 import { useCallback, useEffect, useState } from "react"
-import { MCP_URL, readAuthor, readConsoleKey, SLUG, writeConsoleKey } from "./env"
+import {
+  LIVE_URL,
+  MCP_URL,
+  readAuthor,
+  readConsoleKey,
+  SLUG,
+  VERSION,
+  writeConsoleKey,
+} from "./env"
 import { useNotes } from "./notes"
 
 /** The "History" tab: every version of the flow, WHEN it was generated (to the minute —
@@ -27,7 +35,15 @@ import { useNotes } from "./notes"
  *  "Deploying": a version newer than the served build (`/version.json`, `built_at`) is
  *  not on the site yet. The badge closes the same gap the console's construction-site
  *  card does — without it, a PO who just restored a version reloads, sees no change, and
- *  concludes the restore failed. */
+ *  concludes the restore failed.
+ *
+ *  LOOKING without restoring (2026-09-08, later the same day). "Open" builds the version
+ *  on the site, on demand, under `/v/<slug>/<sha7>/` (`POST …/preview.json` → the site's
+ *  hot build, from the flow's files at that commit) and opens it in a new tab: nothing is
+ *  committed, the live flow does not move. "Compare" opens `/compare/` with the live flow
+ *  on the left and that version on the right, on the screen currently displayed. Both
+ *  exist only where the hot build is wired — the history says so (`preview`), and the
+ *  tab explains instead of drawing buttons that would answer 503. */
 
 type Version = {
   sha: string
@@ -85,6 +101,11 @@ export const HistoryBody = ({ active }: { active: boolean }) => {
   const [author, setAuthor] = useState(readAuthor)
   const [restoring, setRestoring] = useState(false)
   const [notice, setNotice] = useState("")
+  // Whether a past version can be OPENED on this site (the hot build is wired). Said by
+  // the history itself, so the tab never draws an "Open" whose route would answer 503.
+  const [canPreview, setCanPreview] = useState(false)
+  const [opening, setOpening] = useState<string | null>(null)
+  const [openError, setOpenError] = useState<{ sha: string; text: string } | null>(null)
   const notes = useNotes()
 
   // How many comments were made on a version. A comment records the `published_at`
@@ -128,8 +149,9 @@ export const HistoryBody = ({ active }: { active: boolean }) => {
         return
       }
       if (!r.ok) throw new Error(await detail(r))
-      const data = (await r.json()) as { versions: Version[] }
+      const data = (await r.json()) as { versions: Version[]; preview?: boolean }
       setVersions(data.versions)
+      setCanPreview(Boolean(data.preview))
       setKey(k)
       setKeyError("")
       writeConsoleKey(k)
@@ -173,6 +195,64 @@ export const HistoryBody = ({ active }: { active: boolean }) => {
     } finally {
       setRestoring(false)
     }
+  }
+
+  /** Opens a version in a NEW tab, on the screen currently displayed. The live one is a
+   *  link; a past one is built first. The tab is opened synchronously — a `window.open`
+   *  after an `await` is what popup blockers eat — and pointed at the URL once known. */
+  const open = async (v: Version, isLive: boolean) => {
+    const hash = window.location.hash
+    if (isLive) {
+      window.open(`${LIVE_URL}${hash}`, "_blank", "noopener")
+      return
+    }
+    const tab = window.open("", "_blank")
+    if (tab) {
+      tab.document.title = `Building version ${v.short}…`
+      tab.document.body.style.cssText = "font:14px system-ui;padding:40px;color:#ccc;background:#111"
+      tab.document.body.textContent = `Building the version of ${when(v.date)} — a few seconds.`
+    }
+    setOpening(v.sha)
+    setOpenError(null)
+    try {
+      const r = await fetch(`${MCP_URL}/console/protos/preview.json`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-DS-Key": key },
+        body: JSON.stringify({ slug: SLUG, sha: v.sha }),
+      })
+      if (r.status === 401) {
+        setKey("")
+        setKeyError("Key rejected by the server.")
+        throw new Error("Key rejected by the server.")
+      }
+      const data = (await r.json().catch(() => ({}))) as { path?: string; url?: string; error?: string }
+      if (!r.ok) {
+        throw new Error(
+          r.status === 422
+            ? `This version no longer compiles against today's skeleton.\n${data.error ?? ""}`
+            : (data.error ?? `HTTP ${r.status}`),
+        )
+      }
+      // `path` is relative (`/v/<slug>/<sha7>/`): same origin as this page, whatever
+      // hostname the MCP was told the site lives at.
+      const target = `${data.path ?? data.url ?? ""}${hash}`
+      if (tab) tab.location.href = target
+      else window.open(target, "_blank", "noopener")
+    } catch (e) {
+      tab?.close()
+      setOpenError({ sha: v.sha, text: message(e) })
+    } finally {
+      setOpening(null)
+    }
+  }
+
+  /** The compare page, live flow on the left and this version on the right, on the
+   *  screen currently displayed. The page builds the version itself if needed. */
+  const compareHref = (v: Version) => {
+    const hash = window.location.hash
+    const a = encodeURIComponent(`${SLUG}${hash}`)
+    const b = encodeURIComponent(`${SLUG}@${v.short}${hash}`)
+    return `/compare/?a=${a}&b=${b}`
   }
 
   const built = builtAt ? Date.parse(builtAt) : Number.NaN
@@ -285,17 +365,29 @@ export const HistoryBody = ({ active }: { active: boolean }) => {
               {versions.map((v, i) => {
                 const isLive = v === live
                 const isDeploying = deploying(v)
+                // The version THIS bundle is (a past version opened from the history).
+                const isViewing = Boolean(VERSION) && v.short === VERSION
                 const from = v.restored_from ? byShort.get(v.restored_from) : undefined
                 const asking = confirm === v.sha
+                const openable = isLive || canPreview
                 return (
                   <li
                     key={v.sha}
                     className={`flex flex-col gap-1 rounded-md border px-3 py-2 ${
-                      isLive ? "border-white/20 bg-white/5" : "border-gray-dark-800"
+                      isViewing
+                        ? "border-yellow-400/40 bg-yellow-400/5"
+                        : isLive
+                          ? "border-white/20 bg-white/5"
+                          : "border-gray-dark-800"
                     }`}
                   >
                     <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
                       <span className="font-mono text-white text-xs">{when(v.date)}</span>
+                      {isViewing ? (
+                        <span className="rounded-full border border-yellow-400/40 px-1.5 py-px text-[10px] text-yellow-200">
+                          you are looking at it
+                        </span>
+                      ) : null}
                       {isDeploying ? (
                         <span className="rounded-full border border-yellow-400/40 px-1.5 py-px text-[10px] text-yellow-200">
                           deploying
@@ -305,7 +397,42 @@ export const HistoryBody = ({ active }: { active: boolean }) => {
                           on the site
                         </span>
                       ) : null}
+                      {openable && !asking ? (
+                        <span className="ms-auto flex items-center gap-0.5">
+                          <button
+                            type="button"
+                            disabled={opening !== null}
+                            onClick={() => void open(v, isLive)}
+                            title={
+                              isLive
+                                ? "Open the live flow in a new tab"
+                                : "Build this version on the site and open it in a new tab — nothing is restored"
+                            }
+                            className="flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] text-gray-dark-400 hover:bg-white/5 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+                          >
+                            <ExternalLink size={11} aria-hidden="true" />
+                            {opening === v.sha ? "Building…" : "Open"}
+                          </button>
+                          {!isLive ? (
+                            <a
+                              href={compareHref(v)}
+                              target="_blank"
+                              rel="noreferrer"
+                              title="Side by side with the live flow, on this screen"
+                              className="flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] text-gray-dark-400 hover:bg-white/5 hover:text-white"
+                            >
+                              <Columns2 size={11} aria-hidden="true" />
+                              Compare
+                            </a>
+                          ) : null}
+                        </span>
+                      ) : null}
                     </div>
+                    {openError?.sha === v.sha ? (
+                      <pre className="whitespace-pre-wrap font-mono text-[11px] text-pink-400 leading-snug">
+                        {openError.text}
+                      </pre>
+                    ) : null}
                     <span className="text-gray-dark-200 text-xs leading-snug">
                       {v.restored_from
                         ? `Back to the version of ${from ? when(from.date) : v.restored_from}`
@@ -380,9 +507,20 @@ export const HistoryBody = ({ active }: { active: boolean }) => {
             <span className="text-gray-dark-500 text-xs italic">No version recorded.</span>
           ) : null}
 
+          {versions && !canPreview ? (
+            <p className="text-[11px] text-gray-dark-500 leading-relaxed">
+              Past versions cannot be opened on this site: it needs the hot build
+              (<span className="font-mono">BUILD_KEY</span> on the Sanctum service,{" "}
+              <span className="font-mono">SANCTUM_BUILD_URL</span> +{" "}
+              <span className="font-mono">SANCTUM_BUILD_KEY</span> on the MCP). Restoring
+              still works.
+            </p>
+          ) : null}
+
           <p className="text-[11px] text-gray-dark-600 leading-relaxed">
             One entry per commit that touched this flow, newest first. A restore is one more
-            commit — nothing is ever removed from this list.
+            commit — nothing is ever removed from this list. Opening a past version builds
+            it next to the live flow and changes nothing.
           </p>
         </div>
       )}

@@ -19,7 +19,7 @@ import {
   useState,
 } from "react"
 import { CommentsBody } from "./comments"
-import { FEEDBACK_KEY, SLUG } from "./env"
+import { FEEDBACK_KEY, IS_PAST_VERSION, SLUG } from "./env"
 import { FeedbackBody } from "./feedback"
 import { HistoryBody } from "./history"
 import { InspectorBody } from "./inspector"
@@ -119,13 +119,16 @@ type TabDef = { key: Tab; label: string; icon: ReactNode; available: boolean; wh
 
 // What each tab needs to exist. Feedback is fail-closed on the build key (same safe
 // default as the server route without its own); History needs to know WHICH flow it is.
-// Components needs nothing: the marks are stamped at compile time.
+// Components needs nothing: the marks are stamped at compile time. On a PAST version
+// (`/v/<slug>/<sha7>/`) feedback and comments are off — both are addressed to the live
+// flow, and a pin left on a screen that no longer exists would point at nothing; the
+// banner says so, and the history stays, it is how one moves between versions.
 const TABS: TabDef[] = [
   {
     key: "feedback",
     label: "Feedback",
     icon: <MessageSquarePlus size={15} aria-hidden="true" />,
-    available: Boolean(FEEDBACK_KEY && SLUG),
+    available: Boolean(FEEDBACK_KEY && SLUG) && !IS_PAST_VERSION,
   },
   {
     key: "comments",

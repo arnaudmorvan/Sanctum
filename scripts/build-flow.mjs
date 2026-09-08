@@ -100,27 +100,38 @@ const run = (bin, args, env, log) => {
  * others down with it (the CI marks it, the hot build reports it).
  *
  * `outDir` is relative to ROOT. Default: `dist/p/<slug>` — the served location.
+ * `source` is the directory the flow is copied FROM. Default: `protos/<slug>` — the
+ *   live flow. The preview of a past version passes a temp directory holding the files
+ *   as they were at that commit: the live folder is not touched.
+ * `base` is the public path the bundle is served under. Default: `/p/<slug>/`.
+ * `version` — `{ short, date, author }` — marks the bundle as a PAST version: the
+ *   skeleton then shows a banner and keeps feedback and comments on the live flow.
  */
-export function buildFlow(flow, { outDir } = {}) {
+export function buildFlow(flow, { outDir, source, base, version } = {}) {
   const started = Date.now()
   const log = []
   const out = outDir ?? path.join("dist", "p", flow.slug)
   try {
     fs.rmSync(SRC_PROTO, { recursive: true, force: true })
-    fs.cpSync(path.join(PROTOS, flow.slug), SRC_PROTO, { recursive: true })
+    fs.cpSync(source ?? path.join(PROTOS, flow.slug), SRC_PROTO, { recursive: true })
     fs.rmSync(path.join(SRC_PROTO, "proto.json"), { force: true })
     run("tsc", ["--noEmit", "-p", "tsconfig.json"], {}, log)
     // VITE_PROTO_TITLE: shown by the shared chrome (sidebar) under the 42 logo.
     // VITE_PROTO_SLUG: the "Feedback" widget attaches it to every submission — it is what
     // tells the MCP server which queue the feedback falls into.
+    // VITE_PROTO_VERSION*: only on the preview of a past version (see `version` above).
     run(
       "vite",
       ["build"],
       {
         PROTO_SLUG: flow.slug,
         PROTO_OUT_DIR: out,
+        PROTO_BASE: base ?? "",
         VITE_PROTO_SLUG: flow.slug,
         VITE_PROTO_TITLE: flow.title ?? "",
+        VITE_PROTO_VERSION: version?.short ?? "",
+        VITE_PROTO_VERSION_AT: version?.date ?? "",
+        VITE_PROTO_VERSION_BY: version?.author ?? "",
       },
       log,
     )

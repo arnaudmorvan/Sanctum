@@ -4,6 +4,31 @@
 
 export const SLUG = (import.meta.env.VITE_PROTO_SLUG as string | undefined) ?? ""
 
+/** Set ONLY on the preview of a PAST version (`/v/<slug>/<sha7>/`, built on demand by
+ *  `scripts/hot-build.mjs` from the flow's files at that commit). Empty on the live flow.
+ *  What it changes: a banner says which version this is, and feedback and comments stay
+ *  on the live flow — a pin left on a screen that no longer exists would point at nothing. */
+export const VERSION = (import.meta.env.VITE_PROTO_VERSION as string | undefined) ?? ""
+export const VERSION_AT = (import.meta.env.VITE_PROTO_VERSION_AT as string | undefined) ?? ""
+export const VERSION_BY = (import.meta.env.VITE_PROTO_VERSION_BY as string | undefined) ?? ""
+export const IS_PAST_VERSION = Boolean(VERSION)
+
+/** The live flow's URL, from wherever this bundle is served. A past version links back to
+ *  it; the compare page builds both sides from it. */
+export const LIVE_URL = SLUG ? `/p/${SLUG}/` : "/"
+
+/** `?bare` — the flow rendered for a FRAME, not a tab: the compare page (`/compare/`)
+ *  embeds two of them side by side. The bottom bar and the side panel are the tooling of
+ *  ONE tab; in a frame they would be drawn twice and would drive nothing. The screen keeps
+ *  its own chrome (the product sidebar): that is part of what is being compared. */
+export const BARE = (() => {
+  try {
+    return new URLSearchParams(window.location.search).has("bare")
+  } catch {
+    return false
+  }
+})()
+
 // Deployment shim: the Railway build variables are still called VITE_RETOURS_KEY and
 // VITE_RETOURS_URL. Drop both fallbacks once they are renamed to VITE_FEEDBACK_*.
 export const FEEDBACK_KEY =

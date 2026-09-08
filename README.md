@@ -63,7 +63,45 @@ floating/dockable panel, and the **pins**:
   (`POST /console/protos/restore.json`) that makes `protos/<slug>/` identical to the
   chosen version, a screen added since included; the version it replaces stays in the
   list, and the site picks the restored one up **at the next deploy** (the entry reads
-  "deploying" until then).
+  "deploying" until then). Since 2026-09-08 (later the same day) every version also has
+  an **Open** — a new tab on that version, nothing restored — and a **Compare** — that
+  version next to the live flow. Both need the hot build (below): the history says
+  whether it is wired, and the tab explains instead of drawing buttons that would fail.
+- **Compare** (bottom bar) — this screen twice on `/compare/`, where either side can
+  become another screen, another version, or another flow. See "Two versions, two
+  screens" below.
+
+## Two versions, two screens — `/v/<slug>/<sha7>/` and `/compare/` (since 2026-09-08)
+
+The site serves the latest build of a flow and nothing else; the older versions exist
+as git blobs, and until now the only way to LOOK at one was to restore it — a commit on
+the branch, and a second one to come back.
+
+**A past version is built on demand**, next to the live flow and never in its place.
+The History tab asks the MCP (`POST /console/protos/preview.json {slug, sha}`, console
+key); the MCP reads the flow's files at that commit (blobs — nothing is committed) and
+posts them to `POST /preview/<slug>/<sha7>` on this site (`scripts/hot-build.mjs`,
+same key as the hot build, same `buildFlow`); the bundle lands in `dist/v/<slug>/<sha7>/`
+and is served at once. The build carries the version stamp (`VITE_PROTO_VERSION*`): the
+skeleton shows a **banner** (which version, generated when and by whom, the way to the
+live flow), and keeps **feedback and comments on the live flow** — a pin left on a screen
+that no longer exists would point at nothing. `protos/<slug>/` on disk is not touched
+and `protos.json` is not rewritten. The previews are a **cache**: the sixteen most
+recently opened are kept, the rest pruned, and a redeploy wipes them all — which is why
+the page always asks again instead of remembering a URL (a version already built answers
+in 0 ms, `cached: true`).
+
+**`/compare/?a=<slug>[@<sha7>][#/screen]&b=…`** puts two of these side by side — two
+versions of one screen, two screens of one flow, or two flows. Each side is a locator
+in the URL, so a comparison is a link. The frames are the flows themselves, rendered
+`?bare` (no bottom bar, no side panel — the tooling of a tab, drawn twice it would
+drive nothing), and they talk to the page (`src/layout/embed.ts`: `sanctum:state` in,
+`sanctum:navigate` out): that is what fills the screen picker of each side and drives
+**Sync** — navigate on one side, the other follows. Picking a different screen on one
+side turns the sync off: that is the "two screens" question. The frames are rendered
+at a fixed width (1280 or 1440) and scaled to their column, so what is compared is the
+layout, not its response to half a window; "Fit" gives the native width. A live side
+is public; a past version that is not built yet asks for the console key, once.
 
 ## For a dev: getting a flow's code
 
@@ -97,9 +135,11 @@ src/                 ← the skeleton, shared by every flow (routing, chrome, to
 vendor/ui-react/     ← a BUILT snapshot of @42/ui-react
 scripts/build-flow.mjs ← ONE flow: copy → tsc → vite (shared by the CI and the hot build)
 scripts/build-all.mjs ← every flow, then the gallery (the CI)
-scripts/hot-build.mjs ← POST /build/<slug>: rebuild one flow in the running container
+scripts/hot-build.mjs ← POST /build/<slug>: rebuild one flow in the running container;
+                        POST /preview/<slug>/<sha7>: build a PAST version under /v/…
 scripts/dev-proto.mjs ← `npm run dev <slug>`: one flow locally
-server.mjs           ← static serving of dist/ (Railway) + the hot build route
+server.mjs           ← static serving of dist/ (Railway) + the two build routes
+console/compare/     ← /compare/: two flows side by side (second entry of the console build)
 ```
 
 `views.tsx` is the contract: the bottom bar **and** the hash routing are both derived from
@@ -188,4 +228,6 @@ sha: the fix is a republish, not a new conversation.
   `railway.json` so a publication no longer redeploys the whole site at all.
 
 Try it locally: `BUILD_KEY=x PORT=4299 npm start`, then POST `{files, meta}` with the
-header `X-Build-Key: x` to `http://localhost:4299/build/<slug>`.
+header `X-Build-Key: x` to `http://localhost:4299/build/<slug>` — or `{files, meta,
+version}` to `http://localhost:4299/preview/<slug>/<sha7>` for a past version, which then
+serves at `/v/<slug>/<sha7>/` (the files of that version: `git show <sha>:protos/<slug>/…`).

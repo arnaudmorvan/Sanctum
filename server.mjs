@@ -1,9 +1,11 @@
 /** Static server for dist/ on Railway. No dependency: adding `serve` or express would pull
  *  a whole npm tree in just to read files off disk.
  *
- *  Plus ONE route that is not static: `POST /build/<slug>` (scripts/hot-build.mjs) rebuilds
- *  a single flow inside this container, seconds after `publish_proto`, instead of making the
- *  PO wait for the Railway redeploy. Mounted only when `BUILD_KEY` is set. */
+ *  Plus TWO routes that are not static (scripts/hot-build.mjs, mounted only when `BUILD_KEY`
+ *  is set): `POST /build/<slug>` rebuilds a single flow inside this container, seconds after
+ *  `publish_proto`, instead of making the PO wait for the Railway redeploy; and
+ *  `POST /preview/<slug>/<sha7>` builds a PAST version of a flow under `/v/<slug>/<sha7>/`,
+ *  next to the live one — what lets the history be looked at without being restored. */
 import fs from "node:fs"
 import http from "node:http"
 import path from "node:path"
@@ -33,10 +35,14 @@ http
       target = path.join(target, "index.html")
     }
     if (!fs.existsSync(target)) {
-      // Every flow is a hash-routed SPA: any URL under /p/<slug>/ falls back to its index.
-      // The hash never reaches the server, so this is the only useful fallback.
+      // Every flow is a hash-routed SPA: any URL under /p/<slug>/ falls back to its index —
+      // and so does a past version under /v/<slug>/<sha7>/. The hash never reaches the
+      // server, so this is the only useful fallback.
       const m = url.match(/^\/p\/([^/]+)\//)
-      const fallback = m && path.join(DIST, "p", m[1], "index.html")
+      const v = url.match(/^\/v\/([^/]+)\/([^/]+)\//)
+      const fallback = m
+        ? path.join(DIST, "p", m[1], "index.html")
+        : v && path.join(DIST, "v", v[1], v[2], "index.html")
       if (fallback && fs.existsSync(fallback)) target = fallback
       else {
         res.writeHead(404, { "content-type": "text/html; charset=utf-8" })
