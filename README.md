@@ -32,9 +32,12 @@ required, slug to retype). It is a commit in this repo, executed by the MCP serv
 the site **at the next deploy** — the card stays visible as "deletion in progress" until
 then.
 
-**Reviewing a flow** happens inside it, in the **side panel** — the rail in the
-bottom-right corner (`src/layout/side-panel.tsx`, since 2026-09-08). Four tabs, one
-floating/dockable panel, and the **pins**:
+**Reviewing a flow** happens inside it, in the **rail** in the bottom-right corner
+(`src/layout/side-panel.tsx`, since 2026-09-08). It is the whole tool box: four tabs that
+open one floating/dockable panel (Feedback, Comments, Components, History), three tools
+one looks at the flow with and that open no panel (**Map**, **Source**, **Compare**), and
+the **pins** switch. Nothing of this is in the bottom bar any more — the bar is the flow's
+navigation, the rail is what one does WITH the flow:
 
 - **Feedback** — say what should change, **to the system**: optionally pointing at an
   element or circling an area. Goes to the MCP's feedback queue (this flow) or out as a
@@ -67,9 +70,18 @@ floating/dockable panel, and the **pins**:
   an **Open** — a new tab on that version, nothing restored — and a **Compare** — that
   version next to the live flow. Both need the hot build (below): the history says
   whether it is wired, and the tab explains instead of drawing buttons that would fail.
-- **Compare** (bottom bar) — this screen twice on `/compare/`, where either side can
-  become another screen, another version, or another flow. See "Two versions, two
-  screens" below.
+- **Map** — the flow zoomed out on one canvas (`src/layout/flow-map.tsx`), read two ways:
+  **Grid** (the screens grouped by navigation section — what the app contains) and **Flow**
+  (laid out by distance from the entry point, with the links between them drawn, read off
+  the rendered DOM — what the app leads to). The miniatures are the real screens, live;
+  clicking one enters it.
+- **Source** — the Figma frame this screen was translated from, rendered next to it
+  (`figma-source.json`, published by `proto-from-figma`). The tile only exists on a screen
+  that HAS a frame — which is itself an answer to "was this one designed, or composed?".
+  The link is free; the render needs a `FIGMA_TOKEN` on the MCP, and says so when there is
+  none.
+- **Compare** — this screen twice on `/compare/`, where either side can become another
+  screen, another version, or another flow. See "Two versions, two screens" below.
 
 ## Two versions, two screens — `/v/<slug>/<sha7>/` and `/compare/` (since 2026-09-08)
 

@@ -11,6 +11,7 @@ import { hrefOf, matchView, type ProtoNavItem, type ProtoView } from "../proto-t
 import { TYPO } from "../typo"
 import { AppChrome } from "./app-chrome"
 import { AppLayout } from "./app-layout"
+import { useBottomBar } from "./bottom-bar"
 import { UI_MARK } from "./target"
 
 /** The "Map" widget: the flow zooms out, and the whole app is on one canvas.
@@ -25,9 +26,9 @@ import { UI_MARK } from "./target"
  *   • **Flow** — the same screens laid out by distance from the entry point, with the links
  *     between them drawn: what the app LEADS TO. This is the one that shows a flow whole.
  *
- *  Nothing to install, and NOTHING in the flow. Like the rest of the bottom bar, this lives
- *  in the skeleton: a cloned or republished flow carries no trace of it, and a PO adding a
- *  screen to `VIEWS` sees it appear here without wiring anything. The map asks the flow for
+ *  Nothing to install, and NOTHING in the flow. Like the rest of the review tooling, this
+ *  lives in the skeleton: a cloned or republished flow carries no trace of it, and a PO
+ *  adding a screen to `VIEWS` sees it appear here without wiring anything. The map asks the flow for
  *  no declaration — which is why it works on every flow, including the ones written before
  *  it existed.
  *
@@ -469,49 +470,41 @@ const Tile = ({
   )
 }
 
+/** The map is CONTROLLED: the tile that opens it lives in the review rail (`side-panel.tsx`),
+ *  not here. It still closes itself — Escape, its own Close, and picking a screen, which is
+ *  what one opens it for. */
 export const FlowMap = ({
   views,
   nav,
   title,
   current,
+  open,
+  onClose,
 }: {
   views: ProtoView[]
   nav?: ProtoNavItem[]
   title?: string
   current?: ProtoView
+  open: boolean
+  onClose: () => void
 }) => {
-  const [open, setOpen] = useState(false)
   const [mode, setMode] = useState<"grid" | "flow">("grid")
   const [size, setSize] = useState<SizeKey>("m")
-  const [barHeight, setBarHeight] = useState(44)
   const [graph, setGraph] = useState<Graph | null>(null)
   const [hover, setHover] = useState<string | null>(null)
-  const button = useRef<HTMLButtonElement>(null)
   const canvas = useRef<HTMLDivElement>(null)
-
-  // The canvas stops exactly ON TOP of the bar — never over it: the button that opened the
-  // map has to stay in reach to close it. The bar's height is MEASURED and not assumed: it
-  // wraps onto a second line as soon as the flow declares enough screens, which is precisely
-  // the case where the map is worth opening.
-  useEffect(() => {
-    if (!open) return
-    const bar = button.current?.closest("nav")
-    if (!bar) return
-    const measure = () => setBarHeight(bar.getBoundingClientRect().height)
-    measure()
-    const ro = new ResizeObserver(measure)
-    ro.observe(bar)
-    return () => ro.disconnect()
-  }, [open])
+  // The canvas stops exactly ON TOP of the bar — never over it: the flow's own navigation
+  // stays reachable while the map is open, and one leaves the map by entering a screen.
+  const barHeight = useBottomBar()
 
   useEffect(() => {
     if (!open) return
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false)
+      if (e.key === "Escape") onClose()
     }
     window.addEventListener("keydown", onKey)
     return () => window.removeEventListener("keydown", onKey)
-  }, [open])
+  }, [open, onClose])
 
   // Read BEFORE the paint, and not in a `useEffect`: the first layout has no link yet, so it
   // stacks every screen into one column. `useLayoutEffect` re-renders in the same frame — the
@@ -521,7 +514,7 @@ export const FlowMap = ({
     setGraph(readEdges(canvas.current, views))
   }, [mode, graph, views])
 
-  if (views.length === 0) return null
+  if (!open || views.length === 0) return null
 
   const chosen = SIZES.find((s) => s.key === size) ?? SIZES[1]
   const groups = groupViews(views, nav)
@@ -547,275 +540,256 @@ export const FlowMap = ({
   )
 
   return (
-    <>
-      <button
-        ref={button}
-        type="button"
-        onClick={() => setOpen((o) => !o)}
-        aria-expanded={open}
-        className={`flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs transition-colors ${
-          open
-            ? "bg-white/10 font-semibold text-white"
-            : "text-gray-dark-400 hover:bg-white/5 hover:text-white"
-        }`}
-      >
-        <LayoutGrid size={13} aria-hidden="true" />
-        Map
-      </button>
-
-      {open && (
-        <div
-          {...{ [UI_MARK]: "" }}
-          className="fixed inset-x-0 top-0 z-50 overflow-auto bg-gray-dark-950/98 backdrop-blur"
-          style={{ bottom: barHeight }}
-          role="dialog"
-          aria-modal="true"
-          aria-label="Map of the flow"
-        >
-          <div className="sticky top-0 z-10 flex flex-wrap items-center gap-x-3 gap-y-2 border-gray-dark-800 border-b bg-gray-dark-950/95 px-5 py-3 backdrop-blur">
-            <span className="font-semibold text-sm text-white">{title ?? "Map of the flow"}</span>
-            <span className="text-gray-dark-400 text-xs">
-              {views.length} screen{views.length > 1 ? "s" : ""}
-              {mode === "grid" && groups.length > 1 ? ` · ${groups.length} sections` : ""}
-              {mode === "flow" ? ` · ${links.length} link${links.length > 1 ? "s" : ""}` : ""}
+    <div
+      {...{ [UI_MARK]: "" }}
+      className="fixed inset-x-0 top-0 z-50 overflow-auto bg-gray-dark-950/98 backdrop-blur"
+      style={{ bottom: barHeight }}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Map of the flow"
+    >
+      <div className="sticky top-0 z-10 flex flex-wrap items-center gap-x-3 gap-y-2 border-gray-dark-800 border-b bg-gray-dark-950/95 px-5 py-3 backdrop-blur">
+        <span className="font-semibold text-sm text-white">{title ?? "Map of the flow"}</span>
+        <span className="text-gray-dark-400 text-xs">
+          {views.length} screen{views.length > 1 ? "s" : ""}
+          {mode === "grid" && groups.length > 1 ? ` · ${groups.length} sections` : ""}
+          {mode === "flow" ? ` · ${links.length} link${links.length > 1 ? "s" : ""}` : ""}
+        </span>
+        {mode === "flow" ? (
+          <span className="flex items-center gap-3 text-[11px] text-gray-dark-500">
+            <span className="flex items-center gap-1.5">
+              <svg width="16" height="4" aria-hidden="true">
+                <title>solid line</title>
+                <line x1="0" y1="2" x2="16" y2="2" stroke="currentColor" className="text-white/35" />
+              </svg>
+              leads to
             </span>
-            {mode === "flow" ? (
-              <span className="flex items-center gap-3 text-[11px] text-gray-dark-500">
-                <span className="flex items-center gap-1.5">
-                  <svg width="16" height="4" aria-hidden="true">
-                    <title>solid line</title>
-                    <line x1="0" y1="2" x2="16" y2="2" stroke="currentColor" className="text-white/35" />
-                  </svg>
-                  leads to
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <svg width="16" height="4" aria-hidden="true">
-                    <title>dashed line</title>
-                    <line
-                      x1="0"
-                      y1="2"
-                      x2="16"
-                      y2="2"
-                      stroke="currentColor"
-                      strokeDasharray="4 3"
-                      className="text-white/35"
-                    />
-                  </svg>
-                  goes back
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <span className="size-2.5 rounded-[3px] border border-orange-400" />
-                  missing a link — in, out, or both
-                </span>
-                <span>hover a screen to isolate it</span>
-              </span>
-            ) : null}
-            {mode === "flow" && graph && graph.dead.length > 0 ? (
-              <span className="rounded bg-pink-400/10 px-2 py-0.5 font-mono text-[11px] text-pink-300">
-                {graph.dead.length} link{graph.dead.length > 1 ? "s" : ""} to nowhere:{" "}
-                {graph.dead.slice(0, 3).join(" ")}
-              </span>
-            ) : null}
+            <span className="flex items-center gap-1.5">
+              <svg width="16" height="4" aria-hidden="true">
+                <title>dashed line</title>
+                <line
+                  x1="0"
+                  y1="2"
+                  x2="16"
+                  y2="2"
+                  stroke="currentColor"
+                  strokeDasharray="4 3"
+                  className="text-white/35"
+                />
+              </svg>
+              goes back
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="size-2.5 rounded-[3px] border border-orange-400" />
+              missing a link — in, out, or both
+            </span>
+            <span>hover a screen to isolate it</span>
+          </span>
+        ) : null}
+        {mode === "flow" && graph && graph.dead.length > 0 ? (
+          <span className="rounded bg-pink-400/10 px-2 py-0.5 font-mono text-[11px] text-pink-300">
+            {graph.dead.length} link{graph.dead.length > 1 ? "s" : ""} to nowhere:{" "}
+            {graph.dead.slice(0, 3).join(" ")}
+          </span>
+        ) : null}
 
-            <div className="ms-auto flex items-center gap-1" role="group" aria-label="Reading">
-              {(
-                [
-                  { key: "grid", label: "Grid", icon: <LayoutGrid size={13} aria-hidden="true" /> },
-                  { key: "flow", label: "Flow", icon: <Share2 size={13} aria-hidden="true" /> },
-                ] as const
-              ).map((m) => (
-                <button
-                  key={m.key}
-                  type="button"
-                  onClick={() => setMode(m.key)}
-                  aria-pressed={mode === m.key}
-                  className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs transition-colors ${
-                    mode === m.key
-                      ? "bg-white/10 font-semibold text-white"
-                      : "text-gray-dark-400 hover:bg-white/5 hover:text-white"
-                  }`}
-                >
-                  {m.icon}
-                  {m.label}
-                </button>
-              ))}
-            </div>
-            <div className="flex items-center gap-1" role="group" aria-label="Zoom">
-              {SIZES.map((s) => (
-                <button
-                  key={s.key}
-                  type="button"
-                  onClick={() => setSize(s.key)}
-                  aria-pressed={size === s.key}
-                  className={`rounded-md px-2 py-1 font-mono text-[11px] transition-colors ${
-                    size === s.key
-                      ? "bg-white/10 font-semibold text-white"
-                      : "text-gray-dark-400 hover:bg-white/5 hover:text-white"
-                  }`}
-                >
-                  {s.label}
-                </button>
-              ))}
-            </div>
+        <div className="ms-auto flex items-center gap-1" role="group" aria-label="Reading">
+          {(
+            [
+              { key: "grid", label: "Grid", icon: <LayoutGrid size={13} aria-hidden="true" /> },
+              { key: "flow", label: "Flow", icon: <Share2 size={13} aria-hidden="true" /> },
+            ] as const
+          ).map((m) => (
             <button
+              key={m.key}
               type="button"
-              onClick={() => setOpen(false)}
-              className="flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-gray-dark-400 text-xs transition-colors hover:bg-white/5 hover:text-white"
+              onClick={() => setMode(m.key)}
+              aria-pressed={mode === m.key}
+              className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs transition-colors ${
+                mode === m.key
+                  ? "bg-white/10 font-semibold text-white"
+                  : "text-gray-dark-400 hover:bg-white/5 hover:text-white"
+              }`}
             >
-              <X size={13} aria-hidden="true" />
-              Close
+              {m.icon}
+              {m.label}
             </button>
-          </div>
+          ))}
+        </div>
+        <div className="flex items-center gap-1" role="group" aria-label="Zoom">
+          {SIZES.map((s) => (
+            <button
+              key={s.key}
+              type="button"
+              onClick={() => setSize(s.key)}
+              aria-pressed={size === s.key}
+              className={`rounded-md px-2 py-1 font-mono text-[11px] transition-colors ${
+                size === s.key
+                  ? "bg-white/10 font-semibold text-white"
+                  : "text-gray-dark-400 hover:bg-white/5 hover:text-white"
+              }`}
+            >
+              {s.label}
+            </button>
+          ))}
+        </div>
+        <button
+          type="button"
+          onClick={onClose}
+          className="flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-gray-dark-400 text-xs transition-colors hover:bg-white/5 hover:text-white"
+        >
+          <X size={13} aria-hidden="true" />
+          Close
+        </button>
+      </div>
 
-          {mode === "grid" ? (
-            <div className="flex flex-col gap-8 px-5 py-6">
-              {groups.map((group) => (
-                <section key={group.label} className="flex flex-col gap-3">
-                  {group.label ? (
-                    <div className="flex items-baseline gap-2">
-                      <h2 className={`${TYPO.nav} text-gray-dark-300 text-xs`}>{group.label}</h2>
-                      <span className="font-mono text-[11px] text-gray-dark-600">
-                        {group.views.length}
-                      </span>
-                    </div>
-                  ) : null}
-                  <ul className="flex flex-wrap gap-x-5 gap-y-6">
-                    {group.views.map((view) => (
-                      <Tile
-                        key={view.path}
-                        view={view}
-                        views={views}
-                        nav={nav}
-                        title={title}
-                        tile={chosen.tile}
-                        current={view === current}
-                        onPick={() => setOpen(false)}
-                      />
-                    ))}
-                  </ul>
-                </section>
-              ))}
-            </div>
-          ) : (
-            <div className="px-5 py-6">
-              <div
-                ref={canvas}
-                className="relative"
-                style={{ width: layout?.width, height: (layout?.height ?? 0) + HEADER }}
-              >
-                {layout?.columns.map((column) => (
-                  <span
-                    key={column.label}
-                    className={`${TYPO.nav} absolute top-0 text-[11px] text-gray-dark-500 leading-tight`}
-                    style={{ left: column.x, width: chosen.node + GAP_X - 16 }}
-                  >
-                    {column.label}
+      {mode === "grid" ? (
+        <div className="flex flex-col gap-8 px-5 py-6">
+          {groups.map((group) => (
+            <section key={group.label} className="flex flex-col gap-3">
+              {group.label ? (
+                <div className="flex items-baseline gap-2">
+                  <h2 className={`${TYPO.nav} text-gray-dark-300 text-xs`}>{group.label}</h2>
+                  <span className="font-mono text-[11px] text-gray-dark-600">
+                    {group.views.length}
                   </span>
+                </div>
+              ) : null}
+              <ul className="flex flex-wrap gap-x-5 gap-y-6">
+                {group.views.map((view) => (
+                  <Tile
+                    key={view.path}
+                    view={view}
+                    views={views}
+                    nav={nav}
+                    title={title}
+                    tile={chosen.tile}
+                    current={view === current}
+                    onPick={onClose}
+                  />
                 ))}
-                <svg
-                  className="pointer-events-none absolute left-0 overflow-visible"
-                  style={{ top: HEADER }}
-                  width={layout?.width}
-                  height={layout?.height}
-                  aria-hidden="true"
+              </ul>
+            </section>
+          ))}
+        </div>
+      ) : (
+        <div className="px-5 py-6">
+          <div
+            ref={canvas}
+            className="relative"
+            style={{ width: layout?.width, height: (layout?.height ?? 0) + HEADER }}
+          >
+            {layout?.columns.map((column) => (
+              <span
+                key={column.label}
+                className={`${TYPO.nav} absolute top-0 text-[11px] text-gray-dark-500 leading-tight`}
+                style={{ left: column.x, width: chosen.node + GAP_X - 16 }}
+              >
+                {column.label}
+              </span>
+            ))}
+            <svg
+              className="pointer-events-none absolute left-0 overflow-visible"
+              style={{ top: HEADER }}
+              width={layout?.width}
+              height={layout?.height}
+              aria-hidden="true"
+            >
+              <defs>
+                {/* A link is read at its two ends: a DOT where it starts, an ARROW where
+                    it lands. Without the dot, a "goes back" link — which leaves by the
+                    left edge and heads left — looks exactly like a link arriving, and a
+                    screen marked "no way in" seems to contradict its own drawing. */}
+                <marker
+                  id="flow-map-arrow"
+                  viewBox="0 0 8 8"
+                  refX="7"
+                  refY="4"
+                  markerWidth="8"
+                  markerHeight="8"
+                  orient="auto-start-reverse"
                 >
-                  <defs>
-                    {/* A link is read at its two ends: a DOT where it starts, an ARROW where
-                        it lands. Without the dot, a "goes back" link — which leaves by the
-                        left edge and heads left — looks exactly like a link arriving, and a
-                        screen marked "no way in" seems to contradict its own drawing. */}
-                    <marker
-                      id="flow-map-arrow"
-                      viewBox="0 0 8 8"
-                      refX="7"
-                      refY="4"
-                      markerWidth="8"
-                      markerHeight="8"
-                      orient="auto-start-reverse"
-                    >
-                      <path d="M0,1 L7,4 L0,7 z" fill="currentColor" />
-                    </marker>
-                    <marker
-                      id="flow-map-start"
-                      viewBox="0 0 6 6"
-                      refX="3"
-                      refY="3"
-                      markerWidth="5"
-                      markerHeight="5"
-                    >
-                      <circle cx="3" cy="3" r="2.2" fill="currentColor" />
-                    </marker>
-                  </defs>
-                  {links.map(({ from, to }) => {
-                    const a = byPath.get(from)
-                    const b = byPath.get(to)
-                    if (!a || !b) return null
-                    const back = b.column <= a.column
-                    const touched = hover === from || hover === to
-                    return (
-                      <path
-                        key={`${from}→${to}`}
-                        d={edgePath(a, b, chosen.node, nodeHeight)}
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth={touched ? 2 : 1}
-                        strokeDasharray={back ? "4 3" : undefined}
-                        markerStart="url(#flow-map-start)"
-                        markerEnd="url(#flow-map-arrow)"
-                        className={
-                          touched
-                            ? "text-brand-400"
-                            : hover
-                              ? "text-white/5"
-                              : back
-                                ? "text-white/15"
-                                : "text-white/35"
-                        }
-                      />
-                    )
-                  })}
-                </svg>
-                {layout?.placed.map((node) => (
-                  <div
-                    key={node.view.path}
-                    className="absolute flex flex-col gap-2"
-                    style={{ left: node.x, top: node.y + HEADER, width: chosen.node }}
-                  >
-                    <Screenshot
-                      view={node.view}
-                      views={views}
-                      nav={nav}
-                      title={title}
-                      width={chosen.node}
-                      // Every screen mounts: the links are read off the rendered DOM, so a
-                      // screen left unmounted would be a screen with no arrow — a hole that
-                      // would read as "this one leads nowhere".
-                      mounted
-                      current={node.view === current}
-                      missing={missingLink(
-                        node.view,
-                        graph?.edges ?? new Map(),
-                        incoming,
-                        navTargets,
-                        views[0]?.path,
-                      )}
-                      dimmed={
-                        hover !== null &&
-                        hover !== node.view.path &&
-                        !(graph?.edges.get(hover)?.has(node.view.path) ?? false) &&
-                        !(graph?.edges.get(node.view.path)?.has(hover) ?? false)
-                      }
-                      onPick={() => setOpen(false)}
-                      onHover={setHover}
-                    />
-                    <Caption view={node.view} />
-                  </div>
-                ))}
+                  <path d="M0,1 L7,4 L0,7 z" fill="currentColor" />
+                </marker>
+                <marker
+                  id="flow-map-start"
+                  viewBox="0 0 6 6"
+                  refX="3"
+                  refY="3"
+                  markerWidth="5"
+                  markerHeight="5"
+                >
+                  <circle cx="3" cy="3" r="2.2" fill="currentColor" />
+                </marker>
+              </defs>
+              {links.map(({ from, to }) => {
+                const a = byPath.get(from)
+                const b = byPath.get(to)
+                if (!a || !b) return null
+                const back = b.column <= a.column
+                const touched = hover === from || hover === to
+                return (
+                  <path
+                    key={`${from}→${to}`}
+                    d={edgePath(a, b, chosen.node, nodeHeight)}
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={touched ? 2 : 1}
+                    strokeDasharray={back ? "4 3" : undefined}
+                    markerStart="url(#flow-map-start)"
+                    markerEnd="url(#flow-map-arrow)"
+                    className={
+                      touched
+                        ? "text-brand-400"
+                        : hover
+                          ? "text-white/5"
+                          : back
+                            ? "text-white/15"
+                            : "text-white/35"
+                    }
+                  />
+                )
+              })}
+            </svg>
+            {layout?.placed.map((node) => (
+              <div
+                key={node.view.path}
+                className="absolute flex flex-col gap-2"
+                style={{ left: node.x, top: node.y + HEADER, width: chosen.node }}
+              >
+                <Screenshot
+                  view={node.view}
+                  views={views}
+                  nav={nav}
+                  title={title}
+                  width={chosen.node}
+                  // Every screen mounts: the links are read off the rendered DOM, so a
+                  // screen left unmounted would be a screen with no arrow — a hole that
+                  // would read as "this one leads nowhere".
+                  mounted
+                  current={node.view === current}
+                  missing={missingLink(
+                    node.view,
+                    graph?.edges ?? new Map(),
+                    incoming,
+                    navTargets,
+                    views[0]?.path,
+                  )}
+                  dimmed={
+                    hover !== null &&
+                    hover !== node.view.path &&
+                    !(graph?.edges.get(hover)?.has(node.view.path) ?? false) &&
+                    !(graph?.edges.get(node.view.path)?.has(hover) ?? false)
+                  }
+                  onPick={onClose}
+                  onHover={setHover}
+                />
+                <Caption view={node.view} />
               </div>
-            </div>
-          )}
+            ))}
+          </div>
         </div>
       )}
-    </>
+    </div>
   )
 }

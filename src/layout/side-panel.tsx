@@ -1,9 +1,12 @@
 import {
   Blocks,
+  Columns2,
   Eye,
   EyeOff,
+  Frame,
   GripHorizontal,
   History,
+  LayoutGrid,
   MessageSquarePlus,
   MessagesSquare,
   PanelRight,
@@ -18,30 +21,54 @@ import {
   useRef,
   useState,
 } from "react"
+import type { ProtoNavItem, ProtoView } from "../proto-types"
+import { useBottomBar } from "./bottom-bar"
 import { CommentsBody } from "./comments"
+import { compareHref } from "./compare-link"
 import { FEEDBACK_KEY, IS_PAST_VERSION, SLUG } from "./env"
 import { FeedbackBody } from "./feedback"
+import { frameOf } from "./figma-source"
+import { FlowMap } from "./flow-map"
 import { HistoryBody } from "./history"
 import { InspectorBody } from "./inspector"
 import { notesAvailable, refreshNotes, useNotes } from "./notes"
 import { type PinKind, Pins } from "./pins"
+import { SourceFrame } from "./source-frame"
 import { UI_MARK } from "./target"
 
-/** The side panel: ONE place for everything a reviewer does ABOUT the flow, as opposed to
- *  IN it. Four tabs — Feedback (say what should change, to the system), Comments (say it
- *  to the developers), Components (what the screen owes to the kit), History (every
- *  version of the flow, with the date and time each one was generated, and the way back
- *  to one of them). Plus the PINS: the comments and feedback of the screen on display,
- *  drawn where they were left (`pins.tsx`), with one switch to show or hide them — on
- *  the rail, so it works with the panel closed.
+/** The review rail and its panel: ONE place for everything a PO does WITH a flow, as
+ *  opposed to IN it. The rail is the launcher, and it holds two kinds of tile:
  *
- *  Before 2026-09-08 these were three different things in three different places: a
- *  floating widget for the feedback, a bottom sheet behind a button of the bar for the
- *  inspector, and nothing at all for the history. A PO reviewing a flow now has one
- *  gesture: the rail in the corner opens the panel on the tab they clicked, and the
- *  other two are a click away — without losing the feedback they were writing (the three
- *  bodies stay MOUNTED, only hidden: switching tabs to check a component must not wipe
- *  a half-written paragraph).
+ *   • what one SAYS about the flow — Feedback (to the system), Comments (to the
+ *     developers), Components (what the screen owes to the kit), History (every version,
+ *     dated, and the way back to one). These OPEN THE PANEL on their tab;
+ *   • what one LOOKS at the flow with — Map (the whole flow on one canvas), Source (the
+ *     Figma frame this screen was translated from), Compare (this screen beside another
+ *     screen, or another version). These open no panel: an overlay, or a new tab.
+ *
+ *  Plus the PINS switch: the comments and feedback of the screen on display, drawn where
+ *  they were left (`pins.tsx`), shown or hidden from the rail so it works with the panel
+ *  closed.
+ *
+ *  Those two kinds used to live in two places — the tabs here, the map, the source and
+ *  the compare link in the bottom bar — for no reason a PO could see: a bar button and a
+ *  rail tile are the same gesture on the same object. Bringing them together (2026-09-08)
+ *  leaves the bar with navigation only, which is its subject, and costs nothing at
+ *  runtime: the overlays are rendered here, CONTROLLED (`open` / `onClose`), and they are
+ *  deliberately NOT tabs — the map and a Figma frame are looked at full width, and a panel
+ *  380 px wide is the wrong container for either.
+ *
+ *  ⚠️ The overlays are rendered as siblings of the rail, never inside it: the rail carries
+ *  `backdrop-blur`, which makes it the containing block of its `position: fixed`
+ *  descendants — an overlay nested in it would be clipped to a 68 px column.
+ *
+ *  Before 2026-09-08 the review tools were three different things in three different
+ *  places: a floating widget for the feedback, a bottom sheet behind a button of the bar
+ *  for the inspector, and nothing at all for the history. A PO reviewing a flow now has
+ *  one gesture: the rail in the corner opens the panel on the tab they clicked, and the
+ *  others are a click away — without losing the feedback they were writing (the bodies
+ *  stay MOUNTED, only hidden: switching tabs to check a component must not wipe a
+ *  half-written paragraph).
  *
  *  The container is the feedback widget's, unchanged in its mechanics: it FLOATS (a
  *  380 px panel one can drag out of the way of what is being criticised), and it DOCKS
@@ -72,7 +99,6 @@ const readPins = (): boolean => {
 
 const PANEL_W = 380
 const EDGE = 16 // the margin the panel keeps from the edges of the window
-const BAR_FALLBACK = 44 // one row of the bottom bar, used until it has been measured
 const PLACEMENT_KEY = "sanctum-panel-placement"
 // The feedback widget's own placement, before the panel absorbed it. Read once as a
 // fallback so nobody who parked the widget finds it back in the corner; never written.
@@ -99,23 +125,81 @@ const readPlacement = (): Placement => {
   }
 }
 
-/** The height of the bottom bar, MEASURED. The bar declares itself with `data-sanctum-bar`;
- *  without it (a flow rendered without the bar) the fallback is one row. */
-const useBottomBar = () => {
-  const [height, setHeight] = useState(BAR_FALLBACK)
-  useEffect(() => {
-    const bar = document.querySelector("[data-sanctum-bar]")
-    if (!bar) return
-    const measure = () => setHeight(Math.round(bar.getBoundingClientRect().height))
-    measure()
-    const observer = new ResizeObserver(measure)
-    observer.observe(bar)
-    return () => observer.disconnect()
-  }, [])
-  return height
+/** One tile of the rail. A tab tile opens the panel, an action tile fires straight away —
+ *  same shape, because for the person clicking it is the same gesture. `href` renders an
+ *  anchor: "Compare" is a link, and a link must be openable in a tab of its own. */
+const TILE =
+  "relative flex w-[68px] flex-col items-center gap-1 px-2 py-2 transition-colors hover:bg-white/5 hover:text-white"
+
+const RailTile = ({
+  icon,
+  label,
+  title,
+  badge,
+  badgeClass,
+  onClick,
+  href,
+  last,
+  pressed,
+  tone = "text-gray-dark-300",
+}: {
+  icon: ReactNode
+  label: string
+  title?: string
+  badge?: number
+  badgeClass?: string
+  onClick?: () => void
+  href?: string
+  last?: boolean
+  pressed?: boolean
+  tone?: string
+}) => {
+  const className = `${TILE} ${tone} ${last ? "" : "border-white/5 border-b"}`
+  const body = (
+    <>
+      {icon}
+      <span className="text-[10px] leading-none">{label}</span>
+      {badge ? (
+        <span
+          className={`absolute top-1 right-2 min-w-4 rounded-full px-1 text-center font-mono font-semibold text-[9px] text-gray-dark-950 leading-4 ${badgeClass}`}
+        >
+          {badge}
+        </span>
+      ) : null}
+    </>
+  )
+  return href ? (
+    <a href={href} target="_blank" rel="noreferrer" title={title ?? label} className={className}>
+      {body}
+    </a>
+  ) : (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={pressed}
+      title={title ?? label}
+      className={className}
+    >
+      {body}
+    </button>
+  )
 }
 
 type TabDef = { key: Tab; label: string; icon: ReactNode; available: boolean; why?: string }
+
+/** An overlay opened FROM the rail and rendered beside it — never a tab: both are looked
+ *  at full width. `null` when neither is open. */
+type Overlay = "map" | "source"
+
+type ActionDef = {
+  key: Overlay | "compare"
+  label: string
+  title: string
+  icon: ReactNode
+  available: boolean
+  onClick?: () => void
+  href?: string
+}
 
 // What each tab needs to exist. Feedback is fail-closed on the build key (same safe
 // default as the server route without its own); History needs to know WHICH flow it is.
@@ -150,8 +234,23 @@ const TABS: TabDef[] = [
   },
 ]
 
-export const SidePanel = ({ screen }: { screen?: string }) => {
+export const SidePanel = ({
+  views,
+  nav,
+  title,
+  current,
+}: {
+  views: ProtoView[]
+  nav?: ProtoNavItem[]
+  title?: string
+  current?: ProtoView
+}) => {
+  // The screen the feedback, the comments and the pins are attached to — its label, which
+  // is what a PO reads back in the queue. The rail takes the whole `ProtoView` because the
+  // map and the source need the screen itself, not its name.
+  const screen = current?.label
   const [active, setActive] = useState<Tab | null>(null)
+  const [overlay, setOverlay] = useState<Overlay | null>(null)
   const [aiming, setAiming] = useState(false)
   const [pins, setPins] = useState(readPins)
   const [focus, setFocus] = useState<{ kind: PinKind; id: string } | null>(null)
@@ -164,6 +263,42 @@ export const SidePanel = ({ screen }: { screen?: string }) => {
 
   const tabs = TABS.filter((t) => t.available)
   const open = active !== null
+
+  // What one LOOKS at the flow with. Availability is not a preference: the map needs
+  // screens, "Source" only exists on a screen translated from a Figma frame — which is
+  // itself an answer to "was this one designed, or composed?" — and "Compare" needs the
+  // slug the build stamps (`npm run dev <slug>` bakes none).
+  const frame = frameOf(current?.path)
+  const compare = compareHref()
+  const tools: ActionDef[] = [
+    {
+      key: "map",
+      label: "Map",
+      title: "The whole flow on one canvas",
+      icon: <LayoutGrid size={15} aria-hidden="true" />,
+      available: views.length > 0,
+      onClick: () => setOverlay("map"),
+    },
+    {
+      key: "source",
+      label: "Source",
+      title: frame?.name || "The Figma frame this screen was built from",
+      icon: <Frame size={15} aria-hidden="true" />,
+      available: Boolean(frame),
+      onClick: () => setOverlay("source"),
+    },
+    {
+      key: "compare",
+      label: "Compare",
+      title: "This screen side by side with another screen, or another version",
+      icon: <Columns2 size={15} aria-hidden="true" />,
+      available: Boolean(compare),
+      href: compare ?? undefined,
+    },
+  ]
+  const actions = tools.filter((a) => a.available)
+
+  const closeOverlay = useCallback(() => setOverlay(null), [])
 
   // The notes are read once on mount — the pins and the counters need them with the
   // panel closed — and again on every opening: someone else may have commented since.
@@ -248,7 +383,7 @@ export const SidePanel = ({ screen }: { screen?: string }) => {
     return () => window.removeEventListener("resize", onResize)
   }, [open, placement.docked, clamp])
 
-  if (tabs.length === 0) return null
+  if (tabs.length === 0 && actions.length === 0) return null
 
   const startDrag = (e: ReactPointerEvent<HTMLDivElement>) => {
     if (placement.docked) return
@@ -295,52 +430,65 @@ export const SidePanel = ({ screen }: { screen?: string }) => {
     <>
       <Pins screen={screen} visible={pins && notesAvailable} hidden={aiming} onOpen={openNote} />
 
-      {/* The rail — the "menu on the side". It is the launcher: one tile per tab, and it
-          steps aside once the panel is open (the header then carries the tabs). */}
+      {/* The rail — the "menu on the side". It is the launcher, and it holds the whole tool
+          box: the tabs first (they open the panel), then what one looks at the flow with
+          (they open no panel), then the pins switch. It steps aside once the panel is open
+          — the header then carries the tabs. A window too short for eight tiles scrolls
+          the rail rather than pushing tiles under the bar. */}
       {!open && (
         <nav
           {...{ [UI_MARK]: "" }}
           aria-label="Review tools"
-          style={{ right: EDGE, bottom: bar + 12 }}
-          className="fixed z-50 flex flex-col overflow-hidden rounded-lg border border-gray-dark-800 bg-gray-dark-950/95 shadow-lg backdrop-blur"
+          style={{
+            right: EDGE,
+            bottom: bar + 12,
+            maxHeight: `calc(100vh - ${bar + 2 * EDGE}px)`,
+          }}
+          className="fixed z-50 flex w-[68px] flex-col overflow-y-auto overscroll-contain rounded-lg border border-gray-dark-800 bg-gray-dark-950/95 shadow-lg backdrop-blur"
         >
-          {tabs.map((t) => {
-            const n = count(t.key)
-            return (
-              <button
+          <div className="flex flex-col">
+            {tabs.map((t, i) => (
+              <RailTile
                 key={t.key}
-                type="button"
+                icon={t.icon}
+                label={t.label}
+                title={count(t.key) ? `${t.label} — ${count(t.key)} open` : t.label}
+                badge={count(t.key)}
+                badgeClass={t.key === "comments" ? "bg-blue-400" : "bg-purple-400"}
                 onClick={() => choose(t.key)}
-                title={n ? `${t.label} — ${n} open` : t.label}
-                className="relative flex w-[68px] flex-col items-center gap-1 border-gray-dark-800 border-b px-2 py-2 text-gray-dark-300 transition-colors hover:bg-white/5 hover:text-white"
-              >
-                {t.icon}
-                <span className="text-[10px] leading-none">{t.label}</span>
-                {n ? (
-                  <span
-                    className={`absolute top-1 right-2 min-w-4 rounded-full px-1 text-center font-mono font-semibold text-[9px] text-gray-dark-950 leading-4 ${
-                      t.key === "comments" ? "bg-blue-400" : "bg-purple-400"
-                    }`}
-                  >
-                    {n}
-                  </span>
-                ) : null}
-              </button>
-            )
-          })}
+                last={i === tabs.length - 1}
+              />
+            ))}
+          </div>
+          {actions.length > 0 ? (
+            <div className="flex flex-col border-gray-dark-800 border-t">
+              {actions.map((a, i) => (
+                <RailTile
+                  key={a.key}
+                  icon={a.icon}
+                  label={a.label}
+                  title={a.title}
+                  onClick={a.onClick}
+                  href={a.href}
+                  last={i === actions.length - 1}
+                />
+              ))}
+            </div>
+          ) : null}
           {notesAvailable ? (
-            <button
-              type="button"
-              onClick={() => setPins((p) => !p)}
-              aria-pressed={pins}
-              title={pins ? "Hide the pins" : "Show the pins"}
-              className={`flex w-[68px] flex-col items-center gap-1 px-2 py-2 transition-colors hover:bg-white/5 ${
-                pins ? "text-white" : "text-gray-dark-500"
-              }`}
-            >
-              {pins ? <Eye size={15} aria-hidden="true" /> : <EyeOff size={15} aria-hidden="true" />}
-              <span className="text-[10px] leading-none">Pins</span>
-            </button>
+            <div className="border-gray-dark-800 border-t">
+              <RailTile
+                icon={
+                  pins ? <Eye size={15} aria-hidden="true" /> : <EyeOff size={15} aria-hidden="true" />
+                }
+                label="Pins"
+                title={pins ? "Hide the pins" : "Show the pins"}
+                onClick={() => setPins((p) => !p)}
+                pressed={pins}
+                tone={pins ? "text-white" : "text-gray-dark-500"}
+                last
+              />
+            </div>
           ) : null}
         </nav>
       )}
@@ -477,6 +625,20 @@ export const SidePanel = ({ screen }: { screen?: string }) => {
           </div>
         </div>
       )}
+
+      {/* Opened from the rail, rendered OUTSIDE it — the rail's `backdrop-blur` would make
+          it their containing block, and a `position: fixed` overlay would end up clipped to
+          a 68 px column. Last in the fragment, so they cover the rail that opened them:
+          both carry their own Close, and Escape closes them. */}
+      <FlowMap
+        views={views}
+        nav={nav}
+        title={title}
+        current={current}
+        open={overlay === "map"}
+        onClose={closeOverlay}
+      />
+      <SourceFrame current={current} open={overlay === "source"} onClose={closeOverlay} />
     </>
   )
 }

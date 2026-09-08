@@ -2,17 +2,18 @@ import { Button } from "@42/ui-react/button"
 import { ArrowLeft } from "lucide-react"
 import { hrefOf, type ProtoNavItem, type ProtoView } from "../proto-types"
 import { TYPO } from "../typo"
-import { CompareLink } from "./compare-link"
-import { FlowMap } from "./flow-map"
-import { SourceFrame } from "./source-frame"
 import { UI_MARK } from "./target"
 
-/** The bottom bar: the prototype's TOOLING, not its product. It leads back to the gallery
- *  and gives direct access to the screens declared in VIEWS — without the PO having to
- *  wire anything: they add an entry, it shows up here. On the right, the map (the whole
- *  flow, zoomed out). The feedback widget left the bar on 2026-09-07, the origin inspector
- *  on 2026-09-08: both are tabs of the side panel now (`side-panel.tsx`, mounted by
- *  `app.tsx`), with the flow's history as their third neighbour.
+/** The bottom bar: WHERE ONE IS in the flow, and nothing else. It leads back to the
+ *  gallery and gives direct access to the screens declared in VIEWS — without the PO
+ *  having to wire anything: they add an entry, it shows up here.
+ *
+ *  It used to carry the tooling too, and the tooling left in three goes: the feedback
+ *  widget on 2026-09-07, the origin inspector on 2026-09-08, then the map, the Figma
+ *  source and the compare link later the same day. They are all in the review rail now
+ *  (`side-panel.tsx`, mounted beside this bar by `app.tsx`) — one corner for everything
+ *  one does WITH a flow, instead of a bar and a rail sharing the job by accident of
+ *  history. What stays here is navigation, which is the bar's own subject.
  *
  *  When the flow exports `NAV`, the product sidebar already carries some of the screens.
  *  Relisting them here made two navigations for the same target ("Learn" on the left,
@@ -42,10 +43,11 @@ export const ProtoViewBar = ({
 
   return (
     <nav
-      // `data-sanctum-bar`: the floating feedback widget MEASURES this bar to rest above it
-      // — the list of deep screens wraps, so its height is not a constant.
+      // `data-sanctum-bar`: everything that rests on this bar MEASURES it (the review
+      // rail, the map, the source frame — see `bottom-bar.ts`). The list of deep screens
+      // wraps, so its height is not a constant.
       {...{ [UI_MARK]: "", "data-sanctum-bar": "" }}
-      aria-label="Prototype tools"
+      aria-label="Screens of the flow"
       className="flex shrink-0 flex-wrap items-center gap-1 border-white/10 border-t bg-gray-dark-950 px-2 py-1.5"
     >
       <Button variant="subtle" size="xs" asChild>
@@ -74,16 +76,6 @@ export const ProtoViewBar = ({
           })}
         </span>
       ) : null}
-      {/* On the right, what one looks AT the flow with — the navigation stays on the left.
-          "Source" only appears on a screen translated from a Figma frame, which is itself
-          an answer to "was this one designed, or composed?". "Compare" opens this screen
-          twice on the compare page, where either side can become another screen or
-          another version. */}
-      <span className="ms-auto flex items-center">
-        <SourceFrame current={current} />
-        <CompareLink />
-        <FlowMap views={views} nav={nav} title={title} current={current} />
-      </span>
     </nav>
   )
 }

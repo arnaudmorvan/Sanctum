@@ -76,10 +76,13 @@ export const App = () => {
       {BARE ? null : (
         <>
           <ProtoViewBar views={VIEWS} current={match?.view} nav={NAV} title={TITLE} />
-          {/* The side panel (Feedback · Components · History) FLOATS over the flow: it is
-              mounted here, beside the bar and not inside it — the bar is the flow's
-              navigation, the panel is what one says ABOUT the flow. */}
-          <SidePanel screen={match?.view.label} />
+          {/* The review rail and its panel FLOAT over the flow: mounted here, beside the bar
+              and not inside it — the bar is the flow's navigation, the rail is everything
+              one does WITH the flow (feedback, comments, components, history, and since
+              2026-09-08 the map, the Figma source and the compare link). It takes the same
+              four arguments as the bar: the map draws the whole flow, "Source" is attached
+              to the current screen. */}
+          <SidePanel views={VIEWS} nav={NAV} title={TITLE} current={match?.view} />
         </>
       )}
     </div>
