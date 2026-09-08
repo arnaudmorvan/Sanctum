@@ -59,6 +59,16 @@ const Cell = ({ intensity }: { intensity: keyof typeof INTENSITY_CLASS }) => (
   <div className={`size-3 rounded-sm ${INTENSITY_CLASS[intensity]}`} />
 )
 
+/** Agenda dot. It rides in `Calendar`'s renderDay slot, which appends INSIDE the day
+ *  cell, next to the number: a plain dot therefore pushes the digit and breaks the
+ *  column alignment (seen on the 2026-09-08 publish). The zero-size wrapper takes no
+ *  room in the flow and hangs the dot under the baseline. */
+const AgendaDot = () => (
+  <span className="relative inline-block h-0 w-0 align-baseline">
+    <span className="absolute -bottom-1 left-0 block size-1 -translate-x-1/2 rounded-full bg-pink-400" />
+  </span>
+)
+
 const ATTENDANCE = buildAttendance()
 
 export const Profile = ({ login }: { login?: string }) => {
@@ -315,6 +325,9 @@ export const Profile = ({ login }: { login?: string }) => {
               block LEADS with the next item (stamp in Kode Mono: a date measures)
               and only then shows the month. `Calendar` carries the grid and its own
               event-dot slot (`renderDay`) — the dot is the one hand-written scrap.
+              locale en-GB: the week starts on MONDAY, like the attendance grid right
+              above it; the kit default (en-US) started it on Sunday and the two
+              calendars of the same screen disagreed.
               default/md, NOT gradient: the screen already has its entry point.
               Inert, like the Elsewhere block: this proto holds no agenda screen and a
               dead control is worse than no control. */}
@@ -332,12 +345,9 @@ export const Profile = ({ login }: { login?: string }) => {
                   </div>
                   <Calendar
                     size="sm"
+                    locale="en-GB"
                     fixedWeeks
-                    renderDay={(date) =>
-                      hasAgenda(date)
-                        ? <span className="mx-auto mt-0.5 block size-1 rounded-full bg-pink-400" />
-                        : null
-                    }
+                    renderDay={(date) => (hasAgenda(date) ? <AgendaDot /> : null)}
                   />
                   <Text size="xs" c="muted">{AGENDA_LEGEND}</Text>
                 </div>

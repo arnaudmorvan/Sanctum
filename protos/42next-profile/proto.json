@@ -6,7 +6,6 @@
   "created_at": "2026-09-08",
   "updated_at": "2026-09-08",
   "files": [
-    "data/agenda.ts",
     "pages/profile.tsx",
     "views.tsx"
   ]
