@@ -12,30 +12,18 @@ import { Title } from "@42/ui-react/title"
 import { TYPO } from "../../../src/typo"
 import { ACTIVITIES, ATTENDANCE_LEGEND, ATTENDANCE_NOTE, ATTENDANCE_TOTAL, ATTENDANCE_VIEWS, CURRENT, ELSEWHERE, INTENSITY_CLASS, LEARNER, MILESTONE, PROGRAMS, STATS, buildAttendance } from "../data/profile"
 
-/** CONFORMANCE PASS 2026-09-04, against frame 22489:9756.
- *  Every (variant, padding) pair on Card, every title size and every gap below are
- *  LIFTED from the frame, not chosen. Do not "harmonise" them: a uniform gap is the
- *  generation defect that foundations-layout explicitly corrects.
+/** CONFORMANCE PASS 2026-09-04, against frame 22489:9756, then TYPO PASS 2026-09-05:
+ *  Lato carries the text AND the titles, Kode Mono carries THE MACHINE (level, counters,
+ *  scores). The kit does the opposite — `Title` forces `font-mono` — hence the
+ *  `className={TYPO.*}` below, each naming the Figma style it reproduces.
  *
- *  Figma -> Tailwind gap mapping: 4=gap-1, 8=gap-2, 12=gap-3,
- *  16=gap-4, 20=gap-5, 24=gap-6, 40=gap-10.
- *  A card's inner padding is carried by the `padding` prop (lg=24, md=16,
- *  sm=12): never re-apply it by hand on Card.Content.
- *
- *  TYPO PASS 2026-09-05, against the survey of the 91 texts of that same frame.
- *  The DS rule: Lato carries the text AND the titles; Kode Mono carries THE
- *  MACHINE (level, counters, scores). The kit does the opposite — `Title` forces
- *  `font-mono` — hence the `className={TYPO.*}` below, each of which names the
- *  Figma style it reproduces. They will disappear once the kit exposes the axes. */
+ *  2026-09-08 — DEVIATION FROM THE FRAME, asked for and assumed: every card is `outline`
+ *  (the identity card, the current activity and the current milestone lose the signature
+ *  pink outline), and the "Validated" badges lose their green. The frame still says
+ *  gradient/green: this flow deliberately does not. */
 
 /** SectionTitle from the Figma DS: size=sm, title in Typography-1/Text md/Bold (16px),
- *  icon leading, gap 6 between the two. size="md" maps the Figma `Text md` step by its
- *  name. The scale used to be size="lg": titles too big, rejection 9.
- *  TYPO.title(): the frame sets them in Lato Bold, the kit was rendering them in Kode Mono.
- *
- *  The icon is NO LONGER missing (2026-09-05): it had been dropped on the belief
- *  that « no asset travels through publish_proto ». An icon is not an asset,
- *  it is a lucide import — and the names are LIFTED from the frame, not chosen
+ *  icon leading, gap 6 between the two. The icon names are LIFTED from the frame
  *  (folder-check, milestone, clock-3, grid-2x2, flame, graduation-cap). */
 const Section = ({ title, icon, children }: { title: string; icon: ReactNode; children: ReactNode }) => (
   <section className="flex flex-col gap-4">
@@ -59,8 +47,7 @@ export const Profile = ({ login }: { login?: string }) => {
 
   return (
     <div className="flex flex-col gap-10">
-      {/* Figma PageHeader: V gap 6, title in Display sm/Bold — Lato Bold 30.
-          Used to be size="2xl" (24) in Kode Mono: two deviations at once. */}
+      {/* Figma PageHeader: V gap 6, title in Display sm/Bold — Lato Bold 30. */}
       <div className="flex flex-col gap-1.5">
         <Title order={1} size="3xl" className={TYPO.title()}>{login ?? LEARNER.login}</Title>
         <Text size="sm" c="secondary">{LEARNER.name} - learner profile</Text>
@@ -68,16 +55,13 @@ export const Profile = ({ login }: { login?: string }) => {
 
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1fr)_340px]">
         <div className="flex flex-col gap-10">
-          {/* Identity: lifted as gradient/lg. Used to be default/lg — the signature
-              pink outline was missing on the identity card (rejection 11). */}
-          <Card variant="gradient" padding="lg">
+          <Card variant="outline" padding="lg">
             <Card.Content>
               <div className="flex flex-col gap-2">
                 <div className="flex items-center gap-5">
-                  {/* Figma Avatar: size=2xl, shape=circle. The kit caps at xl.
-                      The photo is the frame's one (_Avatar photos, photo=Olivia
-                      Rhye), served by the site: /avatars/<slug>.webp. `name` stays
-                      set — it is the initials fallback if the file is missing. */}
+                  {/* Figma Avatar: size=2xl, shape=circle. The kit caps at xl. The photo
+                      is the frame's one, served by the site: /avatars/<slug>.webp.
+                      `name` stays set — it is the initials fallback. */}
                   <Avatar
                     size="xl"
                     src="/avatars/olivia-rhye.webp"
@@ -92,17 +76,14 @@ export const Profile = ({ login }: { login?: string }) => {
                       <Text size="xs" c="muted">{LEARNER.presence}</Text>
                     </div>
                     <div className="flex flex-wrap items-baseline justify-between gap-3">
-                      {/* Typography-2/Display xs/Bold — Kode Mono Bold 24: THIS is
-                          the machine register, and the only place in the block where it
-                          serves. Used to be size="xl" (20) in SemiBold. */}
+                      {/* Typography-2/Display xs/Bold — Kode Mono Bold 24: THIS is the
+                          machine register, and the only place in the block where it serves. */}
                       <Title order={2} size="2xl" className={TYPO.mono()}>LEVEL {LEARNER.level}</Title>
                       <Text size="xs" c="muted" className={TYPO.title("medium")}>{MILESTONE.name}</Text>
                     </div>
                     <div className="flex items-center gap-4">
-                      {/* Figma Progress: axis Color=Pink. In React the signature
-                          gradient goes through variant="gradient" (CVA default
-                          purple-300 -> pink-400). review:color demands the gradient,
-                          never a flat color. */}
+                      {/* Figma Progress: axis Color=Pink. In React the signature gradient
+                          goes through variant="gradient". */}
                       <div className="grow"><Progress variant="gradient" value={LEARNER.levelPct} size="sm" /></div>
                       <Text size="sm" className={TYPO.title("medium")}>{LEARNER.xp}</Text>
                     </div>
@@ -115,16 +96,14 @@ export const Profile = ({ login }: { login?: string }) => {
 
           <Section title="Activities" icon={<FolderCheck size={16} />}>
             <div className="flex flex-col gap-4">
-              {/* Current activity: lifted as gradient/md. Used to be gradient/lg. */}
-              <Card variant="gradient" padding="md">
+              <Card variant="outline" padding="md">
                 <Card.Content>
                   <div className="flex flex-col gap-3">
                     <div className="flex flex-wrap gap-2">
                       <Badge variant="light" color="blue">In progress</Badge>
-                      <Badge variant="light" color="gray">{CURRENT.attempt}</Badge>
+                      <Badge variant="outline">{CURRENT.attempt}</Badge>
                     </div>
-                    {/* Figma: Text sm/Bold (Lato Bold 14). Used to be a Title with no
-                        size, so at the default for its order — several steps too big. */}
+                    {/* Figma: Text sm/Bold (Lato Bold 14). */}
                     <Title order={3} size="sm" className={TYPO.title()}>{CURRENT.name}</Title>
                     <Text size="xs" c="muted">{CURRENT.context}</Text>
                     <div className="flex items-baseline justify-between gap-3">
@@ -141,10 +120,8 @@ export const Profile = ({ login }: { login?: string }) => {
                 </Card.Content>
               </Card>
 
-              {/* Past activity: lifted as default/md, past-row H gap 12,
-                  past-copy V gap 4, past-right H gap 12. Used to be default/lg. */}
               {ACTIVITIES.map((a) => (
-                <Card key={a.slug} variant="default" padding="md">
+                <Card key={a.slug} variant="outline" padding="md">
                   <Card.Content>
                     <div className="flex flex-wrap items-center justify-between gap-3">
                       <div className="flex flex-col gap-1">
@@ -152,10 +129,10 @@ export const Profile = ({ login }: { login?: string }) => {
                         <Text size="xs" c="muted">{a.context}</Text>
                       </div>
                       <div className="flex items-center gap-3">
-                        {/* Typography-2/Text sm/Bold — Kode Mono Bold 14. A score
-                            is a counter: it belongs to the machine register. */}
+                        {/* Typography-2/Text sm/Bold — Kode Mono Bold 14. A score is a
+                            counter: it belongs to the machine register. */}
                         <Text size="sm" className={TYPO.mono()}>{a.score} / {a.outOf}</Text>
-                        <Badge variant="light" color="green">Validated</Badge>
+                        <Badge variant="outline">Validated</Badge>
                       </div>
                     </div>
                   </Card.Content>
@@ -165,23 +142,14 @@ export const Profile = ({ login }: { login?: string }) => {
           </Section>
 
           <Section title="Programs" icon={<Milestone size={16} />}>
-            <Card variant="default" padding="md">
+            <Card variant="outline" padding="md">
               <Card.Content>
-                {/* FIXED on 2026-09-05. The previous version passed the program name
-                    as `title={...}` — but Timeline.Item has NO `title` prop: it fell
-                    through to the HTML `title` attribute, so into a tooltip,
-                    invisible on screen. The three program names were simply
-                    missing. The real API is
-                    Item > Label + Content > Title (the component's JSDoc).
-                    The frame's left column carries the start (Lato Bold 16) above
-                    the end (Lato Regular 14); the title is Text xl/Bold. */}
+                {/* Timeline.Item has NO `title` prop — the real API is
+                    Item > Label + Content > Title. The active program is now told by a
+                    filled mark rather than by a green one. */}
                 <Timeline size="md" lineVariant="solid">
                   {PROGRAMS.map((p) => (
-                    <Timeline.Item
-                      key={p.name}
-                      color={p.active ? "green" : undefined}
-                      variant={p.active ? undefined : "outline"}
-                    >
+                    <Timeline.Item key={p.name} variant={p.active ? undefined : "outline"}>
                       <Timeline.Label>
                         <span className="flex flex-col">
                           <span className={TYPO.title()}>{p.start}</span>
@@ -200,7 +168,7 @@ export const Profile = ({ login }: { login?: string }) => {
           </Section>
 
           <Section title="Attendance" icon={<Clock3 size={16} />}>
-            <Card variant="default" padding="md">
+            <Card variant="outline" padding="md">
               <Card.Content>
                 {/* attendance-body V gap 16, grid-row H gap 24. */}
                 <div className="flex flex-col gap-4">
@@ -217,8 +185,7 @@ export const Profile = ({ login }: { login?: string }) => {
                       ))}
                     </div>
                     <div className="flex flex-col gap-2">
-                      {/* 312H: Typography-2/Display xs/Bold — an hour counter,
-                          machine register. Used to be size="xl" in SemiBold. */}
+                      {/* 312H: Typography-2/Display xs/Bold — an hour counter, machine. */}
                       <Title order={3} size="2xl" className={TYPO.mono()}>{ATTENDANCE_TOTAL}</Title>
                       <Text size="xs" c="muted">{ATTENDANCE_NOTE}</Text>
                       <div className="flex items-center gap-2">
@@ -242,10 +209,8 @@ export const Profile = ({ login }: { login?: string }) => {
         </div>
 
         <aside className="flex flex-col gap-10">
-          {/* Stats: lifted as default/md, stats-body V gap 16, stat-row H gap 12,
-              NO divider. Used to be outline/lg with invented Dividers. */}
           <Section title="Stats" icon={<Grid2x2 size={16} />}>
-            <Card variant="default" padding="md">
+            <Card variant="outline" padding="md">
               <Card.Content>
                 <div className="flex flex-col gap-4">
                   {STATS.map((s) => (
@@ -263,10 +228,8 @@ export const Profile = ({ login }: { login?: string }) => {
             </Card>
           </Section>
 
-          {/* Current milestone: lifted as gradient/sm, milestone-body V gap 12.
-              Used to be outline/lg — this is the side rail's other pink-outlined card. */}
           <Section title="Current milestone" icon={<Flame size={16} />}>
-            <Card variant="gradient" padding="sm">
+            <Card variant="outline" padding="sm">
               <Card.Content>
                 <div className="flex flex-col gap-3">
                   <Text size="sm" className={TYPO.title()}>{MILESTONE.name}</Text>
@@ -281,14 +244,10 @@ export const Profile = ({ login }: { login?: string }) => {
             </Card>
           </Section>
 
-          {/* Elsewhere: lifted as default/md, links-body V gap 16, link V gap 4.
-              The cross-references are LINKS in Text sm/BoldCap, not buttons —
-              4 Buttons inside one card violated "buttons must not dominate".
-              They are inert (designer's call), so rendered as text: the kit
-              has neither a Link component nor a color prop on Text, so the DS
-              interactive color is not reachable here. Filed to the report. */}
+          {/* The cross-references are LINKS in Text sm/BoldCap, not buttons — 4 Buttons
+              inside one card violated "buttons must not dominate". They are inert. */}
           <Section title="Elsewhere on this profile" icon={<GraduationCap size={16} />}>
-            <Card variant="default" padding="md">
+            <Card variant="outline" padding="md">
               <Card.Content>
                 <div className="flex flex-col gap-4">
                   {ELSEWHERE.map((l) => (
