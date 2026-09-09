@@ -242,6 +242,24 @@ export type Connector = {
   state: "blocked" | "stale" | "unknown" | "current"
 }
 
+/** ONE breakage, not one occurrence of it — `metrics.failures_payload` groups by tool ×
+ *  message and counts. `what` is the exception's type and message, redacted and truncated
+ *  server-side; `arg` is the primary argument of the LAST occurrence, which is half of a
+ *  reproduction. Served behind DASHBOARD_KEY only: a message names internal paths.
+ *  The row keyed `_other` is the CAP admitting itself — occurrences the week could no
+ *  longer hold apart. */
+export type Failure = {
+  key: string
+  tool: string
+  what: string
+  count: number
+  first?: string
+  last?: string
+  lastAt?: string
+  arg?: string
+  client?: string
+}
+
 export type Metrics = {
   meta?: { range?: string; updated?: string; period?: string }
   /** The tool-list version in force, what the connectors are compared against.
@@ -267,6 +285,11 @@ export type Metrics = {
   topTools?: Pair[]
   gaps?: Pair[]
   gapsTotal?: number
+  /** What failed and what it SAID. `errorRate` says how much; this says what — and it
+   *  is the only field of the two one can act on. Empty on a server with no
+   *  DASHBOARD_KEY, where the counts stay public and the messages do not. */
+  failures?: Failure[]
+  failuresDistinct?: number
   sequences?: Pair[]
   clientsList?: string[]
   recent?: Array<{ t: string; n: string; lat: number; ok: boolean }>
@@ -357,9 +380,24 @@ export type Generations = {
   chars_per_token: number
 }
 
+/** One call inside a session's timeline. `err` carries what the exception said, on the
+ *  events where `ok` is false — the same text the Failures panel groups. */
+export type SessionEvent = {
+  t: string
+  tool: string
+  arg?: string
+  dur?: number
+  gap?: number
+  bytes?: number
+  ok?: boolean
+  miss?: boolean
+  err?: string
+}
+
 export type Session = {
   id: string
   client: string
+  events?: SessionEvent[]
   calls: number
   errors: number
   misses: number

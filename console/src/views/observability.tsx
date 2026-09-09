@@ -237,6 +237,92 @@ const GenerationBlock = ({ apiKey }: { apiKey: string }) => {
   )
 }
 
+/** `2026-09-09T14:22:31` → `09-09 14:22`. A failure's value is largely "is it still
+ *  happening since I pushed the fix", and a bare date cannot answer that. */
+const seenAt = (iso?: string, day?: string): string => {
+  if (!iso) return day ?? "—"
+  const [d, t] = iso.split("T")
+  return `${(d ?? "").slice(5)} ${(t ?? "").slice(0, 5)}`.trim() || (day ?? "—")
+}
+
+/** WHAT failed, next to how often it did.
+ *
+ *  The error rate said "3 %" and stopped there: the middleware caught the exception,
+ *  re-raised it to the agent and kept a BOOLEAN. A failure was therefore visible and not
+ *  diagnosable — the one shape of observability nobody can act on, and the reason none of
+ *  this ever reached a report. The server now keeps the exception's type and message,
+ *  grouped by tool × message: the same breakage seen forty times is one row.
+ *
+ *  The order is NOT decided here — `metrics.failures_payload` owns it (most frequent
+ *  first, most recent breaking the tie). Re-sorting in the console would put a different
+ *  first row in front of the same person.
+ *
+ *  ⚠️ Two things it deliberately does not claim. It reports what a TOOL CALL raised: a
+ *  console route answering 500 is not in here, it is answered to the browser that asked
+ *  and the person sees it there. And an empty list under a non-zero error rate is not
+ *  "nothing broke" — it is a week whose failures were counted before the messages were
+ *  kept, which is what the empty state says instead of drawing a reassuring blank. */
+const Failures = ({ data }: { data: Metrics | null }) => {
+  const rows = data?.failures ?? []
+  const rate = data?.errorRate ?? 0
+  const hidden = data?.surface?.hidden
+
+  return (
+    <Block
+      title={`What failed${data?.failuresDistinct ? ` · ${data.failuresDistinct} distinct` : ""}`}
+      help="What a failed call actually said — its exception, the argument it was called with, and when it last happened. One row per breakage, not per occurrence."
+    >
+      {rows.length ? (
+        <Table size="sm">
+          <Table.Content>
+            <Table.Head>
+              <Table.Row>
+                <Table.HeaderCell>Tool</Table.HeaderCell>
+                <Table.HeaderCell>What it said</Table.HeaderCell>
+                <Table.HeaderCell>Called with</Table.HeaderCell>
+                <Table.HeaderCell className="text-right">Times</Table.HeaderCell>
+                <Table.HeaderCell className="text-right">Last</Table.HeaderCell>
+              </Table.Row>
+            </Table.Head>
+            <Table.Body>
+              {rows.map((f) => (
+                <Table.Row key={f.key}>
+                  <Table.Cell className="whitespace-nowrap font-mono">{f.tool}</Table.Cell>
+                  <Table.Cell>
+                    <span className="font-mono text-xs [overflow-wrap:anywhere]">{f.what}</span>
+                  </Table.Cell>
+                  <Table.Cell className="font-mono text-xs">
+                    {f.arg || "—"}
+                    {f.client ? (
+                      <span className="ms-1.5 text-gray-dark-400">{f.client}</span>
+                    ) : null}
+                  </Table.Cell>
+                  <Table.Cell className="text-right">
+                    <Badge variant="light" color={f.count > 5 ? "red" : "orange"}>
+                      {f.count}
+                    </Badge>
+                  </Table.Cell>
+                  <Table.Cell className="whitespace-nowrap text-right font-mono text-xs">
+                    {seenAt(f.lastAt, f.last)}
+                  </Table.Cell>
+                </Table.Row>
+              ))}
+            </Table.Body>
+          </Table.Content>
+        </Table>
+      ) : (
+        <Text c="muted" size="sm">
+          {hidden
+            ? `The messages are hidden: ${hidden} on the server. The error rate above stays right — a failure message names internal paths and variables, which do not go on a public URL.`
+            : rate > 0
+              ? "Calls failed this period, and what they said was not kept: the messages are recorded since 2026-09-09, the counter is older. The next failure is named here."
+              : "No failure this period — every call that was made came back."}
+        </Text>
+      )}
+    </Block>
+  )
+}
+
 export const ObservabilityView = ({ apiKey }: { apiKey: string }) => {
   const { data, error, loading, noKey } = useRoute<Metrics>("/metrics.json", apiKey)
 
@@ -261,6 +347,8 @@ export const ObservabilityView = ({ apiKey }: { apiKey: string }) => {
           <Series title="Sessions" values={data?.series?.sessions} />
           <Series title="Errors" values={data?.series?.errors} status />
         </div>
+
+        <Failures data={data} />
 
         <Heatmap grid={data?.heatmap} />
 
