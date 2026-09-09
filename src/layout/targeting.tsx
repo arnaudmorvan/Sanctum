@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import {
   describeElement,
+  describePoint,
   describeZone,
   holderElement,
   isOurs,
@@ -13,7 +14,7 @@ import {
 
 /** The pointing layer: show WHAT we are talking about before talking about it.
  *
- *  Two gestures, because there are two natures of feedback:
+ *  Three gestures, because there are three natures of remark:
  *   • **Point at** — the feedback is about something that exists ("this button", "this
  *     card"). Hovering highlights the element and says what it is; the click freezes it.
  *   • **Circle** — the feedback is about nothing that exists ("some breathing room is
@@ -22,6 +23,13 @@ import {
  *     element that asked for nothing. The zone is anchored to the deepest element that
  *     contains it: the rectangle says what was shown, the anchor says where it lands in
  *     the screen.
+ *   • **Pin** — the comment tool (2026-09-09): a click ANYWHERE drops a pin and opens
+ *     an empty thread on it. It is the "point at" gesture with the click's exact spot
+ *     kept as the anchor, which is what makes the pin land where the finger did rather
+ *     than on the corner of whatever contains it. Deliberately quieter than the other
+ *     two: the person is placing a mark, not choosing a component, so the frame is thin
+ *     and there is no breadcrumb — the thread names what was hit, and one click on
+ *     another spot corrects it.
  *
  *  The breadcrumb under the cursor solves the recurring pointing problem: we meant to aim
  *  at the card, we aimed at its title. Every link is a real ancestor and is clickable.
@@ -33,7 +41,7 @@ const MIN = 10
 const DEFAULT_W = 200
 const DEFAULT_H = 120
 
-type Mode = "element" | "zone"
+export type Mode = "element" | "zone" | "pin"
 
 export const Targeting = ({
   mode,
@@ -71,7 +79,7 @@ export const Targeting = ({
   }, [])
 
   const onMove = (e: React.PointerEvent) => {
-    if (mode === "element") {
+    if (mode !== "zone") {
       setHovered(underPointer(e.clientX, e.clientY))
       return
     }
@@ -95,9 +103,10 @@ export const Targeting = ({
   }
 
   const onUp = (e: React.PointerEvent) => {
-    if (mode === "element") {
+    if (mode !== "zone") {
       const el = underPointer(e.clientX, e.clientY)
-      if (el) onTarget(describeElement(el))
+      if (!el) return
+      onTarget(mode === "pin" ? describePoint(el, e.clientX, e.clientY) : describeElement(el))
       return
     }
     const d = start.current
@@ -136,7 +145,7 @@ export const Targeting = ({
       ref={layer}
       {...{ [UI_MARK]: "" }}
       className="fixed inset-0 z-[60]"
-      style={{ cursor: mode === "zone" ? "crosshair" : "default" }}
+      style={{ cursor: mode === "element" ? "default" : "crosshair" }}
       onPointerMove={onMove}
       onPointerDown={onDown}
       onPointerUp={onUp}
@@ -152,6 +161,16 @@ export const Targeting = ({
         </>
       )}
 
+      {/* Pin mode: the same element is shown, thinly. What is being chosen is the SPOT;
+          the frame is only there to say what the pin will hang onto when the screen is
+          republished and the coordinates mean nothing any more. */}
+      {mode === "pin" && box && box.width > 0 && (
+        <div
+          className="pointer-events-none absolute rounded-sm border border-blue-400/70 bg-blue-400/5"
+          style={{ left: box.left, top: box.top, width: box.width, height: box.height }}
+        />
+      )}
+
       {/* Zone mode: the rectangle being drawn. */}
       {mode === "zone" && drawn && (
         <div
@@ -164,7 +183,9 @@ export const Targeting = ({
         <span className="rounded-md bg-gray-dark-950/95 px-3 py-1.5 text-gray-dark-200 text-xs shadow-lg">
           {mode === "element"
             ? "Click the element the feedback is about"
-            : "Draw the area concerned"}{" "}
+            : mode === "pin"
+              ? "Click where the comment goes"
+              : "Draw the area concerned"}{" "}
           <span className="text-gray-dark-500">· Esc to cancel</span>
         </span>
       </div>

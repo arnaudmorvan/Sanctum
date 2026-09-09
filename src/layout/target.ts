@@ -179,6 +179,22 @@ export const describeElement = (el: Element): Target => ({
   rect: rectOf(el),
 })
 
+/**
+ * A CLICK: the element under it, plus where in that element the click landed.
+ *
+ * This is the comment tool's gesture — Figma drops a pin at a point, and a point is a
+ * coordinate of a window that no longer exists at the next publication. We drop it on an
+ * ELEMENT and keep the offset: the element is the address that survives, the offset is
+ * the precision that says "this corner of the card", not "this card".
+ */
+export const describePoint = (el: Element, x: number, y: number): Target => {
+  const box = el.getBoundingClientRect()
+  return {
+    ...describeElement(el),
+    anchor: { dx: Math.round(x - box.left), dy: Math.round(y - box.top) },
+  }
+}
+
 export const describeZone = (zone: Zone, holder: Element): Target => {
   const box = holder.getBoundingClientRect()
   return {

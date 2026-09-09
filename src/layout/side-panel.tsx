@@ -7,6 +7,7 @@ import {
   GripHorizontal,
   History,
   LayoutGrid,
+  MapPin,
   MessageSquarePlus,
   MessagesSquare,
   PanelRight,
@@ -21,6 +22,7 @@ import {
   useRef,
   useState,
 } from "react"
+import { createPortal } from "react-dom"
 import type { ProtoNavItem, ProtoView } from "../proto-types"
 import { useBottomBar } from "./bottom-bar"
 import { CommentsBody } from "./comments"
@@ -34,6 +36,8 @@ import { InspectorBody } from "./inspector"
 import { notesAvailable, refreshNotes, useNotes } from "./notes"
 import { type PinKind, Pins } from "./pins"
 import { SourceFrame } from "./source-frame"
+import { Targeting } from "./targeting"
+import { Thread, type ThreadTarget } from "./thread"
 import { UI_MARK } from "./target"
 
 /** The review rail and its panel: ONE place for everything a PO does WITH a flow, as
@@ -46,9 +50,20 @@ import { UI_MARK } from "./target"
  *     Figma frame this screen was translated from), Compare (this screen beside another
  *     screen, or another version). These open no panel: an overlay, or a new tab.
  *
- *  Plus the PINS switch: the comments and feedback of the screen on display, drawn where
- *  they were left (`pins.tsx`), shown or hidden from the rail so it works with the panel
- *  closed.
+ *  Plus two things that live ON the screen rather than in the panel, and are launched
+ *  from the rail because that is where a PO looks for the flow's tooling:
+ *
+ *   • the PINS — the comments and feedback of the screen on display, drawn where they
+ *     were left (`pins.tsx`), shown or hidden from the rail so the switch works with the
+ *     panel closed. Clicking one opens its THREAD (`thread.tsx`) on the spot: until
+ *     2026-09-09 it opened this panel and scrolled a list to the right row, which read
+ *     the note but gave the gesture it invites — answering it — nowhere to happen;
+ *   • the COMMENT tool — a click anywhere on the screen drops a pin and opens an empty
+ *     thread on it. It is the pointing layer in `pin` mode, so a comment left this way
+ *     carries the same proofs as any other target and survives a republication.
+ *
+ *  The panel keeps the LISTS, and that division is the whole design: one place to read
+ *  everything the flow has collected, one place to hold each conversation.
  *
  *  Those two kinds used to live in two places — the tabs here, the map, the source and
  *  the compare link in the bottom bar — for no reason a PO could see: a bar button and a
@@ -254,6 +269,10 @@ export const SidePanel = ({
   const [aiming, setAiming] = useState(false)
   const [pins, setPins] = useState(readPins)
   const [focus, setFocus] = useState<{ kind: PinKind; id: string } | null>(null)
+  // The conversation open ON the screen, and the tool that drops a new one. Both are
+  // the flow's, not the panel's: a thread reads and answers with the panel closed.
+  const [thread, setThread] = useState<ThreadTarget | null>(null)
+  const [dropping, setDropping] = useState(false)
   const notes = useNotes()
   const [placement, setPlacement] = useState<Placement>(readPlacement)
   const [dragging, setDragging] = useState(false)
@@ -308,6 +327,9 @@ export const SidePanel = ({
   useEffect(() => {
     if (open) void refreshNotes()
   }, [open])
+  useEffect(() => {
+    if (thread) void refreshNotes()
+  }, [thread])
 
   useEffect(() => {
     try {
@@ -317,16 +339,36 @@ export const SidePanel = ({
     }
   }, [pins])
 
-  // A pin was clicked: open its tab on it. The focus is cleared when the tab changes
-  // by hand, so the highlight does not stick to an item nobody asked for.
+  // A pin was clicked: its THREAD opens on the spot (2026-09-09). It used to open the
+  // side panel and scroll a list to the right row — readable, but the gesture a note
+  // invites is answering it, and that had nowhere to happen. The panel keeps the lists:
+  // one place to read everything, one place to hold each conversation.
   const openNote = useCallback((kind: PinKind, id: string) => {
-    setFocus({ kind, id })
-    setActive(kind === "comment" ? "comments" : "feedback")
+    setDropping(false)
+    setThread({ kind, id })
   }, [])
+  const closeThread = useCallback(() => setThread(null), [])
   const choose = (tab: Tab) => {
     setFocus(null)
     setActive(tab)
   }
+
+  // Opening a note FROM its row in a list. Both at once, on purpose: the thread is the
+  // answer, and the highlighted row is what is left when the thread cannot open — a
+  // target this version no longer resolves has no pin to hang a thread on, and a click
+  // that produced nothing at all would read as a broken button.
+  const openFromList = useCallback((kind: PinKind, id: string) => {
+    setThread({ kind, id })
+    setFocus({ kind, id })
+  }, [])
+
+  // The comment tool. It hides the panel and the pins like any aiming does — what is
+  // being pointed at must have nothing of ours over it.
+  const drop = useCallback(() => {
+    setActive(null)
+    setThread(null)
+    setDropping(true)
+  }, [])
 
   const nOpenComments = notes.comments.filter((c) => c.status === "open").length
   const nOpenFeedback = notes.feedback.filter((f) => f.status === "open").length
@@ -363,16 +405,17 @@ export const SidePanel = ({
     setFocus(null)
   }, [])
 
-  // Esc closes the panel — except while aiming, where it belongs to the targeting overlay,
-  // which cancels the aim and leaves the half-written feedback alone.
+  // Esc closes the panel — except while aiming, where it belongs to the targeting overlay
+  // (which cancels the aim and leaves the half-written feedback alone), and except while a
+  // thread is open over it, which is the topmost thing and therefore the one Esc means.
   useEffect(() => {
-    if (!open || aiming) return
+    if (!open || aiming || thread) return
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") close()
     }
     window.addEventListener("keydown", onKey)
     return () => window.removeEventListener("keydown", onKey)
-  }, [open, aiming, close])
+  }, [open, aiming, thread, close])
 
   // A window resized smaller must not leave the panel outside of it.
   useEffect(() => {
@@ -426,16 +469,40 @@ export const SidePanel = ({
           : { right: EDGE, bottom: bar + 12 }),
       }
 
+  const aimingNow = aiming || dropping
+
   return (
     <>
-      <Pins screen={screen} visible={pins && notesAvailable} hidden={aiming} onOpen={openNote} />
+      <Pins
+        screen={screen}
+        visible={pins && notesAvailable}
+        hidden={aimingNow}
+        openId={thread && thread.kind !== "draft" ? `${thread.kind}:${thread.id}` : undefined}
+        onOpen={openNote}
+      />
+
+      {/* The comment tool: a click anywhere drops the pin and opens an empty thread on
+          it. Portalled to `body` — the panel hides itself while aiming, and an overlay
+          nested in it would go with it. */}
+      {dropping &&
+        createPortal(
+          <Targeting
+            mode="pin"
+            onCancel={() => setDropping(false)}
+            onTarget={(target) => {
+              setDropping(false)
+              setThread({ kind: "draft", target })
+            }}
+          />,
+          document.body,
+        )}
 
       {/* The rail — the "menu on the side". It is the launcher, and it holds the whole tool
           box: the tabs first (they open the panel), then what one looks at the flow with
           (they open no panel), then the pins switch. It steps aside once the panel is open
           — the header then carries the tabs. A window too short for eight tiles scrolls
           the rail rather than pushing tiles under the bar. */}
-      {!open && (
+      {!open && !dropping && (
         <nav
           {...{ [UI_MARK]: "" }}
           aria-label="Review tools"
@@ -476,7 +543,18 @@ export const SidePanel = ({
             </div>
           ) : null}
           {notesAvailable ? (
-            <div className="border-gray-dark-800 border-t">
+            <div className="flex flex-col border-gray-dark-800 border-t">
+              {/* Leaving a comment is the one gesture here that starts ON THE SCREEN and
+                  not in a panel — hence a tile of its own, next to the switch that shows
+                  what it produces. */}
+              <RailTile
+                icon={<MapPin size={15} aria-hidden="true" />}
+                label="Comment"
+                title="Click a spot on the screen to comment on it"
+                onClick={drop}
+                pressed={dropping}
+                tone={dropping ? "text-white" : "text-gray-dark-300"}
+              />
               <RailTile
                 icon={
                   pins ? <Eye size={15} aria-hidden="true" /> : <EyeOff size={15} aria-hidden="true" />
@@ -502,7 +580,7 @@ export const SidePanel = ({
             placement.docked
               ? "rounded-none border-y-0 border-e-0 shadow-[-18px_0_48px_rgba(0,0,0,0.45)]"
               : "rounded-lg shadow-[0_18px_48px_rgba(0,0,0,0.55)]"
-          } ${aiming ? "hidden" : ""}`}
+          } ${aimingNow ? "hidden" : ""}`}
           role="dialog"
           aria-label="Review panel"
         >
@@ -557,10 +635,21 @@ export const SidePanel = ({
             {notesAvailable ? (
               <button
                 type="button"
+                onClick={drop}
+                title="Click a spot on the screen to comment on it"
+                className="ms-auto rounded p-1 text-gray-dark-500 hover:bg-white/5 hover:text-white"
+              >
+                <MapPin size={14} aria-hidden="true" />
+                <span className="sr-only">Comment on a spot of the screen</span>
+              </button>
+            ) : null}
+            {notesAvailable ? (
+              <button
+                type="button"
                 onClick={() => setPins((p) => !p)}
                 aria-pressed={pins}
                 title={pins ? "Hide the pins" : "Show the pins"}
-                className={`ms-auto rounded p-1 hover:bg-white/5 ${pins ? "text-white" : "text-gray-dark-500"}`}
+                className={`rounded p-1 hover:bg-white/5 ${pins ? "text-white" : "text-gray-dark-500"}`}
               >
                 {pins ? <Eye size={14} aria-hidden="true" /> : <EyeOff size={14} aria-hidden="true" />}
                 <span className="sr-only">{pins ? "Hide the pins" : "Show the pins"}</span>
@@ -601,6 +690,7 @@ export const SidePanel = ({
                   active={active === "feedback"}
                   focus={focus?.kind === "feedback" ? focus.id : null}
                   onAiming={setAiming}
+                  onOpen={(id) => openFromList("feedback", id)}
                 />
               </section>
             )}
@@ -611,6 +701,7 @@ export const SidePanel = ({
                   active={active === "comments"}
                   focus={focus?.kind === "comment" ? focus.id : null}
                   onAiming={setAiming}
+                  onOpen={(id) => openFromList("comment", id)}
                 />
               </section>
             )}
@@ -639,6 +730,18 @@ export const SidePanel = ({
         onClose={closeOverlay}
       />
       <SourceFrame current={current} open={overlay === "source"} onClose={closeOverlay} />
+
+      {/* Last, and marked as ours: it sits over the pins it belongs to, and the pointing
+          must never take a thread for a piece of the screen. */}
+      <div {...{ [UI_MARK]: "" }}>
+        <Thread
+          screen={screen}
+          open={thread}
+          hidden={aimingNow}
+          onClose={closeThread}
+          onPosted={(id) => setThread({ kind: "comment", id })}
+        />
+      </div>
     </>
   )
 }

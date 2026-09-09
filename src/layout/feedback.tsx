@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { createPortal } from "react-dom"
 import { FEEDBACK_KEY, MCP_URL, SLUG } from "./env"
-import { numberOf, refreshNotes, useNotes } from "./notes"
+import { numberOf, refreshNotes, useNotes, whenQueue as when } from "./notes"
 import { Bubble } from "./pins"
 import { describeElement, type Target } from "./target"
 import { ChosenTarget, Targeting } from "./targeting"
@@ -43,13 +43,6 @@ import { ChosenTarget, Targeting } from "./targeting"
  *  The embedded key is not a secret (it is readable in the bundle): it stops drive-by spam,
  *  the real limits (size, closed set of kinds, server-computed paths) are on the server. */
 
-const withTime = new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" })
-/** The queue writes `YYYY-MM-DD HH:MM` in UTC; shown in the reader's own time. */
-const when = (s: string): string => {
-  const t = Date.parse(`${s.replace(" ", "T")}:00Z`)
-  return Number.isNaN(t) ? s : withTime.format(t)
-}
-
 const TEXT_MAX = 2000 // the server limit — refusing here saves a round trip for nothing
 
 type State = "editing" | "sending" | "thanks" | "error"
@@ -73,13 +66,18 @@ export const FeedbackBody = ({
   active,
   focus,
   onAiming,
+  onOpen,
 }: {
   screen?: string
   docked: boolean
   active: boolean
-  /** The feedback item a pin click asked for: scrolled into view and highlighted. */
+  /** The item the panel was asked to bring into view: scrolled to and highlighted. It
+   *  travels WITH the thread now — it is what is left of the answer when the item's
+   *  target no longer resolves and no thread can open on it. */
   focus: string | null
   onAiming: (aiming: boolean) => void
+  /** Open an item's thread on the screen, from its row. */
+  onOpen: (id: string) => void
 }) => {
   const notes = useNotes()
   const [showHandled, setShowHandled] = useState(false)
@@ -337,6 +335,7 @@ export const FeedbackBody = ({
                 <ul className="flex flex-col gap-1.5">
                   {shown.map((f) => {
                     const done = f.status === "handled"
+                    const onScreen = f.screen === screen
                     return (
                       <li
                         key={f.id}
@@ -346,7 +345,21 @@ export const FeedbackBody = ({
                         } ${done ? "opacity-70" : ""}`}
                       >
                         <div className="flex items-start gap-2">
-                          <Bubble kind="feedback" n={numberOf(notes.feedback, f.id)} done={done} />
+                          {/* On this screen and still placeable: the number opens the
+                              thread, which is where one answers the item. */}
+                          {onScreen && f.target ? (
+                            <button
+                              type="button"
+                              onClick={() => onOpen(f.id)}
+                              title="Open the thread on the screen"
+                              className="rounded-full transition-transform hover:scale-110"
+                            >
+                              <Bubble kind="feedback" n={numberOf(notes.feedback, f.id)} done={done} />
+                              <span className="sr-only">Open thread {numberOf(notes.feedback, f.id)}</span>
+                            </button>
+                          ) : (
+                            <Bubble kind="feedback" n={numberOf(notes.feedback, f.id)} done={done} />
+                          )}
                           <p className="min-w-0 flex-1 whitespace-pre-wrap text-gray-dark-100 text-sm leading-snug">
                             {f.text}
                           </p>
@@ -370,6 +383,14 @@ export const FeedbackBody = ({
                               <span>{f.screen}</span>
                             </>
                           ) : null}
+                          {f.replies.length ? (
+                            <>
+                              <span>·</span>
+                              <span className="text-gray-dark-300">
+                                {f.replies.length} {f.replies.length > 1 ? "replies" : "reply"}
+                              </span>
+                            </>
+                          ) : null}
                         </div>
                         {f.handled ? (
                           <p className="text-[11px] text-green-200/80 leading-snug">
@@ -383,8 +404,10 @@ export const FeedbackBody = ({
                 </ul>
               )}
               <p className="text-[11px] text-gray-dark-600 leading-relaxed">
-                An item goes from open to handled when the agent works on this flow — it is the
-                agent's to close, the page only shows where it stands.
+                Click a pin, or a number above, to open an item's thread and add a precision —
+                it joins the item in the agent's queue. An item goes from open to handled when
+                the agent works on this flow: it is the agent's to close, the page only shows
+                where it stands.
               </p>
             </>
           )

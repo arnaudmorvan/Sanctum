@@ -11,6 +11,7 @@ import {
   numberOf,
   useNotes,
   versionOf,
+  whenISO as when,
 } from "./notes"
 import { Bubble } from "./pins"
 import { describeElement, type Target } from "./target"
@@ -36,16 +37,6 @@ import { ChosenTarget, Targeting } from "./targeting"
 
 const TEXT_MAX = 2000
 
-const withTime = new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" })
-const dayOnly = new Intl.DateTimeFormat(undefined, { dateStyle: "medium" })
-
-const when = (iso: string): string => {
-  if (!iso) return ""
-  if (/^\d{4}-\d{2}-\d{2}$/.test(iso)) return dayOnly.format(new Date(`${iso}T12:00:00`))
-  const t = Date.parse(iso)
-  return Number.isNaN(t) ? iso : withTime.format(t)
-}
-
 const message = (e: unknown) => (e instanceof Error ? e.message : String(e))
 
 export const CommentsBody = ({
@@ -53,12 +44,17 @@ export const CommentsBody = ({
   active,
   focus,
   onAiming,
+  onOpen,
 }: {
   screen?: string
   active: boolean
-  /** The comment a pin click asked for: scrolled into view and flashed. */
+  /** The comment the panel was asked to bring into view: scrolled to and flashed. It
+   *  travels WITH the thread now — it is what is left of the answer when the note's
+   *  target no longer resolves and no thread can open on it. */
   focus: string | null
   onAiming: (aiming: boolean) => void
+  /** Open a comment's thread on the screen, from its row. */
+  onOpen: (id: string) => void
 }) => {
   const notes = useNotes()
   const [text, setText] = useState("")
@@ -297,7 +293,21 @@ export const CommentsBody = ({
                       } ${done ? "opacity-70" : ""}`}
                     >
                       <div className="flex items-start gap-2">
-                        <Bubble kind="comment" n={n} done={done} />
+                        {/* On this screen and still placeable: the number is the way
+                            into the conversation, which is where it happens. */}
+                        {onScreen && c.target ? (
+                          <button
+                            type="button"
+                            onClick={() => onOpen(c.id)}
+                            title="Open the thread on the screen"
+                            className="rounded-full transition-transform hover:scale-110"
+                          >
+                            <Bubble kind="comment" n={n} done={done} />
+                            <span className="sr-only">Open thread {n}</span>
+                          </button>
+                        ) : (
+                          <Bubble kind="comment" n={n} done={done} />
+                        )}
                         {isEditing ? (
                           <textarea
                             value={draft}
@@ -336,6 +346,19 @@ export const CommentsBody = ({
                         {!c.target ? null : onScreen ? null : (
                           <span className="text-gray-dark-600">· pinned there</span>
                         )}
+                        {c.replies.length ? (
+                          <>
+                            <span>·</span>
+                            <span className="text-gray-dark-300">
+                              {c.replies.length} {c.replies.length > 1 ? "replies" : "reply"}
+                            </span>
+                          </>
+                        ) : null}
+                        {Object.entries(c.reactions).map(([emoji, who]) => (
+                          <span key={emoji} title={who.join(", ")} className="text-gray-dark-300">
+                            {emoji} {who.length}
+                          </span>
+                        ))}
                       </div>
 
                       {isEditing ? (
@@ -430,8 +453,10 @@ export const CommentsBody = ({
         })}
 
         <p className="text-[11px] text-gray-dark-600 leading-relaxed">
-          Comments are for people, not for the agent: it cannot read them. Deleting one removes it
-          from the list; the repo's history keeps it, version included.
+          This tab holds every comment of the flow; the conversation happens on the screen —
+          click a pin, or a number above, to open its thread and answer it. Comments are for
+          people, not for the agent: it cannot read them. Deleting one removes it from the
+          list; the repo's history keeps it, version included.
         </p>
       </div>
     </>
