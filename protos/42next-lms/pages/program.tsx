@@ -10,7 +10,8 @@ import { MODULES, PROGRAM, PROGRAM_VIEWS, STATUS_BADGE } from "../data/learn"
 
 /** Screen 1 — learn.modules of the prototype: a 2-column grid of module cards.
  *  Only the "In progress" card leads to the module screen: that is the nominal path
- *  through the flow, the others stay inert rather than opening an empty screen. */
+ *  through the flow, the others stay inert rather than opening an empty screen.
+ *  Rhythm reused from the 42next-profile survey: sections 16, cards 16, content 12. */
 export const Program = () => (
   <div className="flex flex-col gap-10">
     <Breadcrumb data={[{ label: "Learn", href: "#/learn/program" }, { label: "My program" }]} />
@@ -19,7 +20,7 @@ export const Program = () => (
       <Title order={1} size="2xl" className={TYPO.title()}>{PROGRAM.name}</Title>
       <div className="flex items-center gap-3">
         <Text size="sm" c="muted">program</Text>
-        <Badge variant="outline" size="sm">{PROGRAM.version}</Badge>
+        <Badge variant="light" color="gray">{PROGRAM.version}</Badge>
         <SegmentGroup size="sm" data={PROGRAM_VIEWS} defaultValue="Cards" />
       </div>
     </div>
@@ -32,7 +33,7 @@ export const Program = () => (
             <div className="flex flex-col gap-3">
               <div className="flex items-start justify-between gap-3">
                 <Title order={2} size="sm" className={TYPO.title()}>{m.name}</Title>
-                <Badge variant="outline">{b.label}</Badge>
+                <Badge variant="light" color={b.color}>{b.label}</Badge>
               </div>
               <div className="flex items-center justify-between gap-3">
                 <Text size="xs" c="secondary">{m.skills}</Text>
@@ -43,15 +44,15 @@ export const Program = () => (
             </div>
           </Card.Content>
         )
-        /* 2026-09-08 — the cards are flat: no fill, no signature outline. What sets the
-           module in progress apart is no longer its surface but the fact that it is the
-           only one you can open; the status badge carries the rest. */
+        /* The signature pink outline goes to the single card in progress: that is the
+           one that "opens" the screen. Locked cards stay in default, with no invented
+           greying out — the Locked badge carries the state. */
         return m.open ? (
           <a key={m.slug} href={`#/learn/module/${m.slug}`} className="block">
-            <Card variant="outline" padding="md">{body}</Card>
+            <Card variant="gradient" padding="md">{body}</Card>
           </a>
         ) : (
-          <Card key={m.slug} variant="outline" padding="md">{body}</Card>
+          <Card key={m.slug} variant="default" padding="md">{body}</Card>
         )
       })}
     </div>

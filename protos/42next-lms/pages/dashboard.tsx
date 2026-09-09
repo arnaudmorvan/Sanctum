@@ -21,11 +21,9 @@ import { PageHead, Section, Tag } from "./shell"
 /** Home — `P['dashboard']` of the prototype.
  *
  *  The page answers four questions in this order, and the order is the point: where do I
- *  stand (hero), what did I just win, what is coming at me, and what am I holding.
- *
- *  2026-09-08 — every card is `outline`: transparent surface, no green on the wins, no
- *  orange fill on the tasks. The hierarchy is carried by the order of the sections and by
- *  the words, not by the tint of the surfaces. */
+ *  stand (hero), what did I just win, what is coming at me, and what am I holding. The
+ *  prototype let every section collapse and kept that state across navigation; here the
+ *  sections are open — a prototype that hides its content on open shows nothing. */
 
 const HERO_STATS = [
   { k: "Level", v: HERO.level, href: "#/me/profile" },
@@ -34,7 +32,7 @@ const HERO_STATS = [
 ]
 
 /** The day separators the agenda block drew: a row only carries its day when it opens a
- *  new one. */
+ *  new one. Same rule, done on the list rather than in a loop with a mutable `day`. */
 const withDayBreaks = (rows: typeof COMING_UP) =>
   rows.map((row, i) => ({ row, day: i === 0 || rows[i - 1].day !== row.day ? row.day : null }))
 
@@ -53,7 +51,7 @@ export const Dashboard = () => (
       <div className="flex flex-wrap items-stretch gap-3">
         {HERO_STATS.map((s) => (
           <a key={s.k} href={s.href} className="min-w-40 flex-1">
-            <Card variant="outline" padding="sm" className="h-full">
+            <Card variant="light" padding="sm" className="h-full">
               <Card.Content>
                 <div className="flex flex-col gap-1">
                   <Text size="xs" c="muted">{s.k}</Text>
@@ -81,7 +79,7 @@ export const Dashboard = () => (
     <Section title="Wins">
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         {WINS.map((w) => (
-          <Card key={w.name} variant="outline" padding="sm">
+          <Card key={w.name} variant="light" color="green" padding="sm">
             <Card.Content>
               <div className="flex flex-col gap-1">
                 <Text size="xs" c="muted" className="uppercase">{w.kind}</Text>
@@ -106,7 +104,7 @@ export const Dashboard = () => (
           </Button>
         }
       >
-        <Card variant="outline" padding="none">
+        <Card variant="default" padding="none">
           <Card.Content>
             <div className="flex flex-col">
               {withDayBreaks(COMING_UP).map(({ row, day }) => (
@@ -125,7 +123,7 @@ export const Dashboard = () => (
                       </Text>
                       <Text size="xs" c="muted">{row.loc}</Text>
                     </div>
-                    {row.note ? <Tag>{row.note}</Tag> : null}
+                    {row.note ? <Tag color="orange">{row.note}</Tag> : null}
                   </div>
                   <Divider />
                 </div>
@@ -138,11 +136,11 @@ export const Dashboard = () => (
       <div className="flex flex-col gap-8">
         <Section
           title="Action required"
-          right={<Badge variant="outline" size="sm">{ACTION_REQUIRED.length}</Badge>}
+          right={<Badge variant="light" color="orange" size="sm">{ACTION_REQUIRED.length}</Badge>}
         >
           <div className="flex flex-col gap-3">
             {ACTION_REQUIRED.map((t) => (
-              <Card key={t.title} variant="outline" padding="sm">
+              <Card key={t.title} variant="light" color="orange" padding="sm">
                 <Card.Content>
                   <div className="flex items-center gap-3">
                     <div className="min-w-0 flex-1">
@@ -150,7 +148,7 @@ export const Dashboard = () => (
                       {t.sub ? <Text size="xs" c="muted">{t.sub}</Text> : null}
                     </div>
                     <Text size="xs" c="muted" className="shrink-0">{t.days} d</Text>
-                    <Button variant="outline" size="xs">{t.action}</Button>
+                    <Button variant="light" size="xs">{t.action}</Button>
                   </div>
                 </Card.Content>
               </Card>
@@ -161,7 +159,7 @@ export const Dashboard = () => (
         <Section title="Suggestions">
           <div className="flex flex-col gap-3">
             {SUGGESTIONS.map((s) => (
-              <Card key={s.title} variant="outline" padding="sm">
+              <Card key={s.title} variant="default" padding="sm">
                 <Card.Content>
                   <div className="flex items-center gap-3">
                     <div className="min-w-0 flex-1">
@@ -188,7 +186,7 @@ export const Dashboard = () => (
       <Section title="In progress">
         <div className="flex flex-col gap-3">
           {IN_PROGRESS.map((p) => (
-            <Card key={p.name} variant="outline" padding="md">
+            <Card key={p.name} variant="gradient" padding="md">
               <Card.Content>
                 <div className="flex flex-col gap-2">
                   <div className="flex items-start justify-between gap-3">
@@ -215,7 +213,7 @@ export const Dashboard = () => (
         <div className="flex flex-col gap-3">
           {FRIENDS.map((f) => (
             <a key={f.login} href={`#/profile/${f.login}`}>
-              <Card variant="outline" padding="sm">
+              <Card variant="default" padding="sm">
                 <Card.Content>
                   <div className="flex items-center gap-3">
                     <Avatar name={f.name} size="sm" />
