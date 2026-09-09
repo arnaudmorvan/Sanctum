@@ -1,0 +1,16 @@
+{
+  "slug": "42-time-transformation-prompt-test",
+  "title": "42 — Time transformations (prompt test)",
+  "author": "Arnaud",
+  "summary": "Time transformations staff back-office built from a written spec alone, with no Figma read — the prose counterpart of 42-time-transformation-request, so the two can be compared.",
+  "created_at": "2026-09-09",
+  "updated_at": "2026-09-09",
+  "published_at": "2026-09-09T17:06:59Z",
+  "files": [
+    "data/transformations.ts",
+    "figma-source.json",
+    "pages/past-requests.tsx",
+    "pages/request-detail.tsx",
+    "views.tsx"
+  ]
+}

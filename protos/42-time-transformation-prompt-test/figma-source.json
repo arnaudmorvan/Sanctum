@@ -1,0 +1,10 @@
+{
+  "figma_file_key": "yoP06GsdWscdgqpJMV2YuN",
+  "ds_sync": "2026-09-03",
+  "translated_on": "2026-09-09",
+  "note": "NO SCREEN HERE HAS A FRAME, and that is the point of this flow: it was written from a prose spec alone, with no Figma read, to be compared against 42-time-transformation-request, which was lifted from the mockups of the same product. `node: null` is the honest answer — the Source button does not appear, which is exactly what a reviewer needs to know.",
+  "screens": {
+    "time-transformations": { "node": null, "frame": null },
+    "time-transformations/:login": { "node": null, "frame": null }
+  }
+}
