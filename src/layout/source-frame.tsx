@@ -1,11 +1,12 @@
 import { Columns2, ExternalLink, X } from "lucide-react"
 import { useEffect, useState } from "react"
 import type { ProtoView } from "../proto-types"
-import { TYPO } from "../typo"
 import { useBottomBar } from "./bottom-bar"
 import { compareWithMockupHref } from "./compare-link"
+import { FigmaActions } from "./figma-actions"
 import { renderFrame } from "./figma-render"
 import { frameOf, hasSource, PROVENANCE } from "./figma-source"
+import { SLUG } from "./env"
 import { UI_MARK } from "./target"
 
 /** The "Source" tile of the review rail: the Figma frame THIS screen was built from.
@@ -118,7 +119,9 @@ export const SourceFrame = ({
         {frame ? (
           <span className="font-mono text-[11px] text-gray-dark-600">{frame.node}</span>
         ) : null}
-        {dates ? <span className="text-gray-dark-500 text-xs">{dates}</span> : null}
+        {frame && dates ? (
+          <span className="text-gray-dark-500 text-xs">{dates}</span>
+        ) : null}
 
         <div className="ms-auto flex items-center gap-1" role="group" aria-label="Zoom">
           {(
@@ -175,6 +178,26 @@ export const SourceFrame = ({
         </button>
       </div>
 
+      {/* The three gestures, right here. They used to live only in the compare page, on the
+          reasoning that a gesture deserves one owner — and the state below, "this screen was
+          not translated from a Figma frame", was precisely where one wanted to act. One
+          owner is the COMPONENT (`figma-actions.tsx`), not the location. */}
+      {current?.path ? (
+        <div className="border-gray-dark-800 border-b bg-white/2 px-5 py-2">
+          <FigmaActions
+            slug={SLUG}
+            path={current.path}
+            label={current.label}
+            frameLink={frame?.url ?? ""}
+            frameName={frame?.name ?? ""}
+            // The flow's own bundle CARRIES the provenance, copied in at build time. The
+            // write rebuilt the flow server-side; only a reload can hand this tab the
+            // bundle that knows about it.
+            onLinked={() => window.location.reload()}
+          />
+        </div>
+      ) : null}
+
       <div className="px-5 py-6">
         {/* No frame behind this screen — and since 2026-09-09 that is no longer a dead end:
             the compare page can point it at one, or hand over the prompt that builds the
@@ -188,9 +211,8 @@ export const SourceFrame = ({
                 ? "This screen was not translated from a Figma frame."
                 : "This flow was described, not translated from mockups."}
             </p>
-            <p className={`${TYPO.nav} text-gray-dark-500 text-xs`}>
-              « Compare with the screen » opens the pair: from there you can point this
-              screen at a frame, or copy the prompt that builds one from it.
+            <p className="text-gray-dark-500 text-xs">
+              Link one above, or copy the prompt that builds a frame FROM this screen.
             </p>
           </div>
         ) : null}
@@ -201,7 +223,7 @@ export const SourceFrame = ({
           <div className="flex max-w-prose flex-col gap-2">
             <p className="text-gray-dark-300 text-sm">The frame cannot be shown here.</p>
             <p className="text-gray-dark-500 text-xs">{state.why}</p>
-            <p className={`${TYPO.nav} text-gray-dark-500 text-xs`}>
+            <p className="text-gray-dark-500 text-xs">
               The link above still opens it in Figma.
             </p>
           </div>

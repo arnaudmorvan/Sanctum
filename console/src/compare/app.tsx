@@ -17,7 +17,7 @@ import {
   useState,
 } from "react"
 import { FIGMA, PREV } from "../../../src/layout/compare-link"
-import { fromFigmaPrompt, toFigmaPrompt } from "../../../src/layout/figma-prompts"
+import { FigmaActions } from "../../../src/layout/figma-actions"
 import { TYPO } from "../../../src/typo"
 import { AccessError, get, getFlows, MCP_URL, readKey, writeKey } from "../mcp"
 
@@ -144,16 +144,6 @@ const MODES = [
 type Mode = (typeof MODES)[number]["key"]
 
 const isMode = (v: string | null): v is Mode => MODES.some((m) => m.key === v)
-
-/** Whose first name goes into the commit. Read where the flow's own widgets left it, and
- *  never asked for here: a form that demands a name to accept a link is a form one closes. */
-const whoami = (): string => {
-  try {
-    return (localStorage.getItem("feedback-author") ?? "").slice(0, 60)
-  } catch {
-    return ""
-  }
-}
 
 const withTime = new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" })
 const when = (iso: string) => {
@@ -643,160 +633,6 @@ const SideHeader = ({
   )
 }
 
-// ------------------------------------------------------------------ the Figma bar
-
-/** What one does WITH the pair, once the two are side by side — and it is deliberately in
- *  the compare page rather than in the flow's rail: this is where the gap is visible, and
- *  the page already holds the console key that the write needs (a flow's bundle does not).
- *
- *  Three gestures, and only the first is ours to perform:
- *   • LINK a frame — `POST /console/protos/source.json`. It is what turned the provenance
- *     from something a skill stamps once into a property of the screen: a flow described
- *     orally can be given its mockup, and a node-id copied wrong can be corrected here
- *     instead of costing a republication;
- *   • SEND to Figma, and REFRESH from it — neither is something a browser can do (see
- *     `figma-prompts.ts`). The button copies the exact sentence, skill named, and the
- *     person pastes it into a conversation that has the MCPs. */
-const FigmaBar = ({
-  slug,
-  path,
-  label,
-  frameLink,
-  frameName,
-  canWrite,
-  onLinked,
-}: {
-  slug: string
-  path: string
-  label: string
-  frameLink: string
-  frameName: string
-  canWrite: boolean
-  onLinked: () => void
-}) => {
-  const [linking, setLinking] = useState(false)
-  const [value, setValue] = useState("")
-  const [busy, setBusy] = useState(false)
-  const [error, setError] = useState("")
-  const [copied, setCopied] = useState("")
-
-  const copy = async (what: string, text: string) => {
-    try {
-      await navigator.clipboard.writeText(text)
-      setCopied(what)
-      window.setTimeout(() => setCopied(""), 2000)
-    } catch {
-      setError("the browser refused the clipboard — the prompt is in the console log.")
-      console.log(text)
-    }
-  }
-
-  const save = async (e: FormEvent) => {
-    e.preventDefault()
-    setBusy(true)
-    setError("")
-    try {
-      const r = await fetch(`${MCP_URL}/console/protos/source.json`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "X-DS-Key": readKey() },
-        body: JSON.stringify({ slug, path, url: value.trim(), author: whoami() }),
-      })
-      if (!r.ok) throw new Error(await detail(r))
-      setLinking(false)
-      setValue("")
-      onLinked()
-    } catch (err) {
-      setError(err instanceof Error ? err.message : String(err))
-    } finally {
-      setBusy(false)
-    }
-  }
-
-  const chip =
-    "flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-[11px] text-gray-dark-400 transition-colors hover:bg-white/5 hover:text-white disabled:opacity-40 disabled:hover:bg-transparent"
-
-  return (
-    <div className="flex shrink-0 flex-wrap items-center gap-x-2 gap-y-1 border-gray-dark-800 border-b bg-white/2 px-3 py-2">
-      <span className={`${TYPO.mono("semibold")} text-[11px] text-gray-dark-500 uppercase`}>
-        figma
-      </span>
-      <span className="max-w-[22rem] truncate text-gray-dark-400 text-xs">
-        {frameName || (frameLink ? "linked frame" : "no frame declared for this screen")}
-      </span>
-
-      <span className="ms-auto flex flex-wrap items-center gap-1">
-        <button
-          type="button"
-          onClick={() => {
-            setLinking((v) => !v)
-            setValue(frameLink)
-          }}
-          aria-expanded={linking}
-          disabled={!canWrite}
-          title={
-            canWrite
-              ? "Point this screen at a Figma frame — or correct the one it names"
-              : "Writing the provenance needs the console key: enter it above"
-          }
-          className={chip}
-        >
-          <Link2 size={13} aria-hidden="true" />
-          {frameLink ? "Change the frame" : "Link a frame…"}
-        </button>
-        <button
-          type="button"
-          onClick={() => copy("to", toFigmaPrompt(slug, path, label))}
-          title="Copy the prompt that rebuilds this screen as a Figma frame, in the DS"
-          className={chip}
-        >
-          <ExternalLink size={13} aria-hidden="true" />
-          {copied === "to" ? "Prompt copied" : "Send to Figma"}
-        </button>
-        <button
-          type="button"
-          onClick={() => copy("from", fromFigmaPrompt(slug, path, label, frameLink))}
-          disabled={!frameLink}
-          title={
-            frameLink
-              ? "Copy the prompt that re-lifts this screen from its frame"
-              : "This screen names no frame yet — link one first"
-          }
-          className={chip}
-        >
-          <ArrowLeft size={13} aria-hidden="true" />
-          {copied === "from" ? "Prompt copied" : "Refresh from Figma"}
-        </button>
-      </span>
-
-      {linking ? (
-        <form onSubmit={save} className="flex w-full flex-wrap items-center gap-2 pt-1">
-          <input
-            type="url"
-            value={value}
-            autoFocus
-            placeholder="paste the Figma link of the frame (Copy link to selection)"
-            onChange={(e) => setValue(e.target.value)}
-            className="min-w-0 flex-1 rounded-md border border-gray-dark-800 bg-white/2 px-3 py-1.5 text-white text-xs placeholder:text-gray-dark-500 focus:border-white/30 focus:outline-none"
-          />
-          <button
-            type="submit"
-            disabled={busy}
-            className="rounded-md bg-white/10 px-3 py-1.5 font-semibold text-white text-xs hover:bg-white/15 disabled:opacity-40"
-          >
-            {busy ? "Writing…" : "Link"}
-          </button>
-          {/* An empty field is not a mistake: it is how a screen is declared to have no
-              mockup behind it, which is a normal state of a composed drill-down. */}
-          <span className="text-[11px] text-gray-dark-500">
-            Empty ⇒ this screen has no mockup.
-          </span>
-        </form>
-      ) : null}
-      {error ? <p className="w-full text-[11px] text-pink-400">{error}</p> : null}
-    </div>
-  )
-}
-
 // ------------------------------------------------------------------ the page
 
 const readParams = () => {
@@ -1228,16 +1064,19 @@ export const CompareApp = () => {
         ) : null}
       </header>
 
+      {/* The same three gestures as the flow's Source panel — one component, two mounts
+          (`src/layout/figma-actions.tsx`). Here they act on the pair one is looking at. */}
       {mockupPane && flowPane && screen ? (
-        <FigmaBar
-          slug={mockupPane.loc.slug}
-          path={screen.path}
-          label={screen.label}
-          frameLink={mockupPane.figmaLink}
-          frameName={mockupPane.figmaName}
-          canWrite={Boolean(key)}
-          onLinked={() => setMockupNonce((n) => n + 1)}
-        />
+        <div className="shrink-0 border-gray-dark-800 border-b bg-white/2 px-3 py-2">
+          <FigmaActions
+            slug={mockupPane.loc.slug}
+            path={screen.path}
+            label={screen.label}
+            frameLink={mockupPane.figmaLink}
+            frameName={mockupPane.figmaName}
+            onLinked={() => setMockupNonce((n) => n + 1)}
+          />
+        </div>
       ) : null}
 
       {mode === "side" ? (
