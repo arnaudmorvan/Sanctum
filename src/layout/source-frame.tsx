@@ -1,9 +1,10 @@
-import { ExternalLink, Frame, X } from "lucide-react"
+import { Columns2, ExternalLink, X } from "lucide-react"
 import { useEffect, useState } from "react"
 import type { ProtoView } from "../proto-types"
 import { TYPO } from "../typo"
 import { useBottomBar } from "./bottom-bar"
-import { FEEDBACK_KEY, MCP_URL, SLUG } from "./env"
+import { compareWithMockupHref } from "./compare-link"
+import { renderFrame } from "./figma-render"
 import { frameOf, hasSource, PROVENANCE } from "./figma-source"
 import { UI_MARK } from "./target"
 
@@ -30,43 +31,21 @@ import { UI_MARK } from "./target"
  *  Since 2026-09-08 it opens from the review rail, next to the Map — but it is still NOT a
  *  tab of the panel: the panel is what one says ABOUT the flow, this is what the screen IS,
  *  and it is shown full width. The overlay covers the screen rather than shrinking it —
- *  comparing is done by FLIPPING (Escape closes), not by squeezing two things into one
- *  width. Which is also why the tile disappears on a screen with no frame behind it. */
-
-type Loaded = { url: string; frame: string }
-
-// Per-screen memo: flipping between the mockup and the screen must not re-ask on every
-// open. The server caches the render too — this one saves the round-trip itself.
-const memo = new Map<string, Loaded>()
+ *  looking is done by FLIPPING (Escape closes), not by squeezing two things into one width.
+ *  Which is also why the tile disappears on a screen with no frame behind it.
+ *
+ *  MEASURING is a different gesture, and it is not done here: "Compare with the screen"
+ *  hands this screen and its mockup to `/compare/`, which lays both out at the width the
+ *  frame was designed at and stacks them — curtain, flip, opacity, difference. Flipping
+ *  between two tabs tells you something is off; only a superposition tells you by how much.
+ *  The render itself belongs to neither: `figma-render.ts` owns it, and the mockup side of
+ *  the compare page is this same flow rendered `?bare&figma`. */
 
 type State =
   | { kind: "idle" }
   | { kind: "loading" }
   | { kind: "ok"; url: string }
   | { kind: "off"; why: string }
-
-const fetchFrame = async (path: string): Promise<Loaded> => {
-  const hit = memo.get(path)
-  if (hit) return hit
-  // `npm run dev <slug>` bakes no key: saying so beats a 401 read as a Figma problem.
-  if (!FEEDBACK_KEY) throw new Error("this build carries no feedback key, so it cannot ask for a render.")
-  const url = `${MCP_URL}/figma/frame.json?slug=${encodeURIComponent(SLUG)}&path=${encodeURIComponent(path)}&scale=2`
-  const res = await fetch(url, { headers: { "X-Feedback-Key": FEEDBACK_KEY } })
-  // The route does not exist when the server has no FIGMA_TOKEN — fail-closed, by
-  // design. A 404 that is not our JSON is that case, and it is not a failure of the flow.
-  const body = await res.json().catch(() => null)
-  if (!res.ok || !body?.url) {
-    throw new Error(
-      body?.error ??
-        (res.status === 404
-          ? "this server does not render frames (no Figma token configured)."
-          : `the render failed (HTTP ${res.status}).`),
-    )
-  }
-  const loaded: Loaded = { url: body.url as string, frame: (body.frame as string) ?? "" }
-  memo.set(path, loaded)
-  return loaded
-}
 
 /** Controlled, like the map: the tile that opens it is in the review rail. */
 export const SourceFrame = ({
@@ -84,6 +63,8 @@ export const SourceFrame = ({
   const barHeight = useBottomBar()
 
   const frame = frameOf(current?.path)
+  // Read at render, like the rail's own Compare tile: the hash is part of the link.
+  const compare = open ? compareWithMockupHref() : null
 
   useEffect(() => {
     if (!open) return
@@ -104,8 +85,8 @@ export const SourceFrame = ({
     }
     let alive = true
     setState({ kind: "loading" })
-    fetchFrame(current.path)
-      .then((l) => alive && setState({ kind: "ok", url: l.url }))
+    renderFrame(current.path)
+      .then((r) => alive && setState({ kind: "ok", url: r.url }))
       .catch((e: Error) => alive && setState({ kind: "off", why: e.message }))
     return () => {
       alive = false
@@ -160,6 +141,18 @@ export const SourceFrame = ({
             </button>
           ))}
         </div>
+        {compare ? (
+          <a
+            href={compare}
+            target="_blank"
+            rel="noreferrer"
+            title="This screen and its mockup in the same box — curtain, flip, opacity, difference"
+            className="flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-gray-dark-400 text-xs transition-colors hover:bg-white/5 hover:text-white"
+          >
+            <Columns2 size={13} aria-hidden="true" />
+            Compare with the screen
+          </a>
+        ) : null}
         <a
           href={frame.url}
           target="_blank"

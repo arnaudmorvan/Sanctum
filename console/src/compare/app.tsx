@@ -7,6 +7,7 @@ import {
   Link2Off,
 } from "lucide-react"
 import {
+  type CSSProperties,
   type FormEvent,
   type RefObject,
   useCallback,
@@ -15,7 +16,7 @@ import {
   useRef,
   useState,
 } from "react"
-import { PREV } from "../../../src/layout/compare-link"
+import { FIGMA, PREV } from "../../../src/layout/compare-link"
 import { TYPO } from "../../../src/typo"
 import { AccessError, get, getFlows, MCP_URL, readKey, writeKey } from "../mcp"
 
@@ -64,6 +65,8 @@ type EmbedState = {
   version: string
   hash: string
   views: EmbedView[]
+  /** Only from a side rendered as the mockup: the width the frame was designed at. */
+  figmaWidth?: number
 }
 
 type Status =
@@ -100,19 +103,43 @@ const parseLocator = (raw: string | null): Locator | null => {
   const hash = hashAt >= 0 ? raw.slice(hashAt) : ""
   const [slug, sha = ""] = head.split("@")
   if (!SLUG_RE.test(slug)) return null
-  if (sha && sha !== PREV && !SHA_RE.test(sha)) return null
-  return { slug, sha: sha === PREV ? PREV : sha.slice(0, 7), hash }
+  if (sha && sha !== PREV && sha !== FIGMA && !SHA_RE.test(sha)) return null
+  return { slug, sha: sha === PREV || sha === FIGMA ? sha : sha.slice(0, 7), hash }
 }
 
 const formatLocator = (l: Locator) => `${l.slug}${l.sha ? `@${l.sha}` : ""}${l.hash}`
 
-const baseOf = (l: Locator) => (l.sha ? `/v/${l.slug}/${l.sha}/` : `/p/${l.slug}/`)
+// The mockup is served by the LIVE flow, in a mode of its own (`?bare&figma`): it is not a
+// past version of anything, and there is nothing to build for it.
+const isMockup = (l: Locator) => l.sha === FIGMA
+
+const baseOf = (l: Locator) =>
+  l.sha && !isMockup(l) ? `/v/${l.slug}/${l.sha}/` : `/p/${l.slug}/`
 
 const WIDTHS = [
   { key: 1280, label: "1280" },
   { key: 1440, label: "1440" },
   { key: 0, label: "Fit" },
+]
+
+/** How the two sides are shown. `side` is the historical page: two columns.
+ *
+ *  The four others STACK them in one box, and they exist because two columns answer
+ *  "are these the same?" and nothing more precise. A 4 px shift is invisible between two
+ *  neighbouring columns and obvious the moment the two are laid on top of each other —
+ *  which is only meaningful if both are laid out at the SAME width, hence the frame's
+ *  design width becoming a width option the moment a mockup side reports it. */
+const MODES = [
+  { key: "side", label: "Side by side", hint: "Two columns, the historical view" },
+  { key: "curtain", label: "Curtain", hint: "Drag the divider: A on the left, B on the right" },
+  { key: "flip", label: "Flip", hint: "Alternate the two in place — press F" },
+  { key: "opacity", label: "Opacity", hint: "Dissolve B into A" },
+  { key: "difference", label: "Difference", hint: "What is identical goes black; what differs lights up" },
 ] as const
+
+type Mode = (typeof MODES)[number]["key"]
+
+const isMode = (v: string | null): v is Mode => MODES.some((m) => m.key === v)
 
 const withTime = new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" })
 const when = (iso: string) => {
@@ -164,6 +191,8 @@ type Pane = {
   views: EmbedView[]
   /** The hash the frame reports — the truth once it has loaded. */
   hash: string
+  /** Reported by a mockup side once its picture is in: the width it was designed at. */
+  figmaWidth: number
 }
 
 type PaneHandle = {
@@ -179,6 +208,7 @@ const usePane = (initial: Locator | null, key: string): PaneHandle => {
   const [status, setStatus] = useState<Status>({ kind: "idle" })
   const [views, setViews] = useState<EmbedView[]>([])
   const [hash, setHash] = useState(initial?.hash ?? "")
+  const [figmaWidth, setFigmaWidth] = useState(0)
 
   // Resolving the base: a live flow is a path; a past version is checked, then built.
   // Keyed on slug + sha — a hash change must NOT rebuild the side.
@@ -197,7 +227,8 @@ const usePane = (initial: Locator | null, key: string): PaneHandle => {
     }
     const l = { slug, sha, hash: "" }
     const base = baseOf(l)
-    if (!sha) {
+    // The live flow, and the mockup it declares, are both already on the site.
+    if (!sha || isMockup(l)) {
       setStatus({ kind: "ready", base })
       return
     }
@@ -231,7 +262,10 @@ const usePane = (initial: Locator | null, key: string): PaneHandle => {
   const locRef = useRef(loc)
   locRef.current = loc
   const set = useCallback((l: Locator) => {
-    if (l.slug !== locRef.current.slug || l.sha !== locRef.current.sha) setViews([])
+    if (l.slug !== locRef.current.slug || l.sha !== locRef.current.sha) {
+      setViews([])
+      setFigmaWidth(0)
+    }
     setLoc(l)
     setHash(l.hash)
   }, [])
@@ -239,9 +273,13 @@ const usePane = (initial: Locator | null, key: string): PaneHandle => {
   const report = useCallback((s: EmbedState) => {
     setViews(s.views)
     setHash(s.hash)
+    if (s.figmaWidth) setFigmaWidth(s.figmaWidth)
   }, [])
 
-  const pane: Pane = useMemo(() => ({ loc, status, views, hash }), [loc, status, views, hash])
+  const pane: Pane = useMemo(
+    () => ({ loc, status, views, hash, figmaWidth }),
+    [loc, status, views, hash, figmaWidth],
+  )
   return { pane, set, report }
 }
 
@@ -275,7 +313,9 @@ const Frame = ({
   const frameW = width || size.w
   const scale = frameW && size.w ? Math.min(1, size.w / frameW) : 1
   const src =
-    pane.status.kind === "ready" ? `${pane.status.base}?bare${pane.loc.hash}` : undefined
+    pane.status.kind === "ready"
+      ? `${pane.status.base}?bare${isMockup(pane.loc) ? "&figma" : ""}${pane.loc.hash}`
+      : undefined
 
   return (
     <div ref={box} className="relative min-h-0 flex-1 overflow-hidden bg-gray-dark-950">
@@ -335,6 +375,127 @@ const Frame = ({
   )
 }
 
+// ------------------------------------------------------------------ the stacked stage
+
+/** The two sides IN ONE BOX. Everything here rests on a single condition, and it is the
+ *  reason the mockup reports its design width: both frames are laid out at the SAME width
+ *  and scaled by the SAME factor, so a pixel of one is a pixel of the other. Scaled to
+ *  anything else, the built screen reflows while the picture merely shrinks, and the
+ *  superposition compares two things that were never the same thing.
+ *
+ *  A is the ground and never moves. B is the layer, and the mode is nothing more than how
+ *  B is painted over it: clipped (curtain), shown or not (flip), dissolved (opacity), or
+ *  blended (difference). Which is why the four cost so little next to the first: the hard
+ *  part was the alignment, not the four styles. */
+const Stage = ({
+  a,
+  b,
+  width,
+  mode,
+  curtain,
+  blend,
+  showB,
+  nudge,
+  frameA,
+  frameB,
+  onCurtain,
+}: {
+  a: Pane
+  b: Pane
+  width: number
+  mode: Mode
+  curtain: number
+  blend: number
+  showB: boolean
+  nudge: { x: number; y: number }
+  frameA: RefObject<HTMLIFrameElement | null>
+  frameB: RefObject<HTMLIFrameElement | null>
+  onCurtain: (pct: number) => void
+}) => {
+  const stage = useRef<HTMLDivElement | null>(null)
+  const [dragging, setDragging] = useState(false)
+
+  const at = (clientX: number) => {
+    const r = stage.current?.getBoundingClientRect()
+    if (!r?.width) return
+    onCurtain(Math.min(100, Math.max(0, ((clientX - r.left) / r.width) * 100)))
+  }
+
+  const layer: Record<Mode, CSSProperties> = {
+    side: {},
+    curtain: { clipPath: `inset(0 0 0 ${curtain}%)` },
+    flip: { opacity: showB ? 1 : 0, pointerEvents: showB ? "auto" : "none" },
+    opacity: { opacity: blend },
+    difference: { mixBlendMode: "difference" },
+  }
+
+  return (
+    <div
+      ref={stage}
+      className="relative min-h-0 flex-1 overflow-hidden bg-gray-dark-950"
+      // The blend of the difference mode must not reach the page behind the stage.
+      style={{ isolation: "isolate" }}
+    >
+      <div className="absolute inset-0 flex">
+        <Frame pane={a} width={width} frameRef={frameA} />
+      </div>
+      <div
+        className="absolute inset-0 flex"
+        style={{
+          ...layer[mode],
+          // The NUDGE. A superposition almost always starts with a global offset — a
+          // container padded differently, a header one line taller — and until it is
+          // cancelled, every element reads as wrong and none of them stands out. Moving
+          // the layer until the two agree somewhere turns "everything is off" into "this
+          // is off", which is the finding one came for.
+          ...(nudge.x || nudge.y
+            ? { transform: `translate(${nudge.x}px, ${nudge.y}px)` }
+            : {}),
+        }}
+      >
+        <Frame pane={b} width={width} frameRef={frameB} />
+      </div>
+
+      {mode === "curtain" ? (
+        <>
+          <div
+            className="pointer-events-none absolute inset-y-0 w-px bg-white/40"
+            style={{ left: `${curtain}%` }}
+            aria-hidden="true"
+          />
+          {/* A HANDLE, not a stage that follows the pointer: the frames stay clickable,
+              which is half of what one comes to check on a built screen. */}
+          <div
+            role="slider"
+            tabIndex={0}
+            aria-label="Curtain position"
+            aria-valuenow={Math.round(curtain)}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            onPointerDown={(e) => {
+              e.currentTarget.setPointerCapture(e.pointerId)
+              setDragging(true)
+            }}
+            onPointerMove={(e) => dragging && at(e.clientX)}
+            onPointerUp={(e) => {
+              e.currentTarget.releasePointerCapture(e.pointerId)
+              setDragging(false)
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "ArrowLeft") onCurtain(Math.max(0, curtain - (e.shiftKey ? 10 : 1)))
+              if (e.key === "ArrowRight") onCurtain(Math.min(100, curtain + (e.shiftKey ? 10 : 1)))
+            }}
+            className="-translate-x-1/2 absolute inset-y-0 z-10 flex w-6 cursor-col-resize touch-none items-center justify-center focus:outline-none"
+            style={{ left: `${curtain}%` }}
+          >
+            <span className="h-10 w-1.5 rounded-full bg-white/70 shadow" />
+          </div>
+        </>
+      ) : null}
+    </div>
+  )
+}
+
 // ------------------------------------------------------------------ the header of a side
 
 const SideHeader = ({
@@ -357,7 +518,10 @@ const SideHeader = ({
   const version = versions?.find((v) => v.short === loc.sha)
   const screens = pane.views.filter((v) => !v.hidden || v.href === pane.hash)
   const current = pane.hash || loc.hash
-  const open = pane.status.kind === "ready" ? `${pane.status.base}${current}` : ""
+  const open =
+    pane.status.kind === "ready"
+      ? `${pane.status.base}${isMockup(loc) ? `?bare&figma${current}` : current}`
+      : ""
 
   const select =
     "min-w-0 rounded-md border border-gray-dark-800 bg-white/2 px-2 py-1 text-white text-xs focus:border-white/30 focus:outline-none disabled:opacity-40"
@@ -394,6 +558,9 @@ const SideHeader = ({
         className={`${select} max-w-[16rem] font-mono`}
       >
         <option value="">live</option>
+        {/* The mockup is a version of the screen — the designed one. It needs no history
+            and no key: it is the flow rendered `?bare&figma`, which the live build serves. */}
+        <option value={FIGMA}>Figma frame</option>
         {(versions ?? []).map((v, i) => (
           <option key={v.sha} value={v.short}>
             {when(v.date)}
@@ -401,7 +568,7 @@ const SideHeader = ({
             {v.author ? ` · ${v.author}` : ""}
           </option>
         ))}
-        {loc.sha && !version ? (
+        {loc.sha && !version && loc.sha !== FIGMA ? (
           <option value={loc.sha}>{loc.sha === PREV ? "previous version…" : loc.sha}</option>
         ) : null}
       </select>
@@ -447,7 +614,8 @@ const SideHeader = ({
 
 const readParams = () => {
   const q = new URLSearchParams(window.location.search)
-  return { a: parseLocator(q.get("a")), b: parseLocator(q.get("b")) }
+  const m = q.get("m")
+  return { a: parseLocator(q.get("a")), b: parseLocator(q.get("b")), m: isMode(m) ? m : "side" }
 }
 
 export const CompareApp = () => {
@@ -458,6 +626,14 @@ export const CompareApp = () => {
   const [flows, setFlows] = useState<Flow[]>([])
   const [histories, setHistories] = useState<Record<string, Version[] | null>>({})
   const [width, setWidth] = useState<number>(1280)
+  // The width follows the mockup as soon as one says how wide it was drawn — until someone
+  // picks one by hand, after which the page stops deciding for them.
+  const [autoWidth, setAutoWidth] = useState(true)
+  const [mode, setMode] = useState<Mode>(initial.m)
+  const [curtain, setCurtain] = useState(50)
+  const [blend, setBlend] = useState(0.5)
+  const [showB, setShowB] = useState(true)
+  const [nudge, setNudge] = useState({ x: 0, y: 0 })
   const { pane: a, set: setA, report: reportA } = usePane(initial.a, key)
   const { pane: b, set: setB, report: reportB } = usePane(initial.b ?? initial.a, key)
   // Sync starts ON when both sides are the same flow on the same screen — the "two
@@ -469,6 +645,56 @@ export const CompareApp = () => {
   })
   const frameA = useRef<HTMLIFrameElement | null>(null)
   const frameB = useRef<HTMLIFrameElement | null>(null)
+
+  const frameWidth = a.figmaWidth || b.figmaWidth
+  useEffect(() => {
+    if (frameWidth && autoWidth) setWidth(frameWidth)
+  }, [frameWidth, autoWidth])
+
+  /** The two shortcuts of a superposition — F alternates the layers, the arrows move the
+   *  top one (Shift × 10, 0 puts it back). They come from TWO places: this page, and the
+   *  frames themselves, which give these keys up (`sanctum:key`). Without that, a click
+   *  anywhere on the stage — that is, on a frame — would silently end the shortcuts, since
+   *  the focus is then inside another document. */
+  const shortcut = useCallback(
+    (key: string, shift: boolean) => {
+      if (mode === "side") return
+      if (key.toLowerCase() === "f") {
+        if (mode === "flip") setShowB((v) => !v)
+        return
+      }
+      // In the curtain the arrows belong to the divider, which has its own handler.
+      if (mode === "curtain") return
+      if (key === "0") {
+        setNudge({ x: 0, y: 0 })
+        return
+      }
+      const step = shift ? 10 : 1
+      const by: Record<string, [number, number]> = {
+        ArrowLeft: [-step, 0],
+        ArrowRight: [step, 0],
+        ArrowUp: [0, -step],
+        ArrowDown: [0, step],
+      }
+      const d = by[key]
+      if (!d) return
+      setNudge((n) => ({ x: n.x + d[0], y: n.y + d[1] }))
+    },
+    [mode],
+  )
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const el = e.target as HTMLElement | null
+      if (el && /^(INPUT|SELECT|TEXTAREA)$/.test(el.tagName)) return
+      if (e.metaKey || e.ctrlKey || e.altKey) return
+      if (!/^(Arrow(Left|Right|Up|Down)|f|F|0)$/.test(e.key)) return
+      e.preventDefault()
+      shortcut(e.key, e.shiftKey)
+    }
+    window.addEventListener("keydown", onKey)
+    return () => window.removeEventListener("keydown", onKey)
+  }, [shortcut])
 
   useEffect(() => {
     getFlows<Flow[]>()
@@ -519,8 +745,9 @@ export const CompareApp = () => {
     const q = new URLSearchParams()
     if (a.loc.slug) q.set("a", formatLocator({ ...a.loc, hash: a.hash || a.loc.hash }))
     if (b.loc.slug) q.set("b", formatLocator({ ...b.loc, hash: b.hash || b.loc.hash }))
+    if (mode !== "side") q.set("m", mode)
     window.history.replaceState(null, "", `${window.location.pathname}?${q.toString()}`)
-  }, [a.loc, a.hash, b.loc, b.hash])
+  }, [a.loc, a.hash, b.loc, b.hash, mode])
 
   const navigate = useCallback((frame: HTMLIFrameElement | null, hash: string) => {
     frame?.contentWindow?.postMessage(
@@ -530,21 +757,43 @@ export const CompareApp = () => {
   }, [])
 
   // The frames talk: state in, navigation out. With sync on, a move on one side is
-  // replayed on the other.
+  // replayed on the other — and so is a SCROLL, which the stacked modes cannot do without:
+  // two screens laid on top of each other are only comparable while they show the same part
+  // of themselves. In side-by-side it follows the sync, which is what that button means.
   useEffect(() => {
-    const onMessage = (e: MessageEvent<EmbedState>) => {
-      if (e.origin !== window.location.origin || e.data?.type !== "sanctum:state") return
+    const onMessage = (
+      e: MessageEvent<
+        | EmbedState
+        | { type: "sanctum:scroll"; top: number }
+        | { type: "sanctum:key"; key: string; shiftKey: boolean }
+      >,
+    ) => {
+      if (e.origin !== window.location.origin) return
       const fromA = e.source === frameA.current?.contentWindow
       const fromB = e.source === frameB.current?.contentWindow
       if (!fromA && !fromB) return
       const other = fromA ? frameB.current : frameA.current
+
+      if (e.data?.type === "sanctum:key") {
+        shortcut(e.data.key, e.data.shiftKey)
+        return
+      }
+      if (e.data?.type === "sanctum:scroll") {
+        if (mode === "side" && !sync) return
+        other?.contentWindow?.postMessage(
+          { type: "sanctum:scroll-to", top: e.data.top },
+          window.location.origin,
+        )
+        return
+      }
+      if (e.data?.type !== "sanctum:state") return
       const otherPane = fromA ? b : a
       ;(fromA ? reportA : reportB)(e.data)
       if (sync && e.data.hash && e.data.hash !== otherPane.hash) navigate(other, e.data.hash)
     }
     window.addEventListener("message", onMessage)
     return () => window.removeEventListener("message", onMessage)
-  }, [a, b, sync, navigate, reportA, reportB])
+  }, [a, b, sync, mode, navigate, reportA, reportB, shortcut])
 
   const change = (side: Side, l: Locator, why: "flow" | "version" | "screen") => {
     const set = side === "a" ? setA : setB
@@ -595,6 +844,12 @@ export const CompareApp = () => {
     setHistories({})
   }
 
+  // The frame's own width joins the list the moment a mockup side reports it, and leads —
+  // it is the only one of them that makes a superposition exact.
+  const widths = frameWidth
+    ? [{ key: frameWidth, label: `${frameWidth} · frame` }, ...WIDTHS.filter((w) => w.key !== frameWidth)]
+    : WIDTHS
+
   const control = (on: boolean) =>
     `flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs transition-colors ${
       on ? "bg-white/10 font-semibold text-white" : "text-gray-dark-400 hover:bg-white/5 hover:text-white"
@@ -637,14 +892,80 @@ export const CompareApp = () => {
             Swap
           </button>
           <span className="mx-1 h-4 w-px bg-gray-dark-800" aria-hidden="true" />
+          <span role="group" aria-label="How the two sides are shown" className="flex items-center gap-0.5">
+            {MODES.map((m) => (
+              <button
+                key={m.key}
+                type="button"
+                onClick={() => setMode(m.key)}
+                aria-pressed={mode === m.key}
+                title={m.hint}
+                className={`rounded-md px-2 py-1 text-[11px] transition-colors ${
+                  mode === m.key
+                    ? "bg-white/10 font-semibold text-white"
+                    : "text-gray-dark-400 hover:bg-white/5 hover:text-white"
+                }`}
+              >
+                {m.label}
+              </button>
+            ))}
+          </span>
+          {mode === "opacity" ? (
+            <input
+              type="range"
+              min={0}
+              max={1}
+              step={0.02}
+              value={blend}
+              onChange={(e) => setBlend(Number(e.target.value))}
+              aria-label="Opacity of side B"
+              title="How much of B shows through A"
+              className="mx-1 w-28 accent-white"
+            />
+          ) : null}
+          {mode !== "side" && mode !== "curtain" ? (
+            <button
+              type="button"
+              onClick={() => setNudge({ x: 0, y: 0 })}
+              title="Arrow keys move the top layer (Shift × 10) — cancel a global offset to see what is left. 0 resets."
+              className={control(Boolean(nudge.x || nudge.y))}
+            >
+              <span className="font-mono text-[11px]">
+                {nudge.x || nudge.y ? `${nudge.x > 0 ? "+" : ""}${nudge.x}, ${nudge.y > 0 ? "+" : ""}${nudge.y}` : "0, 0"}
+              </span>
+            </button>
+          ) : null}
+          {mode === "flip" ? (
+            <button
+              type="button"
+              onClick={() => setShowB((v) => !v)}
+              title="Alternate the two — or press F"
+              className={control(false)}
+            >
+              {showB ? "Showing B" : "Showing A"}
+              <kbd className="rounded border border-gray-dark-700 px-1 font-mono text-[10px] text-gray-dark-500">
+                F
+              </kbd>
+            </button>
+          ) : null}
+          <span className="mx-1 h-4 w-px bg-gray-dark-800" aria-hidden="true" />
           <span role="group" aria-label="Frame width" className="flex items-center gap-0.5">
-            {WIDTHS.map((w) => (
+            {widths.map((w) => (
               <button
                 key={w.key}
                 type="button"
-                onClick={() => setWidth(w.key)}
+                onClick={() => {
+                  setAutoWidth(false)
+                  setWidth(w.key)
+                }}
                 aria-pressed={width === w.key}
-                title={w.key ? `Render both sides at ${w.key} px and scale to fit` : "Native width of each column"}
+                title={
+                  w.key
+                    ? w.key === frameWidth
+                      ? `The width the Figma frame was designed at — both sides laid out at ${w.key} px, which is what makes them superposable`
+                      : `Render both sides at ${w.key} px and scale to fit`
+                    : "Native width of each column"
+                }
                 className={`rounded-md px-2 py-1 font-mono text-[11px] transition-colors ${
                   width === w.key
                     ? "bg-white/10 font-semibold text-white"
@@ -709,30 +1030,68 @@ export const CompareApp = () => {
         ) : null}
       </header>
 
-      <div className="grid min-h-0 flex-1 grid-cols-1 md:grid-cols-2">
-        {(
-          [
-            { side: "a", pane: a, ref: frameA },
-            { side: "b", pane: b, ref: frameB },
-          ] as const
-        ).map(({ side, pane, ref }) => (
-          <section
-            key={side}
-            aria-label={`Side ${side.toUpperCase()}`}
-            className={`flex min-h-0 flex-col ${side === "a" ? "md:border-gray-dark-800 md:border-e" : ""}`}
-          >
-            <SideHeader
-              side={side}
-              pane={pane}
-              flows={flows}
-              versions={histories[pane.loc.slug] ?? null}
-              onChange={(l, why) => change(side, l, why)}
-              sync={sync}
-            />
-            <Frame pane={pane} width={width} frameRef={ref} />
-          </section>
-        ))}
-      </div>
+      {mode === "side" ? (
+        <div className="grid min-h-0 flex-1 grid-cols-1 md:grid-cols-2">
+          {(
+            [
+              { side: "a", pane: a, ref: frameA },
+              { side: "b", pane: b, ref: frameB },
+            ] as const
+          ).map(({ side, pane, ref }) => (
+            <section
+              key={side}
+              aria-label={`Side ${side.toUpperCase()}`}
+              className={`flex min-h-0 flex-col ${side === "a" ? "md:border-gray-dark-800 md:border-e" : ""}`}
+            >
+              <SideHeader
+                side={side}
+                pane={pane}
+                flows={flows}
+                versions={histories[pane.loc.slug] ?? null}
+                onChange={(l, why) => change(side, l, why)}
+                sync={sync}
+              />
+              <Frame pane={pane} width={width} frameRef={ref} />
+            </section>
+          ))}
+        </div>
+      ) : (
+        /* Stacked: one box, so the two pickers stack above it rather than beside it. They
+           are the same headers — a side is chosen the same way whichever mode reads it. */
+        <div className="flex min-h-0 flex-1 flex-col">
+          <div className="shrink-0">
+            {(
+              [
+                { side: "a", pane: a },
+                { side: "b", pane: b },
+              ] as const
+            ).map(({ side, pane }) => (
+              <SideHeader
+                key={side}
+                side={side}
+                pane={pane}
+                flows={flows}
+                versions={histories[pane.loc.slug] ?? null}
+                onChange={(l, why) => change(side, l, why)}
+                sync={sync}
+              />
+            ))}
+          </div>
+          <Stage
+            a={a}
+            b={b}
+            width={width}
+            mode={mode}
+            curtain={curtain}
+            blend={blend}
+            showB={showB}
+            nudge={nudge}
+            frameA={frameA}
+            frameB={frameB}
+            onCurtain={setCurtain}
+          />
+        </div>
+      )}
     </div>
   )
 }

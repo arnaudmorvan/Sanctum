@@ -17,6 +17,22 @@ export const IS_PAST_VERSION = Boolean(VERSION)
  *  it; the compare page builds both sides from it. */
 export const LIVE_URL = SLUG ? `/p/${SLUG}/` : "/"
 
+/** `?figma` — the flow rendered as the MOCKUP it was translated from: the source frame of
+ *  the current screen, at the width it was designed at, and nothing else. Only meaningful
+ *  with `?bare`, and only from the compare page, which uses it as one of its two sides.
+ *
+ *  Why a mode of the FLOW rather than a picture the compare page fetches itself: the render
+ *  takes the feedback key and the flow's own provenance, and both live here. The compare
+ *  page carries no key — asking it to hold one would put the same secret in a second
+ *  bundle to save an iframe. */
+export const FIGMA_VIEW = (() => {
+  try {
+    return new URLSearchParams(window.location.search).has("figma")
+  } catch {
+    return false
+  }
+})()
+
 /** `?bare` — the flow rendered for a FRAME, not a tab: the compare page (`/compare/`)
  *  embeds two of them side by side. The bottom bar and the side panel are the tooling of
  *  ONE tab; in a frame they would be drawn twice and would drive nothing. The screen keeps

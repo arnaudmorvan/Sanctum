@@ -31,3 +31,22 @@ export const compareHref = (): string | null => {
   const b = encodeURIComponent(`${SLUG}@${VERSION || PREV}${hash}`)
   return `/compare/?a=${a}&b=${b}`
 }
+
+/** The version that is not a commit: the MOCKUP. `<slug>@figma` is a legal side of the
+ *  compare page — the flow rendered `?bare&figma`, which is to say the Figma frame this
+ *  screen was translated from. Written as a version rather than as a third kind of side
+ *  because that is what it is: the designed one, next to the built one.
+ *
+ *  Where it leads from the Source panel: this screen against its own mockup, on the
+ *  CURTAIN — of the four gestures the compare page offers, it is the one that answers the
+ *  question one opens this link with ("does the built thing sit where it was drawn?"), and
+ *  the other three are one click away. */
+export const FIGMA = "figma"
+
+export const compareWithMockupHref = (): string | null => {
+  if (!SLUG) return null
+  const hash = typeof window === "undefined" ? "" : window.location.hash
+  const a = encodeURIComponent(`${SLUG}${VERSION ? `@${VERSION}` : ""}${hash}`)
+  const b = encodeURIComponent(`${SLUG}@${FIGMA}${hash}`)
+  return `/compare/?a=${a}&b=${b}&m=curtain`
+}

@@ -5,7 +5,8 @@ import { useEffect, useState } from "react"
 import { AppChrome } from "./layout/app-chrome"
 import { AppLayout } from "./layout/app-layout"
 import { useEmbedBridge } from "./layout/embed"
-import { BARE, IS_PAST_VERSION } from "./layout/env"
+import { BARE, FIGMA_VIEW, IS_PAST_VERSION } from "./layout/env"
+import { FigmaView } from "./layout/figma-view"
 import { ProtoViewBar } from "./layout/proto-view-bar"
 import { SidePanel } from "./layout/side-panel"
 import { VersionBanner } from "./layout/version-banner"
@@ -36,8 +37,16 @@ const Unknown = ({ hash }: { hash: string }) => (
   </div>
 )
 
+// `?bare&figma`: this tab is not the flow, it is the MOCKUP the flow was translated from —
+// one side of the compare page. Never on its own: without `?bare` the flow is a tab a PO
+// walks, and the mockup belongs in the rail's "Source" panel.
+const AS_MOCKUP = BARE && FIGMA_VIEW
+
 export const App = () => {
   const [hash, setHash] = useState(() => window.location.hash)
+  // Reported to the compare page, which lays BOTH sides out at that width — the condition
+  // for the two to be superposable rather than merely adjacent.
+  const [figmaWidth, setFigmaWidth] = useState(0)
 
   useEffect(() => {
     const onHash = () => setHash(window.location.hash)
@@ -54,7 +63,7 @@ export const App = () => {
   const screen = match ? match.view.render(match.params) : <Unknown hash={hash} />
 
   // Inside a frame of the compare page: say where we are, follow where we are sent.
-  useEmbedBridge(BARE, VIEWS, hash)
+  useEmbedBridge(BARE, VIEWS, hash, figmaWidth)
 
   return (
     <div className="flex h-dvh flex-col">
@@ -62,7 +71,9 @@ export const App = () => {
           page labels its two sides itself, and the banner would be drawn twice. */}
       {IS_PAST_VERSION && !BARE ? <VersionBanner /> : null}
       <div className="min-h-0 flex-1">
-        {NAV ? (
+        {AS_MOCKUP ? (
+          <FigmaView current={match?.view} onWidth={setFigmaWidth} />
+        ) : NAV ? (
           <AppChrome nav={NAV} views={VIEWS} currentPath={match?.view.path} title={TITLE}>
             {screen}
           </AppChrome>
