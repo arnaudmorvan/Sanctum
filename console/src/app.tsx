@@ -10,6 +10,7 @@ import {
   BookOpen,
   KeyRound,
   LayoutGrid,
+  Plug,
   GitCompare,
   ListChecks,
   LogOut,
@@ -36,6 +37,7 @@ import { Notifications } from "./notifier"
 import { AccessView } from "./views/access"
 import { ConfigView } from "./views/config"
 import { ContextView, CORPORA, type CorpusKey, corpusOf } from "./views/context"
+import { ConnectorsView } from "./views/connectors"
 import { ObservabilityView } from "./views/observability"
 import { FlowsView } from "./views/protos"
 import { QualityView } from "./views/quality"
@@ -101,6 +103,13 @@ const SECTIONS: Section[] = [
     icon: <Users size={16} />,
     keyRequired: true,
     sub: "Every conversation that talked to the server, and its friction.",
+  },
+  {
+    v: "connectors",
+    label: "Connectors",
+    icon: <Plug size={16} />,
+    keyRequired: true,
+    sub: "Which tool list each person's connector still carries, and who to ping when it moves.",
   },
   {
     v: "quality",
@@ -235,6 +244,8 @@ export const App = () => {
         return <ObservabilityView apiKey={apiKey} />
       case "sessions":
         return <SessionsView apiKey={apiKey} />
+      case "connectors":
+        return <ConnectorsView apiKey={apiKey} />
       case "quality":
         return <QualityView apiKey={apiKey} />
       case "access":

@@ -200,8 +200,42 @@ export async function getConfig(): Promise<Config> {
 
 export type Pair = { n: string; v: number }
 
+/** One person × one client application, with the tool list their connector still carries.
+ *  A host FREEZES the tool list when the connector is added: after a server update, a
+ *  connector nobody refreshed keeps calling the old one. `version` is the number each
+ *  connector echoes back through `start(version=…)` — the only thing the server knows
+ *  about a cached list. Served by `metrics.connectors_payload`. */
+export type Connector = {
+  id: string
+  name: string
+  email: string
+  role: string
+  client: string
+  calls: number
+  sessions: number
+  first: string
+  last: string
+  /** `null` = never echoed a number: the list predates the mechanism, or the model
+   *  skipped the parameter. Nudged, never refused. */
+  version: number | null
+  versionAt: string
+  state: "blocked" | "stale" | "unknown" | "current"
+}
+
 export type Metrics = {
   meta?: { range?: string; updated?: string; period?: string }
+  /** The tool-list version in force, what the connectors are compared against.
+   *  `hidden` is set when the server has no DASHBOARD_KEY: the counts stay public, the
+   *  people do not, and `people` comes back empty. `refreshHowto` is served by
+   *  `surface.REFRESH_HOWTO` — the single owner of that sentence. */
+  surface?: {
+    served?: number
+    minimum?: number
+    toUpdate?: number
+    refreshHowto?: string
+    hidden?: string
+  }
+  people?: Connector[]
   totalCalls?: number
   activeTools?: number
   clients?: number
