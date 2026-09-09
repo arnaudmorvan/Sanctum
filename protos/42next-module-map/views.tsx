@@ -3,6 +3,7 @@ import type { ProtoNavItem, ProtoView } from "../../src/proto-types"
 import { Holygraph } from "./pages/holygraph"
 import { ModuleMap } from "./pages/module-map"
 import { Modules } from "./pages/modules"
+import { Paperwork } from "./pages/paperwork"
 
 /** 42next — the curriculum read as a territory.
  *
@@ -16,14 +17,14 @@ import { Modules } from "./pages/modules"
  *  / review / agenda tree.
  *
  *  The CHROME (sidebar, 42 logo, ambient background) is the skeleton's, rendered as soon as
- *  NAV is exported. Home, Cluster Map and Paperwork carry no target: they say what the
- *  product has around these screens, with no dead link. */
+ *  NAV is exported. Home and Cluster Map carry no target: they say what the product
+ *  has around these screens, with no dead link. */
 export const NAV: ProtoNavItem[] = [
   { label: "Home", icon: <House size={16} /> },
   { label: "Holy Graph", path: "holygraph", match: "holygraph", icon: <Network size={16} /> },
   { label: "Modules", path: "modules", match: "modules", icon: <LayoutGrid size={16} /> },
   { label: "Cluster Map", icon: <MapIcon size={16} /> },
-  { label: "Paperwork", icon: <FileText size={16} /> },
+  { label: "Paperwork", path: "paperwork", match: "paperwork", icon: <FileText size={16} /> },
 ]
 
 export const VIEWS: ProtoView[] = [
@@ -35,4 +36,5 @@ export const VIEWS: ProtoView[] = [
     href: "#/modules/programming-fundamentals",
     render: ({ slug }) => <ModuleMap slug={slug} />,
   },
+  { path: "paperwork", label: "Paperwork", render: () => <Paperwork /> },
 ]
