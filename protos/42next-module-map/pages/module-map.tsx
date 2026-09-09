@@ -74,11 +74,16 @@ const KIND_ICON: Record<MapNode["kind"], LucideIcon> = {
 const Node = ({ n }: { n: MapNode }) => {
   const Icon = KIND_ICON[n.kind]
   const variant =
-    n.entry ? "gradient" : n.kind === "locked" ? "outline" : n.kind === "exam" ? "filled" : "default"
+    n.entry ? "gradient" : n.kind === "locked" ? "outline" : n.kind === "exam" ? "light" : "default"
 
   return (
     <div className="absolute" style={{ left: n.x, top: n.y, width: n.w, height: n.h }}>
-      <Card variant={variant} padding="md" className="h-full">
+      <Card
+        variant={variant}
+        color={n.kind === "exam" ? "purple" : undefined}
+        padding="md"
+        className="h-full"
+      >
         <Card.Content className="h-full">
           <div className="flex h-full flex-col gap-3">
             <div className="flex items-start justify-between gap-2">

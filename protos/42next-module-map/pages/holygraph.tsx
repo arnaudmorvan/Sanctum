@@ -34,8 +34,8 @@ const KIND: Record<
   progress: { icon: Hourglass, variant: "gradient", badge: "In progress" },
   open: { icon: LockOpen, variant: "default", badge: "Open" },
   locked: { icon: Lock, variant: "outline", badge: "Sealed" },
-  gate: { icon: FileCheck, variant: "filled", badge: "Exam" },
-  final: { icon: Rocket, variant: "filled", badge: "Final" },
+  gate: { icon: FileCheck, variant: "light", badge: "Exam" },
+  final: { icon: Rocket, variant: "light", badge: "Final" },
 }
 
 const Node = ({ n }: { n: GraphNode }) => {
@@ -43,7 +43,12 @@ const Node = ({ n }: { n: GraphNode }) => {
   const Icon = k.icon
 
   const card = (
-    <Card variant={k.variant} padding="md" className="h-full">
+    <Card
+      variant={k.variant}
+      color={n.kind === "gate" || n.kind === "final" ? "purple" : undefined}
+      padding="md"
+      className="h-full"
+    >
       <Card.Content className="h-full">
         <div className="flex h-full flex-col gap-2">
           <div className="flex items-start justify-between gap-2">
@@ -210,7 +215,7 @@ export const Holygraph = () => {
 
         <aside className="flex flex-col gap-6 lg:sticky lg:top-6 lg:self-start">
           {/* The rail leads with what to do next, not with what is done. */}
-          <Card variant="filled" padding="lg">
+          <Card variant="light" color="purple" padding="lg">
             <Card.Content>
               <div className="flex flex-col gap-3">
                 <span className={`text-xs ${TYPO.nav}`}>Next quest</span>
