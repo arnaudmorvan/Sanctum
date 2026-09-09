@@ -14,6 +14,7 @@ import {
   LogOut,
   Menu as MenuIcon,
   ShieldCheck,
+  SlidersHorizontal,
   Users,
 } from "lucide-react"
 import { type ReactNode, useEffect, useState } from "react"
@@ -32,6 +33,7 @@ import {
 } from "./mcp"
 import { Notifications } from "./notifier"
 import { AccessView } from "./views/access"
+import { ConfigView } from "./views/config"
 import { ContextView, CORPORA, type CorpusKey, corpusOf } from "./views/context"
 import { ObservabilityView } from "./views/observability"
 import { FlowsView } from "./views/protos"
@@ -95,6 +97,13 @@ const SECTIONS: Section[] = [
     icon: <ShieldCheck size={16} />,
     keyRequired: true,
     sub: "Who is allowed to write, and under which regime.",
+  },
+  {
+    v: "config",
+    label: "Configuration",
+    icon: <SlidersHorizontal size={16} />,
+    keyRequired: true,
+    sub: "What the server is wired to: every capability, its state, and what it is waiting for.",
   },
 ]
 
@@ -199,6 +208,8 @@ export const App = () => {
         return <QualityView apiKey={apiKey} />
       case "access":
         return <AccessView apiKey={apiKey} />
+      case "config":
+        return <ConfigView apiKey={apiKey} />
       default:
         return null
     }

@@ -126,6 +126,50 @@ export const MCP_URL = BASE
 
 // ---------------------------------------------------------------- served shapes
 
+/** What the server is wired to — `GET /console/config.json`, served by `config_report.py`.
+ *  A secret NEVER carries a `value`: the module reports set/unset and nothing else. */
+export type ConfigVar = {
+  name: string
+  set: boolean
+  secret: boolean
+  /** Only on non-secret variables. Reading it is the point (a stale UI_REPO, a wrong branch). */
+  value?: string
+  /** A variable that lives on the OTHER Railway service — a reminder, never a verdict. */
+  twin?: string
+}
+
+export type ConfigCapability = {
+  key: string
+  label: string
+  what: string
+  state: "on" | "off" | "blocked"
+  required: boolean
+  optional: boolean
+  missing: string[]
+  /** Set when everything is configured but a mode (READ_ONLY) is closing it. */
+  blocked_by: string
+  vars: ConfigVar[]
+  refines: ConfigVar[]
+}
+
+export type ConfigMode = {
+  key: string
+  label: string
+  name: string
+  on: boolean
+  value: string
+  detail: string
+  warn: string
+}
+
+export type Config = {
+  broken: string[]
+  off: string[]
+  capabilities: ConfigCapability[]
+  modes: ConfigMode[]
+  note: string
+}
+
 export type Pair = { n: string; v: number }
 
 export type Metrics = {
