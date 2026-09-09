@@ -338,10 +338,10 @@ export const STANDINGS: { name: string; points: string; members: string; trend: 
 /** The login carries the identity; the badge carries the only thing that makes a friend
  *  useful right now — that is the prototype's own rule. */
 export const FRIENDS: { login: string; name: string; level: string; status: string; color: Color }[] = [
-  { login: "tlemoine", name: "Théo Lemoine", level: "9.02", status: "In cluster e2 · seat 22", color: "green" },
-  { login: "mchen", name: "Mei Chen", level: "10.61", status: "Offering a slot Fri 14:00", color: "brand" },
+  { login: "tlemoine", name: "Théo Lemoine", level: "9.02", status: "In cluster e2 · seat 22", color: "neutral" },
+  { login: "mchen", name: "Mei Chen", level: "10.61", status: "Offering a slot Fri 14:00", color: "neutral" },
   { login: "dvargas", name: "Diego Vargas", level: "8.44", status: "You review them today 14:30", color: "orange" },
-  { login: "sbernard", name: "Sofia Bernard", level: "12.10", status: "Offline", color: "gray" },
+  { login: "sbernard", name: "Sofia Bernard", level: "12.10", status: "Offline", color: "neutral" },
 ]
 
 export const CLUBS = [
@@ -434,7 +434,7 @@ export const WINS: { kind: "project" | "exam" | "milestone"; name: string; when:
 ]
 
 /** "In progress" — the projects with an attempt in flight. */
-export const IN_PROGRESS: { name: string; module: string; status: string; color: Color; sub: string }[] = [
-  { name: "minishell", module: "Systems & networks administration", status: "Under review", color: "brand", sub: "Rank 03 · 2 of 3 reviews done" },
+export const IN_PROGRESS: { name: string; module: string; status: string; color: Color; sub: string; pct?: number }[] = [
+  { name: "minishell", module: "Systems & networks administration", status: "Under review", color: "pink", sub: "Rank 03 · 2 of 3 reviews done", pct: 67 },
   { name: "cub3d", module: "Systems & networks administration", status: "CPM failed", color: "red", sub: "Rank 04 · a new attempt is open" },
 ]

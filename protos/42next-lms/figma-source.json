@@ -2,7 +2,7 @@
   "figma_file_key": "yoP06GsdWscdgqpJMV2YuN",
   "ds_sync": "2026-09-03",
   "translated_on": "2026-09-09",
-  "note": "Two directions coexist here. `learn/holygraph` was LIFTED FROM a frame (design -> code, 2026-09-06). `dashboard` went the other way: the React screen already existed and was rebuilt as a DS frame on 2026-09-09 (figma-from-screen), so the frame is a translation of the code, not its source. The rest of the flow comes from the HTML prototypes of _oldProto/, which had no Figma source.",
+  "note": "Both screens listed here are now LIFTED FROM their frame (design -> code). `learn/holygraph` always was (2026-09-06). `dashboard` did a round trip: generated from the React code on 2026-09-09 (figma-from-screen), reworked in Figma, then re-lifted the same day (proto-from-figma) — from that point the frame is the source, not the translation. The rest of the flow comes from the HTML prototypes of _oldProto/, which had no Figma source.",
   "screens": {
     "learn/holygraph": { "node": "22505:9532", "frame": "42next — Home v3 · Quest map · Amanda (Dark 1500)" },
     "dashboard": { "node": "22828:12317", "frame": "42next LMS — Home (from code, 2026-09-09)" }
