@@ -2,8 +2,8 @@ import { Badge } from "@42/ui-react/badge"
 import { Table } from "@42/ui-react/table"
 import { Text } from "@42/ui-react/text"
 import { Title } from "@42/ui-react/title"
-import type { ReactNode } from "react"
-import type { Metrics, Pair } from "../mcp"
+import { type ReactNode, useState } from "react"
+import type { GenerationFlow, Generations, Metrics, Pair } from "../mcp"
 import { State, Stat, useRoute } from "../state"
 import { Heatmap, Series } from "./series"
 
@@ -52,12 +52,178 @@ const Ranking = ({ rows, unit, empty }: { rows?: Pair[]; unit?: string; empty: s
     </Text>
   )
 
+/** `4 min 12 s`, `38 s`, `1 h 07` — the same shape as the flows' own panel. */
+const duration = (seconds?: number): string => {
+  const s = Math.max(0, Math.round(seconds ?? 0))
+  if (s < 60) return `${s} s`
+  const m = Math.floor(s / 60)
+  if (m < 60) return `${m} min${s % 60 ? ` ${s % 60} s` : ""}`
+  return `${Math.floor(m / 60)} h ${String(m % 60).padStart(2, "0")}`
+}
+
+const compact = (n?: number): string => {
+  const v = n ?? 0
+  return v >= 1_000_000
+    ? `${(v / 1_000_000).toFixed(1)}M`
+    : v >= 1_000
+      ? `${Math.round(v / 1_000)}k`
+      : String(v)
+}
+
+const day = (iso?: string): string =>
+  iso ? (Number.isNaN(Date.parse(iso)) ? iso : new Date(iso).toLocaleDateString()) : "—"
+
+/** One flow, and what it cost. Expanded, it shows the per-screen share and the runs — the
+ *  two things a comparison with another method is actually read off.
+ *
+ *  ⚠️ The per-screen column is ATTRIBUTED: one publication carries several screens, so a
+ *  run's time is prorated on what was written. The header says so once, here, rather than
+ *  on every cell — but it must never be dropped: a prorated number printed as a
+ *  measurement is a lie that survives into whatever table it is copied to. */
+const FlowRows = ({ flow }: { flow: GenerationFlow }) => {
+  const [open, setOpen] = useState(false)
+  return (
+    <>
+      <Table.Row>
+        <Table.Cell>
+          <button
+            type="button"
+            onClick={() => setOpen((v) => !v)}
+            className="text-start hover:underline"
+          >
+            {flow.title}
+          </button>
+          <Text c="muted" size="xs">
+            <span className="font-mono">{flow.slug}</span> · {day(flow.last)}
+          </Text>
+        </Table.Cell>
+        <Table.Cell className="text-right font-mono tabular-nums">{flow.screens}</Table.Cell>
+        <Table.Cell className="text-right font-mono tabular-nums">
+          {duration(flow.per_screen_s)}
+        </Table.Cell>
+        <Table.Cell className="text-right font-mono tabular-nums">
+          {duration(flow.model_s)}
+        </Table.Cell>
+        <Table.Cell className="text-right font-mono tabular-nums">{flow.runs}</Table.Cell>
+        <Table.Cell className="text-right font-mono tabular-nums">
+          ~{compact(flow.tokens_in + flow.tokens_out)}
+        </Table.Cell>
+        <Table.Cell className="font-mono text-xs">
+          {flow.models.join(" · ") || "—"}
+        </Table.Cell>
+      </Table.Row>
+      {open ? (
+        <Table.Row>
+          <Table.Cell colSpan={7}>
+            <div className="grid gap-6 py-2 lg:grid-cols-2">
+              <div className="flex flex-col gap-1.5">
+                <Text size="sm" c="secondary">
+                  Per screen — attributed
+                </Text>
+                {flow.detail.map((f) => (
+                  <div key={f.path} className="flex items-baseline justify-between gap-4">
+                    <span className="truncate font-mono text-xs">{f.path}</span>
+                    <span className="shrink-0 font-mono text-xs tabular-nums">
+                      {duration(f.seconds)} · {Math.round(f.bytes / 100) / 10} Ko ·{" "}
+                      {f.runs} pass{f.runs > 1 ? "es" : ""}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Text size="sm" c="secondary">
+                  Generations — measured
+                </Text>
+                {flow.runs_detail
+                  .slice()
+                  .reverse()
+                  .map((r) => (
+                    <div key={r.run} className="flex items-baseline justify-between gap-4">
+                      <span className="truncate font-mono text-xs">
+                        #{r.run} · {day(r.at)} · {r.author || "—"}
+                      </span>
+                      <span className="shrink-0 font-mono text-xs tabular-nums">
+                        {r.measured === false ? "not measured" : duration(r.model_s)} ·{" "}
+                        {r.calls ?? 0} calls · ~
+                        {compact(
+                          Math.floor(((r.in_chars ?? 0) + (r.out_chars ?? 0)) / 4),
+                        )}{" "}
+                        tk
+                      </span>
+                    </div>
+                  ))}
+              </div>
+            </div>
+          </Table.Cell>
+        </Table.Row>
+      ) : null}
+    </>
+  )
+}
+
+/** What a screen costs to produce here. The claim this whole setup rests on — that a
+ *  screen comes out faster with the DS served to the agent than another way — had no
+ *  recorded evidence until 2026-09-09: the time of a generation lived in a conversation.
+ *
+ *  Read from the records the MCP writes into each flow, not from the metrics: the metrics
+ *  know every call, they do not know which ones were ONE generation. Absent (no flows
+ *  repo, no record yet) the block simply does not draw — an optional capability, and a
+ *  failing fetch here must not take the observability page down with it. */
+const GenerationBlock = ({ apiKey }: { apiKey: string }) => {
+  const { data } = useRoute<Generations>("/console/generations.json", apiKey)
+  if (!data?.flows?.length) return null
+  const o = data.overall
+  return (
+    <Block
+      title="Generation cost"
+      help="What a flow cost to produce. Measured on the calls themselves — the wall clock of one generation, and how much of it was spent inside the model. The per-screen figure is ATTRIBUTED: one publication carries several screens, so a run's time is shared out in proportion to what was written. Tokens are an estimate — characters through this server ÷ 4."
+    >
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <Stat label="Average per screen" value={duration(o.per_screen_s)} />
+        <Stat label="Average per flow" value={duration(o.per_flow_s)} />
+        <Stat label="Screens generated" value={o.screens} />
+        <Stat label="Generations" value={o.runs} />
+        <Stat label="Time in the model" value={duration(o.model_s)} />
+        <Stat label="Round trips" value={o.calls} />
+        <Stat label="Tokens in (est.)" value={`~${compact(o.tokens_in)}`} />
+        <Stat label="Tokens out (est.)" value={`~${compact(o.tokens_out)}`} />
+      </div>
+      <Table size="sm">
+        <Table.Content>
+          <Table.Head>
+            <Table.Row>
+              <Table.HeaderCell>Flow</Table.HeaderCell>
+              <Table.HeaderCell className="text-right">Screens</Table.HeaderCell>
+              <Table.HeaderCell className="text-right">Per screen</Table.HeaderCell>
+              <Table.HeaderCell className="text-right">In the model</Table.HeaderCell>
+              <Table.HeaderCell className="text-right">Runs</Table.HeaderCell>
+              <Table.HeaderCell className="text-right">Tokens</Table.HeaderCell>
+              <Table.HeaderCell>Model</Table.HeaderCell>
+            </Table.Row>
+          </Table.Head>
+          <Table.Body>
+            {data.flows.map((f) => (
+              <FlowRows key={f.slug} flow={f} />
+            ))}
+          </Table.Body>
+        </Table.Content>
+      </Table>
+      <Text c="muted" size="sm">
+        Click a flow for the per-screen share and the run by run detail. A model is named
+        only where the agent declared it — the server cannot see which one wrote a screen.
+      </Text>
+    </Block>
+  )
+}
+
 export const ObservabilityView = ({ apiKey }: { apiKey: string }) => {
   const { data, error, loading, noKey } = useRoute<Metrics>("/metrics.json", apiKey)
 
   return (
     <State loading={loading} error={error} data={data} noKey={noKey}>
       <div className="flex flex-col gap-8">
+        <GenerationBlock apiKey={apiKey} />
+
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <Stat label="Calls" value={data?.totalCalls ?? 0} />
           <Stat label="Active tools" value={data?.activeTools ?? 0} />

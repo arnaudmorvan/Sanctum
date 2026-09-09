@@ -278,6 +278,85 @@ export type Metrics = {
   matrix?: Array<{ tool: string; row: number[] }>
 }
 
+/** What generating the flows COST — `GET /console/generations.json`.
+ *
+ *  Written by the MCP at every publication (`generation.py`), read here and, for one flow
+ *  at a time, by the flow's own review rail. Both read the SAME arithmetic, computed
+ *  server-side: two implementations of "the average time per screen" put two different
+ *  numbers in front of the same person.
+ *
+ *  ⚠️ Three kinds of number, and the tab must keep them apart: MEASURED (a run's wall
+ *  clock and the time inside the model), ATTRIBUTED (`s` per file — one publication
+ *  carries several screens, so their share is prorated on what was written), ESTIMATED
+ *  (the tokens: characters through the server ÷ 4 — no model knows its own billed
+ *  usage). */
+export type GenerationFile = {
+  path: string
+  /** Attributed seconds, never measured. */
+  seconds: number
+  runs: number
+  bytes: number
+  lines: number
+  created: string
+  updated: string
+  models: string[]
+}
+
+export type GenerationRun = {
+  run: number
+  at: string
+  author?: string
+  client?: string
+  model?: string
+  measured?: boolean
+  wall_s?: number
+  model_s?: number
+  server_s?: number
+  away_s?: number
+  calls?: number
+  in_chars?: number
+  out_chars?: number
+}
+
+export type GenerationFlow = {
+  slug: string
+  title: string
+  runs: number
+  measured_runs: number
+  screens: number
+  files: number
+  model_s: number
+  wall_s: number
+  server_s: number
+  away_s: number
+  calls: number
+  tokens_in: number
+  tokens_out: number
+  per_screen_s: number
+  models: string[]
+  first: string
+  last: string
+  detail: GenerationFile[]
+  runs_detail: GenerationRun[]
+}
+
+export type Generations = {
+  overall: {
+    flows: number
+    runs: number
+    screens: number
+    model_s: number
+    per_screen_s: number
+    per_flow_s: number
+    tokens_in: number
+    tokens_out: number
+    calls: number
+    models: string[]
+  }
+  flows: GenerationFlow[]
+  chars_per_token: number
+}
+
 export type Session = {
   id: string
   client: string

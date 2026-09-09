@@ -4,6 +4,7 @@ import {
   Eye,
   EyeOff,
   Frame,
+  Gauge,
   GripHorizontal,
   History,
   LayoutGrid,
@@ -31,6 +32,8 @@ import { setDock } from "./dock"
 import { FEEDBACK_KEY, IS_PAST_VERSION, SLUG } from "./env"
 import { FeedbackBody } from "./feedback"
 import { frameOf } from "./figma-source"
+import { hasRecords } from "./generation"
+import { GenerationBody } from "./generation-panel"
 import { FlowMap } from "./flow-map"
 import { HistoryBody } from "./history"
 import { InspectorBody } from "./inspector"
@@ -114,7 +117,7 @@ import { UI_MARK } from "./target"
  *   • the bottom bar is MEASURED, not assumed: it wraps its list of deep screens and goes
  *     from 44 px to 130 px depending on the flow. The panel rests above it. */
 
-export type Tab = "feedback" | "comments" | "components" | "history"
+export type Tab = "feedback" | "comments" | "components" | "generation" | "history"
 
 const PINS_KEY = "sanctum-pins-visible"
 const readPins = (): boolean => {
@@ -310,6 +313,15 @@ const TABS: TabDef[] = [
     label: "Components",
     icon: <Blocks size={15} aria-hidden="true" />,
     available: true,
+  },
+  {
+    key: "generation",
+    label: "Generation",
+    icon: <Gauge size={15} aria-hidden="true" />,
+    // Only where there is something to read. A flow published before the records existed
+    // has no cost to show, and a tab whose body would only explain its own absence is
+    // the thing this rail deliberately does not draw. One republication brings it.
+    available: hasRecords(),
   },
   {
     key: "history",
@@ -849,6 +861,13 @@ export const SidePanel = ({
             <section role="tabpanel" hidden={active !== "components"} className="flex flex-col">
               <InspectorBody active={active === "components"} />
             </section>
+            {tabs.some((t) => t.key === "generation") && (
+              <section role="tabpanel" hidden={active !== "generation"} className="flex flex-col">
+                {/* The screen's PATH, not its label: it is what a file name is matched
+                    against to highlight the row of the screen on display. */}
+                <GenerationBody screen={current?.path} />
+              </section>
+            )}
             {tabs.some((t) => t.key === "history") && (
               <section role="tabpanel" hidden={active !== "history"} className="flex flex-col">
                 <HistoryBody active={active === "history"} />
