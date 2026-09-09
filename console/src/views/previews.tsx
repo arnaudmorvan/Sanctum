@@ -85,84 +85,97 @@ const TREE = [
   { value: "cursus", label: "Cursus", children: [{ value: "c-piscine", label: "Piscine" }] },
 ]
 
+/** A preview takes the props of ONE point in the component's variant space.
+ *
+ *  Zero-argument at first, which was enough beside a Figma frame and useless for the
+ *  coverage grid: a grid cell is `variant="outline" color="red" size="md"`, and the whole
+ *  point is to see those side by side. `Record<string, unknown>` rather than a typed prop
+ *  bag on purpose — the axes come from the catalogues at runtime, and there is no type
+ *  here that could describe sixty-two different components' props.
+ *
+ *  ⚠️ `{...p}` is spread LAST in every entry, and that ordering is load-bearing: `Alert`'s
+ *  preview sets `type="info"` for the card, and a grid whose rows ARE the `type` axis must
+ *  win over it. Spread first, every row of that grid would have rendered `info`. */
+export type Preview = (props?: Record<string, unknown>) => ReactNode
+
 /** Written previews, keyed by the React component's name — the same key the parity report
  *  pairs on. The content is the SMALLEST thing that shows what the component is: a Select
  *  gets three options because one would not show it is a list, and no more because the
  *  cell sits beside a Figma frame, not on a documentation page. */
-export const PREVIEWS: Record<string, () => ReactNode> = {
-  ActionIcon: () => (
-    <ActionIcon aria-label="Notifications">
+export const PREVIEWS: Record<string, Preview> = {
+  ActionIcon: (p) => (
+    <ActionIcon aria-label="Notifications" {...p}>
       <Bell size={16} />
     </ActionIcon>
   ),
-  Alert: () => <Alert type="info" title="Breaking change in v3" description="The theme API changed." />,
-  Autocomplete: () => <Autocomplete data={OPTIONS} placeholder="Search a cursus" />,
-  Avatar: () => <Avatar name="Amanda Lowery" />,
-  AvatarGroup: () => (
-    <AvatarGroup>
+  Alert: (p) => <Alert type="info" title="Breaking change in v3" description="The theme API changed."  {...p}/>,
+  Autocomplete: (p) => <Autocomplete data={OPTIONS} placeholder="Search a cursus"  {...p}/>,
+  Avatar: (p) => <Avatar name="Amanda Lowery"  {...p}/>,
+  AvatarGroup: (p) => (
+    <AvatarGroup {...p}>
       <Avatar name="Amanda Lowery" />
       <Avatar name="Adil Floyd" />
       <Avatar name="Alec Whitten" />
     </AvatarGroup>
   ),
-  Badge: () => <Badge>Label</Badge>,
-  Breadcrumb: () => (
-    <Breadcrumb data={[{ label: "Cursus", href: "#" }, { label: "Piscine", href: "#" }, { label: "C05" }]} />
+  Badge: (p) => <Badge {...p}>Label</Badge>,
+  Breadcrumb: (p) => (
+    <Breadcrumb data={[{ label: "Cursus", href: "#" }, { label: "Piscine", href: "#" }, { label: "C05" }]}  {...p}/>
   ),
-  Button: () => <Button>Button</Button>,
-  ButtonGroup: () => (
-    <ButtonGroup>
+  Button: (p) => <Button {...p}>Button</Button>,
+  ButtonGroup: (p) => (
+    <ButtonGroup {...p}>
       <Button variant="outline">Day</Button>
       <Button variant="outline">Week</Button>
     </ButtonGroup>
   ),
-  Calendar: () => <Calendar />,
-  Card: () => (
-    <Card>
+  Calendar: (p) => <Calendar  {...p}/>,
+  Card: (p) => (
+    <Card {...p}>
       <Text size="sm">A card, at its default padding.</Text>
     </Card>
   ),
-  Checkbox: () => <Checkbox label="Remember me" />,
-  ChoiceCardGroup: () => <ChoiceCardGroup data={["Solo", "Team"]} />,
-  CircularProgress: () => <CircularProgress value={62} />,
-  Collapse: () => (
-    <Collapse open>
+  Checkbox: (p) => <Checkbox label="Remember me"  {...p}/>,
+  ChoiceCardGroup: (p) => <ChoiceCardGroup data={["Solo", "Team"]}  {...p}/>,
+  CircularProgress: (p) => <CircularProgress value={62}  {...p}/>,
+  Collapse: (p) => (
+    <Collapse open {...p}>
       <Text size="sm">Open content.</Text>
     </Collapse>
   ),
-  ComboboxList: () => <ComboboxList data={OPTIONS} placeholder="Pick one" />,
-  DatePicker: () => <DatePicker />,
-  Divider: () => <Divider label="or" />,
-  Field: () => (
-    <Field label="E-mail" description="We never share it.">
+  ComboboxList: (p) => <ComboboxList data={OPTIONS} placeholder="Pick one"  {...p}/>,
+  DatePicker: (p) => <DatePicker  {...p}/>,
+  Divider: (p) => <Divider label="or"  {...p}/>,
+  Field: (p) => (
+    <Field label="E-mail" description="We never share it." {...p}>
       <Input placeholder="you@42.fr" />
     </Field>
   ),
-  FileUpload: () => <FileUpload />,
-  Input: () => <Input placeholder="Placeholder" />,
-  Kbd: () => <Kbd>⌘K</Kbd>,
-  Menu: () => <Menu data={["Rename", "Duplicate", "Delete"]}><Button variant="outline">Open menu</Button></Menu>,
-  MultiComboboxList: () => <MultiComboboxList data={OPTIONS} placeholder="Pick several" />,
-  MultiSelect: () => <MultiSelect data={OPTIONS} placeholder="Pick several" />,
-  NavLink: () => <NavLink label="Dashboard" icon={<Star size={16} />} />,
-  Notification: () => <Notification type="success" title="Saved" description="Your changes are live." />,
-  NumberInput: () => <NumberInput defaultValue={3} />,
-  PasswordInput: () => <PasswordInput placeholder="••••••••" />,
-  Pill: () => <Pill withRemoveButton>Piscine</Pill>,
-  PinInput: () => <PinInput length={4} />,
-  Progress: () => <Progress value={62} />,
-  RadioGroup: () => <RadioGroup data={OPTIONS} />,
-  SegmentGroup: () => <SegmentGroup data={["Day", "Week", "Month"]} />,
-  Select: () => <Select data={OPTIONS} placeholder="Pick one" />,
-  Skeleton: () => <Skeleton className="h-4 w-40" />,
-  Slider: () => <Slider defaultValue={[40]} />,
-  Spinner: () => <Spinner />,
-  Switch: () => <Switch label="Notifications" />,
+  FileUpload: (p) => <FileUpload  {...p}/>,
+  Input: (p) => <Input placeholder="Placeholder"  {...p}/>,
+  Kbd: (p) => <Kbd {...p}>⌘K</Kbd>,
+  Menu: (p) => <Menu data={["Rename", "Duplicate", "Delete"]} {...p}><Button variant="outline">Open menu</Button></Menu>,
+  MultiComboboxList: (p) => <MultiComboboxList data={OPTIONS} placeholder="Pick several"  {...p}/>,
+  MultiSelect: (p) => <MultiSelect data={OPTIONS} placeholder="Pick several"  {...p}/>,
+  NavLink: (p) => <NavLink label="Dashboard" icon={<Star size={16} />}  {...p}/>,
+  Notification: (p) => <Notification type="success" title="Saved" description="Your changes are live."  {...p}/>,
+  NumberInput: (p) => <NumberInput defaultValue={3}  {...p}/>,
+  PasswordInput: (p) => <PasswordInput placeholder="••••••••"  {...p}/>,
+  Pill: (p) => <Pill withRemoveButton {...p}>Piscine</Pill>,
+  PinInput: (p) => <PinInput length={4}  {...p}/>,
+  Progress: (p) => <Progress value={62}  {...p}/>,
+  RadioGroup: (p) => <RadioGroup data={OPTIONS}  {...p}/>,
+  SegmentGroup: (p) => <SegmentGroup data={["Day", "Week", "Month"]}  {...p}/>,
+  Select: (p) => <Select data={OPTIONS} placeholder="Pick one"  {...p}/>,
+  Skeleton: (p) => <Skeleton className="h-4 w-40"  {...p}/>,
+  Slider: (p) => <Slider defaultValue={[40]}  {...p}/>,
+  Spinner: (p) => <Spinner  {...p}/>,
+  Switch: (p) => <Switch label="Notifications"  {...p}/>,
   // ⚠️ `Table` is the SHELL (a div, with room for a title and a toolbar); `Table.Content`
   // is the `<table>`. Putting `Table.Head` straight under the root put a `<thead>` inside
   // a `<div>` — invalid HTML, and React said so in the console on every render.
-  Table: () => (
-    <Table>
+  Table: (p) => (
+    <Table {...p}>
       <Table.Content>
         <Table.Head>
           <Table.Row>
@@ -181,25 +194,25 @@ export const PREVIEWS: Record<string, () => ReactNode> = {
       </Table.Content>
     </Table>
   ),
-  Tabs: () => (
+  Tabs: (p) => (
     <Tabs
       data={[
         { value: "overview", label: "Overview", content: <Text size="sm">Overview</Text> },
         { value: "activity", label: "Activity", content: <Text size="sm">Activity</Text> },
       ]}
-    />
+     {...p}/>
   ),
-  TagsInput: () => <TagsInput defaultValue={["C", "Unix"]} />,
-  Text: () => <Text>The quick brown fox.</Text>,
-  Textarea: () => <Textarea placeholder="Say something" />,
-  ThemeIcon: () => (
-    <ThemeIcon>
+  TagsInput: (p) => <TagsInput defaultValue={["C", "Unix"]}  {...p}/>,
+  Text: (p) => <Text {...p}>The quick brown fox.</Text>,
+  Textarea: (p) => <Textarea placeholder="Say something"  {...p}/>,
+  ThemeIcon: (p) => (
+    <ThemeIcon {...p}>
       <Check size={16} />
     </ThemeIcon>
   ),
-  TimeInput: () => <TimeInput />,
-  Timeline: () => (
-    <Timeline>
+  TimeInput: (p) => <TimeInput  {...p}/>,
+  Timeline: (p) => (
+    <Timeline {...p}>
       <Timeline.Item>
         <Timeline.Title>Registered</Timeline.Title>
       </Timeline.Item>
@@ -208,14 +221,14 @@ export const PREVIEWS: Record<string, () => ReactNode> = {
       </Timeline.Item>
     </Timeline>
   ),
-  Title: () => <Title size="lg">A title</Title>,
-  Tooltip: () => (
-    <Tooltip label="A tooltip">
+  Title: (p) => <Title size="lg" {...p}>A title</Title>,
+  Tooltip: (p) => (
+    <Tooltip label="A tooltip" {...p}>
       <Button variant="outline">Hover me</Button>
     </Tooltip>
   ),
-  TreeMultiSelect: () => <TreeMultiSelect data={TREE} placeholder="Pick several" />,
-  TreeSelect: () => <TreeSelect data={TREE} placeholder="Pick one" />,
+  TreeMultiSelect: (p) => <TreeMultiSelect data={TREE} placeholder="Pick several"  {...p}/>,
+  TreeSelect: (p) => <TreeSelect data={TREE} placeholder="Pick one"  {...p}/>,
 }
 
 /** Components that are deliberately NOT previewed, and why. Written down rather than

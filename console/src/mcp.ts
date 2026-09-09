@@ -531,6 +531,34 @@ export async function getParity(fresh = false): Promise<ParityReport> {
   return get<ParityReport>(`/console/parity.json${fresh ? "?fresh=1" : ""}`)
 }
 
+/** One axis of the coverage grid: what Figma DRAWS on it against what the kit RENDERS.
+ *  `readable` false means the manifest cannot see the kit's values (a cva outside the
+ *  component file, a type alias) — the grid then marks the axis rather than claiming
+ *  the kit is missing anything. */
+export type CoverageAxis = {
+  axis: string
+  react: string
+  register: string
+  readable: boolean
+  figma: string[]
+  kit: string[]
+  only_figma: string[]
+  only_kit: string[]
+}
+
+/** Every drawn combination, decoded. `variant` is the Figma key-variant slug — the string
+ *  `/console/parity/frame.json?variant=` takes, so a cell can render its own exact frame. */
+export type CoverageCombo = { variant: string; values: Record<string, string> }
+
+export type Coverage = {
+  axes: CoverageAxis[]
+  combinations: CoverageCombo[]
+  drawn: number
+  /** Key-variant slugs the server could not decode. Said out loud: they are combinations
+   *  missing from the grid, so the count is short by that many. */
+  unparsed: string[]
+}
+
 export type ParityDetail = {
   slug: string
   description: string
@@ -538,6 +566,7 @@ export type ParityDetail = {
   default_node: string
   axes: Record<string, string[] | string>
   defaults: Record<string, string>
+  coverage: Coverage
   react: {
     props: Record<string, { type: unknown; required?: boolean; description?: string; default?: string }>
     variants: Record<string, string[]>

@@ -38,6 +38,7 @@ import {
   ArrowRight,
   Check,
   Copy,
+  Grid3x3,
   ImageOff,
   RefreshCw,
   Sun,
@@ -47,8 +48,12 @@ import { type ReactNode, useCallback, useEffect, useState } from "react"
 import { TYPO } from "../../../src/typo"
 import {
   AccessError,
+  type Coverage,
+  type CoverageAxis,
+  type CoverageCombo,
   getParity,
   getParityBrief,
+  getParityDetail,
   getParityFrame,
   type ParityAxis,
   type ParityFinding,
@@ -218,6 +223,333 @@ const KitPreview = ({ name }: { name: string }) => {
   )
 }
 
+// ---------------------------------------------------------------- the coverage grid
+
+/** What a cell IS, and the four words are the whole tool. `figma-only` is the one that
+ *  costs a screen: a mockup uses a combination the code cannot render. */
+const CELL = {
+  both: { ring: "border-white/10", dot: "bg-green-500", label: "drawn and renderable" },
+  "kit-only": {
+    ring: "border-white/10 opacity-45",
+    dot: "bg-gray-500",
+    label: "the kit renders it, nobody drew it",
+  },
+  "figma-only": {
+    ring: "border-red-500/60 bg-red-500/5",
+    dot: "bg-red-500",
+    label: "drawn, the kit refuses this value",
+  },
+  neither: { ring: "border-dashed border-white/8", dot: "", label: "neither side" },
+} as const
+
+type CellState = keyof typeof CELL
+
+/** The coverage matrix: two axes crossed, one live React render per cell.
+ *
+ *  ⚠️ This exists because the pair card answered the wrong question. It showed ONE Figma
+ *  frame and ONE React default; on `Badge` that is one cell out of ninety-six drawn and
+ *  sixty renderable, so "where is the hole" was not answerable by looking. Here a whole
+ *  column reads red when a hue is drawn and refused (`grey`), and a whole column reads
+ *  faded when the kit ships something nobody ever drew (`gradient`).
+ *
+ *  The cells render the KIT, not Figma, and that is a deliberate asymmetry: a React render
+ *  is free and instant, where sixty Figma frames would be sixty render jobs of one to three
+ *  seconds against someone else's rate limit. Figma's own drawing of one exact combination
+ *  is a click away — which is the gesture you make once you have spotted the odd cell. */
+const CoverageGrid = ({
+  slug,
+  react,
+  cov,
+  dark,
+  frames,
+}: {
+  slug: string
+  react: string
+  cov: Coverage
+  dark: boolean
+  frames: boolean
+}) => {
+  const axes = cov.axes
+  // Default to the two widest axes, `variant` and `color` first when they exist: that is
+  // the pair a designer means by "the colours next to each other".
+  const preferred = (names: string[]) =>
+    names.find((n) => axes.some((a) => a.axis === n)) ?? ""
+  const widest = [...axes].sort((a, b) => b.figma.length + b.kit.length - a.figma.length - a.kit.length)
+  const [rowAxis, setRowAxis] = useState(
+    preferred(["variant", "variants", "type", "style"]) || widest[0]?.axis || "",
+  )
+  const [colAxis, setColAxis] = useState(
+    preferred(["color"]) || widest.find((a) => a.axis !== rowAxis)?.axis || "",
+  )
+  const [fixed, setFixed] = useState<Record<string, string>>({})
+  const [zoom, setZoom] = useState<CoverageCombo | null>(null)
+
+  const find = (name: string) => axes.find((a) => a.axis === name)
+  const rowDef = find(rowAxis)
+  const colDef = find(colAxis)
+  if (!rowDef || !colDef || rowAxis === colAxis)
+    return (
+      <Text size="xs" c="muted">
+        This component varies on a single axis — the table above already says everything a
+        grid could.
+      </Text>
+    )
+
+  // The union of both sides, so a value only ONE side has still gets its row: those are
+  // exactly the rows worth looking at.
+  const union = (a: CoverageAxis) => {
+    const seen = new Map<string, string>()
+    for (const v of [...a.figma, ...a.kit]) if (!seen.has(v.toLowerCase())) seen.set(v.toLowerCase(), v)
+    return [...seen.values()]
+  }
+  const rows = union(rowDef)
+  const cols = union(colDef)
+  const others = axes.filter((a) => a.axis !== rowAxis && a.axis !== colAxis)
+
+  const matching = (r: string, c: string) =>
+    cov.combinations.filter(
+      (k) =>
+        k.values[rowAxis]?.toLowerCase() === r.toLowerCase() &&
+        k.values[colAxis]?.toLowerCase() === c.toLowerCase() &&
+        others.every((o) => !fixed[o.axis] || k.values[o.axis] === fixed[o.axis]),
+    )
+
+  const inKit = (a: CoverageAxis, v: string) =>
+    // ⚠️ An axis whose values the manifest cannot read is treated as ACCEPTING the value.
+    // The alternative is painting a whole grid red on the strength of what this report
+    // cannot see — the accusation the whole module refuses to make.
+    !a.readable || a.kit.some((k) => k.toLowerCase() === v.toLowerCase())
+
+  const state = (r: string, c: string): CellState => {
+    const drawn = matching(r, c).length > 0
+    const renderable = inKit(rowDef, r) && inKit(colDef, c)
+    if (drawn && renderable) return "both"
+    if (drawn) return "figma-only"
+    return renderable ? "kit-only" : "neither"
+  }
+
+  const props = (r: string, c: string): Record<string, unknown> => {
+    const out: Record<string, unknown> = {}
+    for (const [axis, value] of [
+      [rowDef, r],
+      [colDef, c],
+    ] as const)
+      if (axis.react && axis.readable) out[axis.react] = value
+    for (const o of others)
+      if (fixed[o.axis] && o.react && o.readable) out[o.react] = fixed[o.axis]
+    return out
+  }
+
+  const cells = rows.length * cols.length
+  const drawnCells = rows.reduce(
+    (n, r) => n + cols.filter((c) => state(r, c) === "both").length,
+    0,
+  )
+  const renderableCells = rows.reduce(
+    (n, r) => n + cols.filter((c) => state(r, c) !== "neither" && state(r, c) !== "figma-only").length,
+    0,
+  )
+
+  const Picker = ({
+    value,
+    onChange,
+    label,
+  }: {
+    value: string
+    onChange: (v: string) => void
+    label: string
+  }) => (
+    <label className="flex items-center gap-1 text-gray-dark-500 text-xs">
+      {label}
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className={`${TYPO.mono()} rounded border border-white/15 bg-transparent px-1.5 py-0.5 text-gray-dark-200 text-xs`}
+      >
+        {axes.map((a) => (
+          <option key={a.axis} value={a.axis} className="bg-gray-dark-900">
+            {a.axis}
+          </option>
+        ))}
+      </select>
+    </label>
+  )
+
+  return (
+    <div className="flex flex-col gap-3">
+      <div className="flex flex-wrap items-center gap-3">
+        <Picker label="rows" value={rowAxis} onChange={setRowAxis} />
+        <Picker label="columns" value={colAxis} onChange={setColAxis} />
+        {others.map((o) => (
+          <label key={o.axis} className="flex items-center gap-1 text-gray-dark-500 text-xs">
+            {o.axis}
+            <select
+              value={fixed[o.axis] ?? ""}
+              onChange={(e) => setFixed((f) => ({ ...f, [o.axis]: e.target.value }))}
+              className={`${TYPO.mono()} rounded border border-white/15 bg-transparent px-1.5 py-0.5 text-gray-dark-200 text-xs`}
+            >
+              <option value="" className="bg-gray-dark-900">
+                any
+              </option>
+              {union(o).map((v) => (
+                <option key={v} value={v} className="bg-gray-dark-900">
+                  {v}
+                </option>
+              ))}
+            </select>
+          </label>
+        ))}
+        <span className={`${TYPO.mono()} text-gray-dark-400 text-xs`}>
+          {drawnCells}/{renderableCells} drawn · {cells} cells
+        </span>
+      </div>
+
+      <div className="overflow-x-auto" data-theme={dark ? "dark" : "light"}>
+        <table className="border-separate border-spacing-1">
+          <thead>
+            <tr>
+              <th className={`sticky left-0 z-10 ${dark ? "bg-gray-dark-950" : "bg-white"}`} />
+              {cols.map((c) => (
+                <th
+                  key={c}
+                  className={`${TYPO.mono()} px-1 pb-1 text-center font-normal text-[11px] ${
+                    inKit(colDef, c) ? "text-gray-dark-400" : "text-red-400"
+                  }`}
+                >
+                  {c}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((r) => (
+              <tr key={r}>
+                {/* Sticky: `color` alone is thirteen columns wide once both sides' values
+                    are unioned, so the grid scrolls — and a row whose label has scrolled
+                    off is a row of anonymous swatches. */}
+                <th
+                  className={`${TYPO.mono()} sticky left-0 z-10 pr-2 text-right font-normal text-[11px] ${
+                    dark ? "bg-gray-dark-950" : "bg-white"
+                  } ${inKit(rowDef, r) ? "text-gray-dark-400" : "text-red-400"}`}
+                >
+                  {r}
+                </th>
+                {cols.map((c) => {
+                  const s = state(r, c)
+                  const hits = matching(r, c)
+                  const tone = CELL[s]
+                  const clickable = hits.length > 0 && frames
+                  return (
+                    <td key={c}>
+                      {/* ⚠️ A div, not a button. Half of these cells render a Button, an
+                          ActionIcon or a Select — a <button> inside a <button> is invalid
+                          HTML, and React said so on every render. `pointer-events-none` on
+                          the preview settles the other half of the problem: sixty live
+                          selects that steal the click and take focus are not something a
+                          coverage grid wants either. */}
+                      {/* biome-ignore lint/a11y/useSemanticElements: see above — the cell
+                          cannot be a <button> because its content often is one. */}
+                      <div
+                        role={clickable ? "button" : undefined}
+                        tabIndex={clickable ? 0 : undefined}
+                        title={`${rowAxis}=${r} · ${colAxis}=${c} — ${tone.label}`}
+                        onClick={clickable ? () => setZoom(hits[0]) : undefined}
+                        onKeyDown={
+                          clickable
+                            ? (e) => {
+                                if (e.key === "Enter" || e.key === " ") {
+                                  e.preventDefault()
+                                  setZoom(hits[0])
+                                }
+                              }
+                            : undefined
+                        }
+                        className={`relative flex h-16 w-28 items-center justify-center overflow-hidden rounded border p-1 ${tone.ring} ${
+                          dark ? "bg-black/20" : "bg-white"
+                        } ${clickable ? "cursor-pointer" : "cursor-default"}`}
+                      >
+                        {s === "neither" ? null : (
+                          <PreviewBoundary name={react}>
+                            <div className="pointer-events-none scale-90">
+                              {PREVIEWS[react]?.(props(r, c))}
+                            </div>
+                          </PreviewBoundary>
+                        )}
+                        {tone.dot ? (
+                          <span
+                            className={`absolute top-1 right-1 h-1.5 w-1.5 rounded-full ${tone.dot}`}
+                          />
+                        ) : null}
+                      </div>
+                    </td>
+                  )
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-gray-dark-500">
+        {(Object.keys(CELL) as CellState[]).map((k) => (
+          <span key={k} className="flex items-center gap-1">
+            <span
+              className={`h-1.5 w-1.5 rounded-full ${CELL[k].dot || "border border-white/20"}`}
+            />
+            {CELL[k].label}
+          </span>
+        ))}
+        {frames ? <span>· click a drawn cell to see Figma's own render of it</span> : null}
+      </div>
+
+      {/* Said out loud rather than swallowed: an undecoded key-variant is a combination
+          missing from this grid, so the count above is short by that many. */}
+      {cov.unparsed.length > 0 ? (
+        <Text size="xs" className="text-orange-300">
+          {cov.unparsed.length} Figma variant name{cov.unparsed.length > 1 ? "s" : ""} could
+          not be decoded ({cov.unparsed.slice(0, 3).join(", ")}
+          {cov.unparsed.length > 3 ? "…" : ""}): those combinations are missing here.
+        </Text>
+      ) : null}
+
+      {zoom ? (
+        <div className="rounded-lg border border-white/10 p-3">
+          <div className="mb-2 flex items-center justify-between gap-2">
+            <code className={`${TYPO.mono()} text-gray-dark-300 text-xs`}>{zoom.variant}</code>
+            <button
+              type="button"
+              className="text-gray-dark-500 text-xs hover:text-gray-dark-200"
+              onClick={() => setZoom(null)}
+            >
+              close
+            </button>
+          </div>
+          <div className="grid gap-3 md:grid-cols-2">
+            <div className="flex min-h-24 items-center justify-center">
+              <FigmaFrame slug={slug} variant={zoom.variant} />
+            </div>
+            <div
+              className={`flex min-h-24 items-center justify-center rounded ${
+                dark ? "bg-black/20" : "bg-white"
+              } p-3`}
+            >
+              <PreviewBoundary name={react}>
+                {PREVIEWS[react]?.(
+                  Object.fromEntries(
+                    Object.entries(zoom.values)
+                      .map(([axis, v]) => [find(axis)?.react || "", v])
+                      .filter(([k]) => k),
+                  ),
+                )}
+              </PreviewBoundary>
+            </div>
+          </div>
+        </div>
+      ) : null}
+    </div>
+  )
+}
+
 // ---------------------------------------------------------------- one axis row
 
 const AxisRow = ({ a }: { a: ParityAxis }) => {
@@ -279,6 +611,9 @@ const Pair = ({ pair, dark, frames }: { pair: ParityPair; dark: boolean; frames:
   // version said the former for both: `Alert` showed a green tick while BOTH its axes were
   // unreadable (its cva lives in `alertRoot`). A green tick on an unmeasured component is
   // the one thing this tab must never print.
+  const [covOpen, setCovOpen] = useState(false)
+  const [cov, setCov] = useState<Coverage | null>(null)
+  const [covError, setCovError] = useState("")
   const blind = pair.axes.filter((a) => a.verdict === "unreadable")
   const comparable = pair.axes.length > blind.length
 
@@ -375,6 +710,26 @@ const Pair = ({ pair, dark, frames }: { pair: ParityPair; dark: boolean; frames:
           {/* The axes. Open on demand: a healthy component is ten rows of "aligned", and
               the reader came for the differences. */}
           <div>
+            {/* The grid is fetched on demand, per component: `buttonsbutton-` alone
+                carries 300 named variants, and forty of those in the list payload is a
+                megabyte nobody scrolls. */}
+            {pair.figma.variant_count > 1 ? (
+              <button
+                type="button"
+                className="mr-4 cursor-pointer text-gray-dark-400 text-xs hover:text-gray-dark-200"
+                onClick={() => {
+                  if (cov) return setCovOpen((o) => !o)
+                  setCovOpen(true)
+                  setCovError("")
+                  getParityDetail(pair.figma.slug, pair.react)
+                    .then((d) => setCov(d.coverage))
+                    .catch((e: Error) => setCovError(e.message))
+                }}
+              >
+                <Grid3x3 size={12} className="mr-1 inline" />
+                {covOpen ? "Hide" : "Show"} the coverage grid
+              </button>
+            ) : null}
             {pair.axes.length === 0 ? (
               <Text size="xs" c="muted">
                 This Figma component declares no axis and no property: there is nothing to
@@ -427,6 +782,29 @@ const Pair = ({ pair, dark, frames }: { pair: ParityPair; dark: boolean; frames:
               </div>
             ) : null}
           </div>
+
+          {covOpen ? (
+            covError ? (
+              <Text size="xs" className="text-orange-300">
+                {covError}
+              </Text>
+            ) : cov ? (
+              <CoverageGrid
+                slug={pair.figma.slug}
+                react={pair.react}
+                cov={cov}
+                dark={dark}
+                frames={frames}
+              />
+            ) : (
+              <div className="flex items-center gap-2 py-2">
+                <Spinner size="sm" />
+                <Text size="xs" c="muted">
+                  Decoding the drawn combinations…
+                </Text>
+              </div>
+            )
+          ) : null}
 
           {pair.others.length > 0 ? (
             <Text size="xs" c="muted">
