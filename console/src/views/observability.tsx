@@ -166,12 +166,33 @@ const FlowRows = ({ flow }: { flow: GenerationFlow }) => {
  *  recorded evidence until 2026-09-09: the time of a generation lived in a conversation.
  *
  *  Read from the records the MCP writes into each flow, not from the metrics: the metrics
- *  know every call, they do not know which ones were ONE generation. Absent (no flows
- *  repo, no record yet) the block simply does not draw — an optional capability, and a
- *  failing fetch here must not take the observability page down with it. */
+ *  know every call, they do not know which ones were ONE generation. A failing fetch draws
+ *  nothing — the route does not exist without a flows repo, and an optional capability
+ *  must not take the observability page down with it.
+ *
+ *  ⚠️ An EMPTY answer is not the same as no answer, and treating them alike was wrong the
+ *  day this shipped: with no flow republished yet there was no record anywhere, the block
+ *  hid itself, and the only way to learn that the measurement exists at all — or that it
+ *  is merely waiting for the next publication — was to read the code. A section that
+ *  hides itself cannot tell you why. */
 const GenerationBlock = ({ apiKey }: { apiKey: string }) => {
   const { data } = useRoute<Generations>("/console/generations.json", apiKey)
-  if (!data?.flows?.length) return null
+  if (!data) return null
+  if (!data.flows.length) {
+    return (
+      <Block
+        title="Generation cost"
+        help="What a flow costs to produce — the time a generation took, how much of it was spent inside the model, the round trips and the volume, per flow and per screen."
+      >
+        <Text c="muted" size="sm">
+          Nothing recorded yet. The measurement is written by the server at publication, so
+          the next flow published (or republished) writes the first record — flows published
+          before it existed carry none, and none is invented for them. Each flow also shows
+          its own detail, in the "Generation" tile of its review rail.
+        </Text>
+      </Block>
+    )
+  }
   const o = data.overall
   return (
     <Block
