@@ -645,3 +645,89 @@ export async function getParityBrief(): Promise<string> {
   if (!r.ok) throw new Error(`brief.md → HTTP ${r.status}`)
   return r.text()
 }
+
+// ---------------------------------------------------------------- foundations (tokens)
+
+/** One token, both sides. `verdict` mirrors the components tab's vocabulary so a reader
+ *  moving between the two tabs does not have to learn a second one. */
+export type TokenRow = {
+  token: string
+  figma: string | null
+  kit: string | null
+  verdict: "aligned" | "differs" | "figma-only" | "kit-only" | "unreadable"
+  note: string
+  figma_px?: number
+  kit_px?: number
+}
+
+export type TokenFamily = {
+  key: string
+  label: string
+  kind: "length" | "text"
+  what: string
+  rows: TokenRow[]
+  counts: { total: number; aligned: number; differs: number; figma_only: number; kit_only: number }
+}
+
+/** A Figma colour token and where it lands in the kit's palette. `in_palette` is empty
+ *  when the colour it resolves to exists in no `--color-*`: nothing the kit ships can
+ *  reproduce it. */
+export type ColorRow = {
+  token: string
+  default: string
+  alpha: number | null
+  in_palette: string[]
+  modes: Record<string, string>
+  mode_hits: Record<string, string[]>
+}
+
+export type TokensReport = {
+  families: TokenFamily[]
+  colors: {
+    /** ⚠️ False means the export predates the plugin's 2026-09-09 fix: only the
+     *  collection's DEFAULT mode is in the file, and here that default is Dark. The tab
+     *  must say so rather than show one mode as if it were both. */
+    modes_exported: boolean
+    modes: string[]
+    rows: ColorRow[]
+    palette_size: number
+    reference_size: number
+    unbound: string[]
+    off_palette_colors: Record<string, string[]>
+    counts: { tokens: number; in_palette: number; off_palette: number; with_alpha: number }
+  }
+  spacing: {
+    figma_steps: Record<string, string>
+    kit_declares: string[]
+    off_grid: string[]
+  }
+  findings: ParityFinding[]
+  counts: {
+    families: number
+    tokens: number
+    differs: number
+    findings: number
+    by_owner: Record<string, number>
+  }
+  sources: {
+    figma: Record<string, string>
+    kit: { repo: string; branch: string; theme: string }
+  }
+  generated_at: string
+}
+
+/** ⚠️ Unlike the components comparison, this one has NO snapshot fallback: the kit's CSS
+ *  is in no committed file, so without KIT_REPO the server answers 503 with the reason. */
+export async function getTokens(fresh = false): Promise<TokensReport> {
+  return get<TokensReport>(`/console/tokens.json${fresh ? "?fresh=1" : ""}`)
+}
+
+export async function getTokensBrief(): Promise<string> {
+  const key = readKey()
+  const r = await fetch(`${BASE}/console/tokens/brief.md`, {
+    headers: key ? { "X-DS-Key": key } : {},
+  })
+  if (r.status === 401) throw new AccessError("Key rejected by the server.")
+  if (!r.ok) throw new Error(`tokens/brief.md → HTTP ${r.status}`)
+  return r.text()
+}

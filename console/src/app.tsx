@@ -13,6 +13,7 @@ import {
   Plug,
   GitCompare,
   ListChecks,
+  Palette,
   LogOut,
   Menu as MenuIcon,
   ShieldCheck,
@@ -52,6 +53,12 @@ import { SessionsView } from "./views/sessions"
 const ParityView = lazy(() =>
   import("./views/parity").then((m) => ({ default: m.ParityView })),
 )
+/** Tokens rides the same reasoning as Parity, one step lighter: it renders no kit
+ *  component, but it belongs to the same rarely-opened pair and there is no reason the six
+ *  everyday tabs should carry it. */
+const TokensView = lazy(() =>
+  import("./views/tokens").then((m) => ({ default: m.TokensView })),
+)
 
 type Status = "checking" | "out" | "in"
 
@@ -89,6 +96,13 @@ const SECTIONS: Section[] = [
     icon: <GitCompare size={16} />,
     keyRequired: true,
     sub: "Figma against @42/ui-react, component by component: what is paired, what is missing, and on which side.",
+  },
+  {
+    v: "tokens",
+    label: "Tokens",
+    icon: <Palette size={16} />,
+    keyRequired: true,
+    sub: "The foundations under the components: radii, the type scale, widths, colours — Figma against the kit's CSS.",
   },
   {
     v: "observability",
@@ -238,6 +252,19 @@ export const App = () => {
             }
           >
             <ParityView />
+          </Suspense>
+        )
+      case "tokens":
+        return (
+          <Suspense
+            fallback={
+              <div className="flex items-center gap-2 py-8">
+                <Spinner size="sm" />
+                <Text c="secondary">Loading the foundations…</Text>
+              </div>
+            }
+          >
+            <TokensView />
           </Suspense>
         )
       case "observability":
