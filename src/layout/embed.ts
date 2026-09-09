@@ -30,8 +30,13 @@ export type EmbedState = {
   version: string
   hash: string
   views: Array<{ path: string; label: string; href: string; hidden: boolean }>
-  /** Only from a frame rendered `?figma`: the mockup's design width, in CSS pixels. */
+  /** Only from a frame rendered `?figma`: the mockup's design width in CSS pixels, and
+   *  the frame's deep link and name. The width makes the superposition exact; the link is
+   *  the one thing the holder cannot build for itself — the file key lives in the flow's
+   *  bundle and nowhere else. */
   figmaWidth?: number
+  figmaLink?: string
+  figmaName?: string
 }
 
 export type EmbedNavigate = { type: "sanctum:navigate"; hash: string }
@@ -70,7 +75,7 @@ export const useEmbedBridge = (
   enabled: boolean,
   views: ProtoView[],
   hash: string,
-  figmaWidth?: number,
+  mockup?: { width: number; link: string; name: string },
 ) => {
   const send = useCallback((message: object) => {
     if (window.parent === window) return
@@ -90,10 +95,12 @@ export const useEmbedBridge = (
         href: hrefOf(v),
         hidden: Boolean(v.hidden),
       })),
-      ...(figmaWidth ? { figmaWidth } : {}),
+      // The link travels as soon as it is known; the width only once the picture is in.
+      ...(mockup?.link ? { figmaLink: mockup.link, figmaName: mockup.name } : {}),
+      ...(mockup?.width ? { figmaWidth: mockup.width } : {}),
     }
     send(state)
-  }, [enabled, views, hash, figmaWidth, send])
+  }, [enabled, views, hash, mockup, send])
 
   // The scroller is looked up lazily and remembered: it changes with the screen, and a
   // scan of the DOM on every wheel event would be the one expensive thing in this file.

@@ -75,12 +75,12 @@ export const SourceFrame = ({
     return () => window.removeEventListener("keydown", onKey)
   }, [open, onClose])
 
-  // The screen can change under an open overlay (the bar keeps routing): re-ask, or close
-  // if the new screen has no frame at all.
+  // The screen can change under an open overlay (the bar keeps routing): re-ask, or fall
+  // back to the empty state when the new screen names no frame.
   useEffect(() => {
     if (!open) return
     if (!frame || !current?.path) {
-      onClose()
+      setState({ kind: "idle" })
       return
     }
     let alive = true
@@ -93,8 +93,7 @@ export const SourceFrame = ({
     }
   }, [open, current?.path, frame, onClose])
 
-  // Nothing to point at: no provenance in this flow, or no frame behind this screen.
-  if (!open || !hasSource() || !frame) return null
+  if (!open) return null
 
   const dates = [
     PROVENANCE.translatedOn ? `translated ${PROVENANCE.translatedOn}` : "",
@@ -114,9 +113,11 @@ export const SourceFrame = ({
     >
       <div className="sticky top-0 z-10 flex flex-wrap items-center gap-x-3 gap-y-2 border-gray-dark-800 border-b bg-gray-dark-950/95 px-5 py-3 backdrop-blur">
         <span className="font-semibold text-sm text-white">
-          {frame.name || "Source frame"}
+          {frame?.name || (frame ? "Source frame" : "No source frame")}
         </span>
-        <span className="font-mono text-[11px] text-gray-dark-600">{frame.node}</span>
+        {frame ? (
+          <span className="font-mono text-[11px] text-gray-dark-600">{frame.node}</span>
+        ) : null}
         {dates ? <span className="text-gray-dark-500 text-xs">{dates}</span> : null}
 
         <div className="ms-auto flex items-center gap-1" role="group" aria-label="Zoom">
@@ -153,15 +154,17 @@ export const SourceFrame = ({
             Compare with the screen
           </a>
         ) : null}
-        <a
-          href={frame.url}
-          target="_blank"
-          rel="noreferrer"
-          className="flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-gray-dark-400 text-xs transition-colors hover:bg-white/5 hover:text-white"
-        >
-          <ExternalLink size={13} aria-hidden="true" />
-          Open in Figma
-        </a>
+        {frame ? (
+          <a
+            href={frame.url}
+            target="_blank"
+            rel="noreferrer"
+            className="flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-gray-dark-400 text-xs transition-colors hover:bg-white/5 hover:text-white"
+          >
+            <ExternalLink size={13} aria-hidden="true" />
+            Open in Figma
+          </a>
+        ) : null}
         <button
           type="button"
           onClick={onClose}
@@ -173,6 +176,24 @@ export const SourceFrame = ({
       </div>
 
       <div className="px-5 py-6">
+        {/* No frame behind this screen — and since 2026-09-09 that is no longer a dead end:
+            the compare page can point it at one, or hand over the prompt that builds the
+            frame FROM this screen. Which is why the tile is now drawn on every screen: its
+            absence used to say "this one was composed, not designed", and that sentence is
+            no longer worth an unreachable action. */}
+        {!frame ? (
+          <div className="flex max-w-prose flex-col gap-2">
+            <p className="text-gray-dark-300 text-sm">
+              {hasSource()
+                ? "This screen was not translated from a Figma frame."
+                : "This flow was described, not translated from mockups."}
+            </p>
+            <p className={`${TYPO.nav} text-gray-dark-500 text-xs`}>
+              « Compare with the screen » opens the pair: from there you can point this
+              screen at a frame, or copy the prompt that builds one from it.
+            </p>
+          </div>
+        ) : null}
         {state.kind === "loading" ? (
           <p className="text-gray-dark-400 text-sm">Rendering the frame…</p>
         ) : null}
@@ -185,7 +206,7 @@ export const SourceFrame = ({
             </p>
           </div>
         ) : null}
-        {state.kind === "ok" ? (
+        {state.kind === "ok" && frame ? (
           <a href={frame.url} target="_blank" rel="noreferrer" className="block">
             <img
               src={state.url}

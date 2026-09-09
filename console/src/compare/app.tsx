@@ -17,6 +17,7 @@ import {
   useState,
 } from "react"
 import { FIGMA, PREV } from "../../../src/layout/compare-link"
+import { fromFigmaPrompt, toFigmaPrompt } from "../../../src/layout/figma-prompts"
 import { TYPO } from "../../../src/typo"
 import { AccessError, get, getFlows, MCP_URL, readKey, writeKey } from "../mcp"
 
@@ -65,8 +66,11 @@ type EmbedState = {
   version: string
   hash: string
   views: EmbedView[]
-  /** Only from a side rendered as the mockup: the width the frame was designed at. */
+  /** Only from a side rendered as the mockup: the width the frame was designed at, and
+   *  the frame's link and name — which this page has no other way to learn. */
   figmaWidth?: number
+  figmaLink?: string
+  figmaName?: string
 }
 
 type Status =
@@ -141,6 +145,16 @@ type Mode = (typeof MODES)[number]["key"]
 
 const isMode = (v: string | null): v is Mode => MODES.some((m) => m.key === v)
 
+/** Whose first name goes into the commit. Read where the flow's own widgets left it, and
+ *  never asked for here: a form that demands a name to accept a link is a form one closes. */
+const whoami = (): string => {
+  try {
+    return (localStorage.getItem("feedback-author") ?? "").slice(0, 60)
+  } catch {
+    return ""
+  }
+}
+
 const withTime = new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" })
 const when = (iso: string) => {
   const t = Date.parse(iso)
@@ -191,8 +205,11 @@ type Pane = {
   views: EmbedView[]
   /** The hash the frame reports — the truth once it has loaded. */
   hash: string
-  /** Reported by a mockup side once its picture is in: the width it was designed at. */
+  /** Reported by a mockup side once its picture is in: the width it was designed at, and
+   *  the frame it shows. */
   figmaWidth: number
+  figmaLink: string
+  figmaName: string
 }
 
 type PaneHandle = {
@@ -208,7 +225,7 @@ const usePane = (initial: Locator | null, key: string): PaneHandle => {
   const [status, setStatus] = useState<Status>({ kind: "idle" })
   const [views, setViews] = useState<EmbedView[]>([])
   const [hash, setHash] = useState(initial?.hash ?? "")
-  const [figmaWidth, setFigmaWidth] = useState(0)
+  const [figma, setFigma] = useState({ width: 0, link: "", name: "" })
 
   // Resolving the base: a live flow is a path; a past version is checked, then built.
   // Keyed on slug + sha — a hash change must NOT rebuild the side.
@@ -264,7 +281,7 @@ const usePane = (initial: Locator | null, key: string): PaneHandle => {
   const set = useCallback((l: Locator) => {
     if (l.slug !== locRef.current.slug || l.sha !== locRef.current.sha) {
       setViews([])
-      setFigmaWidth(0)
+      setFigma({ width: 0, link: "", name: "" })
     }
     setLoc(l)
     setHash(l.hash)
@@ -273,12 +290,19 @@ const usePane = (initial: Locator | null, key: string): PaneHandle => {
   const report = useCallback((s: EmbedState) => {
     setViews(s.views)
     setHash(s.hash)
-    if (s.figmaWidth) setFigmaWidth(s.figmaWidth)
+    // Merged, not replaced: the link arrives first, the width three seconds later.
+    if (s.figmaWidth || s.figmaLink !== undefined)
+      setFigma((f) => ({
+        width: s.figmaWidth || f.width,
+        link: s.figmaLink ?? f.link,
+        name: s.figmaName ?? f.name,
+      }))
   }, [])
 
   const pane: Pane = useMemo(
-    () => ({ loc, status, views, hash, figmaWidth }),
-    [loc, status, views, hash, figmaWidth],
+    () => ({ loc, status, views, hash, figmaWidth: figma.width, figmaLink: figma.link,
+             figmaName: figma.name }),
+    [loc, status, views, hash, figma],
   )
   return { pane, set, report }
 }
@@ -289,10 +313,14 @@ const Frame = ({
   pane,
   width,
   frameRef,
+  nonce = 0,
 }: {
   pane: Pane
   width: number
   frameRef: RefObject<HTMLIFrameElement | null>
+  /** Bumped to REMOUNT the frame — the mockup side after its provenance was rewritten.
+   *  It lands in the query, which is what `key` is built from. */
+  nonce?: number
 }) => {
   const box = useRef<HTMLDivElement | null>(null)
   const [size, setSize] = useState({ w: 0, h: 0 })
@@ -314,7 +342,8 @@ const Frame = ({
   const scale = frameW && size.w ? Math.min(1, size.w / frameW) : 1
   const src =
     pane.status.kind === "ready"
-      ? `${pane.status.base}?bare${isMockup(pane.loc) ? "&figma" : ""}${pane.loc.hash}`
+      ? `${pane.status.base}?bare${isMockup(pane.loc) ? "&figma" : ""}` +
+        `${nonce ? `&r=${nonce}` : ""}${pane.hash || pane.loc.hash}`
       : undefined
 
   return (
@@ -398,6 +427,8 @@ const Stage = ({
   nudge,
   frameA,
   frameB,
+  nonceA,
+  nonceB,
   onCurtain,
 }: {
   a: Pane
@@ -410,6 +441,8 @@ const Stage = ({
   nudge: { x: number; y: number }
   frameA: RefObject<HTMLIFrameElement | null>
   frameB: RefObject<HTMLIFrameElement | null>
+  nonceA: number
+  nonceB: number
   onCurtain: (pct: number) => void
 }) => {
   const stage = useRef<HTMLDivElement | null>(null)
@@ -437,7 +470,7 @@ const Stage = ({
       style={{ isolation: "isolate" }}
     >
       <div className="absolute inset-0 flex">
-        <Frame pane={a} width={width} frameRef={frameA} />
+        <Frame pane={a} width={width} frameRef={frameA} nonce={nonceA} />
       </div>
       <div
         className="absolute inset-0 flex"
@@ -453,7 +486,7 @@ const Stage = ({
             : {}),
         }}
       >
-        <Frame pane={b} width={width} frameRef={frameB} />
+        <Frame pane={b} width={width} frameRef={frameB} nonce={nonceB} />
       </div>
 
       {mode === "curtain" ? (
@@ -610,6 +643,160 @@ const SideHeader = ({
   )
 }
 
+// ------------------------------------------------------------------ the Figma bar
+
+/** What one does WITH the pair, once the two are side by side — and it is deliberately in
+ *  the compare page rather than in the flow's rail: this is where the gap is visible, and
+ *  the page already holds the console key that the write needs (a flow's bundle does not).
+ *
+ *  Three gestures, and only the first is ours to perform:
+ *   • LINK a frame — `POST /console/protos/source.json`. It is what turned the provenance
+ *     from something a skill stamps once into a property of the screen: a flow described
+ *     orally can be given its mockup, and a node-id copied wrong can be corrected here
+ *     instead of costing a republication;
+ *   • SEND to Figma, and REFRESH from it — neither is something a browser can do (see
+ *     `figma-prompts.ts`). The button copies the exact sentence, skill named, and the
+ *     person pastes it into a conversation that has the MCPs. */
+const FigmaBar = ({
+  slug,
+  path,
+  label,
+  frameLink,
+  frameName,
+  canWrite,
+  onLinked,
+}: {
+  slug: string
+  path: string
+  label: string
+  frameLink: string
+  frameName: string
+  canWrite: boolean
+  onLinked: () => void
+}) => {
+  const [linking, setLinking] = useState(false)
+  const [value, setValue] = useState("")
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState("")
+  const [copied, setCopied] = useState("")
+
+  const copy = async (what: string, text: string) => {
+    try {
+      await navigator.clipboard.writeText(text)
+      setCopied(what)
+      window.setTimeout(() => setCopied(""), 2000)
+    } catch {
+      setError("the browser refused the clipboard — the prompt is in the console log.")
+      console.log(text)
+    }
+  }
+
+  const save = async (e: FormEvent) => {
+    e.preventDefault()
+    setBusy(true)
+    setError("")
+    try {
+      const r = await fetch(`${MCP_URL}/console/protos/source.json`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-DS-Key": readKey() },
+        body: JSON.stringify({ slug, path, url: value.trim(), author: whoami() }),
+      })
+      if (!r.ok) throw new Error(await detail(r))
+      setLinking(false)
+      setValue("")
+      onLinked()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err))
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  const chip =
+    "flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-[11px] text-gray-dark-400 transition-colors hover:bg-white/5 hover:text-white disabled:opacity-40 disabled:hover:bg-transparent"
+
+  return (
+    <div className="flex shrink-0 flex-wrap items-center gap-x-2 gap-y-1 border-gray-dark-800 border-b bg-white/2 px-3 py-2">
+      <span className={`${TYPO.mono("semibold")} text-[11px] text-gray-dark-500 uppercase`}>
+        figma
+      </span>
+      <span className="max-w-[22rem] truncate text-gray-dark-400 text-xs">
+        {frameName || (frameLink ? "linked frame" : "no frame declared for this screen")}
+      </span>
+
+      <span className="ms-auto flex flex-wrap items-center gap-1">
+        <button
+          type="button"
+          onClick={() => {
+            setLinking((v) => !v)
+            setValue(frameLink)
+          }}
+          aria-expanded={linking}
+          disabled={!canWrite}
+          title={
+            canWrite
+              ? "Point this screen at a Figma frame — or correct the one it names"
+              : "Writing the provenance needs the console key: enter it above"
+          }
+          className={chip}
+        >
+          <Link2 size={13} aria-hidden="true" />
+          {frameLink ? "Change the frame" : "Link a frame…"}
+        </button>
+        <button
+          type="button"
+          onClick={() => copy("to", toFigmaPrompt(slug, path, label))}
+          title="Copy the prompt that rebuilds this screen as a Figma frame, in the DS"
+          className={chip}
+        >
+          <ExternalLink size={13} aria-hidden="true" />
+          {copied === "to" ? "Prompt copied" : "Send to Figma"}
+        </button>
+        <button
+          type="button"
+          onClick={() => copy("from", fromFigmaPrompt(slug, path, label, frameLink))}
+          disabled={!frameLink}
+          title={
+            frameLink
+              ? "Copy the prompt that re-lifts this screen from its frame"
+              : "This screen names no frame yet — link one first"
+          }
+          className={chip}
+        >
+          <ArrowLeft size={13} aria-hidden="true" />
+          {copied === "from" ? "Prompt copied" : "Refresh from Figma"}
+        </button>
+      </span>
+
+      {linking ? (
+        <form onSubmit={save} className="flex w-full flex-wrap items-center gap-2 pt-1">
+          <input
+            type="url"
+            value={value}
+            autoFocus
+            placeholder="paste the Figma link of the frame (Copy link to selection)"
+            onChange={(e) => setValue(e.target.value)}
+            className="min-w-0 flex-1 rounded-md border border-gray-dark-800 bg-white/2 px-3 py-1.5 text-white text-xs placeholder:text-gray-dark-500 focus:border-white/30 focus:outline-none"
+          />
+          <button
+            type="submit"
+            disabled={busy}
+            className="rounded-md bg-white/10 px-3 py-1.5 font-semibold text-white text-xs hover:bg-white/15 disabled:opacity-40"
+          >
+            {busy ? "Writing…" : "Link"}
+          </button>
+          {/* An empty field is not a mistake: it is how a screen is declared to have no
+              mockup behind it, which is a normal state of a composed drill-down. */}
+          <span className="text-[11px] text-gray-dark-500">
+            Empty ⇒ this screen has no mockup.
+          </span>
+        </form>
+      ) : null}
+      {error ? <p className="w-full text-[11px] text-pink-400">{error}</p> : null}
+    </div>
+  )
+}
+
 // ------------------------------------------------------------------ the page
 
 const readParams = () => {
@@ -634,6 +821,9 @@ export const CompareApp = () => {
   const [blend, setBlend] = useState(0.5)
   const [showB, setShowB] = useState(true)
   const [nudge, setNudge] = useState({ x: 0, y: 0 })
+  // Bumped after the provenance is rewritten: the mockup side remounts and asks for the
+  // frame it now names, instead of showing the one it was opened with.
+  const [mockupNonce, setMockupNonce] = useState(0)
   const { pane: a, set: setA, report: reportA } = usePane(initial.a, key)
   const { pane: b, set: setB, report: reportB } = usePane(initial.b ?? initial.a, key)
   // Sync starts ON when both sides are the same flow on the same screen — the "two
@@ -844,6 +1034,14 @@ export const CompareApp = () => {
     setHistories({})
   }
 
+  // What the Figma bar acts on: the mockup side names the flow and carries the frame, the
+  // OTHER side is the built screen and is the one that knows the screens by name. Both are
+  // needed — a path is what the provenance is keyed by, and only `views` gives it.
+  const mockupPane = isMockup(a.loc) ? a : isMockup(b.loc) ? b : null
+  const flowPane = !isMockup(a.loc) ? a : !isMockup(b.loc) ? b : null
+  const currentHash = flowPane ? flowPane.hash || flowPane.loc.hash : ""
+  const screen = flowPane?.views.find((v) => v.href === currentHash)
+
   // The frame's own width joins the list the moment a mockup side reports it, and leads —
   // it is the only one of them that makes a superposition exact.
   const widths = frameWidth
@@ -1030,6 +1228,18 @@ export const CompareApp = () => {
         ) : null}
       </header>
 
+      {mockupPane && flowPane && screen ? (
+        <FigmaBar
+          slug={mockupPane.loc.slug}
+          path={screen.path}
+          label={screen.label}
+          frameLink={mockupPane.figmaLink}
+          frameName={mockupPane.figmaName}
+          canWrite={Boolean(key)}
+          onLinked={() => setMockupNonce((n) => n + 1)}
+        />
+      ) : null}
+
       {mode === "side" ? (
         <div className="grid min-h-0 flex-1 grid-cols-1 md:grid-cols-2">
           {(
@@ -1051,7 +1261,12 @@ export const CompareApp = () => {
                 onChange={(l, why) => change(side, l, why)}
                 sync={sync}
               />
-              <Frame pane={pane} width={width} frameRef={ref} />
+              <Frame
+                pane={pane}
+                width={width}
+                frameRef={ref}
+                nonce={isMockup(pane.loc) ? mockupNonce : 0}
+              />
             </section>
           ))}
         </div>
@@ -1088,6 +1303,8 @@ export const CompareApp = () => {
             nudge={nudge}
             frameA={frameA}
             frameB={frameB}
+            nonceA={isMockup(a.loc) ? mockupNonce : 0}
+            nonceB={isMockup(b.loc) ? mockupNonce : 0}
             onCurtain={setCurtain}
           />
         </div>

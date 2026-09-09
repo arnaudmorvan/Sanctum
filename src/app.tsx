@@ -7,7 +7,7 @@ import { AppLayout } from "./layout/app-layout"
 import { useDock } from "./layout/dock"
 import { useEmbedBridge } from "./layout/embed"
 import { BARE, FIGMA_VIEW, IS_PAST_VERSION } from "./layout/env"
-import { FigmaView } from "./layout/figma-view"
+import { FigmaView, type MockupState } from "./layout/figma-view"
 import { ProtoViewBar } from "./layout/proto-view-bar"
 import { SidePanel } from "./layout/side-panel"
 import { VersionBanner } from "./layout/version-banner"
@@ -45,9 +45,9 @@ const AS_MOCKUP = BARE && FIGMA_VIEW
 
 export const App = () => {
   const [hash, setHash] = useState(() => window.location.hash)
-  // Reported to the compare page, which lays BOTH sides out at that width — the condition
-  // for the two to be superposable rather than merely adjacent.
-  const [figmaWidth, setFigmaWidth] = useState(0)
+  // Reported to the compare page: the width is what makes the two superposable rather than
+  // merely adjacent, and the link is what that page cannot build for itself.
+  const [mockup, setMockup] = useState<MockupState | undefined>(undefined)
 
   useEffect(() => {
     const onHash = () => setHash(window.location.hash)
@@ -64,7 +64,7 @@ export const App = () => {
   const screen = match ? match.view.render(match.params) : <Unknown hash={hash} />
 
   // Inside a frame of the compare page: say where we are, follow where we are sent.
-  useEmbedBridge(BARE, VIEWS, hash, figmaWidth)
+  useEmbedBridge(BARE, VIEWS, hash, mockup)
 
   // What the docked panel takes away from the flow (0 whenever it merely covers it).
   const dock = useDock()
@@ -92,7 +92,7 @@ export const App = () => {
         {IS_PAST_VERSION && !BARE ? <VersionBanner /> : null}
         <div className="min-h-0 flex-1">
           {AS_MOCKUP ? (
-            <FigmaView current={match?.view} onWidth={setFigmaWidth} />
+            <FigmaView current={match?.view} onSource={setMockup} />
           ) : NAV ? (
             <AppChrome nav={NAV} views={VIEWS} currentPath={match?.view.path} title={TITLE}>
               {screen}

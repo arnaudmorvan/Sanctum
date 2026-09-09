@@ -374,9 +374,12 @@ export const SidePanel = ({
     {
       key: "source",
       label: "Source",
-      title: frame?.name || "The Figma frame this screen was built from",
+      title: frame?.name || "The Figma frame this screen was built from — none yet",
       icon: <Frame size={15} aria-hidden="true" />,
-      available: Boolean(frame),
+      // Drawn even with no frame behind the screen. Its absence used to be an answer in
+      // itself ("this one was composed, not designed"); since a frameless screen can now
+      // be given a frame — or have one built from it — that sentence costs an action.
+      available: true,
       onClick: () => setOverlay("source"),
     },
     {

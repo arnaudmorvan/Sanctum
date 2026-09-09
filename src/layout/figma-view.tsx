@@ -14,12 +14,17 @@ import { designWidth, renderFrame } from "./figma-render"
  *  the whole condition of an exact superposition: the screen on the other side has to be
  *  laid out at the width the frame was drawn at, or a responsive layout reflows while a
  *  picture merely shrinks. */
+export type MockupState = { width: number; link: string; name: string }
+
 export const FigmaView = ({
   current,
-  onWidth,
+  onSource,
 }: {
   current?: ProtoView
-  onWidth: (w: number) => void
+  /** Reported up to the compare page: the width (which makes the superposition exact) and
+   *  the frame's link and name — so the page holding this can offer the frame WITHOUT
+   *  knowing the file key, which it has no way to learn otherwise. */
+  onSource: (s: MockupState) => void
 }) => {
   const [state, setState] = useState<
     { kind: "loading" } | { kind: "ok"; url: string } | { kind: "off"; why: string }
@@ -30,6 +35,14 @@ export const FigmaView = ({
 
   const frame = frameOf(current?.path)
   const path = current?.path
+
+  // The LINK is announced as soon as the screen is known — it costs nothing, the bundle
+  // carries the provenance. Only the width waits for the picture. Reporting both at once
+  // would have left the compare page's Figma bar dead for the three seconds a Figma render
+  // takes, on the one gesture that never needed a render.
+  useEffect(() => {
+    onSource({ width: 0, link: frame?.url ?? "", name: frame?.name ?? "" })
+  }, [frame, onSource])
 
   useEffect(() => {
     if (!frame || !path) {
@@ -71,7 +84,7 @@ export const FigmaView = ({
           onLoad={(e) => {
             const width = designWidth(e.currentTarget)
             setW(width)
-            onWidth(width)
+            onSource({ width, link: frame?.url ?? "", name: frame?.name ?? "" })
           }}
         />
       ) : null}
