@@ -438,14 +438,43 @@ KIT_TOKEN=<a PAT with Contents: Read on that repo>`}</pre>
             </Text>
           </div>
           <div>
-            <Text size="xs" c="muted">
-              Kit
-            </Text>
+            <div className="flex items-center gap-2">
+              <Text size="xs" c="muted">
+                Kit
+              </Text>
+              <Badge
+                color={data.sources.kit.mode === "live" ? "green" : "orange"}
+                size="sm"
+                variant="light"
+              >
+                {data.sources.kit.mode === "live" ? "read live" : "snapshot"}
+              </Badge>
+            </div>
             <Text size="sm">
-              <span className={`${TYPO.mono()} text-gray-dark-500`}>
-                {data.sources.kit.repo}@{data.sources.kit.branch} · {data.sources.kit.theme}
-              </span>
+              {data.sources.kit.mode === "live" ? (
+                <span className={`${TYPO.mono()} text-gray-dark-500`}>
+                  {data.sources.kit.repo}@{data.sources.kit.branch} ·{" "}
+                  {data.sources.kit.sources.join(", ")}
+                </span>
+              ) : (
+                <span className={`${TYPO.mono()} text-gray-dark-500`}>
+                  {data.sources.kit.package} {data.sources.kit.version} · ui-tokens.json,{" "}
+                  {data.sources.kit.generated_at}
+                </span>
+              )}
             </Text>
+            {/* Not an error, and not hidden either: the snapshot gives the right answer
+                for the day it was taken, and the only thing that can say so is this. */}
+            {data.sources.kit.note ? (
+              <Text size="xs" c="muted" className="mt-1">
+                {data.sources.kit.note}
+              </Text>
+            ) : null}
+            {data.sources.kit.error ? (
+              <Text size="xs" className="mt-1 text-orange-300">
+                {data.sources.kit.error}
+              </Text>
+            ) : null}
           </div>
         </div>
       </Card>
