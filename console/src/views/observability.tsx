@@ -115,40 +115,57 @@ const FlowRows = ({ flow }: { flow: GenerationFlow }) => {
       {open ? (
         <Table.Row>
           <Table.Cell colSpan={7}>
-            <div className="grid gap-6 py-2 lg:grid-cols-2">
+            <div className="grid gap-6 py-2 lg:grid-cols-3">
               <div className="flex flex-col gap-1.5">
                 <Text size="sm" c="secondary">
                   Per screen — attributed
                 </Text>
                 {flow.detail.map((f) => (
-                  <div key={f.path} className="flex items-baseline justify-between gap-4">
-                    <span className="truncate font-mono text-xs">{f.path}</span>
-                    <span className="shrink-0 font-mono text-xs tabular-nums">
-                      {duration(f.seconds)} · {Math.round(f.bytes / 100) / 10} Ko ·{" "}
-                      {f.runs} pass{f.runs > 1 ? "es" : ""}
+                  <div key={f.path} className="flex flex-col">
+                    <span className="font-mono text-xs">{f.path}</span>
+                    <span className="font-mono text-[11px] text-(--c-muted) tabular-nums">
+                      {duration(f.seconds)} · {Math.round(f.bytes / 100) / 10} Ko · {f.runs}{" "}
+                      pass{f.runs > 1 ? "es" : ""}
                     </span>
                   </div>
                 ))}
               </div>
               <div className="flex flex-col gap-1.5">
                 <Text size="sm" c="secondary">
+                  Where the context goes — tokens, every run
+                </Text>
+                {Object.entries(flow.context ?? {})
+                  .sort((a, b) => b[1] - a[1])
+                  .map(([tool, chars]) => (
+                    <div key={tool} className="flex items-baseline justify-between gap-2">
+                      <span className="truncate font-mono text-xs">{tool}</span>
+                      <span className="shrink-0 font-mono text-xs tabular-nums">
+                        ~{compact(Math.floor(chars / 4))}
+                      </span>
+                    </div>
+                  ))}
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Text size="sm" c="secondary">
                   Generations — measured
                 </Text>
+                {/* Stacked, not justified across the row: a run's line carries four
+                    facts and this column is a third of a table cell — side by side, the
+                    last of them was clipped by the cell's edge, which is the one way a
+                    number can be wrong without being false. */}
                 {flow.runs_detail
                   .slice()
                   .reverse()
                   .map((r) => (
-                    <div key={r.run} className="flex items-baseline justify-between gap-4">
-                      <span className="truncate font-mono text-xs">
+                    <div key={r.run} className="flex flex-col">
+                      <span className="font-mono text-xs">
                         #{r.run} · {day(r.at)} · {r.author || "—"}
                       </span>
-                      <span className="shrink-0 font-mono text-xs tabular-nums">
-                        {r.measured === false ? "not measured" : duration(r.model_s)} ·{" "}
+                      <span className="font-mono text-[11px] text-(--c-muted) tabular-nums">
+                        {r.measured === false ? "not measured" : duration(r.model_s)}
+                        {r.write_s ? ` · ${duration(r.write_s)} composing` : ""} ·{" "}
                         {r.calls ?? 0} calls · ~
-                        {compact(
-                          Math.floor(((r.in_chars ?? 0) + (r.out_chars ?? 0)) / 4),
-                        )}{" "}
-                        tk
+                        {compact(Math.floor(((r.in_chars ?? 0) + (r.out_chars ?? 0)) / 4))} tk
                       </span>
                     </div>
                   ))}
@@ -197,7 +214,7 @@ const GenerationBlock = ({ apiKey }: { apiKey: string }) => {
   return (
     <Block
       title="Generation cost"
-      help="What a flow cost to produce. Measured on the calls themselves — the wall clock of one generation, and how much of it was spent inside the model. The per-screen figure is ATTRIBUTED: one publication carries several screens, so a run's time is shared out in proportion to what was written. Tokens are an estimate — characters through this server ÷ 4."
+      help="What a flow cost to produce. Measured on the calls themselves — the wall clock of one generation, how much of it was spent inside the model, and how much of THAT was composing rather than reading and deciding. The per-screen figure is ATTRIBUTED: one publication carries several screens, so a run's time is shared out in proportion to what was written. Tokens are an estimate — characters through this server ÷ 4."
     >
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <Stat label="Average per screen" value={duration(o.per_screen_s)} />
@@ -205,6 +222,7 @@ const GenerationBlock = ({ apiKey }: { apiKey: string }) => {
         <Stat label="Screens generated" value={o.screens} />
         <Stat label="Generations" value={o.runs} />
         <Stat label="Time in the model" value={duration(o.model_s)} />
+        <Stat label="Composing" value={duration(o.write_s)} />
         <Stat label="Round trips" value={o.calls} />
         <Stat label="Tokens in (est.)" value={`~${compact(o.tokens_in)}`} />
         <Stat label="Tokens out (est.)" value={`~${compact(o.tokens_out)}`} />
@@ -230,8 +248,9 @@ const GenerationBlock = ({ apiKey }: { apiKey: string }) => {
         </Table.Content>
       </Table>
       <Text c="muted" size="sm">
-        Click a flow for the per-screen share and the run by run detail. A model is named
-        only where the agent declared it — the server cannot see which one wrote a screen.
+        Click a flow for the per-screen share, where its context went, and the run by run
+        detail. A model is named only where the agent declared it — the server cannot see
+        which one wrote a screen.
       </Text>
     </Block>
   )

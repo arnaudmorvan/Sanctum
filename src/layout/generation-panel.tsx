@@ -94,6 +94,12 @@ const RunRow = ({ run }: { run: Run }) => (
       {run.calls > 1 ? "s" : ""} · ~{compact(run.tokensIn)} in / ~{compact(run.tokensOut)} out
       {run.awayS > 60 ? ` · ${duration(run.awayS)} idle` : ""}
     </span>
+    {run.measured && run.writeS ? (
+      <span className="text-[10px] text-gray-dark-500">
+        {duration(run.writeS)} composing · {duration(Math.max(0, run.modelS - run.writeS))}{" "}
+        reading and deciding
+      </span>
+    ) : null}
     <span className="truncate text-[10px] text-gray-dark-600">
       {[run.model || "model not declared", run.author].filter(Boolean).join(" · ")}
     </span>
@@ -129,7 +135,15 @@ export const GenerationBody = ({ screen }: { screen?: string }) => {
           value={duration(t.perScreenS)}
           hint={`${t.screens} screen${t.screens > 1 ? "s" : ""}, attributed`}
         />
-        <Row label="in the model" value={duration(t.modelS)} hint={`${t.runs} generation${t.runs > 1 ? "s" : ""}`} />
+        <Row
+          label="in the model"
+          value={duration(t.modelS)}
+          hint={
+            t.writeS
+              ? `${duration(t.writeS)} composing`
+              : `${t.runs} generation${t.runs > 1 ? "s" : ""}`
+          }
+        />
         <Row label="round trips" value={String(t.calls)} hint={`${duration(t.serverS)} of server`} />
         <Row
           label="tokens (estimate)"
@@ -174,6 +188,31 @@ export const GenerationBody = ({ screen }: { screen?: string }) => {
               <FileRow key={f.path} file={f} current={false} />
             ))}
           </ul>
+        </div>
+      ) : null}
+
+      {t.context.length ? (
+        <div className="flex flex-col gap-2">
+          <div className="flex flex-wrap items-baseline gap-2">
+            <span className="font-semibold text-sm text-white">Where the context goes</span>
+            <span className="text-[11px] text-gray-dark-500">tokens, every run</span>
+          </div>
+          <ul className="flex flex-col gap-0.5">
+            {t.context.map(([tool, tk]) => (
+              <li key={tool} className="flex items-baseline justify-between gap-3">
+                <span className="truncate font-mono text-gray-dark-200 text-xs">{tool}</span>
+                <span className="shrink-0 font-mono text-gray-dark-400 text-xs tabular-nums">
+                  ~{compact(tk)}
+                </span>
+              </li>
+            ))}
+          </ul>
+          <p className="text-[11px] text-gray-dark-500 leading-relaxed">
+            The rows at the top are read whatever the screen is: the operating mode and the
+            foundations do not depend on what is being drawn. That is what an optimisation
+            of the context has to reach — not the components, which are the part that
+            answers to this flow.
+          </p>
         </div>
       ) : null}
 

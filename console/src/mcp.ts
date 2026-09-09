@@ -334,11 +334,17 @@ export type GenerationRun = {
   measured?: boolean
   wall_s?: number
   model_s?: number
+  /** The trailing silence — the turn in which the screens were composed. Part of
+   *  `model_s`; the rest of it is deciding and looking things up. */
+  write_s?: number
   server_s?: number
   away_s?: number
   calls?: number
   in_chars?: number
   out_chars?: number
+  /** Tool → characters served. Sums to `in_chars`; past the top consumers the tail is
+   *  folded into one row rather than dropped. */
+  context?: Record<string, number>
 }
 
 export type GenerationFlow = {
@@ -349,6 +355,7 @@ export type GenerationFlow = {
   screens: number
   files: number
   model_s: number
+  write_s: number
   wall_s: number
   server_s: number
   away_s: number
@@ -357,6 +364,7 @@ export type GenerationFlow = {
   tokens_out: number
   per_screen_s: number
   models: string[]
+  context: Record<string, number>
   first: string
   last: string
   detail: GenerationFile[]
@@ -369,12 +377,14 @@ export type Generations = {
     runs: number
     screens: number
     model_s: number
+    write_s: number
     per_screen_s: number
     per_flow_s: number
     tokens_in: number
     tokens_out: number
     calls: number
     models: string[]
+    context: Record<string, number>
   }
   flows: GenerationFlow[]
   chars_per_token: number

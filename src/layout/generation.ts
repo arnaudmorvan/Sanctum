@@ -40,10 +40,16 @@ type RawRun = {
   measured?: boolean
   wall_s?: number
   model_s?: number
+  /** The trailing silence: the turn in which the screens were composed. Part of
+   *  `model_s`, reported apart — the rest of it is deciding and looking things up. */
+  write_s?: number
   server_s?: number
   away_s?: number
   calls?: number
   tools?: Record<string, number>
+  /** Where the context came from, tool by tool, in characters. Sums to `in_chars`;
+   *  beyond the top consumers the tail is folded under one row, never dropped. */
+  context?: Record<string, number>
   in_chars?: number
   out_chars?: number
   files?: RawFile[]
@@ -71,10 +77,13 @@ export type Run = {
   measured: boolean
   wallS: number
   modelS: number
+  writeS: number
   serverS: number
   awayS: number
   calls: number
   tools: [string, number][]
+  /** Tool → tokens, biggest first. */
+  context: [string, number][]
   tokensIn: number
   tokensOut: number
   files: number
@@ -105,10 +114,14 @@ export const runs = (): Run[] =>
     measured: r.measured !== false,
     wallS: r.wall_s ?? 0,
     modelS: r.model_s ?? 0,
+    writeS: r.write_s ?? 0,
     serverS: r.server_s ?? 0,
     awayS: r.away_s ?? 0,
     calls: r.calls ?? 0,
     tools: Object.entries(r.tools ?? {}).sort((a, b) => b[1] - a[1]),
+    context: Object.entries(r.context ?? {})
+      .map(([tool, chars]) => [tool, Math.floor(chars / CHARS_PER_TOKEN)] as [string, number])
+      .sort((a, b) => b[1] - a[1]),
     tokensIn: Math.floor((r.in_chars ?? 0) / CHARS_PER_TOKEN),
     tokensOut: Math.floor((r.out_chars ?? 0) / CHARS_PER_TOKEN),
     files: (r.files ?? []).length,
@@ -154,11 +167,16 @@ export type Totals = {
   runs: number
   screens: number
   modelS: number
+  /** Of `modelS`, the part spent composing rather than reading and deciding. */
+  writeS: number
   wallS: number
   serverS: number
   awayS: number
   calls: number
   perScreenS: number
+  /** Tool → tokens across every run, biggest first. The top row is where an
+   *  optimisation of the context is worth writing. */
+  context: [string, number][]
   tokensIn: number
   tokensOut: number
   models: string[]
@@ -174,10 +192,15 @@ export const totals = (): Totals => {
   const modelS = rows.reduce((s, r) => s + r.modelS, 0)
   const models: string[] = []
   for (const r of rows) if (r.model && !models.includes(r.model)) models.push(r.model)
+  const context = new Map<string, number>()
+  for (const r of rows)
+    for (const [tool, tk] of r.context) context.set(tool, (context.get(tool) ?? 0) + tk)
   return {
     runs: rows.length,
     screens,
     modelS,
+    writeS: rows.reduce((s, r) => s + r.writeS, 0),
+    context: [...context.entries()].sort((a, b) => b[1] - a[1]),
     wallS: rows.reduce((s, r) => s + r.wallS, 0),
     serverS: rows.reduce((s, r) => s + r.serverS, 0),
     awayS: rows.reduce((s, r) => s + r.awayS, 0),
