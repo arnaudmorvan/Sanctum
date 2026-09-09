@@ -10,6 +10,7 @@ import {
 } from "./env"
 import { Signature } from "./identity"
 import { useNotes } from "./notes"
+import { detail, KeyRejected, message, restoredNotice, restoreVersion } from "./restore"
 import { useAuthor } from "./who"
 
 /** The "History" tab: every version of the flow, WHEN it was generated (to the minute —
@@ -78,16 +79,6 @@ const when = (iso: string | undefined): string => {
   const t = Date.parse(iso)
   return Number.isNaN(t) ? iso : withTime.format(t)
 }
-
-const detail = async (r: Response): Promise<string> => {
-  try {
-    return ((await r.json()) as { error?: string }).error ?? `HTTP ${r.status}`
-  } catch {
-    return `HTTP ${r.status}`
-  }
-}
-
-const message = (e: unknown) => (e instanceof Error ? e.message : String(e))
 
 export const HistoryBody = ({ active }: { active: boolean }) => {
   const [key, setKey] = useState(readConsoleKey)
@@ -174,25 +165,16 @@ export const HistoryBody = ({ active }: { active: boolean }) => {
     setError("")
     setNotice("")
     try {
-      const r = await fetch(`${MCP_URL}/console/protos/restore.json`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "X-DS-Key": key },
-        body: JSON.stringify({ slug: SLUG, sha, author: author.trim() }),
-      })
-      if (r.status === 401) {
-        setKey("")
-        setKeyError("Key rejected by the server.")
-        return
-      }
-      if (!r.ok) throw new Error(await detail(r))
-      const data = (await r.json()) as { commit: string; restored_from: string }
-      setNotice(
-        `Version ${data.restored_from} is back (commit ${data.commit}). The site rebuilds: give it a few minutes.`,
-      )
+      setNotice(restoredNotice(await restoreVersion(sha, key, author)))
       setConfirm(null)
       await load(key)
     } catch (e) {
-      setError(message(e))
+      if (e instanceof KeyRejected) {
+        setKey("")
+        setKeyError(e.message)
+      } else {
+        setError(message(e))
+      }
     } finally {
       setRestoring(false)
     }
