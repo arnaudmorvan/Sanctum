@@ -2,13 +2,15 @@
   "slug": "42-time-transformation-request",
   "title": "42 — Time transformation request",
   "author": "Arnaud",
-  "summary": "Staff back-office: the detail of a learner's time transformation request, with the validation form and the approve / deny decision.",
+  "summary": "Staff back-office: the queue of learners' time transformation requests, and the detail of one — the validation form and the approve / deny decision.",
   "created_at": "2026-09-08",
-  "updated_at": "2026-09-08",
+  "updated_at": "2026-09-09",
   "published_at": "2026-09-08T15:31:21Z",
   "files": [
     "data/requests.ts",
+    "figma-source.json",
     "pages/request-detail.tsx",
+    "pages/requests-list.tsx",
     "views.tsx"
   ]
 }

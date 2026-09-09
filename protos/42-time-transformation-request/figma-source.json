@@ -1,0 +1,15 @@
+{
+  "figma_file_key": "yoP06GsdWscdgqpJMV2YuN",
+  "ds_sync": "2026-08-31",
+  "translated_on": "2026-09-09",
+  "screens": {
+    "learners/time-transformation": {
+      "node": "22701:11048",
+      "frame": "42 — Time transformations (list) v2"
+    },
+    "learners/time-transformation/:login": {
+      "node": "22705:11627",
+      "frame": "42 — Time transformation request (detail)"
+    }
+  }
+}
