@@ -34,24 +34,52 @@ const TONE = {
   blocked: { color: "gray", icon: <Lock size={14} />, label: "blocked" },
 } as const
 
-const Var = ({ v }: { v: ConfigVar }) => (
-  <li className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-    <code className={`${TYPO.mono()} text-xs ${v.set ? "text-gray-dark-200" : "text-orange-300"}`}>
-      {v.name}
-    </code>
-    {v.secret ? (
-      <span className="text-gray-dark-500 text-xs">{v.set ? "set" : "not set"}</span>
-    ) : (
-      <span className={`${TYPO.mono()} text-gray-dark-400 text-xs`}>
-        {v.value ? v.value : "not set"}
-      </span>
-    )}
-    {/* The twin lives on the OTHER Railway service. We cannot read it from here, so it is
-        a reminder and never a verdict — announcing "not set" about an environment we do
-        not see sends someone re-setting a variable that was already right. */}
-    {v.twin ? <span className="text-gray-dark-500 text-xs">· twin: {v.twin}</span> : null}
-  </li>
-)
+/** ⚠️ Orange means "something is MISSING", never merely "this variable is empty".
+ *
+ *  The first version coloured every unset variable, optional ones included — so a
+ *  perfectly healthy server (no PROTOS_TOKEN because GITHUB_TOKEN is used, no
+ *  PROTOS_BRANCH because the default is main) read as broken everywhere, and the one row
+ *  that actually needed attention was lost in the noise. Reported on 2026-09-09, an hour
+ *  after the tab shipped. An optional variable now shows the DEFAULT the code applies,
+ *  which is information rather than an alarm. */
+const Var = ({ v }: { v: ConfigVar }) => {
+  const alarming = v.required && !v.set
+  return (
+    <li className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+      <code
+        className={`${TYPO.mono()} text-xs ${alarming ? "text-orange-300" : "text-gray-dark-200"}`}
+      >
+        {v.name}
+      </code>
+      {v.secret ? (
+        <span className="text-gray-dark-500 text-xs">{v.set ? "set" : "not set"}</span>
+      ) : (
+        <span className={`${TYPO.mono()} text-gray-dark-400 text-xs`}>
+          {v.value ? v.value : "not set"}
+        </span>
+      )}
+      {/* Which NAME carries the value, when the variable has two legal ones. Saying it is
+          the whole point: FEEDBACK_KEY reads "not set" on a server where the feedback
+          works, because the Railway dashboard still holds the pre-migration RETOURS_KEY —
+          and someone reading that goes and creates a variable that already exists. */}
+      {v.via && v.via !== v.name ? (
+        <span className="text-gray-dark-500 text-xs">
+          · via <code className={TYPO.mono()}>{v.via}</code>
+        </span>
+      ) : null}
+      {!v.set && v.default ? (
+        <span className="text-gray-dark-500 text-xs">· default: {v.default}</span>
+      ) : null}
+      {!v.set && !v.default && v.aliases.length > 0 ? (
+        <span className="text-gray-dark-500 text-xs">· or {v.aliases.join(", ")}</span>
+      ) : null}
+      {/* The twin lives on the OTHER Railway service. We cannot read it from here, so it is
+          a reminder and never a verdict — announcing "not set" about an environment we do
+          not see sends someone re-setting a variable that was already right. */}
+      {v.twin ? <span className="text-gray-dark-500 text-xs">· twin: {v.twin}</span> : null}
+    </li>
+  )
+}
 
 const Capability = ({ c }: { c: ConfigCapability }) => {
   const tone = TONE[c.state]

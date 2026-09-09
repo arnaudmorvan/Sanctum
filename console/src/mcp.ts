@@ -130,8 +130,17 @@ export const MCP_URL = BASE
  *  A secret NEVER carries a `value`: the module reports set/unset and nothing else. */
 export type ConfigVar = {
   name: string
+  /** Other legal names for the same variable (FEEDBACK_KEY ← RETOURS_KEY). */
+  aliases: string[]
+  /** Which of those names actually carries the value. Empty when none does. */
+  via: string
   set: boolean
   secret: boolean
+  /** Required by its capability, or merely a refinement. This is what the panel colours
+   *  on: an empty OPTIONAL variable is the normal state of a healthy server. */
+  required: boolean
+  /** What the code falls back on when the variable is empty. */
+  default: string
   /** Only on non-secret variables. Reading it is the point (a stale UI_REPO, a wrong branch). */
   value?: string
   /** A variable that lives on the OTHER Railway service — a reminder, never a verdict. */
