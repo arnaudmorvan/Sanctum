@@ -1,12 +1,23 @@
 import { Alert } from "@42/ui-react/alert"
 import { Badge } from "@42/ui-react/badge"
+import { Button } from "@42/ui-react/button"
 import { Card } from "@42/ui-react/card"
+import { PasswordInput } from "@42/ui-react/password-input"
 import { Text } from "@42/ui-react/text"
 import { Title } from "@42/ui-react/title"
 import { CircleAlert, CircleCheck, CircleSlash, Lock } from "lucide-react"
-import type { Config, ConfigCapability, ConfigVar } from "../mcp"
+import { useCallback, useEffect, useState } from "react"
+import {
+  AccessError,
+  type Config,
+  type ConfigCapability,
+  type ConfigVar,
+  getConfig,
+  readAdminKey,
+  writeAdminKey,
+} from "../mcp"
 import { TYPO } from "../../../src/typo"
-import { State, useRoute } from "../state"
+import { State } from "../state"
 
 /** The Configuration tab: what this MCP server is actually WIRED TO.
  *
@@ -143,12 +154,142 @@ const Capability = ({ c }: { c: ConfigCapability }) => {
   )
 }
 
+/** The keys THIS BROWSER holds — and the reason they belong here rather than only in the
+ *  Access tab, where the administration key used to be asked for and nowhere else.
+ *
+ *  ⚠️ They are not the same kind of thing as the variables above, and confusing the two is
+ *  what made this tab hard to use. `FIGMA_TOKEN` and the rest are SERVER secrets: they live
+ *  on Railway, and nothing here writes them. These two are the opposite — they are never
+ *  stored server-side at all; the browser keeps them to present as headers. Typing one here
+ *  stores nothing new anywhere, which is why it costs no invariant.
+ *
+ *  The administration key is CHECKED as it is typed: the config route answers whether the
+ *  key presented is the right one (a boolean, never an echo). Storing it blind meant
+ *  discovering a typo later, in another tab, on a gesture one then believed was broken. */
+const BrowserKeys = ({ admin, onSaved }: { admin: Config["admin_key"]; onSaved: () => void }) => {
+  const [typed, setTyped] = useState("")
+  const held = Boolean(readAdminKey())
+
+  const save = (value: string) => {
+    writeAdminKey(value)
+    setTyped("")
+    onSaved()
+  }
+
+  return (
+    <Card>
+      <Card.Header>
+        <div className="flex flex-wrap items-center gap-2">
+          <Card.Title>Keys held by this browser</Card.Title>
+          {admin.ok ? (
+            <Badge color="green" size="sm">
+              <CircleCheck size={14} />
+              admin key accepted
+            </Badge>
+          ) : held ? (
+            <Badge color="orange" size="sm">
+              <CircleAlert size={14} />
+              admin key refused
+            </Badge>
+          ) : (
+            <Badge color="gray" size="sm">
+              <Lock size={14} />
+              admin key not held
+            </Badge>
+          )}
+        </div>
+      </Card.Header>
+      <Card.Content>
+        <div className="flex flex-col gap-3">
+          <Text c="secondary" size="sm">
+            These are not server secrets: they are never stored on the server. The browser
+            keeps them to present as headers. The console key opens this page; the
+            administration key unlocks the writes of the Access tab — opening an access,
+            changing a role, revoking, reading a token back.
+          </Text>
+
+          {!admin.configured ? (
+            <Text size="sm" className="text-orange-300">
+              The server has no ACCESS_ADMIN_KEY: there is nothing to unlock yet. Set it on
+              the mcp-42 service in Railway first — the card above says so too.
+            </Text>
+          ) : (
+            <form
+              className="flex flex-wrap items-end gap-2"
+              onSubmit={(e) => {
+                e.preventDefault()
+                if (typed.trim()) save(typed.trim())
+              }}
+            >
+              <PasswordInput
+                className="min-w-64"
+                value={typed}
+                placeholder="ACCESS_ADMIN_KEY"
+                onChange={(e) => setTyped(e.currentTarget.value)}
+              />
+              <Button type="submit" size="sm" variant="filled" disabled={!typed.trim()}>
+                {held ? "Replace" : "Unlock"}
+              </Button>
+              {held ? (
+                <Button size="sm" variant="subtle" onClick={() => save("")}>
+                  Forget
+                </Button>
+              ) : null}
+            </form>
+          )}
+
+          {held && !admin.ok && admin.configured ? (
+            <Text size="sm" className="text-orange-300">
+              The key this browser holds is not the one the server expects. Copy
+              ACCESS_ADMIN_KEY from the mcp-42 variables in Railway and paste it again.
+            </Text>
+          ) : null}
+          {admin.ok ? (
+            <Text c="secondary" size="sm">
+              The Access tab can now write. It reads this same key — nothing to type twice.
+            </Text>
+          ) : null}
+        </div>
+      </Card.Content>
+    </Card>
+  )
+}
+
 export const ConfigView = ({ apiKey }: { apiKey: string }) => {
-  const { data, error, loading, noKey } = useRoute<Config>("/console/config.json", apiKey)
+  // Not `useRoute`: the answer depends on the ADMIN key too, and it has to be re-fetched
+  // the moment one is typed — that round trip IS the verdict shown next to the field.
+  const [data, setData] = useState<Config | null>(null)
+  const [error, setError] = useState("")
+  const [loading, setLoading] = useState(false)
+
+  const load = useCallback(() => {
+    if (!apiKey) {
+      setData(null)
+      setError("")
+      return
+    }
+    setLoading(true)
+    setError("")
+    getConfig()
+      .then(setData)
+      .catch((e: Error) =>
+        setError(
+          e instanceof AccessError
+            ? "Key rejected. It is DASHBOARD_KEY, in the MCP service variables."
+            : e.message,
+        ),
+      )
+      .finally(() => setLoading(false))
+  }, [apiKey])
+
+  useEffect(load, [load])
+  const noKey = !apiKey
 
   return (
     <State loading={loading} error={error} data={data} noKey={noKey}>
       <div className="flex flex-col gap-6">
+        {data ? <BrowserKeys admin={data.admin_key} onSaved={load} /> : null}
+
         {data && data.broken.length > 0 ? (
           <Alert color="red">
             <Alert.Title>The server is not wired to its own repository</Alert.Title>

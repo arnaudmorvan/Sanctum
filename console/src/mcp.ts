@@ -177,6 +177,25 @@ export type Config = {
   capabilities: ConfigCapability[]
   modes: ConfigMode[]
   note: string
+  /** Verdict on the admin key THIS browser presented. Booleans only — the server never
+   *  echoes a key back. `configured` says the server has one at all. */
+  admin_key: { configured: boolean; sent: boolean; ok: boolean }
+}
+
+/** The configuration, asked for WITH the administration key when the browser holds one —
+ *  that is what makes the answer carry a verdict on it. The generic `get` only sends the
+ *  console key, and a second header on every route would hand that key to routes that have
+ *  no business seeing it. */
+export async function getConfig(): Promise<Config> {
+  const key = readKey()
+  const admin = readAdminKey()
+  const headers: Record<string, string> = {}
+  if (key) headers["X-DS-Key"] = key
+  if (admin) headers["X-Access-Key"] = admin
+  const r = await fetch(`${BASE}/console/config.json`, { headers })
+  if (r.status === 401) throw new AccessError("Key rejected by the server.")
+  if (!r.ok) throw new Error(`/console/config.json → HTTP ${r.status}`)
+  return (await r.json()) as Config
 }
 
 export type Pair = { n: string; v: number }
