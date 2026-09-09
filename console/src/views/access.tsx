@@ -12,7 +12,7 @@ import { Select } from "@42/ui-react/select"
 import { Table } from "@42/ui-react/table"
 import { Text } from "@42/ui-react/text"
 import { Copy, Ellipsis, KeyRound, Pencil, Trash2, UserPlus } from "lucide-react"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import {
   type Access,
   AccessError,
@@ -36,6 +36,30 @@ const COLOR: Record<string, string> = {
 }
 
 const ROLES = ["reader", "po", "designer", "admin"] as const
+
+/** An access administers when it is `admin` AND active. `active` is normalized by the
+ *  server (`user_row`), so a missing value never reads as revoked here. */
+const isAdmin = (u: AccessUser): boolean => u.role === "admin" && u.active !== false
+
+/** The id of the ONLY active administrator, when there is exactly one — otherwise `null`.
+ *
+ *  The registry must never lose its last one: with no admin left, this tab's own door is
+ *  closed and it takes a hand-made push to reopen it. The server already refuses the
+ *  change (`auth.apply_change`), and that refusal stays the truth — but a gesture offered,
+ *  clicked, then refused reads as a broken console. So the same rule is said BEFORE the
+ *  click: the last administrator cannot be revoked, removed, or demoted from here. */
+const soleAdminOf = (users: AccessUser[]): string | null => {
+  const admins = users.filter(isAdmin)
+  return admins.length === 1 ? (admins[0].id ?? null) : null
+}
+
+/** Why a row's two closing gestures are grayed out. Said in the menu itself: a disabled
+ *  item with no reason is read as a bug. */
+const LAST_ADMIN = (
+  <Text c="muted" size="xs">
+    last admin
+  </Text>
+)
 
 /** Who is acting. It goes into the commit message — since 2026-09-08 these commits are no
  *  longer only hand-made pushes, and "who granted which right to whom" is the whole reason
@@ -110,6 +134,7 @@ const KeyGate = ({ onUnlock }: { onUnlock: () => void }) => {
 const UserModal = ({
   user,
   open,
+  roleLocked,
   onClose,
   onDone,
 }: {
@@ -117,6 +142,8 @@ const UserModal = ({
    *  derived from it, so renaming would silently revoke the person. */
   user: AccessUser | null
   open: boolean
+  /** This person is the registry's only active administrator: the role stays `admin`. */
+  roleLocked: boolean
   onClose: () => void
   onDone: (users: AccessUser[], token?: string, id?: string) => void
 }) => {
@@ -128,6 +155,13 @@ const UserModal = ({
   const [by, setBy] = useState(readWho())
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState("")
+
+  /** Demoting the last administrator is refused by the server; here the three other roles
+   *  are simply not selectable, and the field says why. */
+  const roles = useMemo<Array<{ value: string; label: string; disabled: boolean }>>(
+    () => ROLES.map((r) => ({ value: r, label: r, disabled: roleLocked && r !== "admin" })),
+    [roleLocked],
+  )
 
   useEffect(() => {
     if (!open) return
@@ -230,8 +264,13 @@ const UserModal = ({
 
         <Select
           label="Role"
-          data={ROLES}
-          value={role as (typeof ROLES)[number]}
+          description={
+            roleLocked
+              ? "The only active administrator keeps the role: the registry must never be left without one."
+              : undefined
+          }
+          data={roles}
+          value={role}
           onChange={(v) => setRole(v ?? "reader")}
         />
 
@@ -429,6 +468,9 @@ export const AccessView = ({ apiKey }: { apiKey: string }) => {
   const rows = users ?? data?.users ?? []
   const canEdit = Boolean(data?.can_edit) && unlocked
   const editable = Boolean(data?.can_edit)
+  const soleAdmin = soleAdminOf(rows)
+  const locked = (u: AccessUser): boolean => soleAdmin !== null && u.id === soleAdmin
+  const noAdmin = rows.length > 0 && rows.every((u) => !isAdmin(u))
 
   /** Revoking and restoring are one click: they are the everyday gesture, and the
    *  confirmation lives in the fact that it is reversible by the same click. */
@@ -473,6 +515,15 @@ export const AccessView = ({ apiKey }: { apiKey: string }) => {
             variant="light"
             title="Writing is closed on the server"
             description={`READ_ONLY is active on ${MCP_URL}: the write tools are not served, and an access cannot be changed from here.`}
+          />
+        ) : null}
+
+        {noAdmin ? (
+          <Alert
+            color="orange"
+            variant="light"
+            title="No active administrator"
+            description="The registry no longer has one, and the server refuses any change that does not give it one back: promote someone to admin (or restore an admin) before anything else."
           />
         ) : null}
 
@@ -565,11 +616,17 @@ export const AccessView = ({ apiKey }: { apiKey: string }) => {
                                 { type: "divider" },
                                 {
                                   label: u.active ? "Revoke" : "Restore",
+                                  // The last active administrator: revoking is exactly the
+                                  // change that leaves the registry unadministrable.
+                                  disabled: locked(u),
+                                  endSection: locked(u) ? LAST_ADMIN : undefined,
                                   onClick: () => toggle(u),
                                 },
                                 {
                                   label: "Remove…",
                                   color: "red",
+                                  disabled: locked(u),
+                                  endSection: locked(u) ? LAST_ADMIN : undefined,
                                   startSection: <Trash2 size={16} />,
                                   onClick: () => setRemoving(u),
                                 },
@@ -618,8 +675,9 @@ export const AccessView = ({ apiKey }: { apiKey: string }) => {
         {editable ? (
           <Text c="muted" size="sm">
             Every change here is a commit in access/users.json, signed with the name you type:
-            git log stays the answer to "who granted which right to whom, and when". A change
-            that would leave no active administrator is refused by the server.
+            git log stays the answer to "who granted which right to whom, and when". The last
+            active administrator is not revocable, removable or demotable — from that state
+            the console has no way back, and the server refuses it too.
           </Text>
         ) : (
           <Text c="muted" size="sm">
@@ -633,6 +691,7 @@ export const AccessView = ({ apiKey }: { apiKey: string }) => {
         <UserModal
           user={editing}
           open={creating || editing !== null}
+          roleLocked={editing !== null && locked(editing)}
           onClose={() => {
             setCreating(false)
             setEditing(null)

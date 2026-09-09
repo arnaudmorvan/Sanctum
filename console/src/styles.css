@@ -17,6 +17,27 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+/* ------------------------------------------------------- a picker opened inside a modal
+   The kit already tiers the floating layers (theme.css § OVERLAY STACKING), but zag's
+   popper writes `--z-index` INLINE on every positioner — it copies the z-index of the
+   nearest layer above, so a Select opened inside a Modal is handed the dialog's own 50 —
+   and an inline declaration beats a stylesheet rule. The two positioners are then siblings
+   of <body> with the same z-index, and the winner is whichever React appended last: in the
+   Access tab's "Open an access" form, that is the dialog, so the role list opened UNDER the
+   modal and no option could be clicked.
+
+   `!important` is what it takes to outrank an inline declaration, and the values sit above
+   `--modal-z` (50) on purpose: a picker opened inside a modal must paint over it. */
+[data-part="positioner"][data-scope="popover"],
+[data-part="positioner"][data-scope="menu"],
+[data-part="positioner"][data-scope="select"],
+[data-part="positioner"][data-scope="combobox"] {
+  --z-index: 60 !important;
+}
+[data-part="positioner"][data-scope="tooltip"] {
+  --z-index: 70 !important;
+}
+
 ::selection {
   background: color-mix(in srgb, var(--color-brand-500, #6388e3) 35%, transparent);
 }
