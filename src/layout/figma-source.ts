@@ -59,11 +59,30 @@ export type Frame = {
   url: string
 }
 
+// One object per path, for the life of the page. Not a cache for speed — building a
+// Frame is three string operations — but for IDENTITY: the provenance is baked at build
+// time, so the frame of a screen never changes, and a caller that puts it in a
+// `useEffect` dependency array is entitled to say so. Returning a fresh literal on every
+// render made that array differ on every render: the effect re-ran, set `loading`, which
+// re-rendered, which re-ran the effect — the Source overlay stayed on "Rendering the
+// frame…" forever while its own fetch had long since answered, cancelled each time by the
+// cleanup of the next pass.
+const FRAMES = new Map<string, Frame | null>()
+
 /** The frame a screen was built from, or `null` — which is a normal answer three times
  *  over: the flow has no provenance file, the screen is not listed in it, or it is listed
- *  with `node: null` (a drill-down composed with no mockup behind it). */
+ *  with `node: null` (a drill-down composed with no mockup behind it).
+ *
+ *  ⚠️ The returned object is STABLE per path: same screen, same reference. */
 export const frameOf = (path?: string): Frame | null => {
   if (!FILE_KEY || !path) return null
+  if (FRAMES.has(path)) return FRAMES.get(path) ?? null
+  const frame = buildFrame(path)
+  FRAMES.set(path, frame)
+  return frame
+}
+
+const buildFrame = (path: string): Frame | null => {
   const entry = SOURCE?.screens?.[path]
   const node = (entry?.node ?? "").trim()
   if (!NODE.test(node)) return null
