@@ -9,11 +9,15 @@ import { ThemeIcon } from "@42/ui-react/theme-icon"
 import { Title } from "@42/ui-react/title"
 import {
   ArrowRight,
+  BookOpen,
   CalendarClock,
+  CalendarPlus,
   CircleAlert,
   Lightbulb,
   LoaderCircle,
-  MessagesSquare,
+  MessageSquare,
+  Play,
+  RotateCcw,
   Trophy,
   Users,
 } from "lucide-react"
@@ -60,6 +64,24 @@ const HERO_STATS = [
  *  new one. Same rule, done on the list rather than in a loop with a mutable `day`. */
 const withDayBreaks = (rows: typeof COMING_UP) =>
   rows.map((row, i) => ({ row, day: i === 0 || rows[i - 1].day !== row.day ? row.day : null }))
+
+/** One glyph per suggestion, keyed on the title.
+ *
+ *  The frame shipped the same `messages-square` on all five rows — a copy-paste, raised by
+ *  Arnaud through the flow's feedback widget on 2026-09-09 ("update the icons based on the
+ *  title"). The frame was corrected in the same pass, so the source and this file do not
+ *  diverge again on the next re-lift.
+ *
+ *  ⚠️ These names are a REASONED choice, not a survey: the frame carried no per-row glyph to
+ *  read. `review:icons` asks that such a choice be declared as one rather than passed off as
+ *  a match — it is, in the report of the day. */
+const SUGGESTION_ICON: Record<string, ComponentType<{ size?: number }>> = {
+  "Start a new attempt on cub3d": RotateCcw,
+  "Project feedback": MessageSquare,
+  "Register to Algorithmics": BookOpen,
+  "Start pacman": Play,
+  "Schedule a review for Inception": CalendarPlus,
+}
 
 /** The frame's `sectiontitle` at `size=xl`: a lucide glyph at 24 and a Lato Bold 24 title.
  *  The DS component has no 1:1 in the kit — its own CODE section says to compose it — and
@@ -262,10 +284,12 @@ export const Dashboard = () => (
       <Card variant="default" padding="md">
         <Card.Content>
           <div className="flex flex-col gap-4">
-            {SUGGESTIONS.map((s) => (
+            {SUGGESTIONS.map((s) => {
+              const Icon = SUGGESTION_ICON[s.title] ?? MessageSquare
+              return (
               <div key={s.title} className="flex items-start gap-3">
                 <ThemeIcon color="pink" variant="light" size="md" radius="md">
-                  <MessagesSquare size={20} />
+                  <Icon size={20} />
                 </ThemeIcon>
                 <div className="flex min-w-0 flex-1 items-start justify-between gap-1">
                   <div className="flex min-w-0 flex-col gap-1">
@@ -283,7 +307,8 @@ export const Dashboard = () => (
                   )}
                 </div>
               </div>
-            ))}
+              )
+            })}
           </div>
         </Card.Content>
       </Card>
