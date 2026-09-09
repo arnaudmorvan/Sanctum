@@ -1,0 +1,16 @@
+{
+  "slug": "42next-module-map",
+  "title": "42next — Module progression map",
+  "author": "Arnaud",
+  "summary": "Programming Fundamentals seen as a zoomable, pannable progression map — branching steps, locked gates, the closing exam, and the skills the module unlocks.",
+  "created_at": "2026-09-09",
+  "updated_at": "2026-09-09",
+  "published_at": "2026-09-09T19:58:59Z",
+  "files": [
+    "data/module.ts",
+    "generation.json",
+    "pages/module-map.tsx",
+    "pages/modules.tsx",
+    "views.tsx"
+  ]
+}
