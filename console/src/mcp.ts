@@ -64,11 +64,31 @@ export const writeAdminKey = (v: string): void => {
   }
 }
 
+/** A capability the server has deliberately NOT mounted, because its variables are not
+ *  set. Distinct from a plain failure: nothing is broken, something is unconfigured, and
+ *  the two call for opposite reactions from whoever is reading. The server answers 503 for
+ *  exactly this case and puts the reason in the body. */
+export class NotConfigured extends Error {}
+
 export async function get<T>(route: string): Promise<T> {
   const key = readKey()
   const r = await fetch(`${BASE}${route}`, { headers: key ? { "X-DS-Key": key } : {} })
   if (r.status === 401) throw new AccessError("Key rejected by the server.")
-  if (!r.ok) throw new Error(`${route} → HTTP ${r.status}`)
+  if (!r.ok) {
+    // ⚠️ The server's own message, not the status code. Every `/console/*` route answers
+    // `{error: "…"}` with a sentence that says what is missing and where to set it — and
+    // this function used to throw all of it away and show "HTTP 503", which is how a
+    // fail-closed capability whose whole point is to explain itself explains nothing.
+    // `deleteFlow` already did it this way; `get` was the inconsistent one.
+    let detail = ""
+    try {
+      detail = ((await r.json()) as { error?: string }).error ?? ""
+    } catch {
+      /* a non-JSON body (a proxy error page): the status is all there is */
+    }
+    const message = detail || `${route} → HTTP ${r.status}`
+    throw r.status === 503 ? new NotConfigured(message) : new Error(message)
+  }
   return (await r.json()) as T
 }
 
@@ -728,6 +748,6 @@ export async function getTokensBrief(): Promise<string> {
     headers: key ? { "X-DS-Key": key } : {},
   })
   if (r.status === 401) throw new AccessError("Key rejected by the server.")
-  if (!r.ok) throw new Error(`tokens/brief.md → HTTP ${r.status}`)
+  if (!r.ok) throw new Error((await r.text()) || `tokens/brief.md → HTTP ${r.status}`)
   return r.text()
 }

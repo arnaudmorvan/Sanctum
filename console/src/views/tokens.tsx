@@ -35,6 +35,7 @@ import {
   type ColorRow,
   getTokens,
   getTokensBrief,
+  NotConfigured,
   type ParityFinding,
   readKey,
   type TokenFamily,
@@ -310,6 +311,9 @@ export const TokensView = () => {
   const key = readKey()
   const [data, setData] = useState<TokensReport | null>(null)
   const [error, setError] = useState("")
+  // A 503 is not a failure: it is the server saying this capability was never wired. Shown
+  // as an alarm it sends someone hunting for a bug that does not exist.
+  const [unwired, setUnwired] = useState(false)
   const [loading, setLoading] = useState(false)
   const [copied, setCopied] = useState(false)
 
@@ -318,15 +322,17 @@ export const TokensView = () => {
       if (!key) return
       setLoading(true)
       setError("")
+      setUnwired(false)
       getTokens(fresh)
         .then(setData)
-        .catch((e: Error) =>
+        .catch((e: Error) => {
+          setUnwired(e instanceof NotConfigured)
           setError(
             e instanceof AccessError
               ? "Key rejected. It is DASHBOARD_KEY, in the MCP service variables."
               : e.message,
-          ),
-        )
+          )
+        })
         .finally(() => setLoading(false))
     },
     [key],
@@ -356,7 +362,50 @@ export const TokensView = () => {
       />
     )
   if (error && !data)
-    return (
+    return unwired ? (
+      // Not an error state: a set-up state. It says what is missing, WHERE to set it, and
+      // why this tab — unlike Parity — has no snapshot to fall back on.
+      <div className="flex flex-col gap-4">
+        <Alert
+          type="info"
+          variant="outline"
+          title="This tab is not wired yet"
+          description={error}
+        />
+        <Card>
+          <Card.Header>
+            <Card.Title>What to set, and where</Card.Title>
+          </Card.Header>
+          <Card.Content>
+            <div className="flex flex-col gap-3">
+              <Text size="sm" c="secondary">
+                On the <strong>mcp-42</strong> service in Railway → Variables. The
+                Configuration tab shows the capability once it is set.
+              </Text>
+              <pre
+                className={`${TYPO.mono()} overflow-x-auto rounded border border-white/10 p-3 text-gray-dark-300 text-xs`}
+              >{`KIT_REPO=42staff/kit
+KIT_BRANCH=main
+KIT_TOKEN=<a PAT with Contents: Read on that repo>`}</pre>
+              <Text size="sm" c="secondary">
+                ⚠️ <code className={TYPO.mono()}>KIT_TOKEN</code> is not optional in
+                practice: the server's own PAT is fine-grained on{" "}
+                <code className={TYPO.mono()}>mcp-Omniscient</code> and cannot read a repo
+                of the <code className={TYPO.mono()}>42staff</code> org.
+              </Text>
+              <Text size="sm" c="secondary">
+                Why there is no fallback: the kit's CSS —{" "}
+                <code className={TYPO.mono()}>theme.css</code>,{" "}
+                <code className={TYPO.mono()}>colors.css</code> — exists in no committed
+                snapshot. <code className={TYPO.mono()}>ui-manifest.json</code> carries the
+                component API and no tokens at all, so there is genuinely nothing here to
+                compare Figma against until the kit can be read.
+              </Text>
+            </div>
+          </Card.Content>
+        </Card>
+      </div>
+    ) : (
       <Alert
         color="red"
         variant="light"
