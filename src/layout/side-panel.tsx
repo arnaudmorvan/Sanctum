@@ -27,6 +27,7 @@ import type { ProtoNavItem, ProtoView } from "../proto-types"
 import { useBottomBar } from "./bottom-bar"
 import { CommentsBody } from "./comments"
 import { compareHref } from "./compare-link"
+import { setDock } from "./dock"
 import { FEEDBACK_KEY, IS_PAST_VERSION, SLUG } from "./env"
 import { FeedbackBody } from "./feedback"
 import { frameOf } from "./figma-source"
@@ -87,10 +88,22 @@ import { UI_MARK } from "./target"
  *
  *  The container is the feedback widget's, unchanged in its mechanics: it FLOATS (a
  *  380 px panel one can drag out of the way of what is being criticised), and it DOCKS
- *  (a full-height rail against the right edge, for longer sessions). It does not push the
- *  page — shifting the flow would break everything it holds in `position: fixed`, and a
- *  panel that deforms the screen under review is worse than one covering an edge of it.
- *  Placement and mode are remembered per browser.
+ *  (a full-height column against the right edge, for longer sessions). Placement and mode
+ *  are remembered per browser.
+ *
+ *  Docked, it PUSHES the flow since 2026-09-09 (`dock.ts`, and the stage in `app.tsx`)
+ *  instead of covering its right edge. Covering was defended on the grounds that shifting
+ *  the flow breaks what it holds in `position: fixed` — true, and answered where the
+ *  problem is: the stage becomes the containing block of those elements, so "the viewport"
+ *  means the visible flow while the panel is open. What was not answered was the review
+ *  itself — a docked panel hides exactly the column a PO is reading, and the workaround
+ *  was to drag the panel off what one wanted to look at. Floating still floats: it is the
+ *  mode for a glance, and a 380 px box that deforms the page on every opening would be
+ *  the worse trade.
+ *
+ *  The push has a floor, and the panel pays first: it narrows from 420 to 320 before the
+ *  flow gives up anything, and under a stage of 960 px it goes back to covering. A window
+ *  too small to hold both is the only case where a docked panel still overlays.
  *
  *  Three things not to break:
  *   • rail AND panel carry `UI_MARK`, otherwise they become targets of the feedback's own
@@ -114,6 +127,28 @@ const readPins = (): boolean => {
 
 const PANEL_W = 380
 const EDGE = 16 // the margin the panel keeps from the edges of the window
+
+/** Docked and PUSHING: how the width of the window is shared.
+ *
+ *  The panel gives up its own width before it takes the flow's. `MIN_STAGE` is the width
+ *  under which the screens stop being reviewable — measured on `42next-profile`, whose
+ *  two-column grid crushes its cards under ~960 px of stage — so above it the panel takes
+ *  what is left, up to `DOCK_MAX`, and shrinks down to `DOCK_MIN` rather than eat into it.
+ *  Under that, it goes back to COVERING: a flow squeezed into its mobile state is not the
+ *  flow under review, and a panel that silently changes what it shows is worse than one
+ *  covering an edge of it.
+ *
+ *  Practical thresholds: a window ≥ 1280 pushes (the usual laptop), ≥ 1380 gives the panel
+ *  its full 420, anything narrower covers exactly as before. */
+const DOCK_MAX = 420
+const DOCK_MIN = 320
+const MIN_STAGE = 960
+
+/** What a docked panel reserves in a window this wide. 0 = it covers. */
+const reserveFor = (w: number): number => {
+  const left = w - MIN_STAGE
+  return left >= DOCK_MIN ? Math.min(DOCK_MAX, left) : 0
+}
 const PLACEMENT_KEY = "sanctum-panel-placement"
 // The feedback widget's own placement, before the panel absorbed it. Read once as a
 // fallback so nobody who parked the widget finds it back in the corner; never written.
@@ -140,6 +175,29 @@ const readPlacement = (): Placement => {
   }
 }
 
+/** The KEYS. Every entry of the rail answers to one, plus the two switches and Escape —
+ *  a review is a lot of opening and closing, and reaching for a 68 px tile each time is
+ *  what makes people stop looking at the map.
+ *
+ *  Digits for the entries, in the order the rail draws them, because that order is what
+ *  the eye already knows and because a flow decides which entries exist — a letter per
+ *  label would collide the day "Comments" and the comment tool sit in the same rail, and
+ *  they do. Two letters for the two things that are not entries: `C` for the comment
+ *  tool, which is where every other tool puts it, and `P` for the pins.
+ *
+ *  ⚠️ A flow contains forms. The handler stands down whenever the key is going into a
+ *  field, or whenever a modifier is held — `1` must type a 1, and ⌘1 belongs to the
+ *  browser. */
+const typing = (target: EventTarget | null): boolean => {
+  const el = target as HTMLElement | null
+  if (!el?.tagName) return false
+  return (
+    el.isContentEditable ||
+    ["INPUT", "TEXTAREA", "SELECT"].includes(el.tagName) ||
+    Boolean(el.closest?.('[contenteditable="true"]'))
+  )
+}
+
 /** One tile of the rail. A tab tile opens the panel, an action tile fires straight away —
  *  same shape, because for the person clicking it is the same gesture. `href` renders an
  *  anchor: "Compare" is a link, and a link must be openable in a tab of its own. */
@@ -152,6 +210,7 @@ const RailTile = ({
   title,
   badge,
   badgeClass,
+  hint,
   onClick,
   href,
   last,
@@ -163,6 +222,9 @@ const RailTile = ({
   title?: string
   badge?: number
   badgeClass?: string
+  /** The key that does the same thing — drawn on the tile, which is the only way a
+   *  shortcut gets found by somebody who was not told about it. */
+  hint?: string
   onClick?: () => void
   href?: string
   last?: boolean
@@ -172,6 +234,14 @@ const RailTile = ({
   const className = `${TILE} ${tone} ${last ? "" : "border-white/5 border-b"}`
   const body = (
     <>
+      {hint ? (
+        <span
+          aria-hidden="true"
+          className="absolute top-1 left-1.5 font-mono text-[9px] text-gray-dark-600"
+        >
+          {hint}
+        </span>
+      ) : null}
       {icon}
       <span className="text-[10px] leading-none">{label}</span>
       {badge ? (
@@ -276,6 +346,9 @@ export const SidePanel = ({
   const notes = useNotes()
   const [placement, setPlacement] = useState<Placement>(readPlacement)
   const [dragging, setDragging] = useState(false)
+  // Read, not assumed: whether the panel pushes or covers depends on it, and a window
+  // dragged narrower must give the flow its width back rather than crush it.
+  const [winW, setWinW] = useState(() => window.innerWidth)
   const bar = useBottomBar()
   const panel = useRef<HTMLDivElement | null>(null)
   const grab = useRef<{ dx: number; dy: number } | null>(null)
@@ -417,6 +490,41 @@ export const SidePanel = ({
     return () => window.removeEventListener("keydown", onKey)
   }, [open, aiming, thread, close])
 
+  // The keys. One list, built from what the rail actually draws — a shortcut for an
+  // entry a flow does not have would be a key that does nothing, silently.
+  const entries: (() => void)[] = [
+    ...tabs.map((t) => () => choose(t.key)),
+    ...actions.map((a) => () =>
+      a.href ? window.open(a.href, "_blank", "noreferrer") : a.onClick?.(),
+    ),
+  ]
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.metaKey || e.ctrlKey || e.altKey || typing(e.target)) return
+      const key = e.key.toLowerCase()
+      if (key === "c" && notesAvailable) {
+        e.preventDefault()
+        drop()
+        return
+      }
+      if (key === "p" && notesAvailable) {
+        e.preventDefault()
+        setPins((p) => !p)
+        return
+      }
+      const nth = Number.parseInt(e.key, 10)
+      if (!Number.isNaN(nth) && nth >= 1 && nth <= entries.length) {
+        e.preventDefault()
+        entries[nth - 1]()
+      }
+    }
+    window.addEventListener("keydown", onKey)
+    return () => window.removeEventListener("keydown", onKey)
+    // No dependency array on purpose: `entries` is rebuilt on every render (a tab
+    // appears, an overlay closes), and a listener pinned to the first one would open
+    // yesterday's rail.
+  })
+
   // A window resized smaller must not leave the panel outside of it.
   useEffect(() => {
     if (!open || placement.docked) return
@@ -425,6 +533,23 @@ export const SidePanel = ({
     window.addEventListener("resize", onResize)
     return () => window.removeEventListener("resize", onResize)
   }, [open, placement.docked, clamp])
+
+  // Always listening, docked or not: the mode is remembered, so the width the panel would
+  // reserve has to be known before it is opened again.
+  useEffect(() => {
+    const onResize = () => setWinW(window.innerWidth)
+    window.addEventListener("resize", onResize)
+    return () => window.removeEventListener("resize", onResize)
+  }, [])
+
+  // What the flow gives up. Published rather than passed down: the stage is a sibling
+  // (`app.tsx`), and it must be one — the margin must never apply to the panel itself.
+  const reserve = open && placement.docked ? reserveFor(winW) : 0
+  useEffect(() => {
+    setDock(reserve)
+  }, [reserve])
+  // A flow that unmounts with the panel docked would leave the stage short of 420 px.
+  useEffect(() => () => setDock(0), [])
 
   if (tabs.length === 0 && actions.length === 0) return null
 
@@ -459,8 +584,12 @@ export const SidePanel = ({
   }
 
   const style: CSSProperties = placement.docked
-    ? // The rail takes all the height there is — down to the bar, not under it.
-      { top: 0, right: 0, bottom: bar, width: "min(420px, 100vw)" }
+    ? reserve
+      ? // Pushing: the bar is BESIDE the panel now, not under it, so the column takes the
+        // whole height — stopping at `bar` would leave a hole in the corner.
+        { top: 0, right: 0, bottom: 0, width: reserve }
+      : // Covering (a window too narrow to push): down to the bar, never over it.
+        { top: 0, right: 0, bottom: bar, width: "min(420px, 100vw)" }
     : {
         width: `min(${PANEL_W}px, calc(100vw - ${EDGE * 2}px))`,
         maxHeight: `min(72vh, calc(100vh - ${bar + 2 * EDGE}px), 680px)`,
@@ -519,7 +648,8 @@ export const SidePanel = ({
                 key={t.key}
                 icon={t.icon}
                 label={t.label}
-                title={count(t.key) ? `${t.label} — ${count(t.key)} open` : t.label}
+                hint={`${i + 1}`}
+                title={`${t.label}${count(t.key) ? ` — ${count(t.key)} open` : ""} · key ${i + 1}`}
                 badge={count(t.key)}
                 badgeClass={t.key === "comments" ? "bg-blue-400" : "bg-purple-400"}
                 onClick={() => choose(t.key)}
@@ -534,7 +664,8 @@ export const SidePanel = ({
                   key={a.key}
                   icon={a.icon}
                   label={a.label}
-                  title={a.title}
+                  hint={`${tabs.length + i + 1}`}
+                  title={`${a.title} · key ${tabs.length + i + 1}`}
                   onClick={a.onClick}
                   href={a.href}
                   last={i === actions.length - 1}
@@ -550,7 +681,8 @@ export const SidePanel = ({
               <RailTile
                 icon={<MapPin size={15} aria-hidden="true" />}
                 label="Comment"
-                title="Click a spot on the screen to comment on it"
+                hint="C"
+                title="Click a spot on the screen to comment on it · key C"
                 onClick={drop}
                 pressed={dropping}
                 tone={dropping ? "text-white" : "text-gray-dark-300"}
@@ -560,7 +692,8 @@ export const SidePanel = ({
                   pins ? <Eye size={15} aria-hidden="true" /> : <EyeOff size={15} aria-hidden="true" />
                 }
                 label="Pins"
-                title={pins ? "Hide the pins" : "Show the pins"}
+                hint="P"
+                title={`${pins ? "Hide the pins" : "Show the pins"} · key P`}
                 onClick={() => setPins((p) => !p)}
                 pressed={pins}
                 tone={pins ? "text-white" : "text-gray-dark-500"}
@@ -578,7 +711,11 @@ export const SidePanel = ({
           style={style}
           className={`fixed z-50 flex flex-col overflow-hidden border border-gray-dark-800 bg-gray-dark-950/98 backdrop-blur ${
             placement.docked
-              ? "rounded-none border-y-0 border-e-0 shadow-[-18px_0_48px_rgba(0,0,0,0.45)]"
+              ? // Pushing, the panel is BESIDE the flow and casts no shadow on it: an
+                // elevation that does not exist reads as a panel still lying on top.
+                `rounded-none border-y-0 border-e-0 ${
+                  reserve ? "" : "shadow-[-18px_0_48px_rgba(0,0,0,0.45)]"
+                }`
               : "rounded-lg shadow-[0_18px_48px_rgba(0,0,0,0.55)]"
           } ${aimingNow ? "hidden" : ""}`}
           role="dialog"
@@ -608,7 +745,7 @@ export const SidePanel = ({
                     role="tab"
                     aria-selected={on}
                     onClick={() => choose(t.key)}
-                    title={t.label}
+                    title={`${t.label} · key ${tabs.indexOf(t) + 1}`}
                     className={`flex items-center gap-1.5 rounded-md px-2 py-1 text-xs transition-colors ${
                       on
                         ? "bg-white/10 font-semibold text-white"
@@ -636,7 +773,7 @@ export const SidePanel = ({
               <button
                 type="button"
                 onClick={drop}
-                title="Click a spot on the screen to comment on it"
+                title="Click a spot on the screen to comment on it · key C"
                 className="ms-auto rounded p-1 text-gray-dark-500 hover:bg-white/5 hover:text-white"
               >
                 <MapPin size={14} aria-hidden="true" />
@@ -648,7 +785,7 @@ export const SidePanel = ({
                 type="button"
                 onClick={() => setPins((p) => !p)}
                 aria-pressed={pins}
-                title={pins ? "Hide the pins" : "Show the pins"}
+                title={`${pins ? "Hide the pins" : "Show the pins"} · key P`}
                 className={`rounded p-1 hover:bg-white/5 ${pins ? "text-white" : "text-gray-dark-500"}`}
               >
                 {pins ? <Eye size={14} aria-hidden="true" /> : <EyeOff size={14} aria-hidden="true" />}
@@ -672,6 +809,7 @@ export const SidePanel = ({
             <button
               type="button"
               onClick={close}
+              title="Close · Esc"
               className="rounded p-1 text-gray-dark-500 hover:bg-white/5 hover:text-white"
             >
               <X size={14} aria-hidden="true" />

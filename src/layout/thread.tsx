@@ -1,16 +1,18 @@
 import { Check, CornerDownRight, Pencil, RotateCcw, Trash2, X } from "lucide-react"
 import { type ReactNode, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react"
-import { readAuthor } from "./env"
+import { Signature } from "./identity"
 import {
   addComment,
   addReply,
   changeComment,
   type Comment,
   deleteComment,
+  editFeedback,
   type FeedbackItem,
   flowMeta,
   numberOf,
   REACTIONS,
+  removeFeedback,
   replyToFeedback,
   toggleReaction,
   useNotes,
@@ -21,6 +23,7 @@ import {
 import { useBottomBar } from "./bottom-bar"
 import { type At, type PinKind, pinClass, useAnchor } from "./pins"
 import type { Target } from "./target"
+import { authorNow, useAuthor } from "./who"
 
 /** The THREAD: the conversation held at one point of a screen, opened where it was left.
  *
@@ -258,7 +261,9 @@ const Message = ({
 )
 
 /** The name is asked once per browser and shared with the feedback widget and the
- *  restore: an anonymous note is a note nobody can go back and question. */
+ *  restore — see `identity.tsx`. Every action of a thread is signed with it, and none is
+ *  offered before it is known: an unsigned note is a note nobody can go back and
+ *  question, which is the only accountability a shared key leaves us. */
 const Composer = ({
   placeholder,
   hint,
@@ -276,7 +281,7 @@ const Composer = ({
   onSend: (text: string, author: string) => Promise<void>
 }) => {
   const [text, setText] = useState("")
-  const [author, setAuthor] = useState(readAuthor)
+  const author = useAuthor()
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState("")
   const field = useRef<HTMLTextAreaElement | null>(null)
@@ -291,12 +296,7 @@ const Composer = ({
     setBusy(true)
     setError("")
     try {
-      localStorage.setItem("feedback-author", author)
-    } catch {
-      /* the name simply is not remembered */
-    }
-    try {
-      await onSend(text.trim(), author.trim() || "anonymous")
+      await onSend(text.trim(), author)
       setText("")
     } catch (e) {
       setError(message(e))
@@ -305,7 +305,9 @@ const Composer = ({
     }
   }
 
-  const ready = text.trim().length >= min && text.length <= TEXT_MAX
+  // The name is part of being ready. There is no `anonymous` left: a note nobody can go
+  // back and question is worth less than the one click it costs to sign it.
+  const ready = text.trim().length >= min && text.length <= TEXT_MAX && Boolean(author)
 
   return (
     <div className="flex shrink-0 flex-col gap-1.5 border-gray-dark-800 border-t bg-white/2 px-2.5 py-2">
@@ -324,13 +326,7 @@ const Composer = ({
         className="w-full resize-y rounded-md border border-gray-dark-800 bg-gray-dark-950 px-2.5 py-1.5 text-sm text-white placeholder:text-gray-dark-500 focus:border-white/30 focus:outline-none"
       />
       <div className="flex flex-wrap items-center gap-1.5">
-        <input
-          value={author}
-          onChange={(e) => setAuthor(e.target.value)}
-          maxLength={60}
-          placeholder="Your first name"
-          className="w-28 rounded-md border border-gray-dark-800 bg-gray-dark-950 px-2 py-1 text-white text-xs placeholder:text-gray-dark-500 focus:border-white/30 focus:outline-none"
-        />
+        <Signature compact />
         <button
           type="button"
           disabled={!ready || busy}
@@ -358,6 +354,7 @@ const CommentThread = ({
   onClose: () => void
 }) => {
   const done = comment.status === "resolved"
+  const me = useAuthor()
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState("")
   const [editing, setEditing] = useState<string | null>(null)
@@ -376,8 +373,6 @@ const CommentThread = ({
     }
   }, [])
 
-  const me = () => readAuthor() || "anonymous"
-
   const edit = (id: string, text: string) => {
     setConfirming(null)
     setEditing(id)
@@ -391,14 +386,14 @@ const CommentThread = ({
       await changeComment(
         comment.id,
         editing === comment.id ? { text } : { reply: editing ?? "", text },
-        me(),
+        me,
       )
       setEditing(null)
     })
 
   const remove = (id: string) =>
     void act(async () => {
-      await deleteComment(comment.id, me(), id === comment.id ? undefined : id)
+      await deleteComment(comment.id, me, id === comment.id ? undefined : id)
       setConfirming(null)
     })
 
@@ -455,10 +450,10 @@ const CommentThread = ({
   const action = (onClick: () => void, label: string, icon: ReactNode) => (
     <button
       type="button"
-      disabled={busy}
+      disabled={busy || !me}
       onClick={onClick}
-      title={label}
-      className="rounded p-0.5 text-gray-dark-500 hover:bg-white/5 hover:text-white"
+      title={me ? label : "Say who you are first"}
+      className="rounded p-0.5 text-gray-dark-500 hover:bg-white/5 hover:text-white disabled:opacity-40"
     >
       {icon}
       <span className="sr-only">{label}</span>
@@ -542,10 +537,11 @@ const CommentThread = ({
         <div className="flex items-center gap-1 border-gray-dark-800 border-t pt-2">
           <button
             type="button"
-            disabled={busy}
+            disabled={busy || !me}
+            title={me ? undefined : "Say who you are first"}
             onClick={() =>
               void act(() =>
-                changeComment(comment.id, { status: done ? "open" : "resolved" }, me()),
+                changeComment(comment.id, { status: done ? "open" : "resolved" }, me),
               )
             }
             className="flex items-center gap-1 rounded-md px-2 py-1 text-[11px] text-gray-dark-400 hover:bg-white/5 hover:text-white"
@@ -582,7 +578,7 @@ const Reactions = ({
   onError: (message: string) => void
 }) => {
   const [busy, setBusy] = useState(false)
-  const me = readAuthor() || "anonymous"
+  const me = useAuthor()
 
   const toggle = async (emoji: string) => {
     setBusy(true)
@@ -607,10 +603,10 @@ const Reactions = ({
           <button
             key={emoji}
             type="button"
-            disabled={busy}
+            disabled={busy || !me}
             onClick={() => void toggle(emoji)}
             aria-pressed={mine}
-            title={who.length ? who.join(", ") : `React ${emoji}`}
+            title={who.length ? who.join(", ") : me ? `React ${emoji}` : "Say who you are first"}
             className={`flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-[11px] transition-colors ${
               mine
                 ? "border-blue-400/60 bg-blue-400/15 text-white"
@@ -642,6 +638,98 @@ const FeedbackThread = ({
   onClose: () => void
 }) => {
   const done = item.status === "handled"
+  // `0` is the item itself, `n` its nth answer — the same address the server takes.
+  const [editing, setEditing] = useState<number | null>(null)
+  const [confirming, setConfirming] = useState<number | null>(null)
+  const [draft, setDraft] = useState("")
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState("")
+
+  const act = async (fn: () => Promise<unknown>) => {
+    setBusy(true)
+    setError("")
+    try {
+      await fn()
+      setEditing(null)
+      setConfirming(null)
+    } catch (e) {
+      setError(message(e))
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  const edit = (at: number, text: string) => {
+    setConfirming(null)
+    setEditing(at)
+    setDraft(text)
+  }
+
+  const editor = (at: number) => (
+    <div className="flex flex-col gap-1.5">
+      <textarea
+        value={draft}
+        onChange={(e) => setDraft(e.target.value)}
+        maxLength={TEXT_MAX}
+        rows={3}
+        className="w-full resize-y rounded-md border border-gray-dark-800 bg-gray-dark-950 px-2 py-1 text-sm text-white focus:border-white/30 focus:outline-none"
+      />
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          disabled={busy || draft.trim().length < (at ? 2 : 10)}
+          onClick={() => void act(() => editFeedback(item.id, draft.trim(), authorNow(), at))}
+          className="rounded-md bg-white/10 px-2.5 py-1 font-semibold text-white text-xs hover:bg-white/15 disabled:opacity-40"
+        >
+          Save
+        </button>
+        <button
+          type="button"
+          onClick={() => setEditing(null)}
+          className="rounded-md px-2 py-1 text-gray-dark-400 text-xs hover:text-white"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  )
+
+  const confirm = (at: number) => (
+    <div className="flex flex-wrap items-center gap-2 text-xs">
+      <span className="text-gray-dark-300">
+        {at ? "Delete this answer?" : "Withdraw this feedback?"}
+      </span>
+      <button
+        type="button"
+        disabled={busy}
+        onClick={() => void act(() => removeFeedback(item.id, authorNow(), at))}
+        className="rounded-md bg-pink-400/20 px-2.5 py-1 font-semibold text-pink-200 hover:bg-pink-400/30"
+      >
+        {at ? "Delete" : "Withdraw"}
+      </button>
+      <button
+        type="button"
+        onClick={() => setConfirming(null)}
+        className="rounded-md px-2 py-1 text-gray-dark-400 hover:text-white"
+      >
+        Keep
+      </button>
+    </div>
+  )
+
+  const action = (onClick: () => void, label: string, icon: ReactNode) => (
+    <button
+      type="button"
+      disabled={busy || !authorNow()}
+      onClick={onClick}
+      title={authorNow() ? label : "Say who you are first"}
+      className="rounded p-0.5 text-gray-dark-500 hover:bg-white/5 hover:text-white disabled:opacity-40"
+    >
+      {icon}
+      <span className="sr-only">{label}</span>
+    </button>
+  )
+
   return (
     <>
       <Header
@@ -662,17 +750,57 @@ const FeedbackThread = ({
       />
 
       <div className="flex min-h-0 flex-1 flex-col gap-2.5 overflow-y-auto px-2.5 py-2.5">
-        <Message author={item.author} when={whenQueue(item.when)} text={item.text} />
-
-        {item.replies.map((r) => (
+        {editing === 0 ? (
+          editor(0)
+        ) : (
           <Message
-            key={`${r.when}-${r.author}-${r.text.slice(0, 24)}`}
-            indented
-            author={r.author}
-            when={whenQueue(r.when)}
-            text={r.text}
+            author={item.author}
+            when={whenQueue(item.when)}
+            text={item.text}
+            actions={
+              confirming === 0 ? null : (
+                <>
+                  {action(() => edit(0, item.text), "Correct this feedback",
+                    <Pencil size={11} aria-hidden="true" />)}
+                  {action(() => setConfirming(0), "Withdraw this feedback",
+                    <Trash2 size={11} aria-hidden="true" />)}
+                </>
+              )
+            }
           />
-        ))}
+        )}
+        {confirming === 0 ? confirm(0) : null}
+
+        {item.replies.map((r, i) => {
+          const at = i + 1
+          return editing === at ? (
+            <div key={`${r.when}-${at}`} className="border-gray-dark-800 border-s ps-2.5">
+              {editor(at)}
+            </div>
+          ) : (
+            <div key={`${r.when}-${at}`} className="flex flex-col gap-1.5">
+              <Message
+                indented
+                author={r.author}
+                when={whenQueue(r.when)}
+                text={r.text}
+                actions={
+                  confirming === at ? null : (
+                    <>
+                      {action(() => edit(at, r.text), "Correct this answer",
+                        <Pencil size={11} aria-hidden="true" />)}
+                      {action(() => setConfirming(at), "Delete this answer",
+                        <Trash2 size={11} aria-hidden="true" />)}
+                    </>
+                  )
+                }
+              />
+              {confirming === at ? <div className="ps-2.5">{confirm(at)}</div> : null}
+            </div>
+          )
+        })}
+
+        {error ? <span className="text-pink-400 text-xs">{error}</span> : null}
 
         {item.handled ? (
           <p className="flex gap-1.5 rounded-md border border-green-400/30 bg-green-400/5 px-2 py-1.5 text-[11px] text-green-200/90 leading-snug">
@@ -686,8 +814,9 @@ const FeedbackThread = ({
 
         <p className="border-gray-dark-800 border-t pt-2 text-[10px] text-gray-dark-600 leading-relaxed">
           This thread goes to the agent: an answer joins the item in its queue, and is read
-          when the flow is worked on. Closing it stays the agent's — the page shows where it
-          stands, it does not decide it.
+          when the flow is worked on. Correcting or withdrawing it changes what the agent
+          will read — closing it, on the other hand, stays the agent's: the page shows where
+          it stands, it does not decide it.
         </p>
       </div>
 

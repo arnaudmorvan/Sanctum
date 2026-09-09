@@ -3,13 +3,14 @@ import { useCallback, useEffect, useState } from "react"
 import {
   LIVE_URL,
   MCP_URL,
-  readAuthor,
   readConsoleKey,
   SLUG,
   VERSION,
   writeConsoleKey,
 } from "./env"
+import { Signature } from "./identity"
 import { useNotes } from "./notes"
+import { useAuthor } from "./who"
 
 /** The "History" tab: every version of the flow, WHEN it was generated (to the minute —
  *  `proto.json` only carries the day), by whom, and the way back to one of them.
@@ -98,7 +99,7 @@ export const HistoryBody = ({ active }: { active: boolean }) => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
   const [confirm, setConfirm] = useState<string | null>(null)
-  const [author, setAuthor] = useState(readAuthor)
+  const author = useAuthor()
   const [restoring, setRestoring] = useState(false)
   const [notice, setNotice] = useState("")
   // Whether a past version can be OPENED on this site (the hot build is wired). Said by
@@ -471,16 +472,10 @@ export const HistoryBody = ({ active }: { active: boolean }) => {
                           since goes away too. The current version stays in this list.
                         </p>
                         <div className="flex flex-wrap items-center gap-2">
-                          <input
-                            value={author}
-                            onChange={(e) => setAuthor(e.target.value)}
-                            maxLength={60}
-                            placeholder="Your first name"
-                            className="w-32 rounded-md border border-gray-dark-800 bg-white/2 px-2.5 py-1 text-white text-xs placeholder:text-gray-dark-500 focus:border-white/30 focus:outline-none"
-                          />
+                          <Signature />
                           <button
                             type="button"
-                            disabled={restoring}
+                            disabled={restoring || !author}
                             onClick={() => void restore(v.sha)}
                             className="rounded-md bg-white/10 px-2.5 py-1 font-semibold text-white text-xs hover:bg-white/15 disabled:cursor-not-allowed disabled:opacity-40"
                           >

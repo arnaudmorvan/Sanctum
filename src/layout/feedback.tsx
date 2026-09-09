@@ -1,10 +1,13 @@
+import { Pencil, Trash2 } from "lucide-react"
 import { useEffect, useState } from "react"
 import { createPortal } from "react-dom"
 import { FEEDBACK_KEY, MCP_URL, SLUG } from "./env"
-import { numberOf, refreshNotes, useNotes, whenQueue as when } from "./notes"
+import { editFeedback, numberOf, refreshNotes, removeFeedback, useNotes, whenQueue as when } from "./notes"
 import { Bubble } from "./pins"
 import { describeElement, type Target } from "./target"
+import { Signature } from "./identity"
 import { ChosenTarget, Targeting } from "./targeting"
+import { useAuthor } from "./who"
 
 /** The "Feedback" tab: the mouth through which a viewer of the flow talks to the system.
  *
@@ -83,26 +86,19 @@ export const FeedbackBody = ({
   const [showHandled, setShowHandled] = useState(false)
   const [kind, setKind] = useState<(typeof KINDS)[number]["key"]>("flow")
   const [text, setText] = useState("")
-  const [author, setAuthor] = useState("")
+  const author = useAuthor()
   const [state, setState] = useState<State>("editing")
   const [error, setError] = useState("")
   const [target, setTarget] = useState<Target | null>(null)
   const [targetElement, setTargetElement] = useState<Element | null>(null)
   const [mode, setMode] = useState<"element" | "zone" | null>(null)
-
-  // The author is asked ONCE per browser: anonymous feedback is feedback nobody can go
-  // back and question.
-  useEffect(() => {
-    try {
-      // `retours-auteur` is the legacy key, read once as a fallback so nobody who already
-      // gave their name has to type it again. Only the new key is ever written.
-      setAuthor(
-        localStorage.getItem("feedback-author") ?? localStorage.getItem("retours-auteur") ?? "",
-      )
-    } catch {
-      /* storage unavailable: the field stays empty, submitting still works */
-    }
-  }, [])
+  // Correcting or withdrawing an item, from the LIST — the thread is the other place,
+  // and it only exists for an item whose pin can still be placed on this screen.
+  const [editing, setEditing] = useState<string | null>(null)
+  const [confirming, setConfirming] = useState<string | null>(null)
+  const [draft, setDraft] = useState("")
+  const [acting, setActing] = useState(false)
+  const [actError, setActError] = useState("")
 
   // The panel needs to know when we aim: it hides itself for the duration.
   useEffect(() => {
@@ -131,11 +127,6 @@ export const FeedbackBody = ({
     setState("sending")
     setError("")
     try {
-      localStorage.setItem("feedback-author", author)
-    } catch {
-      /* same tolerance as on read */
-    }
-    try {
       const r = await fetch(`${MCP_URL}/feedback/submit.json`, {
         method: "POST",
         headers: { "Content-Type": "application/json", "X-Feedback-Key": FEEDBACK_KEY },
@@ -163,7 +154,21 @@ export const FeedbackBody = ({
     setTarget(describeElement(el))
   }
 
-  const readyToSend = text.trim().length >= 10 && text.length <= TEXT_MAX
+  const readyToSend = text.trim().length >= 10 && text.length <= TEXT_MAX && Boolean(author)
+
+  const act = async (fn: () => Promise<unknown>) => {
+    setActing(true)
+    setActError("")
+    try {
+      await fn()
+      setEditing(null)
+      setConfirming(null)
+    } catch (e) {
+      setActError(e instanceof Error ? e.message : String(e))
+    } finally {
+      setActing(false)
+    }
+  }
 
   return (
     <>
@@ -278,13 +283,7 @@ export const FeedbackBody = ({
             />
 
             <div className="flex flex-wrap items-center gap-2">
-              <input
-                value={author}
-                onChange={(e) => setAuthor(e.target.value)}
-                maxLength={60}
-                placeholder="Your first name"
-                className="w-32 rounded-md border border-gray-dark-800 bg-white/2 px-3 py-1.5 text-white text-xs placeholder:text-gray-dark-500 focus:border-white/30 focus:outline-none"
-              />
+              <Signature />
               <button
                 type="button"
                 disabled={!readyToSend || state === "sending"}
@@ -398,11 +397,92 @@ export const FeedbackBody = ({
                             {f.handled}
                           </p>
                         ) : null}
+
+                        {editing === f.id ? (
+                          <div className="flex flex-col gap-1.5">
+                            <textarea
+                              value={draft}
+                              onChange={(e) => setDraft(e.target.value)}
+                              maxLength={TEXT_MAX}
+                              rows={3}
+                              className="w-full resize-y rounded-md border border-gray-dark-800 bg-white/2 px-2 py-1 text-sm text-white focus:border-white/30 focus:outline-none"
+                            />
+                            <div className="flex items-center gap-2">
+                              <button
+                                type="button"
+                                disabled={acting || draft.trim().length < 10}
+                                onClick={() =>
+                                  void act(() => editFeedback(f.id, draft.trim(), author))
+                                }
+                                className="rounded-md bg-white/10 px-2.5 py-1 font-semibold text-white text-xs hover:bg-white/15 disabled:opacity-40"
+                              >
+                                Save
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setEditing(null)}
+                                className="rounded-md px-2 py-1 text-gray-dark-400 text-xs hover:text-white"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          </div>
+                        ) : confirming === f.id ? (
+                          <div className="flex flex-wrap items-center gap-2 text-xs">
+                            <span className="text-gray-dark-300">Withdraw this feedback?</span>
+                            <button
+                              type="button"
+                              disabled={acting}
+                              onClick={() => void act(() => removeFeedback(f.id, author))}
+                              className="rounded-md bg-pink-400/20 px-2.5 py-1 font-semibold text-pink-200 hover:bg-pink-400/30"
+                            >
+                              Withdraw
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setConfirming(null)}
+                              className="rounded-md px-2 py-1 text-gray-dark-400 hover:text-white"
+                            >
+                              Keep
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-1">
+                            <button
+                              type="button"
+                              disabled={acting || !author}
+                              onClick={() => {
+                                setConfirming(null)
+                                setEditing(f.id)
+                                setDraft(f.text)
+                              }}
+                              title={author ? "Correct what this item says" : "Say who you are first"}
+                              className="flex items-center gap-1 rounded-md px-2 py-1 text-[11px] text-gray-dark-400 hover:bg-white/5 hover:text-white disabled:opacity-40"
+                            >
+                              <Pencil size={11} aria-hidden="true" />
+                              Correct
+                            </button>
+                            <button
+                              type="button"
+                              disabled={acting || !author}
+                              onClick={() => {
+                                setEditing(null)
+                                setConfirming(f.id)
+                              }}
+                              title={author ? "Withdraw it from the agent's queue" : "Say who you are first"}
+                              className="ms-auto flex items-center gap-1 rounded-md px-2 py-1 text-[11px] text-gray-dark-500 hover:bg-white/5 hover:text-pink-300 disabled:opacity-40"
+                            >
+                              <Trash2 size={11} aria-hidden="true" />
+                              Withdraw
+                            </button>
+                          </div>
+                        )}
                       </li>
                     )
                   })}
                 </ul>
               )}
+              {actError ? <span className="text-pink-400 text-xs">{actError}</span> : null}
               <p className="text-[11px] text-gray-dark-600 leading-relaxed">
                 Click a pin, or a number above, to open an item's thread and add a precision —
                 it joins the item in the agent's queue. An item goes from open to handled when

@@ -82,12 +82,3 @@ export const writeConsoleKey = (v: string): void => {
   }
 }
 
-/** The first name the feedback widget remembers — reused by the restore, so that the
- *  history says who brought a version back. Read-only here: the widget owns the write. */
-export const readAuthor = (): string => {
-  try {
-    return localStorage.getItem("feedback-author") ?? localStorage.getItem("retours-auteur") ?? ""
-  } catch {
-    return ""
-  }
-}

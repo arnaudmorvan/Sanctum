@@ -240,6 +240,29 @@ export const deleteComment = async (
   set({ comments: state.comments.filter((c) => c.id !== id) })
 }
 
+/** Correcting an item, or withdrawing one — including one answer to it (`reply` is its
+ *  rank, 1 for the first). Both rewrite ONE section of the agent's queue: the server
+ *  keeps the title, so a status is never changed this way, and it hands back the file's
+ *  items, which is what the store takes.
+ *
+ *  ⚠️ The ids are POSITIONAL (`f3` is the third item): a deletion renumbers what follows,
+ *  server-side and in the same commit. Which is why the answer replaces the whole list
+ *  rather than being merged into it — half of it may have moved. */
+const changeFeedback = async (route: string, body: Record<string, unknown>): Promise<void> => {
+  const { items } = await call<{ items: FeedbackItem[] }>(route, { slug: SLUG, ...body })
+  set({ feedback: items.map(thread) })
+}
+
+export const editFeedback = (
+  id: string,
+  text: string,
+  author: string,
+  reply = 0,
+): Promise<void> => changeFeedback("/feedback/update.json", { id, text, author, reply })
+
+export const removeFeedback = (id: string, author: string, reply = 0): Promise<void> =>
+  changeFeedback("/feedback/delete.json", { id, author, reply })
+
 /** An answer to a FEEDBACK item. It goes to the agent's queue — the same route that
  *  files feedback, with `parent` — because a precision nobody reads is worse than a
  *  precision one cannot write. Nothing comes back to merge: the queue file is the

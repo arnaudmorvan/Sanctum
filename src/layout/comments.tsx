@@ -1,7 +1,7 @@
 import { Check, Pencil, RotateCcw, Trash2 } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 import { createPortal } from "react-dom"
-import { readAuthor } from "./env"
+import { Signature } from "./identity"
 import {
   addComment,
   changeComment,
@@ -16,6 +16,7 @@ import {
 import { Bubble } from "./pins"
 import { describeElement, type Target } from "./target"
 import { ChosenTarget, Targeting } from "./targeting"
+import { useAuthor } from "./who"
 
 /** The "Comments" tab: what a PO tells the DEVELOPERS about a screen.
  *
@@ -58,7 +59,7 @@ export const CommentsBody = ({
 }) => {
   const notes = useNotes()
   const [text, setText] = useState("")
-  const [author, setAuthor] = useState(readAuthor)
+  const author = useAuthor()
   const [target, setTarget] = useState<Target | null>(null)
   const [targetElement, setTargetElement] = useState<Element | null>(null)
   const [mode, setMode] = useState<"element" | "zone" | null>(null)
@@ -101,11 +102,6 @@ export const CommentsBody = ({
   const post = async () => {
     setBusy(true)
     setError("")
-    try {
-      localStorage.setItem("feedback-author", author)
-    } catch {
-      /* the name simply is not remembered */
-    }
     try {
       await addComment({
         text,
@@ -151,7 +147,7 @@ export const CommentsBody = ({
 
   const nOpen = notes.comments.filter((c) => c.status === "open").length
   const nResolved = notes.comments.length - nOpen
-  const ready = text.trim().length >= 2 && text.length <= TEXT_MAX
+  const ready = text.trim().length >= 2 && text.length <= TEXT_MAX && Boolean(author)
 
   return (
     <>
@@ -215,13 +211,7 @@ export const CommentsBody = ({
           className="w-full resize-y rounded-md border border-gray-dark-800 bg-white/2 px-3 py-2 text-sm text-white placeholder:text-gray-dark-500 focus:border-white/30 focus:outline-none"
         />
         <div className="flex flex-wrap items-center gap-2">
-          <input
-            value={author}
-            onChange={(e) => setAuthor(e.target.value)}
-            maxLength={60}
-            placeholder="Your first name"
-            className="w-32 rounded-md border border-gray-dark-800 bg-white/2 px-3 py-1.5 text-white text-xs placeholder:text-gray-dark-500 focus:border-white/30 focus:outline-none"
-          />
+          <Signature />
           <button
             type="button"
             disabled={!ready || busy}
@@ -389,7 +379,7 @@ export const CommentsBody = ({
                           <span className="text-gray-dark-300">Delete this comment?</span>
                           <button
                             type="button"
-                            disabled={busy}
+                            disabled={busy || !author}
                             onClick={() =>
                               void act(async () => {
                                 await deleteComment(c.id, author)
@@ -412,7 +402,7 @@ export const CommentsBody = ({
                         <div className="flex items-center gap-1">
                           <button
                             type="button"
-                            disabled={busy}
+                            disabled={busy || !author}
                             onClick={() =>
                               void act(() => changeComment(c.id, { status: done ? "open" : "resolved" }, author))
                             }
@@ -423,7 +413,7 @@ export const CommentsBody = ({
                           </button>
                           <button
                             type="button"
-                            disabled={busy}
+                            disabled={busy || !author}
                             onClick={() => {
                               setEditing(c.id)
                               setDraft(c.text)
@@ -435,7 +425,7 @@ export const CommentsBody = ({
                           </button>
                           <button
                             type="button"
-                            disabled={busy}
+                            disabled={busy || !author}
                             onClick={() => setConfirming(c.id)}
                             className="ms-auto flex items-center gap-1 rounded-md px-2 py-1 text-[11px] text-gray-dark-500 hover:bg-white/5 hover:text-pink-300"
                           >
