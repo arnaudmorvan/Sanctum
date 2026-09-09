@@ -228,18 +228,30 @@ const KitPreview = ({ name }: { name: string }) => {
 /** What a cell IS, and the four words are the whole tool. `figma-only` is the one that
  *  costs a screen: a mockup uses a combination the code cannot render. */
 const CELL = {
-  both: { ring: "border-white/10", dot: "bg-green-500", label: "drawn and renderable" },
+  both: {
+    ring: "border-white/10",
+    dot: "bg-green-500",
+    label: "in Figma and in the kit",
+    short: "both sides",
+  },
   "kit-only": {
     ring: "border-white/10 opacity-45",
     dot: "bg-gray-500",
-    label: "the kit renders it, nobody drew it",
+    label: "in the kit only — nobody drew it",
+    short: "kit only",
   },
   "figma-only": {
     ring: "border-red-500/60 bg-red-500/5",
     dot: "bg-red-500",
-    label: "drawn, the kit refuses this value",
+    label: "in Figma only — the kit refuses this value",
+    short: "Figma only",
   },
-  neither: { ring: "border-dashed border-white/8", dot: "", label: "neither side" },
+  neither: {
+    ring: "border-dashed border-white/8",
+    dot: "",
+    label: "in neither",
+    short: "neither",
+  },
 } as const
 
 type CellState = keyof typeof CELL
@@ -399,24 +411,110 @@ const CoverageGrid = ({
             </select>
           </label>
         ))}
-        <span className={`${TYPO.mono()} text-gray-dark-400 text-xs`}>
-          {drawnCells}/{renderableCells} drawn · {cells} cells
-        </span>
       </div>
 
+      {/* ⚠️ The answer, IN WORDS, above the grid. The first version encoded it in the
+          border colour of a cell and left the reader to decode it through a legend at the
+          bottom of the page — which is not an answer to "what is missing on which side",
+          it is a puzzle whose solution happens to be one. The colours stay; they are now a
+          second reading of a sentence, not the only one. */}
+      <div className="flex flex-col gap-1 rounded-lg border border-white/10 p-3">
+        <Text size="sm">
+          <strong>{drawnCells}</strong> of the {renderableCells} combinations the kit can
+          render are drawn in Figma.
+          {cells !== renderableCells
+            ? ` ${cells - renderableCells} more cell${cells - renderableCells > 1 ? "s" : ""} exist${cells - renderableCells > 1 ? "" : "s"} on one side only.`
+            : ""}
+        </Text>
+        {[rowDef, colDef].map((a) => (
+          <div key={a.axis} className="flex flex-col gap-0.5">
+            {a.only_figma.length > 0 ? (
+              <Text size="xs" className="text-red-300">
+                <code className={TYPO.mono()}>{a.axis}</code>: Figma draws{" "}
+                <strong>{a.only_figma.join(", ")}</strong> — the kit does not accept
+                {a.only_figma.length > 1 ? " those values" : " that value"}, so
+                {a.axis === rowAxis ? " those rows" : " those columns"} cannot be built.
+              </Text>
+            ) : null}
+            {a.only_kit.length > 0 ? (
+              <Text size="xs" c="muted">
+                <code className={TYPO.mono()}>{a.axis}</code>: the kit ships{" "}
+                <strong>{a.only_kit.join(", ")}</strong> — nothing in Figma draws
+                {a.only_kit.length > 1 ? " them" : " it"}.
+              </Text>
+            ) : null}
+            {!a.readable ? (
+              <Text size="xs" c="muted">
+                <code className={TYPO.mono()}>{a.axis}</code>: the manifest cannot read the
+                kit's values here, so every cell is given the benefit of the doubt.
+              </Text>
+            ) : null}
+          </div>
+        ))}
+        {rowDef.only_figma.length === 0 &&
+        rowDef.only_kit.length === 0 &&
+        colDef.only_figma.length === 0 &&
+        colDef.only_kit.length === 0 ? (
+          <Text size="xs" c="muted">
+            Both axes hold the same values on both sides — what is left is which
+            combinations were drawn.
+          </Text>
+        ) : null}
+      </div>
+
+      {/* The legend, ABOVE the grid and showing real cells: a swatch of the thing itself
+          beats a dot that has to be matched to a sentence forty rows further down. */}
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-[11px] text-gray-dark-400">
+        {(Object.keys(CELL) as CellState[]).map((k) => (
+          <span key={k} className="flex items-center gap-1.5">
+            <span
+              className={`relative h-5 w-8 rounded border ${CELL[k].ring} ${
+                dark ? "bg-black/20" : "bg-white"
+              }`}
+            >
+              {CELL[k].dot ? (
+                <span
+                  className={`absolute top-0.5 right-0.5 h-1.5 w-1.5 rounded-full ${CELL[k].dot}`}
+                />
+              ) : null}
+            </span>
+            {CELL[k].label}
+          </span>
+        ))}
+        {frames ? <span>· click a drawn cell to see Figma's own render of it</span> : null}
+      </div>
+
+      {cols.length > 6 ? (
+        <Text size="xs" c="muted">
+          {cols.length} columns — the grid scrolls sideways; the row labels stay put.
+        </Text>
+      ) : null}
+
+      {/* ⚠️ No edge fade here, and that was tried first: a permanent mask on the trailing
+          40px hides the LAST column once you have scrolled to the end, which is worse than
+          the clipping it was meant to explain. The line above says the grid scrolls; a
+          sentence that is always true beats a gradient that lies at one end of the range. */}
       <div className="overflow-x-auto" data-theme={dark ? "dark" : "light"}>
         <table className="border-separate border-spacing-1">
           <thead>
             <tr>
               <th className={`sticky left-0 z-10 ${dark ? "bg-gray-dark-950" : "bg-white"}`} />
               {cols.map((c) => (
-                <th
-                  key={c}
-                  className={`${TYPO.mono()} px-1 pb-1 text-center font-normal text-[11px] ${
-                    inKit(colDef, c) ? "text-gray-dark-400" : "text-red-400"
-                  }`}
-                >
-                  {c}
+                <th key={c} className="px-1 pb-1 text-center font-normal">
+                  <div
+                    className={`${TYPO.mono()} text-[11px] ${
+                      inKit(colDef, c) ? "text-gray-dark-400" : "text-red-400"
+                    }`}
+                  >
+                    {c}
+                  </div>
+                  {/* The side is NAMED on the header, not left to the colour. Red-on-dark
+                      at 11px is not a statement anyone should have to decode. */}
+                  {!inKit(colDef, c) ? (
+                    <div className="text-[10px] text-red-400">Figma only</div>
+                  ) : !colDef.figma.some((v) => v.toLowerCase() === c.toLowerCase()) ? (
+                    <div className="text-[10px] text-gray-dark-600">kit only</div>
+                  ) : null}
                 </th>
               ))}
             </tr>
@@ -428,11 +526,22 @@ const CoverageGrid = ({
                     are unioned, so the grid scrolls — and a row whose label has scrolled
                     off is a row of anonymous swatches. */}
                 <th
-                  className={`${TYPO.mono()} sticky left-0 z-10 pr-2 text-right font-normal text-[11px] ${
+                  className={`sticky left-0 z-10 pr-2 text-right font-normal ${
                     dark ? "bg-gray-dark-950" : "bg-white"
-                  } ${inKit(rowDef, r) ? "text-gray-dark-400" : "text-red-400"}`}
+                  }`}
                 >
-                  {r}
+                  <div
+                    className={`${TYPO.mono()} text-[11px] ${
+                      inKit(rowDef, r) ? "text-gray-dark-400" : "text-red-400"
+                    }`}
+                  >
+                    {r}
+                  </div>
+                  {!inKit(rowDef, r) ? (
+                    <div className="text-[10px] text-red-400">Figma only</div>
+                  ) : !rowDef.figma.some((v) => v.toLowerCase() === r.toLowerCase()) ? (
+                    <div className="text-[10px] text-gray-dark-600">kit only</div>
+                  ) : null}
                 </th>
                 {cols.map((c) => {
                   const s = state(r, c)
@@ -464,7 +573,7 @@ const CoverageGrid = ({
                               }
                             : undefined
                         }
-                        className={`relative flex h-16 w-28 items-center justify-center overflow-hidden rounded border p-1 ${tone.ring} ${
+                        className={`relative flex h-14 w-24 items-center justify-center overflow-hidden rounded border p-1 ${tone.ring} ${
                           dark ? "bg-black/20" : "bg-white"
                         } ${clickable ? "cursor-pointer" : "cursor-default"}`}
                       >
@@ -488,18 +597,6 @@ const CoverageGrid = ({
             ))}
           </tbody>
         </table>
-      </div>
-
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-gray-dark-500">
-        {(Object.keys(CELL) as CellState[]).map((k) => (
-          <span key={k} className="flex items-center gap-1">
-            <span
-              className={`h-1.5 w-1.5 rounded-full ${CELL[k].dot || "border border-white/20"}`}
-            />
-            {CELL[k].label}
-          </span>
-        ))}
-        {frames ? <span>· click a drawn cell to see Figma's own render of it</span> : null}
       </div>
 
       {/* Said out loud rather than swallowed: an undecoded key-variant is a combination
