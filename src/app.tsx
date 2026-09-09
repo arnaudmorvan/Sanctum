@@ -4,6 +4,7 @@ import { Title } from "@42/ui-react/title"
 import { useEffect, useState } from "react"
 import { AppChrome } from "./layout/app-chrome"
 import { AppLayout } from "./layout/app-layout"
+import { useDock } from "./layout/dock"
 import { useEmbedBridge } from "./layout/embed"
 import { BARE, FIGMA_VIEW, IS_PAST_VERSION } from "./layout/env"
 import { FigmaView } from "./layout/figma-view"
@@ -65,37 +66,53 @@ export const App = () => {
   // Inside a frame of the compare page: say where we are, follow where we are sent.
   useEmbedBridge(BARE, VIEWS, hash, figmaWidth)
 
+  // What the docked panel takes away from the flow (0 whenever it merely covers it).
+  const dock = useDock()
+
   return (
-    <div className="flex h-dvh flex-col">
-      {/* A past version says so before anything else — and not in a frame: the compare
-          page labels its two sides itself, and the banner would be drawn twice. */}
-      {IS_PAST_VERSION && !BARE ? <VersionBanner /> : null}
-      <div className="min-h-0 flex-1">
-        {AS_MOCKUP ? (
-          <FigmaView current={match?.view} onWidth={setFigmaWidth} />
-        ) : NAV ? (
-          <AppChrome nav={NAV} views={VIEWS} currentPath={match?.view.path} title={TITLE}>
-            {screen}
-          </AppChrome>
-        ) : (
-          <AppLayout>{screen}</AppLayout>
-        )}
+    <>
+      {/* THE STAGE — the flow and its navigation, and nothing of the review tooling. It is
+          what the docked panel pushes: the margin shrinks the column, so the bar wraps and
+          the screens reflow into what is left instead of hiding under a panel.
+
+          ⚠️ `translateZ(0)` is not a paint hint, it is the point: it makes the stage the
+          containing block of its `position: fixed` descendants, so what a flow fixes to
+          "the viewport" (the kit's AmbientBackground, a sticky action bar, the AppShell
+          drawer) means the visible flow and not the window. Applied ONLY while the panel
+          reserves width — a stacking context costs nothing here, but it costs nothing in
+          the default state either, and that state is every other second of the flow's life.
+          Overlays that Ark UI portals to `body` (dialogs, menus) stay outside it, which is
+          right: a modal is over everything, the panel included. */}
+      <div
+        className="flex h-dvh flex-col"
+        style={dock ? { marginRight: dock, transform: "translateZ(0)" } : undefined}
+      >
+        {/* A past version says so before anything else — and not in a frame: the compare
+            page labels its two sides itself, and the banner would be drawn twice. */}
+        {IS_PAST_VERSION && !BARE ? <VersionBanner /> : null}
+        <div className="min-h-0 flex-1">
+          {AS_MOCKUP ? (
+            <FigmaView current={match?.view} onWidth={setFigmaWidth} />
+          ) : NAV ? (
+            <AppChrome nav={NAV} views={VIEWS} currentPath={match?.view.path} title={TITLE}>
+              {screen}
+            </AppChrome>
+          ) : (
+            <AppLayout>{screen}</AppLayout>
+          )}
+        </div>
+        {/* The bar is the tooling of ONE tab. In a frame (`?bare`, the compare page) it
+            would be drawn twice and drive nothing: the page holding the frames carries
+            its own. */}
+        {BARE ? null : <ProtoViewBar views={VIEWS} current={match?.view} nav={NAV} title={TITLE} />}
       </div>
-      {/* The bar and the panel are the tooling of ONE tab. In a frame (`?bare`, the
-          compare page) they would be drawn twice and drive nothing: the page holding the
-          frames carries its own. */}
-      {BARE ? null : (
-        <>
-          <ProtoViewBar views={VIEWS} current={match?.view} nav={NAV} title={TITLE} />
-          {/* The review rail and its panel FLOAT over the flow: mounted here, beside the bar
-              and not inside it — the bar is the flow's navigation, the rail is everything
-              one does WITH the flow (feedback, comments, components, history, and since
-              2026-09-08 the map, the Figma source and the compare link). It takes the same
-              four arguments as the bar: the map draws the whole flow, "Source" is attached
-              to the current screen. */}
-          <SidePanel views={VIEWS} nav={NAV} title={TITLE} current={match?.view} />
-        </>
-      )}
-    </div>
+
+      {/* The review rail and its panel — mounted BESIDE the stage, never inside it: they
+          are everything one does WITH the flow (feedback, comments, components, history,
+          and since 2026-09-08 the map, the Figma source and the compare link), and the
+          margin that pushes the flow must not push them too. Same four arguments as the
+          bar: the map draws the whole flow, "Source" is attached to the current screen. */}
+      {BARE ? null : <SidePanel views={VIEWS} nav={NAV} title={TITLE} current={match?.view} />}
+    </>
   )
 }
