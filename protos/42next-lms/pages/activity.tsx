@@ -46,11 +46,11 @@ export const Activity = ({ slug }: { slug?: string }) => {
           <div className="flex flex-wrap items-center gap-3">
             <Title order={1} size="2xl" className={TYPO.title()}>{validated ? validated.name : CURRENT.name}</Title>
             {validated ? (
-              <Badge variant="outline">Validated</Badge>
+              <Badge variant="light" color="green">Validated</Badge>
             ) : (
               <>
                 <Badge variant="light" color="blue">In progress</Badge>
-                <Badge variant="outline">{CURRENT.attempt}</Badge>
+                <Badge variant="light" color="gray">{CURRENT.attempt}</Badge>
               </>
             )}
           </div>
@@ -60,7 +60,7 @@ export const Activity = ({ slug }: { slug?: string }) => {
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1fr)_340px]">
         <section className="flex flex-col gap-4">
           <Title order={2} size="lg" className={TYPO.title()}>Validation requirements</Title>
-          <Card variant="outline" padding="lg">
+          <Card variant="gradient" padding="lg">
             <Card.Content>
               <div className="flex flex-col gap-4">
                 <div className="flex items-baseline justify-between gap-3">
@@ -72,7 +72,7 @@ export const Activity = ({ slug }: { slug?: string }) => {
                   {CURRENT.requirements.map((r) => (
                     <div key={r.label} className="flex items-center justify-between gap-3">
                       <Text>{r.label}</Text>
-                      <Badge variant="outline" color="gray">
+                      <Badge variant={validated || r.done ? "outline" : "light"} color="gray">
                         {validated || r.done ? "Met" : "Pending"}
                       </Badge>
                     </div>

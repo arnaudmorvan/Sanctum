@@ -10,7 +10,10 @@ import { TYPO } from "../../../src/typo"
 import { EXAM_REGISTERED, EXAM_RESULTS } from "../data/lms"
 import { PageHead, Tag } from "./shell"
 
-/** Exams — `P['exams']`. A single page with three tabs, exactly as the prototype had it.
+/** Exams — `P['exams']`. A single page with three tabs, exactly as the prototype had it
+ *  (it kept the active tab in a module-level `examTab` and re-rendered; `Tabs` from the
+ *  kit holds that state itself).
+ *
  *  A module has zero or one exam — that is the rule the subtitle states, and it is why
  *  this section is a page rather than a tree in the sidebar. */
 export const Exams = () => (
@@ -32,7 +35,7 @@ export const Exams = () => (
 
       <Tabs.Content value="eligible">
         <div className="grid grid-cols-1 gap-4 pt-6 md:grid-cols-2">
-          <Card variant="outline" padding="md">
+          <Card variant="gradient" padding="md">
             <Card.Content>
               <div className="flex flex-col gap-3">
                 <div className="flex flex-wrap items-start justify-between gap-3">
@@ -53,7 +56,7 @@ export const Exams = () => (
             </Card.Content>
           </Card>
 
-          <Card variant="outline" padding="md">
+          <Card variant="default" padding="md">
             <Card.Content>
               <div className="flex flex-col gap-3">
                 <div className="flex flex-wrap items-start justify-between gap-3">

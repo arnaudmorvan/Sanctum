@@ -14,18 +14,20 @@ import { Title } from "@42/ui-react/title"
 import { TYPO } from "../../../src/typo"
 import {
   ACHIEVEMENTS, CURRENT_TERRITORY, FILTERS, LEARNER, MASTERY, NEXT_MISSION, QUESTS,
-  SKILLS, TERRITORIES, type Mark, type Status,
+  SKILLS, TERRITORIES, type Mark,
 } from "../data/quest-map"
 
 /** Screen translated from frame 22505:9532 on 2026-09-06.
  *
  *  Every gap, padding, variant and text style below is LIFTED from the frame.
- *  Figma → Tailwind mapping: 2=gap-0.5, 8=gap-2, 12=gap-3, 16=gap-4, 40=gap-10.
+ *  Figma → Tailwind mapping: 2=gap-0.5, 8=gap-2, 12=gap-3, 16=gap-4,
+ *  40=gap-10. Card padding is carried by the `padding` prop (lg=24).
  *
- *  2026-09-08 — TWO DEVIATIONS FROM THE FRAME, asked for and assumed: every card is
- *  `outline` (transparent surface, the signature pink outline included), and green is
- *  out of the palette — validated territories and acquired skills come back as
- *  uncoloured badges and neutral timeline marks. */
+ *  ⚠️ THIS frame's typography is not the profile's: its section titles are in
+ *  `Display xs/Bold` (Lato Bold 24, SectionTitle size=xl) where the profile sets
+ *  `Text md/Bold` (16, size=sm). Same Figma component, another step — which is why we
+ *  lift instead of reusing. And it uses a lot of **Semibold**, which the first version
+ *  of `TYPO` could not produce. */
 
 /** The DS `SectionTitle` (size=xl, iconPosition=left, gap 8) has NO React equivalent:
  *  we compose. The icon is `hourglass`, the same on all 7 sections of the frame. */
@@ -42,24 +44,13 @@ const Section = ({ title, aside, children }: { title: string; aside?: ReactNode;
   </section>
 )
 
-/** The timeline indicator. The frame filled it green; here a validated territory keeps
- *  its white `check` on a filled neutral dot, and an open one stays an empty circle. */
+/** The timeline indicator. Lifted: white `check` on a solid green dot for a validated
+ *  territory, bare green dot for the one in progress, empty circle otherwise. */
 const MARK: Record<Mark, { color?: string; variant?: "filled" | "outline"; bullet?: ReactNode }> = {
-  validated: { variant: "filled", bullet: <Check size={12} strokeWidth={3} /> },
-  "in-progress": { variant: "filled" },
+  validated: { color: "green", variant: "filled", bullet: <Check size={12} strokeWidth={3} /> },
+  "in-progress": { color: "green", variant: "filled" },
   open: { variant: "outline" },
 }
-
-/** Green and red are out of the flow's palette: a status carrying one comes back as an
- *  uncoloured outline badge — the label states the state. */
-const NEUTRALISED = new Set(["green", "red"])
-
-const StatusBadge = ({ status }: { status: Status }) =>
-  NEUTRALISED.has(status.color) ? (
-    <Badge variant="outline">{status.label}</Badge>
-  ) : (
-    <Badge variant="light" color={status.color}>{status.label}</Badge>
-  )
 
 export const QuestMap = () => (
   <div className="flex flex-col gap-10">
@@ -78,7 +69,7 @@ export const QuestMap = () => (
           title="Territories"
           aside={<SegmentGroup size="sm" data={FILTERS} defaultValue="All" />}
         >
-          <Card variant="outline" padding="lg">
+          <Card variant="default" padding="lg">
             <Card.Content>
               {/* The frame gives three zones per item: rail, content, actions. The
                   kit's Timeline only has label / axis / content — so the badge lives
@@ -95,7 +86,7 @@ export const QuestMap = () => (
                           </Timeline.Title>
                           <Text size="md" c="muted">{t.detail}</Text>
                         </div>
-                        <StatusBadge status={t.status} />
+                        <Badge variant="light" color={t.status.color}>{t.status.label}</Badge>
                       </div>
                     </Timeline.Content>
                   </Timeline.Item>
@@ -106,7 +97,7 @@ export const QuestMap = () => (
         </Section>
 
         <Section title="Skills">
-          <Card variant="outline" padding="lg">
+          <Card variant="default" padding="lg">
             <Card.Content>
               <div className="flex flex-col gap-4">
                 {SKILLS.map((s) => (
@@ -116,11 +107,11 @@ export const QuestMap = () => (
                       <Text size="md" className={TYPO.title("semibold")}>{s.name}</Text>
                       <Text size="xs" c="muted">{s.detail}</Text>
                     </div>
-                    <StatusBadge status={s.status} />
+                    <Badge variant="light" color={s.status.color}>{s.status.label}</Badge>
                   </div>
                 ))}
-                {/* Last row: no badge, a bar. The « 30 % » is a percentage → machine
-                    register (Kode Mono SemiBold). */}
+                {/* Last row: no badge, a bar. The « 30 % » is a
+                    percentage → machine register (Kode Mono SemiBold). */}
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center justify-between gap-4">
                     <Text size="md" className={TYPO.title("semibold")}>{MASTERY.name}</Text>
@@ -138,7 +129,7 @@ export const QuestMap = () => (
               and carries SectionTitle + Card + Card. */}
           <div className="flex flex-col gap-4">
             {QUESTS.map((q) => (
-              <Card key={q.name} variant="outline" padding="lg">
+              <Card key={q.name} variant="default" padding="lg">
                 <Card.Content>
                   <div className="flex flex-wrap items-center gap-4">
                     <ThemeIcon color="pink" size="md" variant="light" radius="full">
@@ -162,12 +153,12 @@ export const QuestMap = () => (
         </Section>
 
         <Section title="Achievements">
-          <Card variant="outline" padding="lg">
+          <Card variant="default" padding="lg">
             <Card.Content>
               <div className="flex flex-col gap-4">
                 {ACHIEVEMENTS.map((a) => (
                   <div key={a.name} className="flex items-center gap-4">
-                    <ThemeIcon color={a.color === "green" ? "gray" : a.color} size="md" variant="light" radius="full">
+                    <ThemeIcon color={a.color} size="md" variant="light" radius="full">
                       <Rocket size={20} />
                     </ThemeIcon>
                     <div className="flex flex-col gap-0.5">
@@ -184,7 +175,9 @@ export const QuestMap = () => (
 
       <aside className="flex flex-col gap-10">
         <Section title="Next mission">
-          <Card variant="outline" padding="lg">
+          {/* The only `gradient` card on the screen: the signature pink outline goes to
+              the next deadline, not to the profile. Lifted, not chosen. */}
+          <Card variant="gradient" padding="lg">
             <Card.Content>
               <div className="flex flex-col gap-3">
                 {/* Text lg/Semibold — Lato SemiBold 18 */}
@@ -201,7 +194,7 @@ export const QuestMap = () => (
         </Section>
 
         <Section title="Profile">
-          <Card variant="outline" padding="lg">
+          <Card variant="default" padding="lg">
             <Card.Content>
               <div className="flex flex-col gap-3">
                 <div className="flex items-center gap-3">
@@ -225,13 +218,14 @@ export const QuestMap = () => (
         </Section>
 
         <Section title="Current territory">
-          <Card variant="outline" padding="lg">
+          <Card variant="default" padding="lg">
             <Card.Content>
               <div className="flex flex-col items-center gap-3">
-                {/* The frame sets the ring at 136 px (size=3xl); the kit's scale stops at
-                    xl = 80. We go through the escape hatch the component documents itself
-                    (`--size` / `--thickness`), rather than shrinking the screen's only
-                    hero element. The deviation goes out as a ds-action. */}
+                {/* The frame sets the ring at 136 px (size=3xl); the kit's scale
+                    stops at xl = 80. We go through the escape hatch the component
+                    documents itself (`--size` / `--thickness`, merged AFTER its
+                    defaults), rather than shrinking the screen's only hero element.
+                    The deviation goes out as a ds-action. */}
                 <CircularProgress
                   variant="gradient"
                   value={CURRENT_TERRITORY.pct}

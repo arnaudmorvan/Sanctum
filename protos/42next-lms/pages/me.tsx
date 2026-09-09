@@ -12,10 +12,8 @@ const CRUMB = { label: "My profile", href: "#/me/profile" }
 
 /** Attendance — `P['me.attendance']`. The prototype derived every average from the same
  *  365 days its graphs drew, and counted only days actually on campus for the daily
- *  average. The figures are ported as computed.
- *
- *  2026-09-08 — the month grid no longer paints its days green: a day on campus is a
- *  filled neutral cell, an empty day a faint one. */
+ *  average: dividing by 365 would average over days nobody was expected in. The figures
+ *  are ported as computed. */
 export const Attendance = () => (
   <div className="flex flex-col gap-8">
     <Breadcrumb data={[CRUMB, { label: "Attendance" }]} />
@@ -23,7 +21,7 @@ export const Attendance = () => (
 
     <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
       {ATTENDANCE.figures.map((f) => (
-        <Card key={f.k} variant="outline" padding="sm">
+        <Card key={f.k} variant="light" padding="sm">
           <Card.Content>
             <div className="flex flex-col gap-1">
               <span className={`text-xl ${TYPO.mono()}`}>{f.v}</span>
@@ -36,7 +34,7 @@ export const Attendance = () => (
     </div>
 
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-      <Card variant="outline" padding="md">
+      <Card variant="default" padding="md">
         <Card.Content>
           <div className="flex flex-col gap-4">
             <div className="flex items-start justify-between gap-3">
@@ -63,7 +61,7 @@ export const Attendance = () => (
         </Card.Content>
       </Card>
 
-      <Card variant="outline" padding="md">
+      <Card variant="default" padding="md">
         <Card.Content>
           <div className="flex flex-col gap-4">
             <div className="flex items-start justify-between gap-3">
@@ -80,7 +78,7 @@ export const Attendance = () => (
               {Array.from({ length: ATTENDANCE.month.of }, (_, i) => (
                 <div
                   key={i}
-                  className={`h-4 w-4 rounded-sm ${i % 7 !== 5 && i % 7 !== 6 ? "bg-white/30" : "bg-white/10"}`}
+                  className={`h-4 w-4 rounded-sm ${i % 7 !== 5 && i % 7 !== 6 ? "bg-green-500/60" : "bg-white/10"}`}
                 />
               ))}
             </div>
@@ -119,7 +117,7 @@ export const Paperwork = () => (
               <Table.Cell>{p.deadline}</Table.Cell>
               <Table.Cell><Tag color={p.color}>{p.status}</Tag></Table.Cell>
               <Table.Cell>
-                <Button variant={p.kind === "You provide" ? "outline" : "subtle"} size="xs">
+                <Button variant={p.kind === "You provide" ? "light" : "subtle"} size="xs">
                   {p.action}
                 </Button>
               </Table.Cell>

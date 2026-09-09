@@ -4,16 +4,15 @@ import { Text } from "@42/ui-react/text"
 import { Title } from "@42/ui-react/title"
 import type { ReactNode } from "react"
 import { TYPO } from "../../../src/typo"
-import type { Tone } from "../data/lms"
+import { TONE_COLOR, type Tone } from "../data/lms"
 
 /** The furniture the HTML prototype repeated on EVERY page — its `head()`, its
- *  `.section-title`, its `.stat` tiles.
+ *  `.section-title`, its `.stat` tiles. It had them as string helpers next to the pages;
+ *  here they are components, so the whole flow states a page header once.
  *
- *  2026-09-08 — FLAT SURFACES. Every card of the flow is `variant="outline"`: no fill,
- *  the canvas shows through, the border does the delimiting (`review:color` — the
- *  background does not repeat, cards stay translucent). Consequence here: `Stat` no
- *  longer tints by tone, and `Tag` drops green and red (`review:color` — a status badge
- *  is grey by default, the meaning is carried by the label). */
+ *  Deliberately thin: they compose kit components and add no grammar of their own. The
+ *  moment one of them starts holding a rule, that rule belongs in the foundations, not
+ *  in a prototype's helper file. */
 
 /** Page header: the title, an optional lead paragraph, and an optional action zone that
  *  the prototype pinned to the right of the title. */
@@ -67,10 +66,9 @@ export const Section = ({
 )
 
 /** One stat tile. The VALUE is mono — it is a number, and mono is the machine register
- *  of the DS (`TYPO`); the label stays Lato. `tone` stays in the signature (the callers
- *  pass it, and it still says what the tile MEANS) but no longer paints the surface. */
-export const Stat = ({ v, k }: { v: string; k: string; tone?: Tone }) => (
-  <Card variant="outline" padding="sm">
+ *  of the DS (`TYPO`); the label stays Lato. */
+export const Stat = ({ v, k, tone }: { v: string; k: string; tone: Tone }) => (
+  <Card variant="light" color={TONE_COLOR[tone]} padding="sm">
     <Card.Content>
       <div className="flex flex-col gap-1">
         <span className={`text-xl ${TYPO.mono()}`}>{v}</span>
@@ -143,19 +141,10 @@ export const Meter = ({
   </div>
 )
 
-/** Badge with the flow's default shape — `sm`. GREEN AND RED ARE FILTERED HERE, once,
- *  rather than in the three data files that feed it: a tag whose data says `green` or
- *  `red` comes out as an uncoloured `outline` badge. The word it carries (Passed,
- *  Validated, Failed) is what states the outcome. */
-const NEUTRALISED = new Set(["green", "red"])
-
-export const Tag = ({ children, color }: { children: ReactNode; color?: string }) =>
-  color && !NEUTRALISED.has(color) ? (
-    <Badge variant="light" size="sm" color={color}>
-      {children}
-    </Badge>
-  ) : (
-    <Badge variant="outline" size="sm">
-      {children}
-    </Badge>
-  )
+/** Badge with the flow's default shape — `light`, `sm`. Saves repeating both axes on the
+ *  ~90 badges the tables carry. */
+export const Tag = ({ children, color }: { children: ReactNode; color: string }) => (
+  <Badge variant="light" size="sm" color={color}>
+    {children}
+  </Badge>
+)
