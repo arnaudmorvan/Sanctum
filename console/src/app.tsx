@@ -10,6 +10,7 @@ import {
   BookOpen,
   KeyRound,
   LayoutGrid,
+  GitCompare,
   ListChecks,
   LogOut,
   Menu as MenuIcon,
@@ -17,7 +18,7 @@ import {
   SlidersHorizontal,
   Users,
 } from "lucide-react"
-import { type ReactNode, useEffect, useState } from "react"
+import { lazy, type ReactNode, Suspense, useEffect, useState } from "react"
 import { Logo42 } from "../../src/layout/logo-42"
 import { TYPO } from "../../src/typo"
 import { Login } from "./login"
@@ -39,6 +40,16 @@ import { ObservabilityView } from "./views/observability"
 import { FlowsView } from "./views/protos"
 import { QualityView } from "./views/quality"
 import { SessionsView } from "./views/sessions"
+
+/** ⚠️ The Parity tab is loaded ON DEMAND, and it is the only one that is.
+ *
+ *  It mounts the real `@42/ui-react` components next to the Figma frames, so it imports
+ *  fifty of them — which took the console bundle from 500 KB to 790 KB, on every tab,
+ *  for a page most sessions never open. Split out, the seven other tabs pay nothing and
+ *  the parity chunk arrives while its own report is still being fetched. */
+const ParityView = lazy(() =>
+  import("./views/parity").then((m) => ({ default: m.ParityView })),
+)
 
 type Status = "checking" | "out" | "in"
 
@@ -69,6 +80,13 @@ const SECTIONS: Section[] = [
     icon: <BookOpen size={16} />,
     keyRequired: true,
     sub: "What the server serves to agents: the catalogue, the rules, the skills, the product spec.",
+  },
+  {
+    v: "parity",
+    label: "Parity",
+    icon: <GitCompare size={16} />,
+    keyRequired: true,
+    sub: "Figma against @42/ui-react, component by component: what is paired, what is missing, and on which side.",
   },
   {
     v: "observability",
@@ -200,6 +218,19 @@ export const App = () => {
         return <FlowsView signedIn={signedIn} repo={version?.repo} />
       case "context":
         return <ContextView apiKey={apiKey} corpus={corpus} />
+      case "parity":
+        return (
+          <Suspense
+            fallback={
+              <div className="flex items-center gap-2 py-8">
+                <Spinner size="sm" />
+                <Text c="secondary">Loading the comparator…</Text>
+              </div>
+            }
+          >
+            <ParityView />
+          </Suspense>
+        )
       case "observability":
         return <ObservabilityView apiKey={apiKey} />
       case "sessions":

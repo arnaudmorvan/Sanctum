@@ -403,3 +403,182 @@ export async function getScreenSource(slug: string, path: string): Promise<Scree
     `/console/protos/file.json?slug=${encodeURIComponent(slug)}&path=${encodeURIComponent(path)}`,
   )
 }
+
+// ---------------------------------------------------------------- parity (Figma ↔ code)
+
+/** One axis, both sides. `verdict` is the whole point of the tab and it is computed
+ *  server-side (`parity.py`), because it encodes the four documented model divergences:
+ *
+ *   `aligned`    same axis, same values — the bulk of a healthy component;
+ *   `values`     same axis, different values (`missing_in_kit` / `missing_in_figma`);
+ *   `by-design`  a divergence the two models OWE each other — an interaction state, a
+ *                slot, the palette living in `color`, a label owned by `Field`;
+ *   `composed`   no prop of its own: in React the region is children. A question, not a hole;
+ *   `unreadable` the MANIFEST cannot see it (a cva outside the file, a type alias). Never
+ *                stated as an absence in the kit — that accusation was wrong twice;
+ *   `code-only`  the kit has the axis, Figma draws nothing for it;
+ *   `unpaired`   it lands nowhere. The only verdict that is a plain hole. */
+export type ParityAxis = {
+  axis: string
+  nature: string
+  verdict: "aligned" | "values" | "by-design" | "composed" | "unreadable" | "code-only" | "unpaired"
+  register: string
+  figma: string[]
+  figma_default: string
+  react: string
+  react_values: string[]
+  react_default: string
+  note: string
+  missing_in_kit?: string[]
+  missing_in_figma?: string[]
+  standard_scale?: boolean
+}
+
+export type ParityFigma = {
+  slug: string
+  page: string
+  node: string
+  key: string
+  type: string
+  axes: Record<string, string[] | string>
+  defaults: Record<string, string>
+  default_node: string
+  variant_count: number
+  described: boolean
+  detail: boolean
+  internal: boolean
+  acknowledged?: boolean
+}
+
+export type ParityPair = {
+  react: string
+  slug: string
+  category: string
+  summary: string
+  docs: string
+  import: string
+  snippet: string
+  figma: ParityFigma
+  others: ParityFigma[]
+  axes: ParityAxis[]
+  react_defaults: Record<string, string>
+  react_props: string[]
+}
+
+/** Every finding names an OWNER — that is the difference between an audit and a tool.
+ *  `kit` the code moves, `figma` the file moves, `both` nobody can settle it alone. */
+export type ParityFinding = {
+  owner: "kit" | "figma" | "both"
+  severity: "high" | "medium" | "low"
+  kind: string
+  component: string
+  title: string
+  detail: string
+  evidence: string
+}
+
+export type ParityReport = {
+  pairs: ParityPair[]
+  figma_only: ParityFigma[]
+  react_only: Array<{
+    react: string
+    slug: string
+    category: string
+    summary: string
+    snippet: string
+    /** False for what is never DRAWN — a Flex, a ThemeScript. Not a hole in the file. */
+    drawn: boolean
+  }>
+  findings: ParityFinding[]
+  counts: {
+    pairs: number
+    figma_only: number
+    react_only: number
+    react_only_expected: number
+    figma_components: number
+    react_components: number
+    findings: number
+    by_owner: Record<string, number>
+    described: number
+  }
+  sources: {
+    /** `frames` is a boolean, not a string: it says whether the server can RENDER a
+     *  component (FIGMA_TOKEN set). Without it the tab must not draw forty image slots
+     *  whose fetches cannot even complete a preflight. */
+    figma: Record<string, string> & { frames?: boolean }
+    react: {
+      /** ⚠️ `snapshot` means the kit was NOT read live: the comparison is against a
+       *  hand-regenerated `ui-manifest.json`. The tab says so rather than looking fresh. */
+      mode: "live" | "snapshot"
+      package: string
+      version: string
+      origin: string
+      generated_at?: string
+      note?: string
+      error?: string
+      snapshot_version?: string
+      snapshot_generated_at?: string
+      snapshot_stale?: string[]
+    }
+  }
+  generated_at: string
+}
+
+/** The whole comparison. Cached server-side for ten minutes — it reads fifty item files
+ *  and, when the kit scan is wired, a hundred blobs of the kit. `fresh` is the Rescan
+ *  button: the only thing that drops that cache. */
+export async function getParity(fresh = false): Promise<ParityReport> {
+  return get<ParityReport>(`/console/parity.json${fresh ? "?fresh=1" : ""}`)
+}
+
+export type ParityDetail = {
+  slug: string
+  description: string
+  key_variants: Record<string, string>
+  default_node: string
+  axes: Record<string, string[] | string>
+  defaults: Record<string, string>
+  react: {
+    props: Record<string, { type: unknown; required?: boolean; description?: string; default?: string }>
+    variants: Record<string, string[]>
+    defaultVariants: Record<string, string>
+    exports: string[]
+    extends: string[]
+    import: string
+    snippet: string
+    docs: string
+  } | null
+}
+
+/** One component in full — the Figma description, its named variants, the React props with
+ *  their JSDoc. Deliberately not in the table above: `buttonsbutton-` alone declares 300
+ *  named variants, and forty components' worth of those is a megabyte nobody scrolls. */
+export async function getParityDetail(slug: string, react: string): Promise<ParityDetail> {
+  return get<ParityDetail>(
+    `/console/parity/component.json?slug=${encodeURIComponent(slug)}&react=${encodeURIComponent(react)}`,
+  )
+}
+
+/** The Figma-rendered PNG of one component — Figma's own CDN URL, so the image never
+ *  crosses the MCP server. The client names a SLUG and, optionally, one of that
+ *  component's declared variants: never a file key and never a node. That bound is what
+ *  keeps a token which can read every file of its owner from being a render proxy. */
+export async function getParityFrame(
+  slug: string,
+  variant = "",
+): Promise<{ slug: string; variant: string; node: string; url: string }> {
+  const v = variant ? `&variant=${encodeURIComponent(variant)}` : ""
+  return get(`/console/parity/frame.json?slug=${encodeURIComponent(slug)}${v}`)
+}
+
+/** The findings as markdown, to paste into a ticket. The console is not where a front-end
+ *  dev works: the list has to be able to leave with them. */
+export async function getParityBrief(): Promise<string> {
+  const key = readKey()
+  const r = await fetch(`${BASE}/console/parity/brief.md`, {
+    headers: key ? { "X-DS-Key": key } : {},
+  })
+  if (r.status === 401) throw new AccessError("Key rejected by the server.")
+  if (!r.ok) throw new Error(`brief.md → HTTP ${r.status}`)
+  return r.text()
+}
