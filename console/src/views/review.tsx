@@ -12,33 +12,45 @@
  *  who signed a comment on a flow signs a review the same way. */
 import { Badge } from "@42/ui-react/badge"
 import { Text } from "@42/ui-react/text"
-import { EyeOff, Flag, RotateCcw } from "lucide-react"
+import { Check, Copy, EyeOff, Flag, RotateCcw, Sparkles } from "lucide-react"
 import { createContext, useCallback, useContext, useMemo, useState } from "react"
 import { useAuthor } from "../../../src/layout/who"
 import { TYPO } from "../../../src/typo"
 import { NotConfigured, type ParityFinding, type ReviewChange, reviewParity } from "../mcp"
 
-export const OWNER: Record<string, { label: string; short: string; hint: string; color: string }> =
-  {
-    kit: {
-      label: "For the kit",
-      short: "kit",
-      hint: "@42/ui-react has to move: a value is drawn and cannot be rendered.",
-      color: "blue",
-    },
-    both: {
-      label: "To settle together",
-      short: "both",
-      hint: "Neither side can decide alone — two defaults for the same component.",
-      color: "purple",
-    },
-    figma: {
-      label: "For the Figma file",
-      short: "Figma",
-      hint: "The file has to move: an unnamed axis, a missing description, a diverging name.",
-      color: "orange",
-    },
-  }
+/** ⚠️ An owner is a PERSON, and the labels say so. It used to name the artefact — "For
+ *  the kit", "For the Figma file" — while the flag buttons on every row already said "the
+ *  dev" and "the designer": one vocabulary for the same split, in two words, and a reader
+ *  asking who to send a list to had to make the translation themselves. */
+export const OWNER: Record<
+  string,
+  { label: string; person: string; short: string; hint: string; where: string; color: string }
+> = {
+  kit: {
+    label: "For the dev",
+    person: "The front-end dev",
+    short: "dev",
+    hint: "@42/ui-react has to move: a value is drawn and the code cannot render it.",
+    where: "the 42staff/kit repo",
+    color: "blue",
+  },
+  both: {
+    label: "To settle together",
+    person: "Both, together",
+    short: "both",
+    hint: "Neither side can decide alone — two defaults for the same thing.",
+    where: "a decision first, then one side moves",
+    color: "purple",
+  },
+  figma: {
+    label: "For the designer",
+    person: "The designer",
+    short: "designer",
+    hint: "The Figma file has to move: an unnamed axis, a missing description, a diverging name.",
+    where: "the 42 UI Kit V3 Figma file",
+    color: "orange",
+  },
+}
 
 export const SEVERITY: Record<string, string> = { high: "red", medium: "orange", low: "gray" }
 
@@ -342,7 +354,89 @@ export const FindingRow = ({ f, href }: { f: ParityFinding; href?: string }) => 
   )
 }
 
-/** The three owner buttons and the brief per owner: the same bar on both tabs. */
+/** WHO to send this to — the same block on both tabs.
+ *
+ *  Reported on 2026-09-10: "on n'a pas [de brief] pour le designer, pour le développeur,
+ *  pour ensuite envoyer les prompts aux bonnes personnes". The per-owner brief existed —
+ *  `?owner=` on both brief routes, `?prompt=1` for the preamble — behind a filter one had
+ *  to move first and two buttons that copied "the current one". A hand-off is not a
+ *  filter: it names the person, says what they get, and hands over a list or a prompt in
+ *  one click each.
+ *
+ *  ⚠️ The two are NOT the same text. The list is what a human reads; the prompt is the
+ *  same findings prefaced with where the work happens and which conventions hold, so it
+ *  can be pasted into Claude as a task. Offering only one of them was what made the
+ *  distinction invisible. */
+export const HandOff = ({
+  counts,
+  copy,
+  copied,
+}: {
+  counts: Record<string, number>
+  copy: (owner: Owner, prompt: boolean) => void
+  copied: string
+}) => (
+  <div className="rounded-lg border border-white/10">
+    <div className="flex flex-wrap items-baseline gap-2 px-3 py-2">
+      <Text size="sm" className={TYPO.title("semibold")}>
+        Hand this to someone
+      </Text>
+      <span className="text-[11px] text-gray-dark-500">
+        the same findings, split by the side that has to move — a list to read, or a prompt
+        to run
+      </span>
+    </div>
+    <ul className="flex flex-col">
+      {(["kit", "figma", "both"] as const).map((o) => {
+        const n = counts[o] ?? 0
+        return (
+          <li
+            key={o}
+            className={`flex flex-wrap items-center gap-2 border-white/8 border-t px-3 py-2 ${
+              n === 0 ? "opacity-50" : ""
+            }`}
+          >
+            <Badge color={OWNER[o].color} size="sm" variant="light">
+              {OWNER[o].short}
+            </Badge>
+            <Text size="sm" className={TYPO.title("semibold")}>
+              {OWNER[o].person}
+            </Text>
+            <span className={`${TYPO.mono()} text-gray-dark-300 text-xs`}>
+              {n} finding{n === 1 ? "" : "s"}
+            </span>
+            <span className="min-w-0 flex-1 text-[11px] text-gray-dark-500">
+              {OWNER[o].hint} → {OWNER[o].where}
+            </span>
+            <span className="flex shrink-0 items-center gap-1">
+              <button
+                type="button"
+                disabled={n === 0}
+                onClick={() => copy(o, false)}
+                className="flex items-center gap-1 rounded border border-white/15 px-2 py-1 text-[11px] text-gray-dark-200 hover:border-white/35 hover:text-white disabled:opacity-40"
+              >
+                {copied === o ? <Check size={12} /> : <Copy size={12} />}
+                {copied === o ? "Copied" : "Copy the list"}
+              </button>
+              <button
+                type="button"
+                disabled={n === 0}
+                title="The same findings, prefaced so an agent can run them"
+                onClick={() => copy(o, true)}
+                className="flex items-center gap-1 rounded border border-white/15 px-2 py-1 text-[11px] text-gray-dark-200 hover:border-white/35 hover:text-white disabled:opacity-40"
+              >
+                {copied === `${o}:prompt` ? <Check size={12} /> : <Sparkles size={12} />}
+                {copied === `${o}:prompt` ? "Copied" : "as a prompt for Claude"}
+              </button>
+            </span>
+          </li>
+        )
+      })}
+    </ul>
+  </div>
+)
+
+/** The three owner buttons — a FILTER for reading the list below, not the hand-off. */
 export const OwnerBar = ({
   owner,
   counts,

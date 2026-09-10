@@ -32,7 +32,7 @@ import { Card } from "@42/ui-react/card"
 import { Spinner } from "@42/ui-react/spinner"
 import { Text } from "@42/ui-react/text"
 import { Title } from "@42/ui-react/title"
-import { Check, ChevronDown, ChevronRight, Copy, RefreshCw, Sparkles } from "lucide-react"
+import { Check, ChevronDown, ChevronRight, Copy, RefreshCw } from "lucide-react"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { Signature } from "../../../src/layout/identity"
 import { TYPO } from "../../../src/typo"
@@ -51,6 +51,7 @@ import {
   IgnoreButton,
   OWNER,
   type Owner,
+  HandOff,
   OwnerBar,
   RestoreButton,
   ReviewContext,
@@ -1060,21 +1061,18 @@ KIT_TOKEN=<a PAT with Contents: Read on that repo>`}</pre>
           anchor={findingAnchor}
         >
           <div className="flex flex-col gap-3">
-            <OwnerBar owner={owner} counts={c.by_owner} setOwner={setOwner}>
-              <Button size="sm" variant="subtle" onClick={() => void copy({ owner }, owner)}>
-                {copied === owner ? <Check size={14} /> : <Copy size={14} />}
-                {copied === owner ? "Copied" : "Copy this list"}
-              </Button>
-              <Button
-                size="sm"
-                variant="subtle"
-                title="The same list, prefaced so an agent can run it"
-                onClick={() => void copy({ owner, prompt: true }, `${owner}:prompt`)}
-              >
-                {copied === `${owner}:prompt` ? <Check size={14} /> : <Sparkles size={14} />}
-                {copied === `${owner}:prompt` ? "Copied" : "as a prompt for Claude"}
-              </Button>
-            </OwnerBar>
+            {/* Same block as the Parity tab, same words: a hand-off names the person. */}
+            <HandOff
+              counts={c.by_owner}
+              copy={(o, prompt) =>
+                void copy({ owner: o, prompt }, prompt ? `${o}:prompt` : o)
+              }
+              copied={copied}
+            />
+            <Text size="xs" c="muted">
+              Below: the same findings, to read here. Pick a side.
+            </Text>
+            <OwnerBar owner={owner} counts={c.by_owner} setOwner={setOwner} />
             <Text size="sm" c="secondary">
               {OWNER[owner].hint}
             </Text>

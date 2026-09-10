@@ -50,7 +50,6 @@ import {
   ImageOff,
   Moon,
   RefreshCw,
-  Sparkles,
 } from "lucide-react"
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { Signature } from "../../../src/layout/identity"
@@ -80,6 +79,7 @@ import {
   IgnoreButton,
   OWNER,
   type Owner,
+  HandOff,
   OwnerBar,
   RestoreButton,
   ReviewContext,
@@ -2868,24 +2868,13 @@ const Overview = ({
       <Title order={2} size="md" className={TYPO.title()}>
         What to change, and who changes it
       </Title>
-      <OwnerBar owner={owner} counts={c.by_owner} setOwner={setOwner}>
-        <Button size="sm" variant="subtle" onClick={() => void copyOwner(owner, false)}>
-          {copied === owner ? <Check size={14} /> : <Copy size={14} />}
-          {copied === owner ? "Copied" : "Copy this list"}
-        </Button>
-        {/* The same list with a preamble that says WHERE and HOW to apply it — the kit
-            is a repo, the Figma file is reached through the Figma MCP — so it can be
-            pasted to Claude as a task rather than read as a report. */}
-        <Button
-          size="sm"
-          variant="subtle"
-          title="The same list, prefaced so an agent can run it"
-          onClick={() => void copyOwner(owner, true)}
-        >
-          {copied === `${owner}:prompt` ? <Check size={14} /> : <Sparkles size={14} />}
-          {copied === `${owner}:prompt` ? "Copied" : "as a prompt for Claude"}
-        </Button>
-      </OwnerBar>
+      {/* WHO gets what, before the list: the per-owner brief existed behind a filter and
+          two buttons that copied "the current one", which is not a hand-off. */}
+      <HandOff counts={c.by_owner} copy={(o, prompt) => void copyOwner(o, prompt)} copied={copied} />
+      <Text size="xs" c="muted">
+        Below: the same findings, to read here. Pick a side.
+      </Text>
+      <OwnerBar owner={owner} counts={c.by_owner} setOwner={setOwner} />
       <Text size="sm" c="secondary">
         {OWNER[owner].hint}
       </Text>
