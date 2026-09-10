@@ -363,7 +363,7 @@ const Colours = ({ colors }: { colors: TokensReport["colors"] }) => {
           </Badge>
         ) : (
           <Badge color="gray" size="sm" variant="outline">
-            painted by nothing
+            no component paints with it
           </Badge>
         )}
         {g.used_by.length > 0 ? (
@@ -488,16 +488,30 @@ const Colours = ({ colors }: { colors: TokensReport["colors"] }) => {
             </Text>
             <span className="text-[11px] text-gray-dark-500">
               {primitive.length} famil{primitive.length > 1 ? "ies" : "y"} ·{" "}
-              {primitive.reduce((n, g) => n + g.colors.length, 0)} colours · nothing binds to
-              them on its own — a note, not a ticket
+              {primitive.reduce((n, g) => n + g.colors.length, 0)} colours · a note, not a
+              ticket
             </span>
           </button>
           {showPrimitive ? (
-            <ul className="border-white/8 border-t px-3">
-              {primitive.map((g) => (
-                <Group key={g.family} g={g} />
-              ))}
-            </ul>
+            <>
+              {/* The criterion, spelled out: it was read as "colours unused in Figma",
+                  which is half of it. Both halves matter — one of the two makes it a
+                  ticket, the other makes it a question for the designer. */}
+              <Text size="xs" c="muted" className="border-white/8 border-t px-3 pt-2">
+                Two things at once: the colour these tokens resolve to is in{" "}
+                <strong>no</strong> <code className={TYPO.mono()}>--color-*</code> of the
+                kit, <strong>and</strong> no component of the catalogue paints with them. So
+                nothing breaks today — the question they raise is whether the DS keeps
+                carrying them, not whether the kit should ship them. ⚠️ "Paints with" is
+                measured on the ROOT of each drawn variant, which is what the plugin
+                exports: a colour used on a nested layer is not seen here.
+              </Text>
+              <ul className="px-3">
+                {primitive.map((g) => (
+                  <Group key={g.family} g={g} />
+                ))}
+              </ul>
+            </>
           ) : null}
         </div>
       ) : null}
