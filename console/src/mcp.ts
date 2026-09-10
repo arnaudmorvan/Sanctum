@@ -676,6 +676,9 @@ export type ParityFinding = {
   family?: string
   tokens?: string[]
   used_by?: string[]
+  /** What settles this colour, in one line — written server-side, where the class and the
+   *  nearest kit colour are both known. An owner says WHO; this says what they do. */
+  action?: string
 }
 
 export type ParityReport = {
@@ -963,6 +966,7 @@ export type ColorRow = {
   /** The components that paint with this token, read off the exported surfaces. */
   used_by: string[]
 }
+
 
 /** The off-palette colours folded to their root causes, ordered blocking first and by
  *  usage inside. What the brief is written from. */
