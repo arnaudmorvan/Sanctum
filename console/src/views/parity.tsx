@@ -1132,6 +1132,49 @@ type Aggregate = {
   note?: string
 }
 
+/** WHICH variants a grouped difference is about, said in the drawing's own axes rather
+ *  than as a count.
+ *
+ *  Reported on 2026-09-10: "il manque de l'info pour que je puisse identifier rapidement
+ *  de quelle variante il s'agit". A row read "Height 36px drawn, 28px rendered · 20 of 60"
+ *  and the twenty were behind a click, as a wall of slugs. What the reader is after is the
+ *  CAUSE, and the cause is what those twenty share: `size sm`.
+ *
+ *  So: per axis, the values the group covers against the values the compared population
+ *  covers. An axis that spans everything says nothing and is dropped (every colour differs
+ *  here — that is not what picks the row out); an axis the group narrows IS the row's
+ *  name. Fewest values first: one value is a cause, four are a coincidence. */
+const signature = (
+  variants: string[],
+  population: string[],
+  axes: CoverageAxis[],
+  values: Map<string, Record<string, string>>,
+): string => {
+  const spread = (list: string[], axis: string) => {
+    const out = new Set<string>()
+    for (const v of list) {
+      const x = values.get(v)?.[axis]
+      if (x !== undefined) out.add(x)
+    }
+    return out
+  }
+  const parts: { text: string; n: number }[] = []
+  for (const a of axes) {
+    if (a.nature === "unnamed") continue
+    const used = spread(variants, a.axis)
+    if (used.size === 0 || used.size === spread(population, a.axis).size) continue
+    const list = [...used]
+    parts.push({
+      n: used.size,
+      text: `${a.axis} ${list.slice(0, 3).join(", ")}${list.length > 3 ? ` +${list.length - 3}` : ""}`,
+    })
+  }
+  return parts
+    .sort((x, y) => x.n - y.n)
+    .map((x) => x.text)
+    .join(" · ")
+}
+
 /** The surface of EVERY drawn variant the kit can render, measured in one pass and
  *  grouped by what differs.
  *
@@ -1200,6 +1243,12 @@ const AllVariantsSurface = ({
     return { renders, refused, uncompared, states, unmapped }
   }, [detail])
 
+  // The drawn values behind a variant slug, for the signature of a grouped row.
+  const comboValues = useMemo(
+    () => new Map(detail.coverage.combinations.map((c) => [c.variant, c.values])),
+    [detail],
+  )
+
   // Measure once the hidden host has mounted; again when the theme flips.
   // biome-ignore lint/correctness/useExhaustiveDependencies: `dark` re-renders the host and must re-measure
   useEffect(() => {
@@ -1218,7 +1267,9 @@ const AllVariantsSurface = ({
   const rows = useMemo(() => {
     if (!measured) return null
     const groups = new Map<string, Aggregate>()
-    const present = new Map<string, number>()
+    // Per property, the variants that HAVE that property compared — the population a
+    // group is a subset of, and the denominator of its count.
+    const present = new Map<string, string[]>()
     // What was NOT compared, by property and reason, with how many variants it concerns.
     // Said out loud rather than folded into "identical": a property this pass could not
     // answer is not a property that agreed.
@@ -1244,7 +1295,7 @@ const AllVariantsSurface = ({
             skipped.set(`${l.key}|${l.skip}`, sk)
             continue
           }
-          present.set(l.key, (present.get(l.key) ?? 0) + 1)
+          present.set(l.key, [...(present.get(l.key) ?? []), v])
           if (l.same) continue
           const gk = `${l.key}|${l.figma}|${l.react}`
           const g = groups.get(gk) ?? {
@@ -1358,14 +1409,24 @@ const AllVariantsSurface = ({
             {shown.map((g) => {
               const gid = id(g)
               const isIgnored = review.ignored.has(gid)
-              const total = rows.present.get(g.key) ?? 0
+              const population = rows.present.get(g.key) ?? []
+              const total = population.length
+              const trait = signature(g.variants, population, detail.coverage.axes, comboValues)
               const open = openRow === gid
               return (
                 <tr
                   key={gid}
                   className={`border-white/6 border-t align-top ${isIgnored ? "opacity-50" : ""}`}
                 >
-                  <td className="py-1 pr-3 text-gray-dark-300 text-xs">{g.what}</td>
+                  <td className="py-1 pr-3 text-xs">
+                    <div className="text-gray-dark-300">{g.what}</div>
+                    {/* The row's NAME: what its variants share. `size sm` is a cause; "20
+                        of 60" is a quantity, and the reader was left to click to find out
+                        which twenty. */}
+                    <div className={`${TYPO.mono()} mt-0.5 text-[10px] text-orange-200/80`}>
+                      {trait || "every variant"}
+                    </div>
+                  </td>
                   <td className={`${TYPO.mono()} py-1 pr-3 text-gray-dark-300 text-[11px]`}>
                     {g.figma}
                   </td>
@@ -1387,8 +1448,8 @@ const AllVariantsSurface = ({
                       </div>
                     ) : null}
                   </td>
-                  <td className="py-1">
-                    <div className="flex flex-wrap items-center gap-1">
+                  <td className="whitespace-nowrap py-1">
+                    <div className="flex items-center gap-1">
                       {isIgnored ? (
                         <RestoreButton id={gid} />
                       ) : (
@@ -1397,7 +1458,7 @@ const AllVariantsSurface = ({
                             id={gid}
                             flag={{
                               component: react,
-                              title: `${react}: ${g.what} is ${g.figma} drawn, ${g.react} rendered — on ${g.variants.length} of ${total} variants`,
+                              title: `${react}: ${g.what} is ${g.figma} drawn, ${g.react} rendered — on ${g.variants.length} of ${total} variants${trait ? ` (${trait})` : ""}`,
                               detail: `Measured in the console on every drawn variant the kit renders, against the surface the Figma plugin exported. Variants: ${g.variants.slice(0, 12).join(", ")}${g.variants.length > 12 ? "…" : ""}.`,
                               evidence: g.note ?? "",
                             }}
