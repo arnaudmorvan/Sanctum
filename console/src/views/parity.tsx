@@ -51,7 +51,6 @@ import {
   Moon,
   RefreshCw,
   Sparkles,
-  Sun,
 } from "lucide-react"
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { Signature } from "../../../src/layout/identity"
@@ -331,23 +330,50 @@ const toHex = (raw: string): string => {
   return `#${hx(r)}${hx(g)}${hx(b)}${alpha}`
 }
 
-/** Two colours are the same when their RGB halves match. ⚠️ Alpha is compared SEPARATELY
- *  and never folded in: Figma paints `#f044381a` where the kit reaches the same place with
- *  an opaque colour and an opacity, and calling those two different would put a false
- *  finding on a third of the tokens. */
-const sameColour = (a: string, b: string): boolean => {
+/** Two colours are the same when their RGB halves match within ONE unit per channel.
+ *
+ *  ⚠️ Alpha is compared SEPARATELY and never folded in: Figma paints `#f044381a` where the
+ *  kit reaches the same place with an opaque colour and an opacity, and calling those two
+ *  different would put a false finding on a third of the tokens.
+ *
+ *  The one unit is for Chrome's serialisation of `oklab(…)`, six significant digits, which
+ *  can land a channel a unit beside the hex the kit was compiled from. `#fafafa` against
+ *  `#ffffff` is five units away and still differs: a real gap survives, a rounding does
+ *  not. */
+const alphaOf = (hex: string): number => {
+  const h = hex.replace("#", "")
+  return h.length === 8 ? Number.parseInt(h.slice(6, 8), 16) / 255 : 1
+}
+
+/** `opacity` is the rendered element's own (the product up to the component's root):
+ *  Figma's `#f044381a` and the kit's opaque red under `opacity-10` are the SAME paint,
+ *  and only the product says so. The alpha halves are then held together within 0.1 —
+ *  Figma's `29` is 0.16 where the kit writes `/15`, and that is not a finding — while a
+ *  white at 35 % against a solid white IS one, whatever the RGB says. */
+const sameColour = (a: string, b: string, opacity = 1): boolean => {
   // A hex whose alpha is 00 IS transparent, whatever its RGB: Figma exports a hidden
   // fill as `#ffffff00`, the browser says `transparent`, and they are the same paint.
   const norm = (v: string) => (/^#[0-9a-f]{6}00$/i.test(v || "") ? "transparent" : v)
-  const rgb = (v: string) => (v || "").replace("#", "").slice(0, 6).toLowerCase()
   const x = norm(a)
   const y = norm(b)
   if (!x || !y) return false
   if (x === "transparent" || y === "transparent") return x === y
-  return rgb(x) === rgb(y)
+  const channels = (v: string): number[] | null => {
+    const h = v.replace("#", "").slice(0, 6).toLowerCase()
+    return /^[0-9a-f]{6}$/.test(h)
+      ? [0, 2, 4].map((i) => Number.parseInt(h.slice(i, i + 2), 16))
+      : null
+  }
+  const p = channels(x)
+  const q = channels(y)
+  if (!p || !q) return x.toLowerCase() === y.toLowerCase()
+  if (!p.every((c, i) => Math.abs(c - q[i]) <= 1)) return false
+  return Math.abs(alphaOf(x) - alphaOf(y) * opacity) <= 0.1
 }
 
 const px = (v: string): number => Number.parseFloat(v || "0") || 0
+
+type Theme = "dark" | "light"
 
 type Line = {
   /** The id's tail — explicit, because `Padding ↕` and `Padding ↔` slugify to the same
@@ -357,6 +383,11 @@ type Line = {
   figma: string
   react: string
   same: boolean
+  /** Set when the line was NOT compared, and why. Shown as such and counted in neither
+   *  column: a property the render cannot answer (no text on screen, one child to
+   *  space, a token the foundations do not carry) is neither "same" nor "differs", and
+   *  saying either would be the report accusing — or absolving — on its own blindness. */
+  skip?: string
   note?: string
 }
 
@@ -368,30 +399,73 @@ type Rendered = {
   borderColor: string
   borderWidth: number
   radius: number
+  width: number
+  height: number
   padV: number
+  /** True when `padV` was derived from a fixed height and centred content rather than
+   *  read from `padding-top`. */
+  padVDerived: boolean
   padH: number
-  gap: number
-  textColor: string
-  fontSize: number
+  /** The spacing between the first two laid-out children — `null` when there is nothing
+   *  to space (one child, or none) and no gap is declared either. */
+  gap: number | null
+  /** The painted node's opacity, multiplied up to the component's root. */
+  opacity: number
+  /** The label's own colour and size — `null` when the render carries no text. */
+  text: { color: string; fontSize: number; opacity: number } | null
+  /** True when the surface was read one level in, the root painting nothing. */
+  viaChild: boolean
 }
 
-const ownsText = (el: HTMLElement): boolean =>
-  Array.from(el.childNodes).some(
+/** The product of `opacity` from `el` up to (and including) `root`. */
+const opacityUpTo = (el: HTMLElement, root: HTMLElement): number => {
+  let out = 1
+  let cur: HTMLElement | null = el
+  while (cur) {
+    out *= Number.parseFloat(getComputedStyle(cur).opacity) || 1
+    if (cur === root) break
+    cur = cur.parentElement
+  }
+  return out
+}
+
+/** Inputs that DRAW text: a caret and a value, or a placeholder. A checkbox's hidden
+ *  `<input>` is not one, and neither is a range's. */
+const TEXT_INPUTS = new Set(["text", "search", "email", "url", "tel", "password", "number"])
+
+const ownsText = (el: HTMLElement): boolean => {
+  if (el instanceof HTMLTextAreaElement) return true
+  if (el instanceof HTMLInputElement) return TEXT_INPUTS.has(el.type)
+  return Array.from(el.childNodes).some(
     (n) => n.nodeType === Node.TEXT_NODE && (n.textContent ?? "").trim().length > 0,
   )
+}
+
+/** Has a box on screen. The off-screen host is `visibility: hidden`, so visibility cannot
+ *  be the test; the rect can — `display: none`, an empty span and Ark's 1×1 hidden
+ *  inputs all fail it. */
+const laidOut = (el: Element): boolean => {
+  const r = el.getBoundingClientRect()
+  return r.width > 1 && r.height > 1
+}
 
 /** The first element carrying its own text, in READING order (depth-first, document
- *  order) — the actual label a Figma `text` layer is drawn against.
+ *  order) — the actual label a Figma `text` layer is drawn against. `null` when the
+ *  render carries no text at all: a Slider at rest, a Progress bar without a label, an
+ *  Avatar showing a picture.
  *
  *  ⚠️ Breadth-first was tried first and picked the wrong node: `Alert`'s `Description`
  *  sits as a SIBLING of the header row that holds `Icon` + `Title`, one level shallower
- *  than `Title` itself (`Title` is nested inside that row). Breadth-first reaches
- *  `Description` — shallower, and queued right after the row — before it ever reaches
- *  `Title`, one level down. It read the description's colour (`gray-dark-300`) while
- *  agreeing with the title's OWN font-size (both are `text-sm`) — same number, wrong
- *  node, which is what made the bug look half-fixed. Depth-first, in document order,
- *  visits `Title` first because it comes first on screen, whatever its depth. */
+ *  than `Title` itself. Breadth-first reached `Description` before `Title`, and read its
+ *  colour (`gray-dark-300`) while agreeing with the title's font-size (both `text-sm`) —
+ *  same number, wrong node, which made the bug look half-fixed. Depth-first visits `Title`
+ *  first because it comes first on screen, whatever its depth.
+ *
+ *  ⚠️ An `<svg>` subtree is skipped whole: a `<title>` inside an icon is text for a screen
+ *  reader, not paint, and the Spinner's was found as its "label". So is anything with no
+ *  box — text that is not laid out is not what the eye compares. */
 const firstTextCarrier = (el: HTMLElement): HTMLElement | null => {
+  if (el instanceof SVGElement || !laidOut(el)) return null
   if (ownsText(el)) return el
   for (const child of Array.from(el.children)) {
     const found = firstTextCarrier(child as HTMLElement)
@@ -400,33 +474,165 @@ const firstTextCarrier = (el: HTMLElement): HTMLElement | null => {
   return null
 }
 
-const textCarrier = (root: HTMLElement): HTMLElement => firstTextCarrier(root) ?? root
+/** The spacing between the first two laid-out children — which is what Figma's
+ *  `itemSpacing` IS. Read from the boxes, not from `gap`: the kit reaches the same
+ *  distance with a margin where Figma uses spacing, and a computed `gap` of `normal`
+ *  read as 0 where the eye sees 8. Descends through single-child wrappers, because the
+ *  kit often wraps its row (`PinInput`: a div around the flex that spaces the cells — the
+ *  root's own gap was 0 and the panel said so, against the 8px anyone could see).
+ *
+ *  With fewer than two children the DECLARED gap is used when there is one (a Button
+ *  rendered without its icon still says what it would space at), else `null`: nothing to
+ *  space is not "0px". */
+const measureGap = (root: HTMLElement): number | null => {
+  // The children that take part in the layout: laid out, and in the flow. Ark's hidden
+  // `<input>` (1×1, clipped) and an absolutely positioned indicator are not spaced.
+  const inFlow = (el: HTMLElement) =>
+    Array.from(el.children)
+      .map((c) => ({ c: c as HTMLElement, cs: getComputedStyle(c), r: c.getBoundingClientRect() }))
+      .filter(
+        ({ cs, r }) =>
+          cs.position !== "absolute" && cs.position !== "fixed" && r.width > 1 && r.height > 1,
+      )
+  let el = root
+  let boxes = inFlow(el)
+  while (boxes.length === 1 && !(boxes[0].c instanceof SVGElement)) {
+    el = boxes[0].c
+    boxes = inFlow(el)
+  }
+  if (boxes.length >= 2) {
+    const a = boxes[0].r
+    const b = boxes[1].r
+    if (b.left >= a.right - 0.5) return Math.round((b.left - a.right) * 100) / 100
+    if (b.top >= a.bottom - 0.5) return Math.round((b.top - a.bottom) * 100) / 100
+    return null
+  }
+  const cs = getComputedStyle(el)
+  const declared =
+    cs.columnGap !== "normal" ? cs.columnGap : cs.rowGap !== "normal" ? cs.rowGap : ""
+  return declared ? px(declared) : null
+}
 
-const readSurface = (node: HTMLElement): Rendered => {
+const transparent = (css: string): boolean => {
+  const v = (css || "").trim()
+  return v === "transparent" || /^rgba\(\s*\d+,\s*\d+,\s*\d+,\s*0\s*\)$/.test(v)
+}
+
+/** Whether an element paints a surface of its own: a background, a border or a radius. */
+const paints = (cs: CSSStyleDeclaration): boolean =>
+  !transparent(cs.backgroundColor) || px(cs.borderTopWidth) > 0 || px(cs.borderTopLeftRadius) > 0
+
+/** The element the SURFACE is read on: the root, unless the root paints nothing and a
+ *  descendant does. Figma's surface is the variant's root frame — the one thing that
+ *  paints. The kit sometimes puts that paint one level in: `ButtonGroup` is a bare
+ *  wrapper around buttons that carry the border and the radius, and read on the wrapper
+ *  the group came out as "radius 4px drawn, 0px rendered · border 1px drawn, 0px
+ *  rendered" — a border that IS on screen, on the next node down. Walks the first
+ *  in-flow child while nothing paints; falls back to the root when nothing does at all
+ *  (a Slider track paints, but a Checkbox's label wrapper and its control both do, and
+ *  Figma's checkbox root exports no surface to compare it to anyway). */
+const paintedNode = (root: HTMLElement): { el: HTMLElement; viaChild: boolean } => {
+  let el = root
+  for (let depth = 0; depth < 4; depth += 1) {
+    if (paints(getComputedStyle(el))) return { el, viaChild: depth > 0 }
+    const next = Array.from(el.children).find((c) => {
+      if (c instanceof SVGElement) return false
+      const cs = getComputedStyle(c)
+      return cs.position !== "absolute" && cs.position !== "fixed" && laidOut(c)
+    }) as HTMLElement | undefined
+    if (!next) break
+    el = next
+  }
+  return { el: root, viaChild: false }
+}
+
+/** The vertical inset the eye sees. The kit often fixes a HEIGHT (`h-8`) and centres the
+ *  content, with no padding at all: Figma's `padding: 8` and the kit's `0px` then describe
+ *  the same look, and "8px drawn, 0px rendered" on forty buttons was the panel counting
+ *  the mechanism rather than the result. With no padding declared, the inset is derived
+ *  from the box and its content — the tallest in-flow child, or the line box when the
+ *  element holds bare text. Said in the line's note, because a derived number is not a
+ *  measured one. */
+const verticalInset = (el: HTMLElement, cs: CSSStyleDeclaration): { value: number; derived: boolean } => {
+  const declared = px(cs.paddingTop)
+  if (declared > 0) return { value: declared, derived: false }
+  const inner =
+    el.getBoundingClientRect().height - px(cs.borderTopWidth) - px(cs.borderBottomWidth)
+  const kids = Array.from(el.children)
+    .filter((c) => {
+      const k = getComputedStyle(c)
+      return k.position !== "absolute" && k.position !== "fixed" && laidOut(c)
+    })
+    .map((c) => c.getBoundingClientRect().height)
+  const content = kids.length
+    ? Math.max(...kids)
+    : ownsText(el) && cs.lineHeight !== "normal"
+      ? px(cs.lineHeight)
+      : 0
+  if (content <= 0 || inner <= content) return { value: declared, derived: false }
+  return { value: Math.round(((inner - content) / 2) * 100) / 100, derived: true }
+}
+
+/** When the Figma entry names a PART of the React component rather than the component,
+ *  the element that part is. The page pairs `↳ Table`'s `tableheadercell` with the kit's
+ *  `Table`, and a header cell's surface held against a whole table's root reported
+ *  "padding 24px drawn, 0px rendered" — true of the table, and not what was drawn. The
+ *  mapping is deliberately tiny and by NAME: a suffix the DS uses, to an element the kit
+ *  renders. Anything else measures the root, as before. */
+const PART_SELECTORS: Record<string, string> = {
+  headercell: "th",
+  cell: "td",
+  header: "thead",
+  row: "tbody tr, tr",
+}
+
+const partSelector = (react: string, slug: string): string | undefined => {
+  const base = react.toLowerCase()
+  const rest = slug.toLowerCase().replace(/[^a-z0-9]/g, "")
+  if (!rest.startsWith(base) || rest === base) return undefined
+  return PART_SELECTORS[rest.slice(base.length)]
+}
+
+const readSurface = (node: HTMLElement, part?: string): Rendered => {
   // The rendered preview wraps the component; the component itself is the first element
   // that is not one of OUR wrappers (`data-preview-wrap`). Measuring a wrapper would
   // compare Figma's surface with a transparent div — true, and about the wrong node.
-  let el: HTMLElement = node
-  while (el.firstElementChild && (el === node || el.hasAttribute("data-preview-wrap")))
-    el = el.firstElementChild as HTMLElement
+  let root: HTMLElement = node
+  while (root.firstElementChild && (root === node || root.hasAttribute("data-preview-wrap")))
+    root = root.firstElementChild as HTMLElement
+  if (part) root = root.querySelector<HTMLElement>(part) ?? root
+  const { el, viaChild } = paintedNode(root)
   const cs = window.getComputedStyle(el)
+  const box = el.getBoundingClientRect()
+  const borderWidth = px(cs.borderTopWidth)
+  const inset = verticalInset(el, cs)
   // ⚠️ Text properties are read on the label, not the root. Alert and Notifier set
   // `text-sm`/colour on a nested title; the root only inherits the page's own default
   // (16px, the body's colour), and that inherited value is not what Figma's `text` layer
   // was drawn against. Reading it there reported a false "16px rendered" against a title
-  // that was, on screen, 14px — the root's OWN properties (background, border, radius,
-  // padding, gap) are still read on `el` itself, which is correct for those.
-  const text = window.getComputedStyle(textCarrier(el))
+  // that was, on screen, 14px. The surface (background, border, radius, padding) is read
+  // on the painted node, which is correct for those.
+  const carrier = firstTextCarrier(root)
+  const text = carrier ? window.getComputedStyle(carrier) : null
   return {
     bg: cs.backgroundColor,
-    borderColor: cs.borderTopColor,
-    borderWidth: px(cs.borderTopWidth),
+    // A border of width 0 has no colour on screen, whatever `currentColor` resolves to:
+    // read as a colour it compared the body's text against Figma's stroke.
+    borderColor: borderWidth > 0 ? cs.borderTopColor : "transparent",
+    borderWidth,
     radius: px(cs.borderTopLeftRadius),
-    padV: px(cs.paddingTop),
+    width: box.width,
+    height: box.height,
+    padV: inset.value,
+    padVDerived: inset.derived,
     padH: px(cs.paddingLeft),
-    gap: px(cs.columnGap || cs.gap),
-    textColor: text.color,
-    fontSize: px(text.fontSize),
+    gap: measureGap(root),
+    opacity: opacityUpTo(el, root),
+    text:
+      text && carrier
+        ? { color: text.color, fontSize: px(text.fontSize), opacity: opacityUpTo(carrier, root) }
+        : null,
+    viaChild,
   }
 }
 
@@ -436,8 +642,18 @@ const readSurface = (node: HTMLElement): Rendered => {
  *  That is the only place the kit's Tailwind classes have actually become a colour and a
  *  width; `ui-manifest.json` carries the API, and `theme.css` carries the tokens, but
  *  neither says what `variant="outline" color="brand"` finally paints. The Figma half is
- *  the plugin's per-variant surface. */
-const compareSurface = (visual: VariantVisual, r: Rendered): Line[] => {
+ *  the plugin's per-variant surface.
+ *
+ *  `theme` is the one the render was made in, and `modes` the ones the export carries.
+ *  The foundations resolve every token at the DEFAULT mode — Dark, on this DS — so a
+ *  drawn hex is the dark value unless the token carries `modes`; a light render is held
+ *  against the light value, and against nothing when the export has none. */
+const compareSurface = (
+  visual: VariantVisual,
+  r: Rendered,
+  theme: Theme = "dark",
+  modes: string[] = [],
+): Line[] => {
   const out: Line[] = []
   const colour = (
     key: string,
@@ -445,87 +661,218 @@ const compareSurface = (visual: VariantVisual, r: Rendered): Line[] => {
     drawn: Paint | undefined,
     got: string,
     hint?: string,
+    opacity = r.opacity,
   ) => {
     if (!drawn?.hex && !drawn?.token) return
     const react = toHex(got)
+    const label = (hex: string) => (drawn.token ? `${drawn.token} · ${hex}` : hex)
+    if (drawn.token && !drawn.hex) {
+      // A token the foundations do not carry (`gray-modern-900`, bound in the file to a
+      // variable the export never resolved). Nothing to hold the render against — and
+      // an empty hex compared to a colour came out as "differs" on every such variant.
+      out.push({
+        key,
+        what,
+        figma: drawn.token,
+        react,
+        same: false,
+        skip: `\`${drawn.token}\` is not in the foundations' colour map: nothing to compare against`,
+      })
+      return
+    }
+    if (theme !== "dark" && !modes.includes(theme)) {
+      out.push({
+        key,
+        what,
+        figma: label(drawn.hex),
+        react,
+        same: false,
+        skip: "the export carries no light-mode values: the foundations resolve at the dark mode, and a light render has nothing to be held against",
+      })
+      return
+    }
+    const hex = drawn.modes?.[theme] ?? drawn.hex
+    const same = sameColour(hex, react, opacity)
+    // Same hue, other opacity: say which half differs, or the reader compares two hexes
+    // that look alike and reads the line as a rounding.
+    const hueSame = !same && sameColour(hex.slice(0, 7), react.slice(0, 7), 1)
     out.push({
       key,
       what,
-      figma: drawn.token ? `${drawn.token} · ${drawn.hex}` : drawn.hex,
-      react,
-      same: sameColour(drawn.hex, react),
-      note: hint,
+      figma: label(hex),
+      react: opacity < 1 ? `${react} × opacity ${Math.round(opacity * 100) / 100}` : react,
+      same,
+      note: hueSame ? "Same hue, other opacity." : hint,
     })
   }
 
-  colour("background", "Background", visual.fill, r.bg)
+  const via = r.viaChild
+    ? "Read one level in: the root paints nothing, its first child does."
+    : undefined
+  colour("background", "Background", visual.fill, r.bg, via)
   if (visual.stroke) {
-    colour("border-color", "Border colour", visual.stroke.color, r.borderColor)
+    colour("border-color", "Border colour", visual.stroke.color, r.borderColor, via)
     out.push({
       key: "border-width",
       what: "Border width",
       figma: `${visual.stroke.width}px`,
       react: `${r.borderWidth}px`,
       same: Math.abs(r.borderWidth - Number(visual.stroke.width)) < 0.51,
-      note: "Figma draws sub-pixel borders; anything under half a pixel is a rounding.",
+      note: via ?? "Figma draws sub-pixel borders; anything under half a pixel is a rounding.",
     })
   }
   if (typeof visual.radius === "number") {
+    // ⚠️ Past half the element's height a radius paints the same shape whatever its
+    // number: Figma's `radius-full` is 9999, the kit's 999, and both are a pill. Compared
+    // as numbers they "differed" on 180 ThemeIcons out of 360.
+    const half = Math.min(r.width, r.height) / 2
+    const pill = half > 0 && visual.radius >= half - 0.5 && r.radius >= half - 0.5
     out.push({
       key: "radius",
       what: "Radius",
       figma: `${visual.radius}px`,
       react: `${r.radius}px`,
-      same: Math.abs(r.radius - visual.radius) < 0.51,
+      same: pill || Math.abs(r.radius - visual.radius) < 0.51,
+      note: pill ? "Both past half the height: a pill either way, whatever the number." : via,
     })
   }
   if (visual.padding) {
-    const v = visual.padding.v ?? visual.padding.t
-    const h = visual.padding.h ?? visual.padding.l
-    if (v !== undefined)
+    const v = visual.padding.v ?? visual.padding.t ?? visual.padding.all
+    const h = visual.padding.h ?? visual.padding.l ?? visual.padding.all
+    if (v !== undefined && !r.padVDerived)
       out.push({
         key: "padding-v",
         what: "Padding ↕",
         figma: `${v}px`,
         react: `${r.padV}px`,
-        same: r.padV === v,
+        same: Math.abs(r.padV - v) < 0.51,
+        note: via,
       })
+    else if (v !== undefined) {
+      // The kit fixes a HEIGHT (`h-8`) and centres the content, with no padding at all.
+      // "8px drawn, 0px rendered" on forty buttons was the panel counting the mechanism
+      // rather than the result; the result is the height, so that is what is compared —
+      // Figma's being its padding around the label's line box. A real finding reads
+      // "40px drawn, 32px rendered": the kit's buttons ARE shorter than the mockup's.
+      const lh = visual.text?.lineHeight
+      const drawn = typeof lh === "number" ? 2 * v + lh : null
+      const got = Math.round(r.height * 100) / 100
+      if (drawn === null)
+        out.push({
+          key: "height",
+          what: "Height",
+          figma: `${v}px padding, line height unknown`,
+          react: `${got}px`,
+          same: false,
+          skip: "the kit fixes the height and centres the content, and the drawn line height is not exported: nothing to derive Figma's height from",
+        })
+      else
+        out.push({
+          key: "height",
+          what: "Height",
+          figma: `${drawn}px`,
+          react: `${got}px`,
+          same: Math.abs(got - drawn) < 1,
+          note: `The kit fixes the height and centres the content; Figma's is ${v}px of padding around a ${lh}px line box. Compared as heights, since a padding is not what the kit uses.`,
+        })
+    }
     if (h !== undefined)
       out.push({
         key: "padding-h",
         what: "Padding ↔",
         figma: `${h}px`,
         react: `${r.padH}px`,
-        same: r.padH === h,
+        same: Math.abs(r.padH - h) < 0.51,
       })
   }
-  if (visual.gap !== undefined)
-    out.push({
-      key: "gap",
-      what: "Gap",
-      figma: `${visual.gap}px`,
-      react: `${r.gap}px`,
-      same: r.gap === visual.gap,
-    })
-  if (visual.text) {
-    colour("text-color", "Text colour", visual.text.fill, r.textColor)
-    if (visual.text.size !== undefined)
+  if (visual.gap !== undefined) {
+    if (r.gap === null)
       out.push({
-        key: "font-size",
-        what: "Font size",
-        figma: `${visual.text.size}px`,
-        react: `${r.fontSize}px`,
-        same: Math.abs(r.fontSize - visual.text.size) < 0.51,
-        // Measured on the first element that owns its own text, not the root — but a
-        // second label at the same depth (a value beside its own text) is not this one.
-        note: "Measured on the first element carrying its own text — a sibling label may differ.",
+        key: "gap",
+        what: "Gap",
+        figma: `${visual.gap}px`,
+        react: "—",
+        same: false,
+        skip: "the render has nothing to space — one child, or none — and declares no gap",
       })
+    else
+      out.push({
+        key: "gap",
+        what: "Gap",
+        figma: `${visual.gap}px`,
+        react: `${r.gap}px`,
+        same: Math.abs(r.gap - visual.gap) < 0.51,
+      })
+  }
+  if (visual.text) {
+    const fill = visual.text.fill
+    if (!r.text) {
+      const why =
+        "the kit renders no text at rest for this variant: the drawn label has no counterpart to be measured"
+      if (fill?.hex || fill?.token)
+        out.push({
+          key: "text-color",
+          what: "Text colour",
+          figma: fill.token ? `${fill.token} · ${fill.hex}` : fill.hex,
+          react: "—",
+          same: false,
+          skip: why,
+        })
+      if (visual.text.size !== undefined)
+        out.push({
+          key: "font-size",
+          what: "Font size",
+          figma: `${visual.text.size}px`,
+          react: "—",
+          same: false,
+          skip: why,
+        })
+    } else {
+      colour("text-color", "Text colour", fill, r.text.color, undefined, r.text.opacity)
+      if (visual.text.size !== undefined)
+        out.push({
+          key: "font-size",
+          what: "Font size",
+          figma: `${visual.text.size}px`,
+          react: `${r.text.fontSize}px`,
+          same: Math.abs(r.text.fontSize - visual.text.size) < 0.51,
+          // Measured on the first element that owns its own text, not the root — but a
+          // second label at the same depth (a value beside its own text) is not this one.
+          note: "Measured on the first element carrying its own text — a sibling label may differ.",
+        })
+    }
   }
   return out
 }
 
-const measureSurface = (visual: VariantVisual, node: HTMLElement): Line[] =>
-  compareSurface(visual, readSurface(node))
+const measureSurface = (
+  visual: VariantVisual,
+  node: HTMLElement,
+  theme: Theme,
+  modes: string[],
+  part?: string,
+): Line[] => compareSurface(visual, readSurface(node, part), theme, modes)
+
+/** Whether a drawn combination is the RESTING state of its component. ⚠️ A drawn
+ *  interaction state (hover, focus, disabled…) is compared with nothing: the kit renders
+ *  it at runtime, off Ark's `data-*`, and every render this tab makes is at rest. Holding
+ *  a `state-hover` surface against a resting render reported the hover tint as a defect
+ *  on every button. One owner for the rule, used by the all-variants pass, the shown
+ *  variant and the grid's zoom alike. */
+const atRest = (
+  values: Record<string, string>,
+  axes: CoverageAxis[],
+  defaults: Record<string, string>,
+): boolean =>
+  axes
+    .filter((a) => a.nature === "state-runtime")
+    .every((a) => {
+      const v = values[a.axis]
+      if (v === undefined) return true
+      const rest =
+        defaults[a.axis] ?? (a.figma.some((x) => sameName(x, "default")) ? "default" : "")
+      return !rest || sameName(v, rest)
+    })
 
 /** A drawn combination's values, as the kit's props — the MATCHING BY PROP the two sides
  *  are compared through. `coverage.axes` (server-side) is the single owner of "which
@@ -535,6 +882,29 @@ const measureSurface = (visual: VariantVisual, node: HTMLElement): Line[] =>
  *  read whose value it refuses (`grey`). Rendering it anyway would show the kit's default
  *  and compare Figma's grey against the kit's gray — a false "same" or a false "differs".
  *  Content samples (`value` on a Slider) and slots are not props to pass: skipped. */
+/** Values of a controlled state under which the component looks like it does at rest. */
+const RESTING_VALUES = new Set(["", "false", "none", "null", "default", "0", "off", "no"])
+
+/** The FIRST axis whose value the render could not take, or `""`. An axis of the drawing
+ *  that lands on no prop — `ButtonGroup`'s `variant` (the kit puts it on the buttons),
+ *  `Avatar`'s `shape` — means the render is NOT this variant: `variant-filled` was rendered
+ *  as the fixture's outline, and its filled background compared against an outline's,
+ *  thirty-two times. The axis-level finding already says the axis lands nowhere; the
+ *  surface must not say it again as a colour. Content, slots, runtime states and unnamed
+ *  axes are not props by nature and do not count; a controlled state counts only when
+ *  its value is not the resting one (`indeterminate-true`, not `indeterminate-false`). */
+const unmappedAxis = (values: Record<string, string>, axes: CoverageAxis[]): string => {
+  for (const [axis, value] of Object.entries(values)) {
+    const row = axes.find((a) => sameName(a.axis, axis))
+    if (!row || row.react) continue
+    if (["content", "slot", "text", "swap", "state-runtime", "unnamed"].includes(row.nature))
+      continue
+    if (row.nature === "state-controlled" && RESTING_VALUES.has(value.toLowerCase())) continue
+    return row.axis
+  }
+  return ""
+}
+
 const propsFor = (
   values: Record<string, string>,
   axes: CoverageAxis[],
@@ -571,6 +941,11 @@ const SurfacePanel = ({
   node,
   exported,
   title,
+  theme,
+  modes,
+  resting = true,
+  part,
+  unmapped = "",
 }: {
   react: string
   variant: string
@@ -578,15 +953,26 @@ const SurfacePanel = ({
   node: HTMLElement | null
   exported: boolean
   title: string
+  theme: Theme
+  modes: string[]
+  /** False when the variant is a drawn INTERACTION state: the render beside it is at
+   *  rest, and holding a hover surface against it would report the hover tint as a
+   *  defect. */
+  resting?: boolean
+  /** The element to measure when the Figma entry names a part (`partSelector`). */
+  part?: string
+  /** An axis of this variant that lands on no prop (`unmappedAxis`): the render is not
+   *  this variant, and nothing is measured. */
+  unmapped?: string
 }) => {
   const review = useReview()
   const [lines, setLines] = useState<Line[] | null>(null)
   const [showIgnored, setShowIgnored] = useState(false)
 
   useEffect(() => {
-    if (!node || !visual) return setLines(null)
-    setLines(measureSurface(visual, node))
-  }, [node, visual])
+    if (!node || !visual || !resting || unmapped) return setLines(null)
+    setLines(measureSurface(visual, node, theme, modes, part))
+  }, [node, visual, theme, modes, resting, part, unmapped])
 
   if (!exported)
     return (
@@ -609,12 +995,29 @@ const SurfacePanel = ({
         No live render to measure against for this component.
       </Text>
     )
+  if (!resting)
+    return (
+      <Text size="xs" c="muted">
+        This variant draws an interaction state (hover, focus, disabled…). The kit renders
+        those at runtime, off Ark's <code className={TYPO.mono()}>data-*</code>, and the
+        component beside it is at rest — holding the two against each other would report
+        the hover tint as a defect. Only resting variants are measured.
+      </Text>
+    )
+  if (unmapped)
+    return (
+      <Text size="xs" c="muted">
+        The axis <code className={TYPO.mono()}>{unmapped}</code> lands on no prop of the kit:
+        the render beside it could not take this variant's value, so it is not this variant
+        and its surface is not measured. The axis itself is one of the findings above.
+      </Text>
+    )
   if (!lines) return null
 
   const lineId = (l: Line) => `surface:${slugify(react)}:${slugify(variant)}:${l.key}`
-  const off = lines.filter((l) => !l.same)
+  const off = lines.filter((l) => !l.same && !l.skip)
   const hidden = off.filter((l) => review.ignored.has(lineId(l)))
-  const shown = lines.filter((l) => l.same || !review.ignored.has(lineId(l)))
+  const shown = lines.filter((l) => l.same || l.skip || !review.ignored.has(lineId(l)))
   const left = off.length - hidden.length
 
   return (
@@ -671,7 +1074,14 @@ const SurfacePanel = ({
                   {l.react}
                 </td>
                 <td className="py-1">
-                  {l.same ? (
+                  {l.skip ? (
+                    <div className="flex flex-wrap items-center gap-1">
+                      <Badge color="gray" size="sm" variant="outline">
+                        not compared
+                      </Badge>
+                      <span className="max-w-xs text-[10px] text-gray-dark-500">{l.skip}</span>
+                    </div>
+                  ) : l.same ? (
                     <Check size={13} className="text-green-500" />
                   ) : (
                     <div className="flex flex-wrap items-center gap-1">
@@ -698,7 +1108,7 @@ const SurfacePanel = ({
                       ) : null}
                     </div>
                   )}
-                  {!l.same && l.note ? (
+                  {!l.same && !l.skip && l.note ? (
                     <div className="mt-0.5 max-w-xs text-[10px] text-gray-dark-500">{l.note}</div>
                   ) : null}
                 </td>
@@ -743,10 +1153,12 @@ const AllVariantsSurface = ({
   react,
   detail,
   dark,
+  part,
 }: {
   react: string
   detail: ParityDetail
   dark: boolean
+  part?: string
 }) => {
   const review = useReview()
   const host = useRef<HTMLDivElement | null>(null)
@@ -755,31 +1167,24 @@ const AllVariantsSurface = ({
   const [showIgnored, setShowIgnored] = useState(false)
 
   // The renders to make: one per distinct set of props, with the variants behind it.
-  const { renders, refused, uncompared, states } = useMemo(() => {
+  const { renders, refused, uncompared, states, unmapped } = useMemo(() => {
     const renders = new Map<string, { props: Record<string, unknown>; variants: string[] }>()
     const refused: string[] = []
+    const unmapped = new Map<string, number>()
     let uncompared = 0
     let states = 0
-    // ⚠️ A drawn INTERACTION state (hover, focus, disabled…) is compared with nothing: the
-    // kit renders it at runtime, off Ark's `data-*`, and this panel mounts the component
-    // at rest. Holding a `state-hover` surface against a resting render reported the
-    // hover tint as a defect on every button. Only the resting state is compared.
-    const runtime = detail.coverage.axes.filter((a) => a.nature === "state-runtime")
-    const atRest = (values: Record<string, string>) =>
-      runtime.every((a) => {
-        const v = values[a.axis]
-        if (v === undefined) return true
-        const rest =
-          detail.defaults[a.axis] ?? (a.figma.some((x) => sameName(x, "default")) ? "default" : "")
-        return !rest || sameName(v, rest)
-      })
     for (const c of detail.coverage.combinations) {
       if (!detail.visuals.variants[c.variant]) {
         uncompared += 1
         continue
       }
-      if (!atRest(c.values)) {
+      if (!atRest(c.values, detail.coverage.axes, detail.defaults)) {
         states += 1
+        continue
+      }
+      const missing = unmappedAxis(c.values, detail.coverage.axes)
+      if (missing) {
+        unmapped.set(missing, (unmapped.get(missing) ?? 0) + 1)
         continue
       }
       const p = propsFor(c.values, detail.coverage.axes)
@@ -792,7 +1197,7 @@ const AllVariantsSurface = ({
       r.variants.push(c.variant)
       renders.set(sig, r)
     }
-    return { renders, refused, uncompared, states }
+    return { renders, refused, uncompared, states, unmapped }
   }, [detail])
 
   // Measure once the hidden host has mounted; again when the theme flips.
@@ -805,7 +1210,7 @@ const AllVariantsSurface = ({
     const out = new Map<string, Rendered | null>()
     for (const el of host.current.querySelectorAll<HTMLElement>("[data-sig]")) {
       const sig = el.dataset.sig ?? ""
-      out.set(sig, el.querySelector("[data-preview-error]") ? null : readSurface(el))
+      out.set(sig, el.querySelector("[data-preview-error]") ? null : readSurface(el, part))
     }
     setMeasured(out)
   }, [measured])
@@ -814,8 +1219,13 @@ const AllVariantsSurface = ({
     if (!measured) return null
     const groups = new Map<string, Aggregate>()
     const present = new Map<string, number>()
+    // What was NOT compared, by property and reason, with how many variants it concerns.
+    // Said out loud rather than folded into "identical": a property this pass could not
+    // answer is not a property that agreed.
+    const skipped = new Map<string, { what: string; reason: string; variants: number }>()
     let compared = 0
     let broken = 0
+    const theme: Theme = dark ? "dark" : "light"
     for (const [sig, r] of renders) {
       const rendered = measured.get(sig)
       if (rendered === null) {
@@ -827,7 +1237,13 @@ const AllVariantsSurface = ({
         const visual = detail.visuals.variants[v]
         if (!visual) continue
         compared += 1
-        for (const l of compareSurface(visual, rendered)) {
+        for (const l of compareSurface(visual, rendered, theme, detail.visuals.modes ?? [])) {
+          if (l.skip) {
+            const sk = skipped.get(`${l.key}|${l.skip}`) ?? { what: l.what, reason: l.skip, variants: 0 }
+            sk.variants += 1
+            skipped.set(`${l.key}|${l.skip}`, sk)
+            continue
+          }
           present.set(l.key, (present.get(l.key) ?? 0) + 1)
           if (l.same) continue
           const gk = `${l.key}|${l.figma}|${l.react}`
@@ -845,8 +1261,8 @@ const AllVariantsSurface = ({
       }
     }
     const list = [...groups.values()].sort((a, b) => b.variants.length - a.variants.length)
-    return { list, present, compared, broken }
-  }, [measured, renders, detail])
+    return { list, present, compared, broken, skipped: [...skipped.values()] }
+  }, [measured, renders, detail, dark])
 
   const id = (g: Aggregate) =>
     `surface:${slugify(react)}:all:${g.key}:${slugify(g.figma)}-${slugify(g.react)}`
@@ -886,6 +1302,10 @@ const AllVariantsSurface = ({
           <Badge color="gray" size="sm" variant="light">
             measuring {renders.size} render{renders.size > 1 ? "s" : ""}…
           </Badge>
+        ) : rows.compared === 0 ? (
+          <Badge color="gray" size="sm" variant="outline">
+            nothing measured
+          </Badge>
         ) : shown.length === 0 ? (
           <Badge color="green" size="sm">
             <Check size={13} />
@@ -901,6 +1321,12 @@ const AllVariantsSurface = ({
             {rows.compared} variant{rows.compared > 1 ? "s" : ""} compared through{" "}
             {renders.size} render{renders.size > 1 ? "s" : ""}
             {refused.length > 0 ? ` · ${refused.length} not renderable` : ""}
+            {[...unmapped.entries()]
+              .map(
+                ([axis, n]) =>
+                  ` · ${n} left out: the axis \`${axis}\` lands on no prop, so a render could not be this variant`,
+              )
+              .join("")}
             {states > 0 ? ` · ${states} interaction states left out (the kit renders them at runtime)` : ""}
             {uncompared > 0 ? ` · ${uncompared} with no exported surface` : ""}
             {rows.broken > 0 ? ` · ${rows.broken} whose render threw` : ""}
@@ -993,10 +1419,20 @@ const AllVariantsSurface = ({
         <Text size="xs" c="muted">
           Same on every variant:{" "}
           {clean
-            .map((k) => ({ background: "background", "border-color": "border colour", "border-width": "border width", radius: "radius", "padding-v": "padding ↕", "padding-h": "padding ↔", gap: "gap", "text-color": "text colour", "font-size": "font size" })[k] ?? k)
+            .map((k) => ({ background: "background", "border-color": "border colour", "border-width": "border width", radius: "radius", "padding-v": "padding ↕", "padding-h": "padding ↔", gap: "gap", height: "height", "text-color": "text colour", "font-size": "font size" })[k] ?? k)
             .join(", ")}
           .
         </Text>
+      ) : null}
+      {rows && rows.skipped.length > 0 ? (
+        <ul className="flex flex-col gap-0.5">
+          {rows.skipped.map((sk) => (
+            <li key={`${sk.what}|${sk.reason}`} className="text-[11px] text-gray-dark-500">
+              <span className="text-gray-dark-400">{sk.what}</span> not compared on{" "}
+              {sk.variants} variant{sk.variants > 1 ? "s" : ""}: {sk.reason}.
+            </li>
+          ))}
+        </ul>
       ) : null}
     </div>
   )
@@ -1069,13 +1505,15 @@ const CoverageGrid = ({
   react,
   cov,
   visuals,
+  defaults,
   dark,
   frames,
 }: {
   slug: string
   react: string
   cov: Coverage
-  visuals: { exported: boolean; variants: Record<string, VariantVisual> }
+  visuals: { exported: boolean; variants: Record<string, VariantVisual>; modes: string[] }
+  defaults: Record<string, string>
   dark: boolean
   frames: boolean
 }) => {
@@ -1088,6 +1526,7 @@ const CoverageGrid = ({
   // The rendered element of the zoomed cell — the ONLY place the kit's classes have become
   // an actual colour and width, which is what the visual diff measures.
   const [zoomNode, setZoomNode] = useState<HTMLElement | null>(null)
+  const zoomProps = zoom ? propsFor(zoom.values, axes) : undefined
 
   const find = (name: string) => axes.find((a) => a.axis === name)
   // The FIRST axis goes across (columns): `variant` reads better as a row of swatches. ONE
@@ -1449,15 +1888,18 @@ const CoverageGrid = ({
                 dark ? "bg-black/20" : "bg-white"
               } p-3`}
             >
-              <PreviewBoundary name={react}>
-                {PREVIEWS[react]?.(
-                  Object.fromEntries(
-                    Object.entries(zoom.values)
-                      .map(([axis, v]) => [find(axis)?.react || "", v])
-                      .filter(([k]) => k),
-                  ),
-                )}
-              </PreviewBoundary>
+              {/* Through `propsFor`, like the two other renders: it drops the axes that
+                  are not props (content samples, states) and REFUSES a value the kit
+                  does not take. Mapping every axis by name rendered `<Badge color="grey">`
+                  as the kit's default and compared Figma's grey against it. */}
+              {zoomProps === null ? (
+                <Text size="xs" className="text-red-300 text-center">
+                  This combination uses a value the kit refuses: nothing faithful can be
+                  rendered beside it. It is one of the findings above.
+                </Text>
+              ) : (
+                <PreviewBoundary name={react}>{PREVIEWS[react]?.(zoomProps)}</PreviewBoundary>
+              )}
             </div>
           </div>
           <div className="mt-3">
@@ -1465,9 +1907,14 @@ const CoverageGrid = ({
               react={react}
               variant={zoom.variant}
               visual={visuals.variants[zoom.variant]}
-              node={zoomNode}
+              node={zoomProps === null ? null : zoomNode}
               exported={visuals.exported}
               title="This variant's surface, drawn against rendered"
+              theme={dark ? "dark" : "light"}
+              modes={visuals.modes ?? []}
+              resting={atRest(zoom.values, axes, defaults)}
+              unmapped={unmappedAxis(zoom.values, axes)}
+              part={partSelector(react, slug)}
             />
           </div>
         </div>
@@ -1756,7 +2203,7 @@ const Pair = ({
     ? (Object.entries(detail.key_variants).find(([, node]) => node === detail.default_node)?.[0] ??
       "")
     : ""
-  const visuals = detail?.visuals ?? { exported: false, variants: {} }
+  const visuals = detail?.visuals ?? { exported: false, variants: {}, modes: [] }
   // The variant BOTH sides show: the one picked in the Figma dropdown, else Figma's
   // default. Its values become the kit's props (`propsFor`, matching by prop), so the two
   // renders and the surface measured under them are about the same variant.
@@ -1773,6 +2220,9 @@ const Pair = ({
     return p && Object.keys(p).length ? p : undefined
   }, [detail, shownValues])
   const refused = Boolean(detail && shownValues && propsFor(shownValues, detail.coverage.axes) === null)
+  // An axis of the picked variant that lands on no prop: the render beside it is NOT that
+  // variant, and its surface must not be held against the drawing's.
+  const unmapped = detail && shownValues ? unmappedAxis(shownValues, detail.coverage.axes) : ""
 
   const copy = async () => {
     try {
@@ -1963,7 +2413,12 @@ const Pair = ({
           ) : (
             <>
               {visuals.exported && PREVIEWS[pair.react] ? (
-                <AllVariantsSurface react={pair.react} detail={detail} dark={dark} />
+                <AllVariantsSurface
+                  react={pair.react}
+                  detail={detail}
+                  dark={dark}
+                  part={partSelector(pair.react, pair.figma.slug)}
+                />
               ) : null}
               <SurfacePanel
                 react={pair.react}
@@ -1976,6 +2431,13 @@ const Pair = ({
                     ? "This variant's surface, drawn against rendered"
                     : "The default variant's surface, drawn against rendered"
                 }
+                theme={dark ? "dark" : "light"}
+                modes={visuals.modes ?? []}
+                resting={
+                  !detail || !shownValues || atRest(shownValues, detail.coverage.axes, detail.defaults)
+                }
+                unmapped={unmapped}
+                part={partSelector(pair.react, pair.figma.slug)}
               />
             </>
           )}
@@ -2039,6 +2501,7 @@ const Pair = ({
               react={pair.react}
               cov={detail.coverage}
               visuals={visuals}
+              defaults={detail.defaults}
               dark={dark}
               frames={frames}
             />
@@ -2547,7 +3010,14 @@ export const ParityView = ({ selected = "" }: { selected?: string }) => {
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
   const [copied, setCopied] = useState(false)
-  const [dark, setDark] = useState(true)
+  // ⚠️ Dark ONLY, and not by choice of design. The kit wires `dark:` to
+  // `[data-theme="dark"] *` — ANY dark ancestor — and the console is `<html
+  // data-theme="dark">`, so a `data-theme="light"` on a preview box undoes nothing: the
+  // component stays dark on a white box. The toggle this used to be compared those dark
+  // renders against Figma's LIGHT values and reported every colour as a difference. A
+  // light comparison needs the previews in their own frame; until then, saying "dark" is
+  // the honest label. (Dark is also the DS's default mode, the one the foundations resolve.)
+  const dark = true
   const [owner, setOwner] = useState<Owner>("kit")
   const [tab, setTab] = useState<OverviewTab>("findings")
 
@@ -2672,10 +3142,13 @@ export const ParityView = ({ selected = "" }: { selected?: string }) => {
             {copied ? <Check size={14} /> : <Copy size={14} />}
             {copied ? "Copied" : "Copy the whole brief"}
           </Button>
-          <Button size="sm" variant="subtle" onClick={() => setDark((d) => !d)}>
-            {dark ? <Moon size={14} /> : <Sun size={14} />}
-            {dark ? "Dark" : "Light"} previews
-          </Button>
+          <span
+            className="flex items-center gap-1 text-[11px] text-gray-dark-500"
+            title="The kit renders dark under any dark ancestor and the console is one: a light preview needs its own frame. Dark is also the DS's default mode, the one the foundations resolve."
+          >
+            <Moon size={13} />
+            dark previews
+          </span>
           {/* On the LEFT, after the buttons: the picker it opens is anchored to its left
               edge, and at the right end of the bar it ran off the page. */}
           <span className="ml-2 flex items-center gap-2 border-white/10 border-l pl-3">

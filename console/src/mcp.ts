@@ -782,7 +782,14 @@ export type Coverage = {
 /** A painted value as Figma declares it: the TOKEN it is bound to, and the hex that token
  *  resolves to. Both are kept — the token is what the two systems can genuinely share, the
  *  hex is what a browser's computed style will hand back to compare against. */
-export type Paint = { token: string; hex: string; mode?: string }
+export type Paint = {
+  token: string
+  /** The value at the collection's DEFAULT mode — Dark, on this DS. */
+  hex: string
+  /** The value per mode (`dark`, `light`) when the export carries `values_by_mode`;
+   *  absent for a single-mode token, which paints the same everywhere. */
+  modes?: Record<string, string>
+}
 
 /** The SURFACE one drawn variant paints. Added by the Figma plugin on 2026-09-10: before
  *  it, only the default variant carried any of this — 9 components out of 56 had a fill. */
@@ -807,7 +814,13 @@ export type ParityDetail = {
   /** `exported` false means the Figma file has not been re-synced since the plugin learned
    *  to write per-variant visuals. Empty because nothing was exported, never because the
    *  component paints nothing — two opposite statements. */
-  visuals: { exported: boolean; variants: Record<string, VariantVisual> }
+  visuals: {
+    exported: boolean
+    variants: Record<string, VariantVisual>
+    /** The modes the export carries (`["dark", "light"]`), empty before the plugin wrote
+     *  `values_by_mode`. A light render is compared only when `light` is in here. */
+    modes: string[]
+  }
   react: {
     props: Record<string, { type: unknown; required?: boolean; description?: string; default?: string }>
     variants: Record<string, string[]>
