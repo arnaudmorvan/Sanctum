@@ -375,23 +375,32 @@ type Rendered = {
   fontSize: number
 }
 
-/** The shallowest element that owns visible text of its own — the actual label a Figma
- *  `text` layer is drawn against. BFS, so the first hit is the outermost text carrier
- *  (a title before a nested description), never a deeper one skipped over. Falls back to
- *  `root` when nothing under it carries text of its own (an icon-only component: reading
- *  the root's own inherited font-size there is no worse, and there is no better node). */
-const textCarrier = (root: HTMLElement): HTMLElement => {
-  const queue: HTMLElement[] = [root]
-  while (queue.length) {
-    const el = queue.shift() as HTMLElement
-    const ownText = Array.from(el.childNodes).some(
-      (n) => n.nodeType === Node.TEXT_NODE && (n.textContent ?? "").trim().length > 0,
-    )
-    if (ownText) return el
-    queue.push(...(Array.from(el.children) as HTMLElement[]))
+const ownsText = (el: HTMLElement): boolean =>
+  Array.from(el.childNodes).some(
+    (n) => n.nodeType === Node.TEXT_NODE && (n.textContent ?? "").trim().length > 0,
+  )
+
+/** The first element carrying its own text, in READING order (depth-first, document
+ *  order) — the actual label a Figma `text` layer is drawn against.
+ *
+ *  ⚠️ Breadth-first was tried first and picked the wrong node: `Alert`'s `Description`
+ *  sits as a SIBLING of the header row that holds `Icon` + `Title`, one level shallower
+ *  than `Title` itself (`Title` is nested inside that row). Breadth-first reaches
+ *  `Description` — shallower, and queued right after the row — before it ever reaches
+ *  `Title`, one level down. It read the description's colour (`gray-dark-300`) while
+ *  agreeing with the title's OWN font-size (both are `text-sm`) — same number, wrong
+ *  node, which is what made the bug look half-fixed. Depth-first, in document order,
+ *  visits `Title` first because it comes first on screen, whatever its depth. */
+const firstTextCarrier = (el: HTMLElement): HTMLElement | null => {
+  if (ownsText(el)) return el
+  for (const child of Array.from(el.children)) {
+    const found = firstTextCarrier(child as HTMLElement)
+    if (found) return found
   }
-  return root
+  return null
 }
+
+const textCarrier = (root: HTMLElement): HTMLElement => firstTextCarrier(root) ?? root
 
 const readSurface = (node: HTMLElement): Rendered => {
   // The rendered preview wraps the component; the component itself is the first element
