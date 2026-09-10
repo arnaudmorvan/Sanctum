@@ -365,7 +365,7 @@ const VisualDiff = ({
         type="info"
         variant="outline"
         title="The drawn surface has not been exported for this component"
-        description="Two different gestures are both called a sync, and only one fills this panel. The Figma PLUGIN exports the catalogue — pages, axes, variants, slots — into context/components/; it does not export what each variant PAINTS. That comes from the « Sync from Figma » button at the top of this page, which reads the Figma API directly and writes the surfaces apart, so the generation context does not double in size. Re-running the plugin will never fill this panel."
+        description="What each variant paints — fill, border, radius, padding — is exported by the Figma plugin alongside the catalogue, into its own file: inline in the fiches it would double the context an agent reads on every generation. If this is empty, either the sync predates the 2026-09-10 plugin, or no variant of this component paints anything on its own root — its surface comes from a nested layer, which the export deliberately leaves out. Re-run the plugin sync; nothing on this page fills it."
       />
     )
   if (!visual)
