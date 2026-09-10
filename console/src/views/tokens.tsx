@@ -33,7 +33,7 @@ import { Spinner } from "@42/ui-react/spinner"
 import { Text } from "@42/ui-react/text"
 import { Title } from "@42/ui-react/title"
 import { Check, ChevronDown, ChevronRight, Copy, RefreshCw, Sparkles } from "lucide-react"
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { Signature } from "../../../src/layout/identity"
 import { TYPO } from "../../../src/typo"
 import {
@@ -65,7 +65,51 @@ const VERDICT: Record<string, { color: string; label: string }> = {
   unreadable: { color: "purple", label: "not readable" },
 }
 
-type Tab = "findings" | "colours" | "scales" | "ignored"
+/** A section of the page that can be folded — never a TAB.
+ *
+ *  ⚠️ Reported twice on 2026-09-10, the second time as "je n'arrive pas à comprendre la vue
+ *  token, ce qui manque et où". The four numbers at the top WERE the navigation: clicking
+ *  "Colours the kit lacks" opened the colours, and nothing said so. A reader saw four
+ *  figures and a list of two findings — the smallest bucket, because the owner filter
+ *  opened on it — and had no way to reach the rest. Everything is on ONE page now; the
+ *  numbers scroll to their section instead of swapping the content. */
+const Section = ({
+  title,
+  hint,
+  count,
+  open,
+  onToggle,
+  children,
+  anchor,
+}: {
+  title: string
+  hint?: string
+  count?: string
+  open: boolean
+  onToggle: () => void
+  children: React.ReactNode
+  anchor?: React.RefObject<HTMLDivElement | null>
+}) => (
+  <div ref={anchor} className="scroll-mt-4">
+    <button
+      type="button"
+      onClick={onToggle}
+      className="flex w-full items-center gap-2 rounded-lg px-1 py-1 text-left hover:bg-white/5"
+    >
+      {open ? (
+        <ChevronDown size={16} className="shrink-0 text-gray-dark-500" />
+      ) : (
+        <ChevronRight size={16} className="shrink-0 text-gray-dark-500" />
+      )}
+      <Title order={2} size="md" className={TYPO.title()}>
+        {title}
+      </Title>
+      {count ? <span className="text-gray-dark-400 text-sm">{count}</span> : null}
+      {hint ? <span className="text-[11px] text-gray-dark-500">{hint}</span> : null}
+    </button>
+    {open ? <div className="mt-2 flex flex-col gap-3">{children}</div> : null}
+  </div>
+)
 
 /** ⚠️ Two layers, not one. A third of these tokens carry alpha — `#f044381a` is that red
  *  at 10% — and painted straight onto the dark panel they are indistinguishable from the
@@ -383,12 +427,9 @@ const Colours = ({ colors }: { colors: TokensReport["colors"] }) => {
       </Text>
 
       <div className="flex flex-wrap items-center gap-2">
-        <Text size="sm" className={TYPO.title("semibold")}>
-          Colours the palette cannot reproduce
-        </Text>
-        <Badge color={left > 0 ? "orange" : "green"} size="sm" variant="light">
-          {left} colour{left === 1 ? "" : "s"}
-        </Badge>
+        {/* No title here: the section's own header already carries "N the kit cannot
+            paint". Two titles for one list is what made this page read as a stack of
+            headings with the substance somewhere else. */}
         <span className="text-[11px] text-gray-dark-500">
           {colors.counts.in_palette} of {colors.counts.tokens} tokens resolve to a colour the
           kit ships ({colors.palette_size} in the palette)
@@ -535,7 +576,7 @@ const Colours = ({ colors }: { colors: TokensReport["colors"] }) => {
               <th className="pb-1 pr-3 font-normal">Figma colour</th>
               <th className="pb-1 pr-3 font-normal">Bound to</th>
               <th className="pb-1 pr-3 font-normal">In the kit</th>
-              <th className="pb-1 pr-3 font-normal">Painted by</th>
+              <th className="pb-1 pr-3 font-normal">Painted by (where)</th>
               <th className="pb-1 font-normal" />
             </tr>
           </thead>
@@ -633,13 +674,18 @@ const Colours = ({ colors }: { colors: TokensReport["colors"] }) => {
                       </span>
                     )}
                   </td>
-                  <td className="whitespace-nowrap py-1 pr-3 text-[11px] text-gray-dark-500">
-                    {c.used.length > 0 ? (
-                      <span title={c.used.join(", ")}>
-                        {c.used.length} component{c.used.length > 1 ? "s" : ""}
-                      </span>
+                  {/* WHERE it is missing: the components that paint with it, NAMED while
+                      they fit. A count answers "how many", and the question this page is
+                      read with is "where". */}
+                  <td className={`${TYPO.mono()} py-1 pr-3 text-[11px] text-gray-dark-500`}>
+                    {c.used.length === 0 ? (
+                      <span className="text-gray-dark-600">nothing yet</span>
+                    ) : c.used.length <= 3 ? (
+                      c.used.join(", ")
                     ) : (
-                      "·"
+                      <span title={c.used.join(", ")}>
+                        {c.used.slice(0, 2).join(", ")} +{c.used.length - 2}
+                      </span>
                     )}
                   </td>
                   <td className="py-1">
@@ -679,8 +725,24 @@ export const TokensView = () => {
   const [unwired, setUnwired] = useState(false)
   const [loading, setLoading] = useState(false)
   const [copied, setCopied] = useState("")
-  const [tab, setTab] = useState<Tab>("findings")
-  const [owner, setOwner] = useState<Owner>("both")
+  const [owner, setOwner] = useState<Owner>("figma")
+  const [open, setOpen] = useState({
+    colours: true,
+    findings: true,
+    scales: false,
+    ignored: false,
+  })
+  const toggle = (k: keyof typeof open) => setOpen((o) => ({ ...o, [k]: !o[k] }))
+  const colourAnchor = useRef<HTMLDivElement | null>(null)
+  const findingAnchor = useRef<HTMLDivElement | null>(null)
+  const scaleAnchor = useRef<HTMLDivElement | null>(null)
+  const ignoredAnchor = useRef<HTMLDivElement | null>(null)
+  const goTo = (k: keyof typeof open, ref: React.RefObject<HTMLDivElement | null>) => {
+    setOpen((o) => ({ ...o, [k]: true }))
+    requestAnimationFrame(() =>
+      ref.current?.scrollIntoView({ behavior: "smooth", block: "start" }),
+    )
+  }
 
   const load = useCallback(
     (fresh: boolean) => {
@@ -791,14 +853,19 @@ KIT_TOKEN=<a PAT with Contents: Read on that repo>`}</pre>
   const active = data.findings.filter((f) => !f.ignored)
   const ignoredList = data.findings.filter((f) => f.ignored)
 
-  const stat = (label: string, value: number, t: Tab, tone?: string) => (
+  const stat = (
+    label: string,
+    value: number,
+    k: keyof typeof open,
+    ref: React.RefObject<HTMLDivElement | null>,
+    tone?: string,
+  ) => (
     <button
-      key={t}
+      key={label}
       type="button"
-      onClick={() => setTab(t)}
-      className={`rounded-lg border p-3 text-left transition ${
-        tab === t ? "border-white/40 bg-white/5" : "border-white/10 hover:border-white/25"
-      }`}
+      onClick={() => goTo(k, ref)}
+      title="Go to that section"
+      className="rounded-lg border border-white/10 p-3 text-left transition hover:border-white/25"
     >
       <Text c="muted" size="sm">
         {label}
@@ -900,24 +967,85 @@ KIT_TOKEN=<a PAT with Contents: Read on that repo>`}</pre>
           />
         ) : null}
 
-        {/* The numbers are DOORS. Each opens the list it counts. */}
+        {/* The numbers SCROLL to their section. They used to swap the page's content,
+            which is why a reader could look at this tab and never see the colours. */}
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-          {stat("To review", c.findings, "findings", c.findings > 0 ? "text-orange-300" : "text-white")}
           {stat(
             "Colours the kit lacks",
             offColours,
             "colours",
+            colourAnchor,
             offColours > 0 ? "text-orange-300" : "text-white",
           )}
-          {stat("Tokens compared", c.tokens, "scales")}
-          {stat("Ignored", c.ignored, "ignored", "text-gray-dark-400")}
+          {stat(
+            "To review",
+            c.findings,
+            "findings",
+            findingAnchor,
+            c.findings > 0 ? "text-orange-300" : "text-white",
+          )}
+          {stat("Tokens compared", c.tokens, "scales", scaleAnchor)}
+          {stat("Ignored", c.ignored, "ignored", ignoredAnchor, "text-gray-dark-400")}
         </div>
 
-        {tab === "findings" ? (
+        {/* The answer to "what is missing", in one sentence, before any list. */}
+        <Text size="sm" c="secondary">
+          {offColours > 0 ? (
+            <>
+              <strong className="text-orange-200">{offColours} colours</strong> drawn in Figma
+              have no counterpart in the kit's palette
+              {data.colors.off_palette_groups.filter(
+                (g) => g.kind === "semantic" && g.used_by.length > 0,
+              ).length > 0 ? (
+                <>
+                  {" "}
+                  — and{" "}
+                  <strong className="text-orange-200">
+                    {
+                      data.colors.off_palette_groups.filter(
+                        (g) => g.kind === "semantic" && g.used_by.length > 0,
+                      ).length
+                    }{" "}
+                    of them are painted by components today
+                  </strong>
+                </>
+              ) : null}
+              . Everything else lines up:{" "}
+              {data.families.filter((f) => f.counts.aligned === f.counts.total).length} of{" "}
+              {data.families.length} scales match name by name.
+            </>
+          ) : (
+            "Every colour a token resolves to exists in the kit's palette."
+          )}
+        </Text>
+        {/* What is NOT compared, before any list. At the bottom as a low finding, the
+            Tailwind line read as one more hole instead of "this family is out of scope". */}
+        {data.scope.map((note) => (
+          <Text key={note} size="xs" c="muted">
+            <strong>Scope.</strong> {note}
+          </Text>
+        ))}
+
+        <Section
+          title="The colours"
+          count={`${offColours} the kit cannot paint`}
+          hint="what is drawn, what the kit ships, and how far apart they are"
+          open={open.colours}
+          onToggle={() => toggle("colours")}
+          anchor={colourAnchor}
+        >
+          <Colours colors={data.colors} />
+        </Section>
+
+        <Section
+          title="What to change, and who changes it"
+          count={`${c.findings}`}
+          hint="the brief, grouped by the side that has to move"
+          open={open.findings}
+          onToggle={() => toggle("findings")}
+          anchor={findingAnchor}
+        >
           <div className="flex flex-col gap-3">
-            <Title order={2} size="md" className={TYPO.title()}>
-              What to change, and who changes it
-            </Title>
             <OwnerBar owner={owner} counts={c.by_owner} setOwner={setOwner}>
               <Button size="sm" variant="subtle" onClick={() => void copy({ owner }, owner)}>
                 {copied === owner ? <Check size={14} /> : <Copy size={14} />}
@@ -936,13 +1064,6 @@ KIT_TOKEN=<a PAT with Contents: Read on that repo>`}</pre>
             <Text size="sm" c="secondary">
               {OWNER[owner].hint}
             </Text>
-            {/* What is NOT compared, FIRST. At the bottom as a low finding, the Tailwind
-                line read as one more hole instead of "this family is out of scope". */}
-            {data.scope.map((note) => (
-              <Text key={note} size="xs" c="muted">
-                <strong>Scope.</strong> {note}
-              </Text>
-            ))}
             <Card>
               <Card.Content>
                 {(() => {
@@ -988,7 +1109,7 @@ KIT_TOKEN=<a PAT with Contents: Read on that repo>`}</pre>
                           </Text>
                           <button
                             type="button"
-                            onClick={() => setTab("colours")}
+                            onClick={() => goTo("colours", colourAnchor)}
                             className="ml-auto text-[11px] text-gray-dark-400 underline decoration-dotted underline-offset-2 hover:text-white"
                           >
                             settle them one by one
@@ -1028,28 +1149,20 @@ KIT_TOKEN=<a PAT with Contents: Read on that repo>`}</pre>
               </Card.Content>
             </Card>
           </div>
-        ) : null}
+        </Section>
 
-        {tab === "colours" ? (
-          <Card>
-            <Card.Header>
-              <Card.Title>Colours</Card.Title>
-            </Card.Header>
-            <Card.Content>
-              <Colours colors={data.colors} />
-            </Card.Content>
-          </Card>
-        ) : null}
-
-        {tab === "scales" ? (
+        <Section
+          title="The scales"
+          count={`${data.families.filter((f) => f.counts.aligned === f.counts.total).length} of ${data.families.length} match`}
+          hint="radius, type, line heights, widths, containers, weights"
+          open={open.scales}
+          onToggle={() => toggle("scales")}
+          anchor={scaleAnchor}
+        >
           <div className="flex flex-col gap-3">
-            <Title order={2} size="md" className={TYPO.title()}>
-              The scales
-            </Title>
             <Text size="xs" c="muted">
-              Radius, type, line heights, widths, containers, weights — compared name by name
-              once rem becomes px. A family that lines up is one line; open it to see the
-              steps.
+              Compared name by name once rem becomes px. A family that lines up is one line;
+              open it to see the steps.
             </Text>
             {data.families.map((f) => (
               <Family key={f.key} fam={f} />
@@ -1086,13 +1199,17 @@ KIT_TOKEN=<a PAT with Contents: Read on that repo>`}</pre>
               </div>
             </div>
           </div>
-        ) : null}
+        </Section>
 
-        {tab === "ignored" ? (
+        <Section
+          title="Ignored by the reviewer"
+          count={`${ignoredList.length}`}
+          hint="left out of the brief and of every count"
+          open={open.ignored}
+          onToggle={() => toggle("ignored")}
+          anchor={ignoredAnchor}
+        >
           <div className="flex flex-col gap-3">
-            <Title order={2} size="md" className={TYPO.title()}>
-              Ignored by the reviewer ({ignoredList.length})
-            </Title>
             <Text size="xs" c="muted">
               Left out of the brief and of every count, with who and why. Same file as the
               components' review (<code className={TYPO.mono()}>{data.review.path}</code>); a
@@ -1114,7 +1231,7 @@ KIT_TOKEN=<a PAT with Contents: Read on that repo>`}</pre>
               </Card.Content>
             </Card>
           </div>
-        ) : null}
+        </Section>
       </div>
     </ReviewContext.Provider>
   )
