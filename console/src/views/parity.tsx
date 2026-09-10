@@ -47,25 +47,14 @@ import {
   ChevronDown,
   ChevronRight,
   Copy,
-  EyeOff,
-  Flag,
   ImageOff,
   Moon,
   RefreshCw,
-  RotateCcw,
+  Sparkles,
   Sun,
 } from "lucide-react"
-import {
-  createContext,
-  type ReactNode,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react"
+import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { Signature } from "../../../src/layout/identity"
-import { useAuthor } from "../../../src/layout/who"
 import { TYPO } from "../../../src/typo"
 import {
   AccessError,
@@ -76,7 +65,6 @@ import {
   getParityBrief,
   getParityDetail,
   getParityFrame,
-  NotConfigured,
   type Paint,
   type ParityAxis,
   type ParityDetail,
@@ -84,11 +72,21 @@ import {
   type ParityPair,
   type ParityReport,
   readKey,
-  type ReviewChange,
-  reviewParity,
   type VariantVisual,
 } from "../mcp"
 import { NOT_PREVIEWABLE, PREVIEWS, PreviewBoundary } from "./previews"
+import {
+  FindingRow,
+  FlagButtons,
+  IgnoreButton,
+  OWNER,
+  type Owner,
+  OwnerBar,
+  RestoreButton,
+  ReviewContext,
+  useReview,
+  useReviewState,
+} from "./review"
 
 // ---------------------------------------------------------------- vocabulary
 
@@ -134,28 +132,6 @@ const VERDICT: Record<string, { color: string; label: string; means: string }> =
 /** The verdicts that mean "nothing to do, and here is why". Folded under one line. */
 const BY_DESIGN = new Set(["by-design", "composed", "code-only", "unreadable"])
 
-const OWNER: Record<string, { label: string; short: string; hint: string; color: string }> = {
-  kit: {
-    label: "For the kit",
-    short: "kit",
-    hint: "@42/ui-react has to move: a value is drawn and cannot be rendered.",
-    color: "blue",
-  },
-  both: {
-    label: "To settle together",
-    short: "both",
-    hint: "Neither side can decide alone — two defaults for the same component.",
-    color: "purple",
-  },
-  figma: {
-    label: "For the Figma file",
-    short: "Figma",
-    hint: "The file has to move: an unnamed axis, a missing description, a diverging name.",
-    color: "orange",
-  },
-}
-
-const SEVERITY: Record<string, string> = { high: "red", medium: "orange", low: "gray" }
 
 /** The order in which an axis deserves to be a grid axis. A dev opens a coverage grid to
  *  see `variant × color`; opening it on `value × size` — the thumb position of a Slider,
@@ -178,121 +154,6 @@ const slugify = (s: string) =>
     .replace(/^-|-$/g, "")
 
 const sameName = (a: string, b: string) => a.toLowerCase() === b.toLowerCase()
-
-// ---------------------------------------------------------------- the review (context)
-
-/** What every row that offers "ignore" or "flag" needs: who signs, whether the server
- *  can write, which ids are already decided, and ONE function that commits a change and
- *  reloads the report. A context rather than six props drilled through four levels — the
- *  finding rows, the surface lines and the overview lists all sign the same way. */
-type Review = {
-  author: string
-  canWrite: boolean
-  busy: string
-  ignored: Set<string>
-  flagged: Set<string>
-  act: (change: Omit<ReviewChange, "by">) => Promise<void>
-}
-
-const ReviewContext = createContext<Review>({
-  author: "",
-  canWrite: false,
-  busy: "",
-  ignored: new Set(),
-  flagged: new Set(),
-  act: async () => {},
-})
-
-const useReview = () => useContext(ReviewContext)
-
-/** "Ignore" is two steps and both are worth it: the click, and ONE line saying why. The
- *  reason is what the next reader — the dev opening the brief, the PO six weeks later —
- *  sees in place of the finding. Optional, because a decision taken is worth more than a
- *  decision postponed for lack of a sentence; Enter confirms, Escape backs out. */
-const IgnoreButton = ({
-  id,
-  title,
-  compact,
-}: {
-  id: string
-  title: string
-  compact?: boolean
-}) => {
-  const review = useReview()
-  const [asking, setAsking] = useState(false)
-  const [why, setWhy] = useState("")
-  if (!review.canWrite) return null
-  const disabled = review.busy === id
-
-  if (!asking)
-    return (
-      <button
-        type="button"
-        disabled={disabled}
-        title={
-          review.author ? "Leave it out of the brief and the counts" : "Say who you are first"
-        }
-        onClick={() => setAsking(true)}
-        className="flex shrink-0 items-center gap-1 rounded px-1.5 py-0.5 text-[11px] text-gray-dark-500 hover:bg-white/5 hover:text-white disabled:opacity-40"
-      >
-        <EyeOff size={11} />
-        {compact ? null : "Ignore"}
-      </button>
-    )
-  return (
-    <span className="flex shrink-0 items-center gap-1">
-      <input
-        // biome-ignore lint/a11y/noAutofocus: the field appears because the reader clicked "Ignore"
-        autoFocus
-        value={why}
-        onChange={(e) => setWhy(e.target.value)}
-        placeholder="why (optional)"
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            void review.act({ op: "ignore", id, why, title })
-            setAsking(false)
-          }
-          if (e.key === "Escape") setAsking(false)
-        }}
-        className={`${TYPO.mono()} w-44 rounded border border-white/15 bg-transparent px-1.5 py-0.5 text-[11px] text-gray-dark-200`}
-      />
-      <button
-        type="button"
-        disabled={disabled}
-        onClick={() => {
-          void review.act({ op: "ignore", id, why, title })
-          setAsking(false)
-        }}
-        className="rounded bg-white/10 px-1.5 py-0.5 text-[11px] text-white hover:bg-white/15"
-      >
-        Ignore
-      </button>
-      <button
-        type="button"
-        onClick={() => setAsking(false)}
-        className="px-1 text-[11px] text-gray-dark-500 hover:text-white"
-      >
-        cancel
-      </button>
-    </span>
-  )
-}
-
-const RestoreButton = ({ id }: { id: string }) => {
-  const review = useReview()
-  if (!review.canWrite) return null
-  return (
-    <button
-      type="button"
-      disabled={review.busy === id}
-      onClick={() => void review.act({ op: "restore", id })}
-      className="flex shrink-0 items-center gap-1 rounded px-1.5 py-0.5 text-[11px] text-gray-dark-400 hover:bg-white/5 hover:text-white disabled:opacity-40"
-    >
-      <RotateCcw size={11} />
-      Restore
-    </button>
-  )
-}
 
 // ---------------------------------------------------------------- the two sides rendered
 
@@ -475,10 +336,15 @@ const toHex = (raw: string): string => {
  *  an opaque colour and an opacity, and calling those two different would put a false
  *  finding on a third of the tokens. */
 const sameColour = (a: string, b: string): boolean => {
+  // A hex whose alpha is 00 IS transparent, whatever its RGB: Figma exports a hidden
+  // fill as `#ffffff00`, the browser says `transparent`, and they are the same paint.
+  const norm = (v: string) => (/^#[0-9a-f]{6}00$/i.test(v || "") ? "transparent" : v)
   const rgb = (v: string) => (v || "").replace("#", "").slice(0, 6).toLowerCase()
-  if (!a || !b) return false
-  if (a === "transparent" || b === "transparent") return a === b
-  return rgb(a) === rgb(b)
+  const x = norm(a)
+  const y = norm(b)
+  if (!x || !y) return false
+  if (x === "transparent" || y === "transparent") return x === y
+  return rgb(x) === rgb(y)
 }
 
 const px = (v: string): number => Number.parseFloat(v || "0") || 0
@@ -494,17 +360,22 @@ type Line = {
   note?: string
 }
 
-/** What the DRAWN variant and the RENDERED component say about the same surface.
- *
- *  ⚠️ The React half is not read from any catalogue — it is measured on the live element
- *  with `getComputedStyle`. That is the only place the kit's Tailwind classes have actually
- *  become a colour and a width; `ui-manifest.json` carries the API, and `theme.css` carries
- *  the tokens, but neither says what `variant="outline" color="brand"` finally paints.
- *
- *  The Figma half is the plugin's per-variant surface. Pure: a visual and a node in, lines
- *  out — the same function measures the default variant under the renders and a cell of
- *  the grid. */
-const measureSurface = (visual: VariantVisual, node: HTMLElement): Line[] => {
+/** What a RENDERED element paints, read once with `getComputedStyle`. Split from the
+ *  comparison so one render can be held against many drawn variants: forty variants that
+ *  differ only on a slot share one render, and the measure runs once per render. */
+type Rendered = {
+  bg: string
+  borderColor: string
+  borderWidth: number
+  radius: number
+  padV: number
+  padH: number
+  gap: number
+  textColor: string
+  fontSize: number
+}
+
+const readSurface = (node: HTMLElement): Rendered => {
   // The rendered preview wraps the component; the component itself is the first element
   // that is not one of OUR wrappers (`data-preview-wrap`). Measuring a wrapper would
   // compare Figma's surface with a transparent div — true, and about the wrong node.
@@ -512,8 +383,28 @@ const measureSurface = (visual: VariantVisual, node: HTMLElement): Line[] => {
   while (el.firstElementChild && (el === node || el.hasAttribute("data-preview-wrap")))
     el = el.firstElementChild as HTMLElement
   const cs = window.getComputedStyle(el)
-  const out: Line[] = []
+  return {
+    bg: cs.backgroundColor,
+    borderColor: cs.borderTopColor,
+    borderWidth: px(cs.borderTopWidth),
+    radius: px(cs.borderTopLeftRadius),
+    padV: px(cs.paddingTop),
+    padH: px(cs.paddingLeft),
+    gap: px(cs.columnGap || cs.gap),
+    textColor: cs.color,
+    fontSize: px(cs.fontSize),
+  }
+}
 
+/** What the DRAWN variant and the RENDERED component say about the same surface.
+ *
+ *  ⚠️ The React half is not read from any catalogue — it is measured on the live element.
+ *  That is the only place the kit's Tailwind classes have actually become a colour and a
+ *  width; `ui-manifest.json` carries the API, and `theme.css` carries the tokens, but
+ *  neither says what `variant="outline" color="brand"` finally paints. The Figma half is
+ *  the plugin's per-variant surface. */
+const compareSurface = (visual: VariantVisual, r: Rendered): Line[] => {
+  const out: Line[] = []
   const colour = (
     key: string,
     what: string,
@@ -533,78 +424,95 @@ const measureSurface = (visual: VariantVisual, node: HTMLElement): Line[] => {
     })
   }
 
-  colour("background", "Background", visual.fill, cs.backgroundColor)
+  colour("background", "Background", visual.fill, r.bg)
   if (visual.stroke) {
-    colour("border-color", "Border colour", visual.stroke.color, cs.borderTopColor)
-    const w = px(cs.borderTopWidth)
+    colour("border-color", "Border colour", visual.stroke.color, r.borderColor)
     out.push({
       key: "border-width",
       what: "Border width",
       figma: `${visual.stroke.width}px`,
-      react: `${w}px`,
-      same: Math.abs(w - Number(visual.stroke.width)) < 0.51,
+      react: `${r.borderWidth}px`,
+      same: Math.abs(r.borderWidth - Number(visual.stroke.width)) < 0.51,
       note: "Figma draws sub-pixel borders; anything under half a pixel is a rounding.",
     })
   }
   if (typeof visual.radius === "number") {
-    const r = px(cs.borderTopLeftRadius)
     out.push({
       key: "radius",
       what: "Radius",
       figma: `${visual.radius}px`,
-      react: `${r}px`,
-      same: Math.abs(r - visual.radius) < 0.51,
+      react: `${r.radius}px`,
+      same: Math.abs(r.radius - visual.radius) < 0.51,
     })
   }
   if (visual.padding) {
     const v = visual.padding.v ?? visual.padding.t
     const h = visual.padding.h ?? visual.padding.l
-    if (v !== undefined) {
-      const got = px(cs.paddingTop)
+    if (v !== undefined)
       out.push({
         key: "padding-v",
         what: "Padding ↕",
         figma: `${v}px`,
-        react: `${got}px`,
-        same: got === v,
+        react: `${r.padV}px`,
+        same: r.padV === v,
       })
-    }
-    if (h !== undefined) {
-      const got = px(cs.paddingLeft)
+    if (h !== undefined)
       out.push({
         key: "padding-h",
         what: "Padding ↔",
         figma: `${h}px`,
-        react: `${got}px`,
-        same: got === h,
+        react: `${r.padH}px`,
+        same: r.padH === h,
       })
-    }
   }
-  if (visual.gap !== undefined) {
-    const got = px(cs.columnGap || cs.gap)
+  if (visual.gap !== undefined)
     out.push({
       key: "gap",
       what: "Gap",
       figma: `${visual.gap}px`,
-      react: `${got}px`,
-      same: got === visual.gap,
+      react: `${r.gap}px`,
+      same: r.gap === visual.gap,
     })
-  }
   if (visual.text) {
-    colour("text-color", "Text colour", visual.text.fill, cs.color)
-    if (visual.text.size !== undefined) {
-      const got = px(cs.fontSize)
+    colour("text-color", "Text colour", visual.text.fill, r.textColor)
+    if (visual.text.size !== undefined)
       out.push({
         key: "font-size",
         what: "Font size",
         figma: `${visual.text.size}px`,
-        react: `${got}px`,
-        same: Math.abs(got - visual.text.size) < 0.51,
+        react: `${r.fontSize}px`,
+        same: Math.abs(r.fontSize - visual.text.size) < 0.51,
         // The text may live on a child; the root's font-size is inherited and usually
         // right, but it is not a guarantee and saying so costs one line.
         note: "Measured on the component's root — a nested label may differ.",
       })
-    }
+  }
+  return out
+}
+
+const measureSurface = (visual: VariantVisual, node: HTMLElement): Line[] =>
+  compareSurface(visual, readSurface(node))
+
+/** A drawn combination's values, as the kit's props — the MATCHING BY PROP the two sides
+ *  are compared through. `coverage.axes` (server-side) is the single owner of "which
+ *  React prop is this Figma axis, and what does the kit accept on it".
+ *
+ *  Returns `null` when the combination cannot be rendered faithfully: an axis the kit can
+ *  read whose value it refuses (`grey`). Rendering it anyway would show the kit's default
+ *  and compare Figma's grey against the kit's gray — a false "same" or a false "differs".
+ *  Content samples (`value` on a Slider) and slots are not props to pass: skipped. */
+const propsFor = (
+  values: Record<string, string>,
+  axes: CoverageAxis[],
+): Record<string, unknown> | null => {
+  const out: Record<string, unknown> = {}
+  for (const [axis, value] of Object.entries(values)) {
+    const row = axes.find((a) => sameName(a.axis, axis))
+    if (!row?.react) continue
+    if (["content", "slot", "text", "swap", "state-runtime", "unnamed"].includes(row.nature))
+      continue
+    if (row.readable && row.kit.length && !row.kit.some((k) => sameName(k, value))) return null
+    out[row.react] = value === "true" ? true : value === "false" ? false : value
   }
   return out
 }
@@ -738,46 +646,20 @@ const SurfacePanel = ({
                       </Badge>
                       {isIgnored ? (
                         <RestoreButton id={id} />
-                      ) : isFlagged ? (
-                        <>
-                          <Badge color="blue" size="sm" variant="light">
-                            <Flag size={11} />
-                            in the brief
-                          </Badge>
-                          {review.canWrite ? (
-                            <button
-                              type="button"
-                              disabled={review.busy === id}
-                              onClick={() => void review.act({ op: "unflag", id })}
-                              className="px-1 text-[11px] text-gray-dark-500 hover:text-white"
-                            >
-                              unflag
-                            </button>
-                          ) : null}
-                        </>
                       ) : review.canWrite ? (
                         <>
-                          <button
-                            type="button"
-                            disabled={review.busy === id}
-                            title="Hand it to the dev: it becomes a finding for the kit"
-                            onClick={() =>
-                              void review.act({
-                                op: "flag",
-                                id,
-                                component: react,
-                                owner: "kit",
-                                title: `${react}: ${l.what} is ${l.figma} drawn, ${l.react} rendered`,
-                                detail: `Measured in the console on the rendered variant ${variant}, against the surface the Figma plugin exported for it.`,
-                                evidence: l.note ?? "",
-                              })
-                            }
-                            className="flex items-center gap-1 rounded px-1.5 py-0.5 text-[11px] text-gray-dark-400 hover:bg-white/5 hover:text-white disabled:opacity-40"
-                          >
-                            <Flag size={11} />
-                            Flag for the dev
-                          </button>
-                          <IgnoreButton id={id} title={`${react}: ${l.what}`} compact />
+                          <FlagButtons
+                            id={id}
+                            flag={{
+                              component: react,
+                              title: `${react}: ${l.what} is ${l.figma} drawn, ${l.react} rendered`,
+                              detail: `Measured in the console on the rendered variant ${variant}, against the surface the Figma plugin exported for it.`,
+                              evidence: l.note ?? "",
+                            }}
+                          />
+                          {isFlagged ? null : (
+                            <IgnoreButton id={id} title={`${react}: ${l.what}`} compact />
+                          )}
                         </>
                       ) : null}
                     </div>
@@ -791,6 +673,297 @@ const SurfacePanel = ({
           })}
         </tbody>
       </table>
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------- every variant, measured
+
+type Aggregate = {
+  key: string
+  what: string
+  figma: string
+  react: string
+  variants: string[]
+  note?: string
+}
+
+/** The surface of EVERY drawn variant the kit can render, measured in one pass and
+ *  grouped by what differs.
+ *
+ *  Reported on 2026-09-10: "ce qu'on voit ici comprend bien l'analyse de toutes les
+ *  variantes, ou je dois rentrer dans chaque variante ?" — it did not. The panel measured
+ *  the one variant on screen, and the other ninety-five were a click each in the grid.
+ *
+ *  How: every drawn combination that has an exported surface is turned into kit props
+ *  (`propsFor`); combinations that map to the SAME props share one render (forty Badges
+ *  that differ only on a slot are one `<Badge color size variant>`), and every unique
+ *  render is mounted once, off-screen, read with `getComputedStyle` and unmounted. Each
+ *  variant's drawn surface is then held against its render, and the differences are
+ *  grouped by (property, drawn value, rendered value) — "Radius 4px drawn, 6px rendered,
+ *  on 60 of 60" is one line, not sixty.
+ *
+ *  ⚠️ Off-screen means `position: absolute; visibility: hidden` and never `display: none`:
+ *  a hidden-by-display element has no used values, and its border width reads 0. */
+const AllVariantsSurface = ({
+  react,
+  detail,
+  dark,
+}: {
+  react: string
+  detail: ParityDetail
+  dark: boolean
+}) => {
+  const review = useReview()
+  const host = useRef<HTMLDivElement | null>(null)
+  const [measured, setMeasured] = useState<Map<string, Rendered | null> | null>(null)
+  const [openRow, setOpenRow] = useState("")
+  const [showIgnored, setShowIgnored] = useState(false)
+
+  // The renders to make: one per distinct set of props, with the variants behind it.
+  const { renders, refused, uncompared, states } = useMemo(() => {
+    const renders = new Map<string, { props: Record<string, unknown>; variants: string[] }>()
+    const refused: string[] = []
+    let uncompared = 0
+    let states = 0
+    // ⚠️ A drawn INTERACTION state (hover, focus, disabled…) is compared with nothing: the
+    // kit renders it at runtime, off Ark's `data-*`, and this panel mounts the component
+    // at rest. Holding a `state-hover` surface against a resting render reported the
+    // hover tint as a defect on every button. Only the resting state is compared.
+    const runtime = detail.coverage.axes.filter((a) => a.nature === "state-runtime")
+    const atRest = (values: Record<string, string>) =>
+      runtime.every((a) => {
+        const v = values[a.axis]
+        if (v === undefined) return true
+        const rest =
+          detail.defaults[a.axis] ?? (a.figma.some((x) => sameName(x, "default")) ? "default" : "")
+        return !rest || sameName(v, rest)
+      })
+    for (const c of detail.coverage.combinations) {
+      if (!detail.visuals.variants[c.variant]) {
+        uncompared += 1
+        continue
+      }
+      if (!atRest(c.values)) {
+        states += 1
+        continue
+      }
+      const p = propsFor(c.values, detail.coverage.axes)
+      if (p === null) {
+        refused.push(c.variant)
+        continue
+      }
+      const sig = JSON.stringify(Object.entries(p).sort())
+      const r = renders.get(sig) ?? { props: p, variants: [] }
+      r.variants.push(c.variant)
+      renders.set(sig, r)
+    }
+    return { renders, refused, uncompared, states }
+  }, [detail])
+
+  // Measure once the hidden host has mounted; again when the theme flips.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: `dark` re-renders the host and must re-measure
+  useEffect(() => {
+    setMeasured(null)
+  }, [dark, renders])
+  useEffect(() => {
+    if (measured !== null || !host.current) return
+    const out = new Map<string, Rendered | null>()
+    for (const el of host.current.querySelectorAll<HTMLElement>("[data-sig]")) {
+      const sig = el.dataset.sig ?? ""
+      out.set(sig, el.querySelector("[data-preview-error]") ? null : readSurface(el))
+    }
+    setMeasured(out)
+  }, [measured])
+
+  const rows = useMemo(() => {
+    if (!measured) return null
+    const groups = new Map<string, Aggregate>()
+    const present = new Map<string, number>()
+    let compared = 0
+    let broken = 0
+    for (const [sig, r] of renders) {
+      const rendered = measured.get(sig)
+      if (rendered === null) {
+        broken += r.variants.length
+        continue
+      }
+      if (!rendered) continue
+      for (const v of r.variants) {
+        const visual = detail.visuals.variants[v]
+        if (!visual) continue
+        compared += 1
+        for (const l of compareSurface(visual, rendered)) {
+          present.set(l.key, (present.get(l.key) ?? 0) + 1)
+          if (l.same) continue
+          const gk = `${l.key}|${l.figma}|${l.react}`
+          const g = groups.get(gk) ?? {
+            key: l.key,
+            what: l.what,
+            figma: l.figma,
+            react: l.react,
+            variants: [],
+            note: l.note,
+          }
+          g.variants.push(v)
+          groups.set(gk, g)
+        }
+      }
+    }
+    const list = [...groups.values()].sort((a, b) => b.variants.length - a.variants.length)
+    return { list, present, compared, broken }
+  }, [measured, renders, detail])
+
+  const id = (g: Aggregate) =>
+    `surface:${slugify(react)}:all:${g.key}:${slugify(g.figma)}-${slugify(g.react)}`
+
+  const hidden = rows ? rows.list.filter((g) => review.ignored.has(id(g))) : []
+  const shown = rows
+    ? rows.list.filter((g) => showIgnored || !review.ignored.has(id(g)))
+    : []
+  const clean = rows
+    ? [...rows.present.keys()].filter((k) => !rows.list.some((g) => g.key === k))
+    : []
+
+  return (
+    <div className="flex flex-col gap-2">
+      {/* The off-screen renders: mounted only until they have been read. */}
+      {measured === null ? (
+        <div
+          ref={host}
+          aria-hidden="true"
+          data-theme={dark ? "dark" : "light"}
+          className="pointer-events-none absolute -left-[9999px] top-0 w-[400px]"
+          style={{ visibility: "hidden" }}
+        >
+          {[...renders.entries()].map(([sig, r]) => (
+            <div key={sig} data-sig={sig} className="p-2">
+              <PreviewBoundary name={react}>{PREVIEWS[react]?.(r.props)}</PreviewBoundary>
+            </div>
+          ))}
+        </div>
+      ) : null}
+
+      <div className="flex flex-wrap items-center gap-2">
+        <Text size="sm" className={TYPO.title("semibold")}>
+          The surface across every drawn variant
+        </Text>
+        {!rows ? (
+          <Badge color="gray" size="sm" variant="light">
+            measuring {renders.size} render{renders.size > 1 ? "s" : ""}…
+          </Badge>
+        ) : shown.length === 0 ? (
+          <Badge color="green" size="sm">
+            <Check size={13} />
+            {rows.list.length === 0 ? "identical" : "nothing left"}
+          </Badge>
+        ) : (
+          <Badge color="orange" size="sm" variant="light">
+            {shown.length} difference{shown.length > 1 ? "s" : ""}
+          </Badge>
+        )}
+        {rows ? (
+          <span className="text-[11px] text-gray-dark-500">
+            {rows.compared} variant{rows.compared > 1 ? "s" : ""} compared through{" "}
+            {renders.size} render{renders.size > 1 ? "s" : ""}
+            {refused.length > 0 ? ` · ${refused.length} not renderable` : ""}
+            {states > 0 ? ` · ${states} interaction states left out (the kit renders them at runtime)` : ""}
+            {uncompared > 0 ? ` · ${uncompared} with no exported surface` : ""}
+            {rows.broken > 0 ? ` · ${rows.broken} whose render threw` : ""}
+          </span>
+        ) : null}
+        {hidden.length > 0 ? (
+          <button
+            type="button"
+            onClick={() => setShowIgnored((v) => !v)}
+            className="text-[11px] text-gray-dark-500 hover:text-white"
+          >
+            {showIgnored ? "hide" : "show"} {hidden.length} ignored
+          </button>
+        ) : null}
+      </div>
+
+      {rows && shown.length > 0 ? (
+        <table className="w-full text-left">
+          <thead>
+            <tr className="text-[11px] text-gray-dark-500 uppercase">
+              <th className="pb-1 pr-3 font-normal">Property</th>
+              <th className="pb-1 pr-3 font-normal">Drawn</th>
+              <th className="pb-1 pr-3 font-normal">Rendered</th>
+              <th className="pb-1 pr-3 font-normal">Variants</th>
+              <th className="pb-1 font-normal" />
+            </tr>
+          </thead>
+          <tbody>
+            {shown.map((g) => {
+              const gid = id(g)
+              const isIgnored = review.ignored.has(gid)
+              const total = rows.present.get(g.key) ?? 0
+              const open = openRow === gid
+              return (
+                <tr
+                  key={gid}
+                  className={`border-white/6 border-t align-top ${isIgnored ? "opacity-50" : ""}`}
+                >
+                  <td className="py-1 pr-3 text-gray-dark-300 text-xs">{g.what}</td>
+                  <td className={`${TYPO.mono()} py-1 pr-3 text-gray-dark-300 text-[11px]`}>
+                    {g.figma}
+                  </td>
+                  <td className={`${TYPO.mono()} py-1 pr-3 text-gray-dark-300 text-[11px]`}>
+                    {g.react}
+                  </td>
+                  <td className={`${TYPO.mono()} whitespace-nowrap py-1 pr-3 text-[11px]`}>
+                    <button
+                      type="button"
+                      onClick={() => setOpenRow(open ? "" : gid)}
+                      className="text-orange-300 underline decoration-dotted underline-offset-2"
+                      title="List the variants"
+                    >
+                      {g.variants.length} of {total}
+                    </button>
+                    {open ? (
+                      <div className="mt-1 max-h-32 max-w-xs overflow-auto text-[10px] text-gray-dark-500">
+                        {g.variants.join(", ")}
+                      </div>
+                    ) : null}
+                  </td>
+                  <td className="py-1">
+                    <div className="flex flex-wrap items-center gap-1">
+                      {isIgnored ? (
+                        <RestoreButton id={gid} />
+                      ) : (
+                        <>
+                          <FlagButtons
+                            id={gid}
+                            flag={{
+                              component: react,
+                              title: `${react}: ${g.what} is ${g.figma} drawn, ${g.react} rendered — on ${g.variants.length} of ${total} variants`,
+                              detail: `Measured in the console on every drawn variant the kit renders, against the surface the Figma plugin exported. Variants: ${g.variants.slice(0, 12).join(", ")}${g.variants.length > 12 ? "…" : ""}.`,
+                              evidence: g.note ?? "",
+                            }}
+                          />
+                          {review.flagged.has(gid) ? null : (
+                            <IgnoreButton id={gid} title={`${react}: ${g.what}`} compact />
+                          )}
+                        </>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      ) : null}
+      {rows && clean.length > 0 ? (
+        <Text size="xs" c="muted">
+          Same on every variant:{" "}
+          {clean
+            .map((k) => ({ background: "background", "border-color": "border colour", "border-width": "border width", radius: "radius", "padding-v": "padding ↕", "padding-h": "padding ↔", gap: "gap", "text-color": "text colour", "font-size": "font size" })[k] ?? k)
+            .join(", ")}
+          .
+        </Text>
+      ) : null}
     </div>
   )
 }
@@ -1434,96 +1607,6 @@ const AxisLine = ({ a }: { a: ParityAxis }) => {
 
 // ---------------------------------------------------------------- one finding
 
-/** A finding NAMES a component, so it links to it. `paired` guards it: a finding about
- *  something that exists on one side only has no pair to open. `here` says the reader is
- *  already on that component, so the link would go nowhere. */
-const FindingRow = ({
-  f,
-  paired,
-  here,
-}: {
-  f: ParityFinding
-  paired: boolean
-  here?: boolean
-}) => {
-  const review = useReview()
-  const o = OWNER[f.owner]
-  return (
-    <li
-      className={`border-white/6 border-t py-2 first:border-t-0 ${f.ignored ? "opacity-60" : ""}`}
-    >
-      <div className="flex flex-wrap items-baseline gap-2">
-        <Badge color={SEVERITY[f.severity]} size="sm" variant="light">
-          {f.severity}
-        </Badge>
-        <Badge color={o.color} size="sm" variant="outline">
-          {o.short}
-        </Badge>
-        {f.flagged ? (
-          <Badge color="blue" size="sm" variant="light">
-            <Flag size={11} />
-            seen in the browser
-          </Badge>
-        ) : null}
-        {paired && !here ? (
-          <a
-            href={`#/parity/${encodeURIComponent(f.component)}`}
-            className={`${TYPO.title("semibold")} text-sm underline decoration-dotted underline-offset-2 hover:text-white ${
-              f.ignored ? "line-through" : ""
-            }`}
-          >
-            {f.title}
-          </a>
-        ) : (
-          <Text
-            size="sm"
-            className={`${TYPO.title("semibold")} ${f.ignored ? "line-through" : ""}`}
-          >
-            {f.title}
-          </Text>
-        )}
-        <span className="ml-auto flex items-center gap-1">
-          {f.ignored ? (
-            <RestoreButton id={f.id} />
-          ) : (
-            <>
-              {f.flagged && review.canWrite ? (
-                <button
-                  type="button"
-                  disabled={review.busy === f.id}
-                  onClick={() => void review.act({ op: "unflag", id: f.id })}
-                  className="px-1 text-[11px] text-gray-dark-500 hover:text-white"
-                >
-                  unflag
-                </button>
-              ) : null}
-              <IgnoreButton id={f.id} title={f.title} />
-            </>
-          )}
-        </span>
-      </div>
-      {f.ignored ? (
-        <Text size="xs" c="muted" className="mt-1">
-          Ignored by {f.ignored_by || "?"}
-          {f.ignored_at ? ` · ${f.ignored_at.slice(0, 10)}` : ""}
-          {f.ignored_why ? ` — ${f.ignored_why}` : ""}
-        </Text>
-      ) : (
-        <>
-          <Text size="sm" c="secondary" className="mt-1">
-            {f.detail}
-          </Text>
-          {f.evidence ? (
-            <div className={`${TYPO.mono()} mt-1 text-[11px] text-gray-dark-500`}>
-              {f.evidence}
-            </div>
-          ) : null}
-        </>
-      )}
-    </li>
-  )
-}
-
 /** One collapsible group with its count in the title. The page is made of these: what
  *  differs, what is by design, what is aligned, what is ignored — each foldable, the
  *  first one open. */
@@ -1640,19 +1723,22 @@ const Pair = ({
       "")
     : ""
   const visuals = detail?.visuals ?? { exported: false, variants: {} }
-  // Figma's default variant, as kit props — only the axes the kit reads and the values it
-  // accepts. `coverage.axes` is the single owner of that mapping (server-side).
-  const defaultProps = useMemo(() => {
-    if (!detail) return undefined
-    const out: Record<string, unknown> = {}
-    for (const [axis, value] of Object.entries(detail.defaults)) {
-      const row = detail.coverage.axes.find((a) => sameName(a.axis, axis))
-      if (!row?.react || !row.readable) continue
-      if (row.kit.length && !row.kit.some((k) => sameName(k, value))) continue
-      out[row.react] = value
-    }
-    return Object.keys(out).length ? out : undefined
-  }, [detail])
+  // The variant BOTH sides show: the one picked in the Figma dropdown, else Figma's
+  // default. Its values become the kit's props (`propsFor`, matching by prop), so the two
+  // renders and the surface measured under them are about the same variant.
+  const shownVariant = variant || defaultVariant
+  const shownValues = useMemo(() => {
+    if (!detail) return null
+    if (variant)
+      return detail.coverage.combinations.find((c) => c.variant === variant)?.values ?? null
+    return detail.defaults
+  }, [detail, variant])
+  const shownProps = useMemo(() => {
+    if (!detail || !shownValues) return undefined
+    const p = propsFor(shownValues, detail.coverage.axes)
+    return p && Object.keys(p).length ? p : undefined
+  }, [detail, shownValues])
+  const refused = Boolean(detail && shownValues && propsFor(shownValues, detail.coverage.axes) === null)
 
   const copy = async () => {
     try {
@@ -1756,12 +1842,12 @@ const Pair = ({
           <div className="mb-2 flex items-center justify-between gap-2">
             <Text size="xs" c="muted" className="shrink-0">
               {pair.import ? "@42/ui-react" : "the kit"}
-              {defaultProps ? " · at Figma's default" : ""}
+              {shownProps ? (variant ? " · same variant" : " · at Figma's default") : ""}
             </Text>
             <code className={`${TYPO.mono()} truncate text-gray-dark-500 text-[11px]`}>
-              {defaultProps
-                ? `<${pair.react} ${Object.entries(defaultProps)
-                    .map(([k, v]) => `${k}="${String(v)}"`)
+              {shownProps
+                ? `<${pair.react} ${Object.entries(shownProps)
+                    .map(([k, v]) => (v === true ? k : `${k}="${String(v)}"`))
                     .join(" ")} />`
                 : pair.snippet}
             </code>
@@ -1772,7 +1858,14 @@ const Pair = ({
               dark ? "bg-black/20" : "bg-white"
             } p-3`}
           >
-            <KitPreview name={pair.react} props={defaultProps} />
+            {refused ? (
+              <Text size="xs" className="text-red-300 text-center">
+                This variant uses a value the kit refuses: nothing faithful can be rendered
+                beside it. It is one of the findings above.
+              </Text>
+            ) : (
+              <KitPreview name={pair.react} props={shownProps} />
+            )}
           </div>
         </div>
       </div>
@@ -1801,7 +1894,7 @@ const Pair = ({
         ) : (
           <ul className="flex flex-col">
             {active.map((f) => (
-              <FindingRow key={f.id} f={f} paired here />
+              <FindingRow key={f.id} f={f} />
             ))}
           </ul>
         )}
@@ -1818,9 +1911,10 @@ const Pair = ({
         ) : null}
       </Group>
 
-      {/* 2. The surface of the DEFAULT variant, measured right here. Its count is its own. */}
+      {/* 2. The surface, measured right here — ACROSS EVERY drawn variant the kit can
+          render, then the one shown above in detail. Its counts are its own. */}
       {pair.figma.detail ? (
-        <div className="rounded-lg border border-white/10 px-3 py-2">
+        <div className="flex flex-col gap-3 rounded-lg border border-white/10 px-3 py-2">
           {detailError ? (
             <Text size="xs" className="text-orange-300">
               {detailError}
@@ -1833,14 +1927,23 @@ const Pair = ({
               </Text>
             </div>
           ) : (
-            <SurfacePanel
-              react={pair.react}
-              variant={defaultVariant || "default"}
-              visual={defaultVariant ? visuals.variants[defaultVariant] : undefined}
-              node={PREVIEWS[pair.react] ? previewNode : null}
-              exported={visuals.exported}
-              title="The default variant's surface, drawn against rendered"
-            />
+            <>
+              {visuals.exported && PREVIEWS[pair.react] ? (
+                <AllVariantsSurface react={pair.react} detail={detail} dark={dark} />
+              ) : null}
+              <SurfacePanel
+                react={pair.react}
+                variant={shownVariant || "default"}
+                visual={shownVariant ? visuals.variants[shownVariant] : undefined}
+                node={PREVIEWS[pair.react] && !refused ? previewNode : null}
+                exported={visuals.exported}
+                title={
+                  variant
+                    ? "This variant's surface, drawn against rendered"
+                    : "The default variant's surface, drawn against rendered"
+                }
+              />
+            </>
           )}
         </div>
       ) : null}
@@ -1879,7 +1982,7 @@ const Pair = ({
         >
           <ul className="flex flex-col">
             {ignored.map((f) => (
-              <FindingRow key={f.id} f={f} paired here />
+              <FindingRow key={f.id} f={f} />
             ))}
           </ul>
         </Group>
@@ -1950,19 +2053,22 @@ const Overview = ({
 }: {
   data: ParityReport
   tab: OverviewTab
-  owner: "kit" | "both" | "figma"
-  setOwner: (o: "kit" | "both" | "figma") => void
+  owner: Owner
+  setOwner: (o: Owner) => void
   counts: Record<string, { active: number; kit: number; ignored: number }>
 }) => {
   const c = data.counts
   const [copied, setCopied] = useState("")
   const [error, setError] = useState("")
-  const paired = (name: string) => data.pairs.some((p) => sameName(p.react, name))
+  const link = (name: string) =>
+    data.pairs.some((p) => sameName(p.react, name))
+      ? `#/parity/${encodeURIComponent(name)}`
+      : undefined
 
-  const copyOwner = async (o: "kit" | "both" | "figma") => {
+  const copyOwner = async (o: Owner, prompt: boolean) => {
     try {
-      await navigator.clipboard.writeText(await getParityBrief({ owner: o }))
-      setCopied(o)
+      await navigator.clipboard.writeText(await getParityBrief({ owner: o, prompt }))
+      setCopied(prompt ? `${o}:prompt` : o)
       setTimeout(() => setCopied(""), 2000)
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e))
@@ -2188,7 +2294,7 @@ const Overview = ({
             ) : (
               <ul className="flex flex-col">
                 {list.map((f) => (
-                  <FindingRow key={f.id} f={f} paired={paired(f.component)} />
+                  <FindingRow key={f.id} f={f} href={link(f.component)} />
                 ))}
               </ul>
             )}
@@ -2204,25 +2310,24 @@ const Overview = ({
       <Title order={2} size="md" className={TYPO.title()}>
         What to change, and who changes it
       </Title>
-      <div className="flex flex-wrap items-center gap-2">
-        {(["kit", "both", "figma"] as const).map((o) => (
-          <Button
-            key={o}
-            size="sm"
-            variant={owner === o ? "filled" : "outline"}
-            color={OWNER[o].color}
-            onClick={() => setOwner(o)}
-          >
-            {OWNER[o].label} ({c.by_owner[o] ?? 0})
-          </Button>
-        ))}
-        <span className="ml-auto">
-          <Button size="sm" variant="subtle" onClick={() => void copyOwner(owner)}>
-            {copied === owner ? <Check size={14} /> : <Copy size={14} />}
-            {copied === owner ? "Copied" : "Copy this list"}
-          </Button>
-        </span>
-      </div>
+      <OwnerBar owner={owner} counts={c.by_owner} setOwner={setOwner}>
+        <Button size="sm" variant="subtle" onClick={() => void copyOwner(owner, false)}>
+          {copied === owner ? <Check size={14} /> : <Copy size={14} />}
+          {copied === owner ? "Copied" : "Copy this list"}
+        </Button>
+        {/* The same list with a preamble that says WHERE and HOW to apply it — the kit
+            is a repo, the Figma file is reached through the Figma MCP — so it can be
+            pasted to Claude as a task rather than read as a report. */}
+        <Button
+          size="sm"
+          variant="subtle"
+          title="The same list, prefaced so an agent can run it"
+          onClick={() => void copyOwner(owner, true)}
+        >
+          {copied === `${owner}:prompt` ? <Check size={14} /> : <Sparkles size={14} />}
+          {copied === `${owner}:prompt` ? "Copied" : "as a prompt for Claude"}
+        </Button>
+      </OwnerBar>
       <Text size="sm" c="secondary">
         {OWNER[owner].hint}
       </Text>
@@ -2238,7 +2343,7 @@ const Overview = ({
           ) : (
             <ul className="flex flex-col">
               {grouped.map((f) => (
-                <FindingRow key={f.id} f={f} paired={paired(f.component)} />
+                <FindingRow key={f.id} f={f} href={link(f.component)} />
               ))}
             </ul>
           )}
@@ -2404,16 +2509,13 @@ const Sources = ({ s }: { s: ParityReport["sources"] }) => {
 
 export const ParityView = ({ selected = "" }: { selected?: string }) => {
   const key = readKey()
-  const author = useAuthor()
   const [data, setData] = useState<ParityReport | null>(null)
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
   const [copied, setCopied] = useState(false)
   const [dark, setDark] = useState(true)
-  const [owner, setOwner] = useState<"kit" | "both" | "figma">("kit")
+  const [owner, setOwner] = useState<Owner>("kit")
   const [tab, setTab] = useState<OverviewTab>("findings")
-  const [busy, setBusy] = useState("")
-  const [reviewError, setReviewError] = useState("")
 
   const load = useCallback(
     (fresh: boolean) => {
@@ -2438,49 +2540,11 @@ export const ParityView = ({ selected = "" }: { selected?: string }) => {
     load(false)
   }, [load])
 
-  // ONE function commits a decision and re-reads the report. The server keeps the
-  // expensive computation cached and stamps the review on at serve time, so this
-  // round-trip is one small file read, not a rebuild.
-  const act = useCallback(
-    async (change: Omit<ReviewChange, "by">) => {
-      if (!author) {
-        setReviewError(
-          "Say who you are first — the name at the top of the page. A decision nobody signs cannot be questioned later.",
-        )
-        return
-      }
-      setBusy(change.id)
-      setReviewError("")
-      try {
-        await reviewParity({ ...change, by: author })
-        // Quietly: the spinner of a full load would blank the component being reviewed.
-        setData(await getParity(false))
-      } catch (e) {
-        setReviewError(
-          e instanceof NotConfigured
-            ? `The review cannot be written on this server: ${e.message}`
-            : e instanceof Error
-              ? e.message
-              : String(e),
-        )
-      } finally {
-        setBusy("")
-      }
-    },
-    [author],
-  )
-
-  const review = useMemo<Review>(
-    () => ({
-      author,
-      canWrite: Boolean(data?.review?.can_write),
-      busy,
-      ignored: new Set(data?.review?.ignored_ids ?? []),
-      flagged: new Set(data?.review?.flagged_ids ?? []),
-      act,
-    }),
-    [author, data, busy, act],
-  )
+  // Quietly, after a decision: the spinner of a full load would blank the component
+  // being reviewed.
+  const reload = useCallback(async () => setData(await getParity(false)), [])
+  const { review, error: reviewError } = useReviewState(data?.review, reload)
+  const author = review.author
 
   const copy = async () => {
     try {

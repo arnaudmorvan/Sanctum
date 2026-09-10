@@ -839,12 +839,15 @@ export async function getParityFrame(
  *  dev works: the list has to be able to leave with them — as one owner's whole list, or
  *  as one component's. Ignored findings are left out and said to be. */
 export async function getParityBrief(
-  filter: { owner?: "kit" | "figma" | "both"; component?: string } = {},
+  filter: { owner?: "kit" | "figma" | "both"; component?: string; prompt?: boolean } = {},
 ): Promise<string> {
   const key = readKey()
   const q = new URLSearchParams()
   if (filter.owner) q.set("owner", filter.owner)
   if (filter.component) q.set("component", filter.component)
+  // `prompt`: the same list with a preamble saying where and how to apply it, so it can
+  // be handed to an agent as a task rather than read as a report.
+  if (filter.prompt) q.set("prompt", "1")
   const qs = q.toString()
   const r = await fetch(`${BASE}/console/parity/brief.md${qs ? `?${qs}` : ""}`, {
     headers: key ? { "X-DS-Key": key } : {},
@@ -947,6 +950,8 @@ export type TokensReport = {
     reference_size: number
     unbound: string[]
     off_palette_colors: Record<string, string[]>
+    /** The off-palette colours the reviewer ignored (`color-off-palette:foundations:<rgb>`). */
+    ignored_colors: string[]
     counts: { tokens: number; in_palette: number; off_palette: number; with_alpha: number }
   }
   spacing: {
@@ -959,9 +964,14 @@ export type TokensReport = {
     families: number
     tokens: number
     differs: number
+    /** ACTIVE findings — ignored ones are not in this number, nor in `by_owner`. */
     findings: number
+    ignored: number
+    flagged: number
     by_owner: Record<string, number>
   }
+  /** Same file and same semantics as the components' review. */
+  review: { can_write: boolean; path: string; ignored_ids: string[]; flagged_ids: string[] }
   sources: {
     figma: Record<string, string>
     /** ⚠️ `snapshot` means the kit was NOT read from its own repo: the comparison ran
@@ -989,9 +999,15 @@ export async function getTokens(fresh = false): Promise<TokensReport> {
   return get<TokensReport>(`/console/tokens.json${fresh ? "?fresh=1" : ""}`)
 }
 
-export async function getTokensBrief(): Promise<string> {
+export async function getTokensBrief(
+  filter: { owner?: "kit" | "figma" | "both"; prompt?: boolean } = {},
+): Promise<string> {
   const key = readKey()
-  const r = await fetch(`${BASE}/console/tokens/brief.md`, {
+  const q = new URLSearchParams()
+  if (filter.owner) q.set("owner", filter.owner)
+  if (filter.prompt) q.set("prompt", "1")
+  const qs = q.toString()
+  const r = await fetch(`${BASE}/console/tokens/brief.md${qs ? `?${qs}` : ""}`, {
     headers: key ? { "X-DS-Key": key } : {},
   })
   if (r.status === 401) throw new AccessError("Key rejected by the server.")

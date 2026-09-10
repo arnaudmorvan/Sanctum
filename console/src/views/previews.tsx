@@ -269,7 +269,9 @@ export class PreviewBoundary extends Component<BoundaryProps, BoundaryState> {
   render(): ReactNode {
     if (this.state.error) {
       return (
-        <div className="text-xs text-orange-400">
+        // `data-preview-error`: the surface measure reads it to skip a variant whose
+        // render threw, instead of measuring the error message's own box.
+        <div data-preview-error="" className="text-xs text-orange-400">
           This preview no longer renders — the kit's API moved under it.
           <div className="mt-1 font-mono text-[11px] break-words opacity-70">{this.state.error}</div>
         </div>
