@@ -55,11 +55,13 @@ import {
   getParityBrief,
   getParityDetail,
   getParityFrame,
+  type Paint,
   type ParityAxis,
   type ParityFinding,
   type ParityPair,
   type ParityReport,
   readKey,
+  type VariantVisual,
 } from "../mcp"
 import { NOT_PREVIEWABLE, PREVIEWS, PreviewBoundary } from "./previews"
 
@@ -223,6 +225,215 @@ const KitPreview = ({ name }: { name: string }) => {
   )
 }
 
+// ---------------------------------------------------------------- the visual diff
+
+/** `rgb(99, 136, 227)` → `#6388e3`. A computed style never gives a hex, and Figma never
+ *  gives an rgb() — one of the two has to move for a comparison to be possible at all. */
+const toHex = (css: string): string => {
+  const m = /rgba?\(([^)]+)\)/.exec(css || "")
+  if (!m) return (css || "").trim().toLowerCase()
+  const [r, g, b, a] = m[1].split(",").map((n) => Number.parseFloat(n.trim()))
+  if (a === 0) return "transparent"
+  const hx = (n: number) => Math.round(n).toString(16).padStart(2, "0")
+  const alpha = a !== undefined && a < 1 ? hx(a * 255) : ""
+  return `#${hx(r)}${hx(g)}${hx(b)}${alpha}`
+}
+
+/** Two colours are the same when their RGB halves match. ⚠️ Alpha is compared SEPARATELY
+ *  and never folded in: Figma paints `#f044381a` where the kit reaches the same place with
+ *  an opaque colour and an opacity, and calling those two different would put a false
+ *  finding on a third of the tokens. */
+const sameColour = (a: string, b: string): boolean => {
+  const rgb = (v: string) => (v || "").replace("#", "").slice(0, 6).toLowerCase()
+  if (!a || !b) return false
+  if (a === "transparent" || b === "transparent") return a === b
+  return rgb(a) === rgb(b)
+}
+
+const px = (v: string): number => Number.parseFloat(v || "0") || 0
+
+type Line = {
+  what: string
+  figma: string
+  react: string
+  same: boolean
+  note?: string
+}
+
+/** What the DRAWN variant and the RENDERED component say about the same surface.
+ *
+ *  ⚠️ The React half is not read from any catalogue — it is measured on the live element
+ *  with `getComputedStyle`. That is the only place the kit's Tailwind classes have actually
+ *  become a colour and a width; `ui-manifest.json` carries the API, and `theme.css` carries
+ *  the tokens, but neither says what `variant="outline" color="brand"` finally paints.
+ *
+ *  The Figma half is the plugin's `variant_visuals`, which is why this panel says so
+ *  plainly when the file has not been re-synced: with nothing on the left there is nothing
+ *  to compare, and an empty table would read as agreement. */
+const VisualDiff = ({
+  visual,
+  node,
+  exported,
+}: {
+  visual?: VariantVisual
+  node: HTMLElement | null
+  exported: boolean
+}) => {
+  const [lines, setLines] = useState<Line[] | null>(null)
+
+  useEffect(() => {
+    if (!node || !visual) return setLines(null)
+    // The rendered preview wraps the component; the component itself is the first element
+    // child that actually paints. Measuring the wrapper would compare Figma's surface with
+    // a transparent div — true, and about the wrong node.
+    const el = (node.querySelector("*") as HTMLElement) ?? node
+    const cs = window.getComputedStyle(el)
+    const out: Line[] = []
+
+    const colour = (what: string, drawn: Paint | undefined, got: string, hint?: string) => {
+      if (!drawn?.hex && !drawn?.token) return
+      const react = toHex(got)
+      out.push({
+        what,
+        figma: drawn.token ? `${drawn.token} · ${drawn.hex}` : drawn.hex,
+        react,
+        same: sameColour(drawn.hex, react),
+        note: hint,
+      })
+    }
+
+    colour("Background", visual.fill, cs.backgroundColor)
+    if (visual.stroke) {
+      colour("Border colour", visual.stroke.color, cs.borderTopColor)
+      const w = px(cs.borderTopWidth)
+      out.push({
+        what: "Border width",
+        figma: `${visual.stroke.width}px`,
+        react: `${w}px`,
+        same: Math.abs(w - Number(visual.stroke.width)) < 0.51,
+        note: "Figma draws sub-pixel borders; anything under half a pixel is a rounding.",
+      })
+    }
+    if (typeof visual.radius === "number") {
+      const r = px(cs.borderTopLeftRadius)
+      out.push({
+        what: "Radius",
+        figma: `${visual.radius}px`,
+        react: `${r}px`,
+        same: Math.abs(r - visual.radius) < 0.51,
+      })
+    }
+    if (visual.padding) {
+      const v = visual.padding.v ?? visual.padding.t
+      const h = visual.padding.h ?? visual.padding.l
+      if (v !== undefined) {
+        const got = px(cs.paddingTop)
+        out.push({ what: "Padding ↕", figma: `${v}px`, react: `${got}px`, same: got === v })
+      }
+      if (h !== undefined) {
+        const got = px(cs.paddingLeft)
+        out.push({ what: "Padding ↔", figma: `${h}px`, react: `${got}px`, same: got === h })
+      }
+    }
+    if (visual.gap !== undefined) {
+      const got = px(cs.columnGap || cs.gap)
+      out.push({ what: "Gap", figma: `${visual.gap}px`, react: `${got}px`, same: got === visual.gap })
+    }
+    if (visual.text) {
+      colour("Text colour", visual.text.fill, cs.color)
+      if (visual.text.size !== undefined) {
+        const got = px(cs.fontSize)
+        out.push({
+          what: "Font size",
+          figma: `${visual.text.size}px`,
+          react: `${got}px`,
+          same: Math.abs(got - visual.text.size) < 0.51,
+          // The text may live on a child; the root's font-size is inherited and usually
+          // right, but it is not a guarantee and saying so costs one line.
+          note: "Measured on the component's root — a nested label may differ.",
+        })
+      }
+    }
+    setLines(out)
+  }, [node, visual])
+
+  if (!exported)
+    return (
+      <Alert
+        type="info"
+        variant="outline"
+        title="The drawn surface is not in the export yet"
+        description="The Figma plugin learned to write each variant's fill, border, radius and padding on 2026-09-10. Re-run a sync from Figma and this panel compares them against what the kit actually paints, measured on the component rendered here."
+      />
+    )
+  if (!visual)
+    return (
+      <Text size="xs" c="muted">
+        This variant paints nothing of its own: its surface comes from a nested layer, which
+        the export deliberately leaves out.
+      </Text>
+    )
+  if (!lines) return null
+
+  const off = lines.filter((l) => !l.same)
+  return (
+    <div className="flex flex-col gap-2">
+      <div className="flex items-center gap-2">
+        <Text size="sm" className={TYPO.title("semibold")}>
+          The surface, drawn against rendered
+        </Text>
+        {off.length === 0 ? (
+          <Badge color="green" size="sm">
+            <Check size={13} />
+            identical
+          </Badge>
+        ) : (
+          <Badge color="orange" size="sm">
+            {off.length} difference{off.length > 1 ? "s" : ""}
+          </Badge>
+        )}
+      </div>
+      <table className="w-full text-left">
+        <thead>
+          <tr className="text-[11px] text-gray-dark-500 uppercase">
+            <th className="pb-1 pr-3 font-normal">Property</th>
+            <th className="pb-1 pr-3 font-normal">Figma</th>
+            <th className="pb-1 pr-3 font-normal">Rendered</th>
+            <th className="pb-1 font-normal" />
+          </tr>
+        </thead>
+        <tbody>
+          {lines.map((l) => (
+            <tr key={l.what} className="border-white/6 border-t align-top">
+              <td className="py-1 pr-3 text-gray-dark-300 text-xs">{l.what}</td>
+              <td className={`${TYPO.mono()} py-1 pr-3 text-gray-dark-300 text-[11px]`}>
+                {l.figma}
+              </td>
+              <td className={`${TYPO.mono()} py-1 pr-3 text-gray-dark-300 text-[11px]`}>
+                {l.react}
+              </td>
+              <td className="py-1">
+                {l.same ? (
+                  <Check size={13} className="text-green-500" />
+                ) : (
+                  <Badge color="orange" size="sm" variant="light">
+                    differs
+                  </Badge>
+                )}
+                {!l.same && l.note ? (
+                  <div className="mt-0.5 max-w-xs text-[10px] text-gray-dark-500">
+                    {l.note}
+                  </div>
+                ) : null}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
 // ---------------------------------------------------------------- the coverage grid
 
 /** What a cell IS, and the four words are the whole tool. `figma-only` is the one that
@@ -272,12 +483,14 @@ const CoverageGrid = ({
   slug,
   react,
   cov,
+  visuals,
   dark,
   frames,
 }: {
   slug: string
   react: string
   cov: Coverage
+  visuals: { exported: boolean; variants: Record<string, VariantVisual> }
   dark: boolean
   frames: boolean
 }) => {
@@ -295,6 +508,9 @@ const CoverageGrid = ({
   )
   const [fixed, setFixed] = useState<Record<string, string>>({})
   const [zoom, setZoom] = useState<CoverageCombo | null>(null)
+  // The rendered element of the zoomed cell — the ONLY place the kit's classes have become
+  // an actual colour and width, which is what the visual diff measures.
+  const [zoomNode, setZoomNode] = useState<HTMLElement | null>(null)
 
   const find = (name: string) => axes.find((a) => a.axis === name)
   const rowDef = find(rowAxis)
@@ -481,7 +697,10 @@ const CoverageGrid = ({
             {CELL[k].label}
           </span>
         ))}
-        {frames ? <span>· click a drawn cell to see Figma's own render of it</span> : null}
+        <span>
+          · click a drawn cell to compare its surface
+          {frames ? " and see Figma's own render of it" : ""}
+        </span>
       </div>
 
       {cols.length > 6 ? (
@@ -547,7 +766,12 @@ const CoverageGrid = ({
                   const s = state(r, c)
                   const hits = matching(r, c)
                   const tone = CELL[s]
-                  const clickable = hits.length > 0 && frames
+                  // ⚠️ NOT gated on `frames`. The zoom used to exist only to fetch Figma's
+                  // render, so it was disabled without a token; it now also carries the
+                  // visual diff, which is measured on the component rendered right here and
+                  // needs nothing from Figma. Keeping the old condition made the comparison
+                  // unreachable on exactly the servers that cannot render a frame.
+                  const clickable = hits.length > 0
                   return (
                     <td key={c}>
                       {/* ⚠️ A div, not a button. Half of these cells render a Button, an
@@ -623,9 +847,21 @@ const CoverageGrid = ({
           </div>
           <div className="grid gap-3 md:grid-cols-2">
             <div className="flex min-h-24 items-center justify-center">
-              <FigmaFrame slug={slug} variant={zoom.variant} />
+              {/* Same guard as the pair card. Ungating the CELL from `frames` (so the
+                  visual diff is reachable without a Figma token) let this side fire a
+                  fetch that cannot even complete its preflight — a CORS error in the
+                  console for a route the server never mounted. */}
+              {frames ? (
+                <FigmaFrame slug={slug} variant={zoom.variant} />
+              ) : (
+                <Text size="xs" c="muted" className="text-center">
+                  No FIGMA_TOKEN on the server: the surface below still compares, the
+                  picture cannot be rendered.
+                </Text>
+              )}
             </div>
             <div
+              ref={setZoomNode}
               className={`flex min-h-24 items-center justify-center rounded ${
                 dark ? "bg-black/20" : "bg-white"
               } p-3`}
@@ -641,6 +877,13 @@ const CoverageGrid = ({
               </PreviewBoundary>
             </div>
           </div>
+          <div className="mt-3">
+            <VisualDiff
+              visual={visuals.variants[zoom.variant]}
+              node={zoomNode}
+              exported={visuals.exported}
+            />
+          </div>
         </div>
       ) : null}
     </div>
@@ -649,52 +892,135 @@ const CoverageGrid = ({
 
 // ---------------------------------------------------------------- one axis row
 
-const AxisRow = ({ a }: { a: ParityAxis }) => {
+/** ONE axis, the two sides facing each other, and the difference SPELLED OUT underneath.
+ *
+ *  ⚠️ This replaced a five-column table (axis · drawn · → · in the kit · verdict). It held
+ *  the same facts and nobody could read a difference out of it: the values ran together in
+ *  narrow cells, and the only thing saying what was wrong was a coloured badge. Reported on
+ *  2026-09-10 — "j'ai encore du mal à distinguer les différences au niveau des props et des
+ *  variantes".
+ *
+ *  So the values get room, the two sides are aligned so the eye can compare them without
+ *  scanning across a table, and every divergence is a SENTENCE. The badge stays, in the
+ *  corner, as a second reading of it. */
+const AxisPair = ({ a }: { a: ParityAxis }) => {
   const v = VERDICT[a.verdict] ?? VERDICT.unpaired
-  return (
-    <tr className="border-white/6 border-t align-top">
-      <td className="py-1.5 pr-3">
-        <code className={`${TYPO.mono()} text-gray-dark-200 text-xs`}>{a.axis || "—"}</code>
-        <div className="text-gray-dark-500 text-[11px]">{a.nature}</div>
-      </td>
-      <td className="py-1.5 pr-3 text-gray-dark-300 text-xs">
-        {a.figma.length > 0 ? a.figma.join(" · ") : "—"}
-        {a.figma_default ? (
-          <span className="text-gray-dark-500"> (default {a.figma_default})</span>
+  const missingKit = a.missing_in_kit ?? []
+  const missingFigma = a.missing_in_figma ?? []
+
+  const Side = ({
+    label,
+    name,
+    register,
+    values,
+    fallback,
+    def,
+    highlight,
+  }: {
+    label: string
+    name: string
+    register?: string
+    values: string[]
+    fallback?: string
+    def?: string
+    highlight: string[]
+  }) => (
+    <div className="flex-1 rounded border border-white/8 p-2">
+      <div className="mb-1 flex items-baseline gap-2">
+        <span className="text-[10px] text-gray-dark-500 uppercase">{label}</span>
+        <code className={`${TYPO.mono()} text-gray-dark-200 text-xs`}>{name || "—"}</code>
+        {register ? (
+          <span className="text-[10px] text-gray-dark-600">{register}</span>
         ) : null}
-      </td>
-      <td className="py-1.5 pr-3">
-        <ArrowRight size={12} className="text-gray-dark-600" />
-      </td>
-      <td className="py-1.5 pr-3 text-xs">
-        <code className={`${TYPO.mono()} text-gray-dark-200`}>{a.react || "—"}</code>
-        {a.register ? <span className="text-gray-dark-500"> · {a.register}</span> : null}
-        <div className="text-gray-dark-300">
-          {a.react_values.length > 0 ? a.react_values.join(" · ") : ""}
-          {a.react_default ? (
-            <span className="text-gray-dark-500"> (default {a.react_default})</span>
-          ) : null}
+      </div>
+      {values.length > 0 ? (
+        <div className="flex flex-wrap gap-1">
+          {values.map((val) => {
+            // The value that exists on ONE side only is picked out where it lives. A list
+            // of eleven values with a note underneath makes the reader do the diffing.
+            const only = highlight.some((h) => h.toLowerCase() === val.toLowerCase())
+            const isDefault = def && def.toLowerCase() === val.toLowerCase()
+            return (
+              <span
+                key={val}
+                title={isDefault ? "the default" : undefined}
+                className={`${TYPO.mono()} rounded px-1.5 py-0.5 text-[11px] ${
+                  only
+                    ? "bg-orange-500/15 text-orange-300 ring-1 ring-orange-500/40"
+                    : "bg-white/5 text-gray-dark-300"
+                } ${isDefault ? "underline decoration-dotted underline-offset-2" : ""}`}
+              >
+                {val}
+              </span>
+            )
+          })}
         </div>
-      </td>
-      <td className="py-1.5">
+      ) : (
+        <span className="text-[11px] text-gray-dark-600">{fallback ?? "—"}</span>
+      )}
+    </div>
+  )
+
+  return (
+    <div className="border-white/6 border-t py-3 first:border-t-0">
+      <div className="mb-1.5 flex flex-wrap items-center gap-2">
         <Badge color={v.color} size="sm" variant="light">
           {v.label}
         </Badge>
-        {a.missing_in_kit && a.missing_in_kit.length > 0 ? (
-          <div className="mt-1 text-[11px] text-orange-300">
-            not in the kit: {a.missing_in_kit.join(", ")}
-          </div>
+        <span className="text-[11px] text-gray-dark-500">{a.nature}</span>
+      </div>
+      <div className="flex flex-col gap-2 md:flex-row md:items-stretch">
+        <Side
+          label="Figma axis"
+          name={a.axis}
+          values={a.figma}
+          def={a.figma_default}
+          highlight={missingKit}
+          fallback="no value on this axis"
+        />
+        <div className="flex items-center justify-center md:px-1">
+          <ArrowRight size={14} className="text-gray-dark-600" />
+        </div>
+        <Side
+          label="React"
+          name={a.react}
+          register={a.register}
+          values={a.react_values}
+          def={a.react_default}
+          highlight={missingFigma}
+          fallback={a.react ? "no enumerable value" : "nothing of that name"}
+        />
+      </div>
+      {/* The difference, in words. A reader should never have to subtract two lists. */}
+      <div className="mt-1.5 flex flex-col gap-0.5">
+        {missingKit.length > 0 ? (
+          <Text size="xs" className="text-orange-300">
+            Figma draws <strong>{missingKit.join(", ")}</strong> — the kit does not accept
+            {missingKit.length > 1 ? " those values" : " that value"}.
+          </Text>
         ) : null}
-        {a.missing_in_figma && a.missing_in_figma.length > 0 ? (
-          <div className="mt-1 text-[11px] text-gray-dark-400">
-            not drawn: {a.missing_in_figma.join(", ")}
-          </div>
+        {missingFigma.length > 0 ? (
+          <Text size="xs" c="muted">
+            The kit ships <strong>{missingFigma.join(", ")}</strong> — nothing draws
+            {missingFigma.length > 1 ? " them" : " it"}.
+          </Text>
+        ) : null}
+        {a.figma_default &&
+        a.react_default &&
+        a.figma_default.toLowerCase() !== a.react_default.toLowerCase() ? (
+          <Text size="xs" className="text-red-300">
+            Defaults disagree: an instance dropped in Figma is{" "}
+            <strong>{a.figma_default}</strong>, the code with no prop is{" "}
+            <strong>{a.react_default}</strong>.
+          </Text>
         ) : null}
         {a.note ? (
-          <div className="mt-1 max-w-md text-[11px] text-gray-dark-500">{a.note}</div>
+          <Text size="xs" c="muted">
+            {a.note}
+          </Text>
         ) : null}
-      </td>
-    </tr>
+      </div>
+    </div>
   )
 }
 
@@ -708,10 +1034,20 @@ const Pair = ({ pair, dark, frames }: { pair: ParityPair; dark: boolean; frames:
   // version said the former for both: `Alert` showed a green tick while BOTH its axes were
   // unreadable (its cva lives in `alertRoot`). A green tick on an unmeasured component is
   // the one thing this tab must never print.
+  const [onlyDiff, setOnlyDiff] = useState(true)
   const [covOpen, setCovOpen] = useState(false)
   const [cov, setCov] = useState<Coverage | null>(null)
+  const [visuals, setVisuals] = useState<{
+    exported: boolean
+    variants: Record<string, VariantVisual>
+  }>({ exported: false, variants: {} })
   const [covError, setCovError] = useState("")
   const blind = pair.axes.filter((a) => a.verdict === "unreadable")
+  // Default to the differences: a healthy component is a page of "aligned", and the reader
+  // came for what is not.
+  const shownAxes = onlyDiff
+    ? pair.axes.filter((a) => a.verdict !== "aligned" && a.verdict !== "by-design")
+    : pair.axes
   const comparable = pair.axes.length > blind.length
 
   return (
@@ -819,7 +1155,10 @@ const Pair = ({ pair, dark, frames }: { pair: ParityPair; dark: boolean; frames:
                   setCovOpen(true)
                   setCovError("")
                   getParityDetail(pair.figma.slug, pair.react)
-                    .then((d) => setCov(d.coverage))
+                    .then((d) => {
+                      setCov(d.coverage)
+                      setVisuals(d.visuals ?? { exported: false, variants: {} })
+                    })
                     .catch((e: Error) => setCovError(e.message))
                 }}
               >
@@ -843,23 +1182,22 @@ const Pair = ({ pair, dark, frames }: { pair: ParityPair; dark: boolean; frames:
               </button>
             )}
             {open ? (
-              <div className="mt-2 overflow-x-auto">
-                <table className="w-full text-left">
-                  <thead>
-                    <tr className="text-gray-dark-500 text-[11px] uppercase">
-                      <th className="pb-1 pr-3 font-normal">Figma axis</th>
-                      <th className="pb-1 pr-3 font-normal">drawn</th>
-                      <th />
-                      <th className="pb-1 pr-3 font-normal">in the kit</th>
-                      <th className="pb-1 font-normal">verdict</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {pair.axes.map((a) => (
-                      <AxisRow key={`${a.axis}-${a.react}`} a={a} />
-                    ))}
-                  </tbody>
-                </table>
+              <div className="mt-2">
+                <label className="mb-1 flex items-center gap-2 text-gray-dark-400 text-xs">
+                  <input
+                    type="checkbox"
+                    checked={onlyDiff}
+                    onChange={(e) => setOnlyDiff(e.target.checked)}
+                  />
+                  Only the axes that differ
+                </label>
+                {shownAxes.length === 0 ? (
+                  <Text size="xs" c="muted">
+                    Every axis lines up on both sides.
+                  </Text>
+                ) : (
+                  shownAxes.map((a) => <AxisPair key={`${a.axis}-${a.react}`} a={a} />)
+                )}
                 {pair.figma.variant_count > 1 ? (
                   <div className="mt-3 flex items-center gap-2">
                     <Text size="xs" c="muted">
@@ -890,6 +1228,7 @@ const Pair = ({ pair, dark, frames }: { pair: ParityPair; dark: boolean; frames:
                 slug={pair.figma.slug}
                 react={pair.react}
                 cov={cov}
+                visuals={visuals}
                 dark={dark}
                 frames={frames}
               />
