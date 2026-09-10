@@ -914,42 +914,12 @@ export async function getTokensBrief(): Promise<string> {
   return r.text()
 }
 
-/** Running the component sync: the API reads Figma and commits the catalogue.
- *
- *  ⚠️ It writes `context/components/**` — what an agent reads — so it is a WRITE: off under
- *  READ_ONLY, and the report's `can_sync` says whether it exists at all before the console
- *  draws a button for it. `only` narrows it to one component, which is the trial run.
- *
- *  It does NOT touch the Variables: no token this account can mint reads them, so the
- *  colour modes still come from the Figma plugin. Two producers, two gestures. */
-export type SyncResult = {
-  commit: string
-  files: string[]
-  components: number
-  surfaces: number
-  pages: number
-  pages_declared: number
-  variables_resolved: number
-  only: string
-}
-
-export async function syncComponents(only = ""): Promise<SyncResult> {
-  const key = readKey()
-  const r = await fetch(`${BASE}/console/parity/sync.json`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", ...(key ? { "X-DS-Key": key } : {}) },
-    body: JSON.stringify({ only }),
-  })
-  if (r.status === 401) throw new AccessError("Key rejected by the server.")
-  if (!r.ok) {
-    let detail = ""
-    try {
-      detail = ((await r.json()) as { error?: string }).error ?? ""
-    } catch {
-      /* non-JSON body */
-    }
-    const message = detail || `sync → HTTP ${r.status}`
-    throw r.status === 503 ? new NotConfigured(message) : new Error(message)
-  }
-  return (await r.json()) as SyncResult
-}
+/* ⚠️ The component sync used to live here — `syncComponents()`, POST /console/parity/sync.json,
+ * which read the Figma API and committed the catalogue. Removed from the console on
+ * 2026-09-10 with the button that called it: it was a SECOND producer of
+ * `context/components/**` and of the index, next to the Figma plugin that owns them, and by
+ * then it no longer wrote the surfaces at all — so pressing it left the export half fresh,
+ * catalogue new and surfaces stale. The Figma → repo sync is the plugin's, whole and in one
+ * gesture. The ROUTE is still mounted server-side and still reachable with the console key;
+ * removing it is a separate decision, and a deliberate one, since nothing in this app calls
+ * it any more. */

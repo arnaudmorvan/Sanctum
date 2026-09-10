@@ -38,7 +38,6 @@ import {
   ArrowRight,
   Check,
   Copy,
-  DownloadCloud,
   Grid3x3,
   ImageOff,
   RefreshCw,
@@ -57,7 +56,6 @@ import {
   getParityDetail,
   getParityFrame,
   type Paint,
-  syncComponents,
   type ParityAxis,
   type ParityFinding,
   type ParityPair,
@@ -1569,8 +1567,6 @@ export const ParityView = ({ selected = "" }: { selected?: string }) => {
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
   const [copied, setCopied] = useState(false)
-  const [syncing, setSyncing] = useState(false)
-  const [syncNote, setSyncNote] = useState("")
   const [dark, setDark] = useState(true)
   const [owner, setOwner] = useState<"kit" | "both" | "figma">("kit")
 
@@ -1596,27 +1592,6 @@ export const ParityView = ({ selected = "" }: { selected?: string }) => {
   useEffect(() => {
     load(false)
   }, [load])
-
-  /** The sync reads Figma and commits the catalogue. It takes a while — a hundred-odd
-   *  calls — so the button says what it is doing rather than going quiet, and the report
-   *  is reloaded from the new commit afterwards. */
-  const runSync = async () => {
-    setSyncing(true)
-    setSyncNote("")
-    try {
-      const out = await syncComponents()
-      setSyncNote(
-        `${out.components} components and ${out.surfaces} surface files written in commit ` +
-          `${out.commit} · ${out.pages}/${out.pages_declared} declared pages found · ` +
-          `${out.variables_resolved} variable ids resolved through the plugin's file.`,
-      )
-      load(true)
-    } catch (e) {
-      setSyncNote(e instanceof Error ? e.message : String(e))
-    } finally {
-      setSyncing(false)
-    }
-  }
 
   const copy = async () => {
     try {
@@ -1671,29 +1646,22 @@ export const ParityView = ({ selected = "" }: { selected?: string }) => {
       <Sources s={data.sources} />
 
       <div className="flex flex-wrap items-center gap-2">
-        <Button size="sm" variant="outline" onClick={() => load(true)} disabled={loading}>
+        {/* ⚠️ ONE sync gesture, and it is not here. Until 2026-09-10 this bar also carried
+            "Sync from Figma", which read the Figma API and committed the catalogue — a
+            SECOND producer of items/ and of the index, the very thing that was removed for
+            the surfaces the same day. Worse by then: it no longer wrote the surfaces, so
+            pressing it produced a half-fresh export, catalogue new and surfaces stale. The
+            Figma → repo sync is the plugin's, whole. This button only re-reads what the
+            plugin has committed. */}
+        <Button size="sm" variant="outline" color="brand"
+                onClick={() => load(true)} disabled={loading}>
           <RefreshCw size={14} />
-          {loading ? "Rescanning…" : "Rescan"}
+          {loading ? "Reading the catalogue…" : "Refresh"}
         </Button>
         <Button size="sm" variant="outline" onClick={copy}>
           {copied ? <Check size={14} /> : <Copy size={14} />}
           {copied ? "Copied" : "Copy the brief"}
         </Button>
-        {/* Only drawn when the server says it exists. A button that appears and then
-            answers 503 is worse than one that is absent — the reader tries it, believes
-            the feature is broken, and looks for the fault in the wrong place. */}
-        {data.sources.figma.can_sync ? (
-          <Button
-            size="sm"
-            variant="outline"
-            color="brand"
-            onClick={runSync}
-            disabled={syncing}
-          >
-            <DownloadCloud size={14} />
-            {syncing ? "Reading Figma…" : "Sync from Figma"}
-          </Button>
-        ) : null}
         <Button size="sm" variant="subtle" onClick={() => setDark((d) => !d)}>
           {dark ? <Moon size={14} /> : <Sun size={14} />}
           {dark ? "Dark" : "Light"} previews
@@ -1702,12 +1670,6 @@ export const ParityView = ({ selected = "" }: { selected?: string }) => {
           The Figma file defaults to Dark — match it here to compare like for like.
         </Text>
       </div>
-      {syncNote ? (
-        <Text size="xs" c="secondary">
-          {syncNote}
-        </Text>
-      ) : null}
-
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         {[
           ["Paired", c.pairs],
