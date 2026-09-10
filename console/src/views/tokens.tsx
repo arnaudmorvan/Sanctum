@@ -33,7 +33,7 @@ import { Spinner } from "@42/ui-react/spinner"
 import { Text } from "@42/ui-react/text"
 import { Title } from "@42/ui-react/title"
 import { Check, ChevronDown, ChevronRight, Copy, RefreshCw, Sparkles } from "lucide-react"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { Signature } from "../../../src/layout/identity"
 import { TYPO } from "../../../src/typo"
 import {
@@ -208,9 +208,95 @@ const Family = ({ fam }: { fam: TokenFamily }) => {
  *  with it, read off the exported surfaces). Both are on every line, and the decision
  *  stays per colour: the reviewer settles one red without settling the others. */
 const Colours = ({ colors }: { colors: TokensReport["colors"] }) => {
-  const [showCarried, setShowCarried] = useState(false)
   const [showIgnored, setShowIgnored] = useState(false)
+  const [showPrimitive, setShowPrimitive] = useState(false)
+  const [filter, setFilter] = useState<"missing" | "carried" | "all">("missing")
+  const [query, setQuery] = useState("")
+  // The modes of ONE collection — the one that covers the most tokens. The union across
+  // collections would offer `brand`/`gray`/`pink`, which resolve nothing for 346 of the
+  // 347 colour tokens.
+  const modeNames = colors.mode_sets?.[0]?.modes ?? []
+  // ⚠️ A token is an ALIAS PER MODE: `text-primary` is white in dark and near-black in
+  // light, and so is the colour it lands on. The table shows ONE mode and says which.
+  const [mode, setMode] = useState(colors.default_mode || modeNames[0] || "")
   const ignored = new Set(colors.ignored_colors)
+
+  // Grouped by the COLOUR the tokens resolve to, in the mode on screen — a dozen roles
+  // share one hex, and the old flat list repeated it a dozen times.
+  const byColour = useMemo(() => {
+    type Colour = {
+      rgb: string
+      hex: string
+      /** The distinct opacities the tokens of this colour carry, and whether one is
+       *  opaque: `#f04438` and `#f044384d` are ONE colour seen twice. */
+      alphas: number[]
+      opaque: boolean
+      tokens: string[]
+      kit: string[]
+      used: string[]
+      family: string
+      near?: { name: string; hex: string; distance: number }
+    }
+    const out = new Map<string, Colour>()
+    for (const r of colors.rows) {
+      // ⚠️ The value and the palette hit come from the SAME place. A token whose
+      // collection has no such mode (`accent-solid` lives in `7. Accent`, whose modes are
+      // brand/gray/pink) falls back to its default value — and must fall back to the
+      // default's hit too, or it reads "absent" while the kit ships it.
+      const perMode = mode ? r.modes[mode] : ""
+      const hex = perMode || r.default
+      const rgb = hex.replace("#", "").slice(0, 6).toLowerCase()
+      if (rgb.length < 6) continue
+      const kit = perMode ? (r.mode_hits[mode] ?? []) : r.in_palette
+      const raw = hex.replace("#", "")
+      const c: Colour = out.get(rgb) ?? {
+        rgb,
+        hex: `#${rgb}`,
+        alphas: [],
+        opaque: false,
+        tokens: [],
+        kit,
+        used: [],
+        family: r.family,
+        near: colors.nearest?.[rgb],
+      }
+      c.tokens.push(r.token)
+      for (const u of r.used_by) if (!c.used.includes(u)) c.used.push(u)
+      // The alpha variants are FOLDED into the colour — `#f04438` and `#f044384d` are one
+      // divergence seen twice — so the cell says how many opacities there are rather than
+      // picking one of them and implying the colour is that.
+      if (raw.length === 8) {
+        const a = Math.round((Number.parseInt(raw.slice(6, 8), 16) / 255) * 100)
+        if (!c.alphas.includes(a)) c.alphas.push(a)
+      } else c.opaque = true
+      out.set(rgb, c)
+    }
+    // Missing first, and inside it what is painted the most: the order a reader acts in.
+    return [...out.values()].sort((a, b) => {
+      if (!a.kit.length !== !b.kit.length) return a.kit.length ? 1 : -1
+      if (b.used.length !== a.used.length) return b.used.length - a.used.length
+      return a.rgb.localeCompare(b.rgb)
+    })
+  }, [colors, mode])
+
+  const counted = {
+    missing: byColour.filter((c) => c.kit.length === 0).length,
+    carried: byColour.filter((c) => c.kit.length > 0).length,
+    all: byColour.length,
+  }
+  const q = query.trim().toLowerCase()
+  const shownColours = byColour.filter((c) => {
+    if (filter === "missing" && c.kit.length > 0) return false
+    if (filter === "carried" && c.kit.length === 0) return false
+    if (!showIgnored && ignored.has(c.rgb) && c.kit.length === 0 && filter !== "all") return false
+    if (!q) return true
+    return (
+      c.rgb.includes(q.replace("#", "")) ||
+      c.tokens.some((t) => t.toLowerCase().includes(q)) ||
+      c.kit.some((k) => k.toLowerCase().includes(q)) ||
+      (c.near?.name ?? "").toLowerCase().includes(q)
+    )
+  })
   const groups = colors.off_palette_groups.map((g) => ({
     ...g,
     colors: g.colors.filter((rgb) => showIgnored || !ignored.has(rgb)),
@@ -340,7 +426,19 @@ const Colours = ({ colors }: { colors: TokensReport["colors"] }) => {
       ) : null}
       {primitive.length > 0 ? (
         <div className="rounded-lg border border-white/10">
-          <div className="flex items-center gap-2 px-3 py-2">
+          {/* FOLDED by default: these are a note, and open they are fifty rows between the
+              blocking box and the table — the reader scrolls past the two things that
+              matter to reach the one that does not. */}
+          <button
+            type="button"
+            onClick={() => setShowPrimitive((v) => !v)}
+            className="flex w-full items-center gap-2 px-3 py-2 text-left hover:bg-white/5"
+          >
+            {showPrimitive ? (
+              <ChevronDown size={14} className="shrink-0 text-gray-dark-500" />
+            ) : (
+              <ChevronRight size={14} className="shrink-0 text-gray-dark-500" />
+            )}
             <Badge color="gray" size="sm" variant="light">
               informative
             </Badge>
@@ -348,14 +446,18 @@ const Colours = ({ colors }: { colors: TokensReport["colors"] }) => {
               Primitive palette steps the kit does not ship
             </Text>
             <span className="text-[11px] text-gray-dark-500">
-              nothing binds to them on its own — a note, not a ticket
+              {primitive.length} famil{primitive.length > 1 ? "ies" : "y"} ·{" "}
+              {primitive.reduce((n, g) => n + g.colors.length, 0)} colours · nothing binds to
+              them on its own — a note, not a ticket
             </span>
-          </div>
-          <ul className="border-white/8 border-t px-3">
-            {primitive.map((g) => (
-              <Group key={g.family} g={g} />
-            ))}
-          </ul>
+          </button>
+          {showPrimitive ? (
+            <ul className="border-white/8 border-t px-3">
+              {primitive.map((g) => (
+                <Group key={g.family} g={g} />
+              ))}
+            </ul>
+          ) : null}
         </div>
       ) : null}
       {semantic.length === 0 && primitive.length === 0 ? (
@@ -366,58 +468,202 @@ const Colours = ({ colors }: { colors: TokensReport["colors"] }) => {
         </Text>
       ) : null}
 
-      <label className="flex items-center gap-2 text-gray-dark-400 text-xs">
+      {/* ONE table, always open, every colour and where it lands.
+          Reported on 2026-09-10: "c'est possible d'avoir un truc clair avec les couleurs
+          Figma, la correspondance et les trous pour identifier rapidement ce qui manque".
+          It was two places — the boxes above for what is missing, a checkbox-hidden list
+          for what is carried — so the two could never be read against each other. Grouped
+          by COLOUR and not by token, because a dozen roles share one hex and repeating it
+          twelve times is what made the old list unreadable. */}
+      <div className="flex flex-wrap items-center gap-2 pt-1">
+        <Text size="sm" className={TYPO.title("semibold")}>
+          Every colour, and where it lands in the kit
+        </Text>
+        {(["missing", "carried", "all"] as const).map((f) => (
+          <button
+            key={f}
+            type="button"
+            onClick={() => setFilter(f)}
+            className={`rounded-md border px-2 py-0.5 text-[11px] transition ${
+              filter === f
+                ? "border-white/40 bg-white/10 text-white"
+                : "border-white/15 text-gray-dark-400 hover:border-white/30"
+            }`}
+          >
+            {f === "missing" ? "not in the kit" : f === "carried" ? "in the kit" : "all"} (
+            {counted[f]})
+          </button>
+        ))}
+        {modeNames.length > 1 ? (
+          <span className="flex items-center gap-1">
+            {modeNames.map((m) => (
+              <button
+                key={m}
+                type="button"
+                onClick={() => setMode(m)}
+                className={`rounded-md border px-2 py-0.5 text-[11px] transition ${
+                  mode === m
+                    ? "border-white/40 bg-white/10 text-white"
+                    : "border-white/15 text-gray-dark-400 hover:border-white/30"
+                }`}
+                title="A token is an alias PER MODE: the colour it resolves to is not the same in both."
+              >
+                {m}
+                {m === colors.default_mode ? (
+                  <span className="ml-1 text-[9px] text-gray-dark-500">default</span>
+                ) : null}
+              </button>
+            ))}
+          </span>
+        ) : null}
+        {mode && colors.default_mode && mode !== colors.default_mode ? (
+          <span className="text-[11px] text-orange-200/80">
+            everything above is resolved at {colors.default_mode} — this table is not
+          </span>
+        ) : null}
         <input
-          type="checkbox"
-          checked={showCarried}
-          onChange={(e) => setShowCarried(e.target.checked)}
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="a token, a hex, a kit variable"
+          className={`${TYPO.mono()} ml-auto w-56 rounded border border-white/15 bg-transparent px-2 py-0.5 text-[11px] text-gray-dark-200`}
         />
-        Show the {colors.counts.in_palette} tokens the palette carries, and where
-      </label>
-      {showCarried ? (
-        <div className="max-h-96 overflow-auto">
-          <table className="w-full text-left">
-            <thead>
-              <tr className="text-[11px] text-gray-dark-500 uppercase">
-                <th className="pb-1 pr-3 font-normal">Token</th>
-                <th className="pb-1 pr-3 font-normal">Resolves to</th>
-                <th className="pb-1 pr-3 font-normal">In the kit's palette</th>
-                <th className="pb-1 font-normal">Painted by</th>
-              </tr>
-            </thead>
-            <tbody>
-              {colors.rows
-                .filter((r: ColorRow) => r.in_palette.length > 0)
-                .map((r: ColorRow) => (
-                  <tr key={r.token} className="border-white/6 border-t align-top">
-                    <td className={`${TYPO.mono()} py-1 pr-3 text-gray-dark-200 text-xs`}>
-                      {r.token}
-                    </td>
-                    <td className="py-1 pr-3">
+      </div>
+      <div className="max-h-[34rem] overflow-auto">
+        <table className="w-full text-left">
+          <thead className="sticky top-0 bg-gray-dark-950">
+            <tr className="text-[11px] text-gray-dark-500 uppercase">
+              <th className="pb-1 pr-3 font-normal">Figma colour</th>
+              <th className="pb-1 pr-3 font-normal">Bound to</th>
+              <th className="pb-1 pr-3 font-normal">In the kit</th>
+              <th className="pb-1 pr-3 font-normal">Painted by</th>
+              <th className="pb-1 font-normal" />
+            </tr>
+          </thead>
+          <tbody>
+            {shownColours.map((c) => {
+              const id = `color-off-palette:foundations:${c.rgb}`
+              const isIgnored = ignored.has(c.rgb)
+              return (
+                <tr
+                  key={c.rgb}
+                  className={`border-white/6 border-t align-top ${isIgnored ? "opacity-50" : ""}`}
+                >
+                  <td className="py-1 pr-3">
+                    <span className="flex items-center gap-1.5">
+                      <Swatch hex={c.hex} />
+                      <code className={`${TYPO.mono()} text-gray-dark-200 text-xs`}>
+                        {c.hex}
+                      </code>
+                      {c.alphas.length === 1 && !c.opaque ? (
+                        <span className="text-[11px] text-gray-dark-500">{c.alphas[0]}%</span>
+                      ) : c.alphas.length > 0 ? (
+                        <span
+                          className="text-[11px] text-gray-dark-500"
+                          title={`${c.opaque ? "opaque, " : ""}${c.alphas
+                            .sort((a, b) => a - b)
+                            .map((a) => `${a}%`)
+                            .join(", ")}`}
+                        >
+                          {c.alphas.length + (c.opaque ? 1 : 0)} opacities
+                        </span>
+                      ) : null}
+                    </span>
+                  </td>
+                  <td className={`${TYPO.mono()} py-1 pr-3 text-[11px]`}>
+                    <span className="flex flex-wrap gap-1">
+                      {c.tokens.slice(0, 4).map((t) => (
+                        <span
+                          key={t}
+                          className="rounded bg-white/5 px-1.5 py-0.5 text-gray-dark-400"
+                        >
+                          {t}
+                        </span>
+                      ))}
+                      {c.tokens.length > 4 ? (
+                        <span
+                          className="px-1 py-0.5 text-gray-dark-600"
+                          title={c.tokens.join(", ")}
+                        >
+                          +{c.tokens.length - 4}
+                        </span>
+                      ) : null}
+                    </span>
+                  </td>
+                  <td className="py-1 pr-3">
+                    {c.kit.length > 0 ? (
                       <span className="flex items-center gap-1.5">
-                        <Swatch hex={r.default} />
+                        <Check size={12} className="shrink-0 text-green-500" />
                         <code className={`${TYPO.mono()} text-gray-dark-300 text-xs`}>
-                          {r.default}
+                          {c.kit[0]}
                         </code>
-                        {r.alpha !== null ? (
-                          <span className="text-[11px] text-gray-dark-500">
-                            {Math.round(r.alpha * 100)}%
+                        {c.kit.length > 1 ? (
+                          <span
+                            className="text-[10px] text-gray-dark-600"
+                            title={c.kit.join(", ")}
+                          >
+                            +{c.kit.length - 1}
                           </span>
                         ) : null}
                       </span>
-                    </td>
-                    <td className={`${TYPO.mono()} py-1 pr-3 text-gray-dark-400 text-xs`}>
-                      {r.in_palette[0]}
-                    </td>
-                    <td className="py-1 text-[11px] text-gray-dark-500">
-                      {r.used_by.length > 0 ? r.used_by.length : "·"}
-                    </td>
-                  </tr>
-                ))}
-            </tbody>
-          </table>
-        </div>
-      ) : null}
+                    ) : (
+                      <span className="flex flex-wrap items-center gap-1.5">
+                        <Badge color="orange" size="sm" variant="light">
+                          absent
+                        </Badge>
+                        {c.near ? (
+                          <>
+                            {/* The DECISION, not just the hole: 5 % from a colour the kit
+                                already ships is a token to re-bind; 30 % is a hue nobody
+                                has. */}
+                            <span className="text-[10px] text-gray-dark-500">nearest</span>
+                            <Swatch hex={c.near.hex} />
+                            <code className={`${TYPO.mono()} text-gray-dark-400 text-xs`}>
+                              {c.near.name}
+                            </code>
+                            <span
+                              className={`text-[10px] ${
+                                c.near.distance < 8 ? "text-orange-200" : "text-gray-dark-600"
+                              }`}
+                              title="0 is the same colour, 100 is black against white."
+                            >
+                              {c.near.distance}% away
+                            </span>
+                          </>
+                        ) : null}
+                      </span>
+                    )}
+                  </td>
+                  <td className="whitespace-nowrap py-1 pr-3 text-[11px] text-gray-dark-500">
+                    {c.used.length > 0 ? (
+                      <span title={c.used.join(", ")}>
+                        {c.used.length} component{c.used.length > 1 ? "s" : ""}
+                      </span>
+                    ) : (
+                      "·"
+                    )}
+                  </td>
+                  <td className="py-1">
+                    {c.kit.length > 0 ? null : isIgnored ? (
+                      <RestoreButton id={id} />
+                    ) : (
+                      <IgnoreButton
+                        id={id}
+                        title={`${c.hex} (${c.family}) is not in the kit's palette`}
+                        compact
+                      />
+                    )}
+                  </td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+        {shownColours.length === 0 ? (
+          <Text size="xs" c="muted" className="py-2">
+            Nothing matches.
+          </Text>
+        ) : null}
+      </div>
     </div>
   )
 }

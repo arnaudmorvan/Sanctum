@@ -981,12 +981,26 @@ export type TokensReport = {
      *  collection's DEFAULT mode is in the file, and here that default is Dark. The tab
      *  must say so rather than show one mode as if it were both. */
     modes_exported: boolean
+    /** Every mode name in the export, across collections. */
     modes: string[]
+    /** ⚠️ Modes belong to a COLLECTION, and the union of two collections is a switch that
+     *  means nothing: this file has `Dark/Light` on every colour and `brand/gray/pink` on
+     *  ONE token. A set is the modes a token carries together; the first covers the most
+     *  tokens and is the one to offer. */
+    mode_sets: { modes: string[]; tokens: number }[]
+    /** The mode every OTHER number in this report is resolved at — `ds-fondations.yaml`
+     *  resolves at the collection's default and never says which. Recovered by agreement:
+     *  the mode whose value equals the resolved one for the most tokens. */
+    default_mode: string
     rows: ColorRow[]
     palette_size: number
     reference_size: number
     unbound: string[]
     off_palette_colors: Record<string, string[]>
+    /** Per colour the kit does NOT carry, the one it comes closest with and how far it is
+     *  (0-100, black against white being 100). The difference between "re-bind this token"
+     *  and "the kit has no such hue". Absent for a colour the palette carries. */
+    nearest: Record<string, { name: string; hex: string; distance: number }>
     off_palette_groups: ColorGroup[]
     /** The off-palette colours the reviewer ignored (`color-off-palette:foundations:<rgb>`). */
     ignored_colors: string[]
