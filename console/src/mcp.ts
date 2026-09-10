@@ -670,6 +670,12 @@ export type ParityFinding = {
   flagged?: boolean
   flagged_by?: string
   flagged_at?: string
+  /** Colour findings only (tokens): the class, the root-cause family, the tokens on this
+   *  colour and the components that paint with it. */
+  class?: "semantic" | "primitive"
+  family?: string
+  tokens?: string[]
+  used_by?: string[]
 }
 
 export type ParityReport = {
@@ -935,6 +941,24 @@ export type ColorRow = {
   in_palette: string[]
   modes: Record<string, string>
   mode_hits: Record<string, string[]>
+  /** `semantic` (a role a component binds to — blocking when unresolved) or `primitive`
+   *  (a palette step nothing binds to on its own — informative). */
+  kind: "semantic" | "primitive"
+  /** The hue behind the role: `bg-error-primary` → `error`, `utility-blue-dark-50` →
+   *  `utility-blue-dark`. The ROOT CAUSE the brief groups by. */
+  family: string
+  /** The components that paint with this token, read off the exported surfaces. */
+  used_by: string[]
+}
+
+/** The off-palette colours folded to their root causes, ordered blocking first and by
+ *  usage inside. What the brief is written from. */
+export type ColorGroup = {
+  kind: "semantic" | "primitive"
+  family: string
+  tokens: string[]
+  colors: string[]
+  used_by: string[]
 }
 
 export type TokensReport = {
@@ -950,6 +974,7 @@ export type TokensReport = {
     reference_size: number
     unbound: string[]
     off_palette_colors: Record<string, string[]>
+    off_palette_groups: ColorGroup[]
     /** The off-palette colours the reviewer ignored (`color-off-palette:foundations:<rgb>`). */
     ignored_colors: string[]
     counts: { tokens: number; in_palette: number; off_palette: number; with_alpha: number }
@@ -959,6 +984,8 @@ export type TokensReport = {
     kit_declares: string[]
     off_grid: string[]
   }
+  /** What is NOT compared, one sentence each with its consequence — read FIRST. */
+  scope: string[]
   findings: ParityFinding[]
   counts: {
     families: number

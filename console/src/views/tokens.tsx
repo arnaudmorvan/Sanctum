@@ -54,7 +54,6 @@ import {
   OwnerBar,
   RestoreButton,
   ReviewContext,
-  useReview,
   useReviewState,
 } from "./review"
 
@@ -200,17 +199,82 @@ const Family = ({ fam }: { fam: TokenFamily }) => {
 
 // ---------------------------------------------------------------- the colours
 
-/** The colours, grouped by COLOUR. The question a dev opens this with is "which colours
- *  do I have to add to the palette" — forty-nine answers, not sixty-one tokens. Each one
- *  carries the tokens that resolve to it and the reviewer's decision. */
+/** The colours, grouped by ROOT CAUSE — the hue behind the role, blocking first.
+ *
+ *  Reported on 2026-09-10 by a reader of the brief: forty-nine colours in a wall say
+ *  nothing about priority. Two things separate `bg-error-primary` from
+ *  `utility-fuchsia-700`: its CLASS (a semantic token the kit cannot paint blocks a
+ *  screen; a primitive palette step is a note) and its USAGE (how many components paint
+ *  with it, read off the exported surfaces). Both are on every line, and the decision
+ *  stays per colour: the reviewer settles one red without settling the others. */
 const Colours = ({ colors }: { colors: TokensReport["colors"] }) => {
-  const review = useReview()
   const [showCarried, setShowCarried] = useState(false)
   const [showIgnored, setShowIgnored] = useState(false)
-  const off = Object.entries(colors.off_palette_colors)
   const ignored = new Set(colors.ignored_colors)
-  const shown = off.filter(([rgb]) => showIgnored || !ignored.has(rgb))
-  const byRgb = (rgb: string) => colors.rows.filter((r) => r.default.toLowerCase().slice(1, 7) === rgb)
+  const groups = colors.off_palette_groups.map((g) => ({
+    ...g,
+    colors: g.colors.filter((rgb) => showIgnored || !ignored.has(rgb)),
+  }))
+  const semantic = groups.filter((g) => g.kind === "semantic" && g.colors.length > 0)
+  const primitive = groups.filter((g) => g.kind === "primitive" && g.colors.length > 0)
+  const left = Object.keys(colors.off_palette_colors).filter((rgb) => !ignored.has(rgb)).length
+
+  const Group = ({ g }: { g: (typeof groups)[number] }) => (
+    <li className="border-white/6 border-t py-2 first:border-t-0">
+      <div className="flex flex-wrap items-center gap-2">
+        <span className={`${TYPO.title("semibold")} text-sm`}>{g.family}</span>
+        <span className="text-[11px] text-gray-dark-500">
+          {g.tokens.length} token{g.tokens.length > 1 ? "s" : ""} · {g.colors.length} colour
+          {g.colors.length > 1 ? "s" : ""}
+        </span>
+        {g.used_by.length > 0 ? (
+          <Badge color={g.kind === "semantic" ? "red" : "gray"} size="sm" variant="light">
+            painted by {g.used_by.length} component{g.used_by.length > 1 ? "s" : ""}
+          </Badge>
+        ) : (
+          <Badge color="gray" size="sm" variant="outline">
+            painted by nothing
+          </Badge>
+        )}
+        {g.used_by.length > 0 ? (
+          <span className={`${TYPO.mono()} text-[11px] text-gray-dark-500`}>
+            {g.used_by.slice(0, 8).join(", ")}
+            {g.used_by.length > 8 ? "…" : ""}
+          </span>
+        ) : null}
+      </div>
+      <ul className="mt-1 flex flex-col gap-1 pl-2">
+        {g.colors.map((rgb) => {
+          const id = `color-off-palette:foundations:${rgb}`
+          const isIgnored = ignored.has(rgb)
+          const tokens = colors.off_palette_colors[rgb] ?? []
+          return (
+            <li
+              key={rgb}
+              className={`flex flex-wrap items-center gap-2 ${isIgnored ? "opacity-50" : ""}`}
+            >
+              <Swatch hex={`#${rgb}`} size={4} />
+              <code className={`${TYPO.mono()} text-gray-dark-200 text-xs`}>#{rgb}</code>
+              <span className={`${TYPO.mono()} flex flex-wrap gap-1 text-[11px]`}>
+                {tokens.map((t) => (
+                  <span key={t} className="rounded bg-white/5 px-1.5 py-0.5 text-gray-dark-400">
+                    {t}
+                  </span>
+                ))}
+              </span>
+              <span className="ml-auto">
+                {isIgnored ? (
+                  <RestoreButton id={id} />
+                ) : (
+                  <IgnoreButton id={id} title={`#${rgb} (${g.family}) is not in the kit's palette`} compact />
+                )}
+              </span>
+            </li>
+          )
+        })}
+      </ul>
+    </li>
+  )
 
   return (
     <div className="flex flex-col gap-3">
@@ -223,27 +287,21 @@ const Colours = ({ colors }: { colors: TokensReport["colors"] }) => {
           title="Only one colour mode is in the export"
           description="ds-fondations.yaml resolves every variable against its collection's default mode — Dark, on this file — so the Light values are nowhere. The Figma plugin was fixed on 2026-09-09 to write values_by_mode; re-run a sync from Figma and both modes are compared here."
         />
-      ) : (
-        <Text size="sm" c="secondary">
-          Modes exported: {colors.modes.join(" · ")}. Each token is looked up in the kit's
-          palette once per mode.
-        </Text>
-      )}
+      ) : null}
       <Text size="xs" c="muted">
         Figma names colours by ROLE (<code className={TYPO.mono()}>text-primary</code>), the
         kit by HUE (<code className={TYPO.mono()}>--color-gray-dark-100</code>) — so they are
-        matched by value, not by name. A colour with no palette entry is one no{" "}
-        <code className={TYPO.mono()}>data-color</code> can reproduce. Grouped by colour: the
-        error red seen through a dozen alpha variants is one divergence, not twelve.
+        matched by value, not by name, and grouped here by the hue behind the role. A
+        SEMANTIC token the kit cannot paint blocks a screen; a PRIMITIVE palette step nothing
+        binds to is a note. "Painted by" is read off the surfaces the plugin exports.
       </Text>
 
       <div className="flex flex-wrap items-center gap-2">
         <Text size="sm" className={TYPO.title("semibold")}>
           Colours the palette cannot reproduce
         </Text>
-        <Badge color={shown.length > 0 ? "orange" : "green"} size="sm" variant="light">
-          {shown.length} colour{shown.length === 1 ? "" : "s"} · {colors.counts.off_palette}{" "}
-          token{colors.counts.off_palette === 1 ? "" : "s"}
+        <Badge color={left > 0 ? "orange" : "green"} size="sm" variant="light">
+          {left} colour{left === 1 ? "" : "s"}
         </Badge>
         <span className="text-[11px] text-gray-dark-500">
           {colors.counts.in_palette} of {colors.counts.tokens} tokens resolve to a colour the
@@ -260,56 +318,53 @@ const Colours = ({ colors }: { colors: TokensReport["colors"] }) => {
         ) : null}
       </div>
 
-      {shown.length === 0 ? (
+      {semantic.length > 0 ? (
+        <div className="rounded-lg border border-red-500/30">
+          <div className="flex items-center gap-2 px-3 py-2">
+            <Badge color="red" size="sm">
+              blocking
+            </Badge>
+            <Text size="sm" className={TYPO.title("semibold")}>
+              Semantic tokens the kit cannot paint
+            </Text>
+            <span className="text-[11px] text-gray-dark-500">
+              a screen built on one cannot be rebuilt with the kit — a ticket each
+            </span>
+          </div>
+          <ul className="border-white/8 border-t px-3">
+            {semantic.map((g) => (
+              <Group key={g.family} g={g} />
+            ))}
+          </ul>
+        </div>
+      ) : null}
+      {primitive.length > 0 ? (
+        <div className="rounded-lg border border-white/10">
+          <div className="flex items-center gap-2 px-3 py-2">
+            <Badge color="gray" size="sm" variant="light">
+              informative
+            </Badge>
+            <Text size="sm" className={TYPO.title("semibold")}>
+              Primitive palette steps the kit does not ship
+            </Text>
+            <span className="text-[11px] text-gray-dark-500">
+              nothing binds to them on its own — a note, not a ticket
+            </span>
+          </div>
+          <ul className="border-white/8 border-t px-3">
+            {primitive.map((g) => (
+              <Group key={g.family} g={g} />
+            ))}
+          </ul>
+        </div>
+      ) : null}
+      {semantic.length === 0 && primitive.length === 0 ? (
         <Text size="xs" c="muted">
-          {off.length === 0
+          {Object.keys(colors.off_palette_colors).length === 0
             ? "Every colour a token resolves to exists in the kit's palette."
             : "Every off-palette colour has been settled by the reviewer."}
         </Text>
-      ) : (
-        <ul className="flex flex-col">
-          {shown.map(([rgb, tokens]) => {
-            const id = `color-off-palette:foundations:${rgb}`
-            const isIgnored = ignored.has(rgb)
-            const rows = byRgb(rgb)
-            const alphas = [...new Set(rows.map((r) => r.alpha).filter((a): a is number => a !== null))]
-            return (
-              <li
-                key={rgb}
-                className={`border-white/6 border-t py-2 first:border-t-0 ${isIgnored ? "opacity-50" : ""}`}
-              >
-                <div className="flex flex-wrap items-center gap-2">
-                  <Swatch hex={`#${rgb}`} size={6} />
-                  <code className={`${TYPO.mono()} text-gray-dark-100 text-sm`}>#{rgb}</code>
-                  <span className="text-[11px] text-gray-dark-500">
-                    {tokens.length} token{tokens.length > 1 ? "s" : ""}
-                    {alphas.length > 0
-                      ? ` · at ${alphas
-                          .sort((a, b) => b - a)
-                          .map((a) => `${Math.round(a * 100)}%`)
-                          .join(", ")}`
-                      : ""}
-                  </span>
-                  <span className="ml-auto">
-                    {isIgnored ? (
-                      <RestoreButton id={id} />
-                    ) : (
-                      <IgnoreButton id={id} title={`#${rgb} is not in the kit's palette`} />
-                    )}
-                  </span>
-                </div>
-                <div className={`${TYPO.mono()} mt-1 flex flex-wrap gap-1 text-[11px]`}>
-                  {tokens.map((t) => (
-                    <span key={t} className="rounded bg-white/5 px-1.5 py-0.5 text-gray-dark-300">
-                      {t}
-                    </span>
-                  ))}
-                </div>
-              </li>
-            )
-          })}
-        </ul>
-      )}
+      ) : null}
 
       <label className="flex items-center gap-2 text-gray-dark-400 text-xs">
         <input
@@ -326,7 +381,8 @@ const Colours = ({ colors }: { colors: TokensReport["colors"] }) => {
               <tr className="text-[11px] text-gray-dark-500 uppercase">
                 <th className="pb-1 pr-3 font-normal">Token</th>
                 <th className="pb-1 pr-3 font-normal">Resolves to</th>
-                <th className="pb-1 font-normal">In the kit's palette</th>
+                <th className="pb-1 pr-3 font-normal">In the kit's palette</th>
+                <th className="pb-1 font-normal">Painted by</th>
               </tr>
             </thead>
             <tbody>
@@ -349,17 +405,12 @@ const Colours = ({ colors }: { colors: TokensReport["colors"] }) => {
                           </span>
                         ) : null}
                       </span>
-                      {Object.entries(r.modes).map(([mode, v]) => (
-                        <span key={mode} className="mt-0.5 flex items-center gap-1.5">
-                          <Swatch hex={v} />
-                          <span className="text-[11px] text-gray-dark-500">
-                            {mode} · {v}
-                          </span>
-                        </span>
-                      ))}
                     </td>
-                    <td className={`${TYPO.mono()} py-1 text-gray-dark-400 text-xs`}>
+                    <td className={`${TYPO.mono()} py-1 pr-3 text-gray-dark-400 text-xs`}>
                       {r.in_palette[0]}
+                    </td>
+                    <td className="py-1 text-[11px] text-gray-dark-500">
+                      {r.used_by.length > 0 ? r.used_by.length : "·"}
                     </td>
                   </tr>
                 ))}
@@ -639,54 +690,92 @@ KIT_TOKEN=<a PAT with Contents: Read on that repo>`}</pre>
             <Text size="sm" c="secondary">
               {OWNER[owner].hint}
             </Text>
+            {/* What is NOT compared, FIRST. At the bottom as a low finding, the Tailwind
+                line read as one more hole instead of "this family is out of scope". */}
+            {data.scope.map((note) => (
+              <Text key={note} size="xs" c="muted">
+                <strong>Scope.</strong> {note}
+              </Text>
+            ))}
             <Card>
               <Card.Content>
                 {(() => {
                   const mine = active.filter((f) => f.owner === owner)
-                  // The off-palette colours are forty-nine findings of one shape. As
-                  // forty-nine rows they buried the radius that differs; here they are ONE
-                  // line, and the Colours tab is where they are settled one by one.
+                  // The off-palette colours are findings of ONE shape, and their two
+                  // CLASSES are two different statements: a semantic token the kit cannot
+                  // paint (blocking, a ticket), a primitive step it does not ship (a
+                  // note). Two rows here, one per class, with the usage that orders them;
+                  // the Colours tab is where each colour is settled.
                   const colours = mine.filter((f) => f.kind === "color-off-palette")
+                  const blocking = colours.filter((f) => f.class === "semantic")
+                  const info = colours.filter((f) => f.class !== "semantic")
                   const rest = mine.filter((f) => f.kind !== "color-off-palette")
+                  const painted = (list: typeof colours) =>
+                    [...new Set(list.flatMap((f) => f.used_by ?? []))]
                   if (mine.length === 0)
                     return (
                       <Text c="secondary" size="sm">
                         Nothing on this side.
                       </Text>
                     )
+                  const fold = (
+                    list: typeof colours,
+                    severity: string,
+                    title: string,
+                    detail: string,
+                  ) =>
+                    list.length > 0 ? (
+                      <li className="border-white/6 border-t py-2 first:border-t-0">
+                        <div className="flex flex-wrap items-baseline gap-2">
+                          <Badge
+                            color={severity === "high" ? "red" : "gray"}
+                            size="sm"
+                            variant="light"
+                          >
+                            {severity}
+                          </Badge>
+                          <Badge color={OWNER[owner].color} size="sm" variant="outline">
+                            {OWNER[owner].short}
+                          </Badge>
+                          <Text size="sm" className={TYPO.title("semibold")}>
+                            {title}
+                          </Text>
+                          <button
+                            type="button"
+                            onClick={() => setTab("colours")}
+                            className="ml-auto text-[11px] text-gray-dark-400 underline decoration-dotted underline-offset-2 hover:text-white"
+                          >
+                            settle them one by one
+                          </button>
+                        </div>
+                        <Text size="sm" c="secondary" className="mt-1">
+                          {detail}
+                        </Text>
+                        <div className={`${TYPO.mono()} mt-1 text-[11px] text-gray-dark-500`}>
+                          {[...new Set(list.map((f) => f.family))].join(", ")}
+                          {painted(list).length > 0
+                            ? ` · painted by ${painted(list).join(", ")}`
+                            : " · painted by nothing"}
+                        </div>
+                      </li>
+                    ) : null
                   return (
                     <ul className="flex flex-col">
+                      {fold(
+                        blocking,
+                        "high",
+                        `${blocking.length} semantic colour${blocking.length > 1 ? "s" : ""} the kit cannot paint`,
+                        "A screen built on one of these cannot be rebuilt with the kit: a ticket each. Either the palette gains the value, or the token is re-bound.",
+                      )}
                       {rest.map((f) => (
                         <FindingRow key={f.id} f={f} />
                       ))}
-                      {colours.length > 0 ? (
-                        <li className="border-white/6 border-t py-2 first:border-t-0">
-                          <div className="flex flex-wrap items-baseline gap-2">
-                            <Badge color="orange" size="sm" variant="light">
-                              medium
-                            </Badge>
-                            <Badge color={OWNER[owner].color} size="sm" variant="outline">
-                              {OWNER[owner].short}
-                            </Badge>
-                            <Text size="sm" className={TYPO.title("semibold")}>
-                              {colours.length} colour{colours.length > 1 ? "s" : ""} the kit's
-                              palette cannot reproduce
-                            </Text>
-                            <button
-                              type="button"
-                              onClick={() => setTab("colours")}
-                              className="ml-auto text-[11px] text-gray-dark-400 underline decoration-dotted underline-offset-2 hover:text-white"
-                            >
-                              settle them one by one
-                            </button>
-                          </div>
-                          <Text size="sm" c="secondary" className="mt-1">
-                            No <code className={TYPO.mono()}>data-color</code> reproduces
-                            them: a screen built on one cannot be rebuilt with the kit. Each
-                            is its own line in the brief, and its own decision in Colours.
-                          </Text>
-                        </li>
-                      ) : null}
+                      {fold(
+                        info,
+                        "low",
+                        `${info.length} primitive palette step${info.length > 1 ? "s" : ""} the kit does not ship`,
+                        "Nothing binds to them on its own — a note, not a ticket.",
+                      )}
                     </ul>
                   )
                 })()}
