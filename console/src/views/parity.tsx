@@ -375,6 +375,24 @@ type Rendered = {
   fontSize: number
 }
 
+/** The shallowest element that owns visible text of its own — the actual label a Figma
+ *  `text` layer is drawn against. BFS, so the first hit is the outermost text carrier
+ *  (a title before a nested description), never a deeper one skipped over. Falls back to
+ *  `root` when nothing under it carries text of its own (an icon-only component: reading
+ *  the root's own inherited font-size there is no worse, and there is no better node). */
+const textCarrier = (root: HTMLElement): HTMLElement => {
+  const queue: HTMLElement[] = [root]
+  while (queue.length) {
+    const el = queue.shift() as HTMLElement
+    const ownText = Array.from(el.childNodes).some(
+      (n) => n.nodeType === Node.TEXT_NODE && (n.textContent ?? "").trim().length > 0,
+    )
+    if (ownText) return el
+    queue.push(...(Array.from(el.children) as HTMLElement[]))
+  }
+  return root
+}
+
 const readSurface = (node: HTMLElement): Rendered => {
   // The rendered preview wraps the component; the component itself is the first element
   // that is not one of OUR wrappers (`data-preview-wrap`). Measuring a wrapper would
@@ -383,6 +401,13 @@ const readSurface = (node: HTMLElement): Rendered => {
   while (el.firstElementChild && (el === node || el.hasAttribute("data-preview-wrap")))
     el = el.firstElementChild as HTMLElement
   const cs = window.getComputedStyle(el)
+  // ⚠️ Text properties are read on the label, not the root. Alert and Notifier set
+  // `text-sm`/colour on a nested title; the root only inherits the page's own default
+  // (16px, the body's colour), and that inherited value is not what Figma's `text` layer
+  // was drawn against. Reading it there reported a false "16px rendered" against a title
+  // that was, on screen, 14px — the root's OWN properties (background, border, radius,
+  // padding, gap) are still read on `el` itself, which is correct for those.
+  const text = window.getComputedStyle(textCarrier(el))
   return {
     bg: cs.backgroundColor,
     borderColor: cs.borderTopColor,
@@ -391,8 +416,8 @@ const readSurface = (node: HTMLElement): Rendered => {
     padV: px(cs.paddingTop),
     padH: px(cs.paddingLeft),
     gap: px(cs.columnGap || cs.gap),
-    textColor: cs.color,
-    fontSize: px(cs.fontSize),
+    textColor: text.color,
+    fontSize: px(text.fontSize),
   }
 }
 
@@ -482,9 +507,9 @@ const compareSurface = (visual: VariantVisual, r: Rendered): Line[] => {
         figma: `${visual.text.size}px`,
         react: `${r.fontSize}px`,
         same: Math.abs(r.fontSize - visual.text.size) < 0.51,
-        // The text may live on a child; the root's font-size is inherited and usually
-        // right, but it is not a guarantee and saying so costs one line.
-        note: "Measured on the component's root — a nested label may differ.",
+        // Measured on the first element that owns its own text, not the root — but a
+        // second label at the same depth (a value beside its own text) is not this one.
+        note: "Measured on the first element carrying its own text — a sibling label may differ.",
       })
   }
   return out
