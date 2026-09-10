@@ -251,7 +251,7 @@ export const App = () => {
               </div>
             }
           >
-            <ParityView />
+            <ParityView selected={route.param ?? ""} />
           </Suspense>
         )
       case "tokens":

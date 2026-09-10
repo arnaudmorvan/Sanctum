@@ -1255,17 +1255,241 @@ const Pair = ({ pair, dark, frames }: { pair: ParityPair; dark: boolean; frames:
   )
 }
 
+/** What the right-hand column shows while no component is picked: the findings by owner and
+ *  the two gap lists. They used to sit ABOVE the component list, which pushed the working
+ *  surface off the first screen — the tab's whole point is now component by component, and
+ *  the overview is what fills the space until one is chosen. */
+const Overview = ({
+  data,
+  owner,
+  setOwner,
+}: {
+  data: ParityReport
+  owner: "kit" | "both" | "figma"
+  setOwner: (o: "kit" | "both" | "figma") => void
+}) => {
+  const c = data.counts
+  const grouped = data.findings.filter((f) => f.owner === owner)
+  return (
+    <div className="flex flex-col gap-6">
+      {/* The findings, by owner. The tabs are the recommendation: a front-end dev opens
+        "For the kit" and has their list; the rest is somebody else's column. */}
+    <div className="flex flex-col gap-3">
+      <Title order={2} size="md" className={TYPO.title()}>
+        What to change, and who changes it
+      </Title>
+      <div className="flex flex-wrap gap-2">
+        {(["kit", "both", "figma"] as const).map((o) => (
+          <Button
+            key={o}
+            size="sm"
+            variant={owner === o ? "filled" : "outline"}
+            color={OWNER[o].color}
+            onClick={() => setOwner(o)}
+          >
+            {OWNER[o].label} ({c.by_owner[o] ?? 0})
+          </Button>
+        ))}
+      </div>
+      <Text size="sm" c="secondary">
+        {OWNER[owner].hint}
+      </Text>
+      <Card>
+        <Card.Content>
+          {grouped.length === 0 ? (
+            <Text c="secondary" size="sm">
+              Nothing on this side.
+            </Text>
+          ) : (
+            <ul className="flex flex-col">
+              {grouped.map((f, i) => (
+                <Finding
+                  key={`${f.kind}-${f.component}-${i}`}
+                  f={f}
+                  paired={data.pairs.some((p) => p.react === f.component)}
+                />
+              ))}
+            </ul>
+          )}
+        </Card.Content>
+      </Card>
+    </div>
+
+    {/* The gaps, said plainly before the table of pairs: they are the answer to "what is
+        missing", and a reader should not have to infer them from forty rows. */}
+    <div className="grid gap-3 md:grid-cols-2">
+      <Card>
+        <Card.Header>
+          <Card.Title>Drawn, not shipped ({data.figma_only.length})</Card.Title>
+        </Card.Header>
+        <Card.Content>
+          <ul className="flex flex-col gap-1">
+            {data.figma_only.map((e) => (
+              <li key={e.slug} className="text-sm">
+                <code className={`${TYPO.mono()} text-gray-dark-200 text-xs`}>{e.slug}</code>
+                <span className="text-gray-dark-500 text-xs"> · {e.page.trim()}</span>
+                {e.acknowledged ? (
+                  <Badge color="gray" size="sm" variant="outline" className="ml-2">
+                    known gap
+                  </Badge>
+                ) : null}
+              </li>
+            ))}
+            {data.figma_only.length === 0 ? (
+              <Text c="secondary" size="sm">
+                Everything drawn has a counterpart in the kit.
+              </Text>
+            ) : null}
+          </ul>
+        </Card.Content>
+      </Card>
+      <Card>
+        <Card.Header>
+          <Card.Title>Shipped, not drawn ({c.react_only_expected})</Card.Title>
+        </Card.Header>
+        <Card.Content>
+          <ul className="flex flex-col gap-1">
+            {data.react_only
+              .filter((r) => r.drawn)
+              .map((r) => (
+                <li key={r.react} className="text-sm">
+                  <code className={`${TYPO.mono()} text-gray-dark-200 text-xs`}>
+                    {r.react}
+                  </code>
+                  <span className="text-gray-dark-500 text-xs"> · {r.category}</span>
+                </li>
+              ))}
+          </ul>
+          {/* Not counted as holes, and said so: a Flex or a ThemeScript drawn in a UI
+              kit would be the anomaly. Hiding them silently would leave a reader
+              wondering why the two counts do not add up. */}
+          <Text size="xs" c="muted" className="mt-2">
+            {data.react_only.length - c.react_only_expected} layout primitives and
+            typography helpers are excluded: they are not meant to be drawn.
+          </Text>
+        </Card.Content>
+      </Card>
+    </div>
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------- the sub-navigation
+
+/** The component list — and the reason it exists is not tidiness.
+ *
+ *  ⚠️ The tab used to mount all 44 pairs at once: 44 live React previews, and once opened,
+ *  44 coverage grids and 44 visual diffs on top. Reported on 2026-09-10 ("analyse composant
+ *  par composant pour ne pas tout charger d'un coup"). Now the list is cheap — a row and a
+ *  badge — and exactly one component is mounted at a time.
+ *
+ *  The selection lives in the HASH (`#/parity/Badge`), like the Context tab's corpora: a
+ *  reload lands back on the same component, and a link to one can be pasted to a colleague.
+ *  That is worth more than local state for something a front-end dev will want to send. */
+const ComponentList = ({
+  pairs,
+  selected,
+  counts,
+}: {
+  pairs: ParityPair[]
+  selected: string
+  counts: Record<string, { holes: number; blind: number }>
+}) => {
+  const [filter, setFilter] = useState("")
+  const [onlyGaps, setOnlyGaps] = useState(false)
+  const needle = filter.trim().toLowerCase()
+  const shown = pairs.filter((p) => {
+    if (onlyGaps && (counts[p.react]?.holes ?? 0) === 0) return false
+    if (!needle) return true
+    return (
+      p.react.toLowerCase().includes(needle) ||
+      p.figma.slug.toLowerCase().includes(needle) ||
+      p.category.toLowerCase().includes(needle)
+    )
+  })
+
+  return (
+    <div className="flex flex-col gap-2">
+      <input
+        value={filter}
+        onChange={(e) => setFilter(e.target.value)}
+        placeholder="Filter the components"
+        className={`${TYPO.mono()} w-full rounded border border-white/15 bg-transparent px-2 py-1 text-gray-dark-200 text-xs`}
+      />
+      <label className="flex items-center gap-2 text-gray-dark-400 text-xs">
+        <input
+          type="checkbox"
+          checked={onlyGaps}
+          onChange={(e) => setOnlyGaps(e.target.checked)}
+        />
+        Only those with differences
+      </label>
+      <div className="flex max-h-[70vh] flex-col overflow-y-auto">
+        {shown.map((p) => {
+          const holes = counts[p.react]?.holes ?? 0
+          const on = p.react === selected
+          return (
+            <a
+              key={p.react}
+              href={`#/parity/${encodeURIComponent(p.react)}`}
+              className={`flex items-center justify-between gap-2 rounded px-2 py-1.5 text-xs ${
+                on ? "bg-white/10 text-white" : "text-gray-dark-300 hover:bg-white/5"
+              }`}
+            >
+              <span className="truncate">
+                {p.react}
+                <span className={`${TYPO.mono()} ml-1.5 text-[10px] text-gray-dark-600`}>
+                  {p.figma.slug}
+                </span>
+              </span>
+              {holes > 0 ? (
+                <span className={`${TYPO.mono()} shrink-0 text-[10px] text-orange-300`}>
+                  {holes}
+                </span>
+              ) : (
+                <Check size={12} className="shrink-0 text-green-600" />
+              )}
+            </a>
+          )
+        })}
+        {shown.length === 0 ? (
+          <Text size="xs" c="muted" className="px-2 py-1">
+            Nothing matches.
+          </Text>
+        ) : null}
+      </div>
+      <Text size="xs" c="muted">
+        {shown.length} of {pairs.length} shown
+      </Text>
+    </div>
+  )
+}
+
 // ---------------------------------------------------------------- the page
 
-const Finding = ({ f }: { f: ParityFinding }) => (
+/** A finding NAMES a component, so it links to it. Reading "Button: `variant` is drawn as
+ *  link" and then hunting for Button in a list of forty-four is a step the page can take
+ *  for the reader — and it writes the same address the sub-navigation does, so the two
+ *  gestures land in the same place. `paired` guards it: a finding about something that
+ *  exists on one side only has no pair to open. */
+const Finding = ({ f, paired }: { f: ParityFinding; paired: boolean }) => (
   <li className="border-white/6 border-t py-2 first:border-t-0">
     <div className="flex flex-wrap items-baseline gap-2">
       <Badge color={SEVERITY[f.severity]} size="sm" variant="light">
         {f.severity}
       </Badge>
-      <Text size="sm" className={TYPO.title("semibold")}>
-        {f.title}
-      </Text>
+      {paired ? (
+        <a
+          href={`#/parity/${encodeURIComponent(f.component)}`}
+          className={`${TYPO.title("semibold")} text-sm underline decoration-dotted underline-offset-2 hover:text-white`}
+        >
+          {f.title}
+        </a>
+      ) : (
+        <Text size="sm" className={TYPO.title("semibold")}>
+          {f.title}
+        </Text>
+      )}
     </div>
     <Text size="sm" c="secondary" className="mt-1">
       {f.detail}
@@ -1337,7 +1561,7 @@ const Sources = ({ s }: { s: ParityReport["sources"] }) => {
   )
 }
 
-export const ParityView = () => {
+export const ParityView = ({ selected = "" }: { selected?: string }) => {
   const key = readKey()
   const [data, setData] = useState<ParityReport | null>(null)
   const [error, setError] = useState("")
@@ -1400,6 +1624,22 @@ export const ParityView = () => {
 
   const c = data.counts
   const grouped = data.findings.filter((f) => f.owner === owner)
+  // Computed once for the list's badges: a component's axes that genuinely differ, which
+  // is the only number worth showing next to forty-four names.
+  const holeCounts = Object.fromEntries(
+    data.pairs.map((p) => [
+      p.react,
+      {
+        holes: p.axes.filter((a) => a.verdict === "values" || a.verdict === "unpaired").length,
+        blind: p.axes.filter((a) => a.verdict === "unreadable").length,
+      },
+    ]),
+  )
+  // The hash carries the selection. Matched case-insensitively so a hand-typed link works,
+  // and falling back to nothing rather than to the first component — landing on a page
+  // that silently shows something else than what the URL says is worse than an empty one.
+  const current =
+    data.pairs.find((p) => p.react.toLowerCase() === selected.toLowerCase()) ?? null
 
   return (
     <div className="flex flex-col gap-6">
@@ -1439,108 +1679,38 @@ export const ParityView = () => {
         ))}
       </div>
 
-      {/* The findings, by owner. The tabs are the recommendation: a front-end dev opens
-          "For the kit" and has their list; the rest is somebody else's column. */}
+      {/* ⚠️ ONE component at a time. Mounting the 44 pairs together meant 44 live React
+          previews, and once opened 44 coverage grids and 44 visual diffs — the page took
+          seconds to settle and the browser held all of it. The list is cheap; the detail
+          is paid for only where the reader is looking. */}
       <div className="flex flex-col gap-3">
         <Title order={2} size="md" className={TYPO.title()}>
-          What to change, and who changes it
+          {current ? current.react : `The ${c.pairs} pairs`}
         </Title>
-        <div className="flex flex-wrap gap-2">
-          {(["kit", "both", "figma"] as const).map((o) => (
-            <Button
-              key={o}
-              size="sm"
-              variant={owner === o ? "filled" : "outline"}
-              color={OWNER[o].color}
-              onClick={() => setOwner(o)}
-            >
-              {OWNER[o].label} ({c.by_owner[o] ?? 0})
-            </Button>
-          ))}
+        {current ? (
+          <a href="#/parity" className="text-gray-dark-400 text-xs hover:text-gray-dark-200">
+            ← back to the findings
+          </a>
+        ) : (
+          <Text size="xs" c="muted">
+            Pick a component on the left to compare it. The number beside a name is how many
+            of its axes differ; the address bar follows the selection, so a link to one can
+            be sent as it is.
+          </Text>
+        )}
+        <div className="grid gap-4 md:grid-cols-[minmax(200px,260px)_1fr]">
+          <ComponentList pairs={data.pairs} selected={current?.react ?? ""} counts={holeCounts} />
+          {current ? (
+            <Pair
+              key={current.react}
+              pair={current}
+              dark={dark}
+              frames={data.sources.figma.frames !== false}
+            />
+          ) : (
+            <Overview data={data} owner={owner} setOwner={setOwner} />
+          )}
         </div>
-        <Text size="sm" c="secondary">
-          {OWNER[owner].hint}
-        </Text>
-        <Card>
-          <Card.Content>
-            {grouped.length === 0 ? (
-              <Text c="secondary" size="sm">
-                Nothing on this side.
-              </Text>
-            ) : (
-              <ul className="flex flex-col">
-                {grouped.map((f, i) => (
-                  <Finding key={`${f.kind}-${f.component}-${i}`} f={f} />
-                ))}
-              </ul>
-            )}
-          </Card.Content>
-        </Card>
-      </div>
-
-      {/* The gaps, said plainly before the table of pairs: they are the answer to "what is
-          missing", and a reader should not have to infer them from forty rows. */}
-      <div className="grid gap-3 md:grid-cols-2">
-        <Card>
-          <Card.Header>
-            <Card.Title>Drawn, not shipped ({data.figma_only.length})</Card.Title>
-          </Card.Header>
-          <Card.Content>
-            <ul className="flex flex-col gap-1">
-              {data.figma_only.map((e) => (
-                <li key={e.slug} className="text-sm">
-                  <code className={`${TYPO.mono()} text-gray-dark-200 text-xs`}>{e.slug}</code>
-                  <span className="text-gray-dark-500 text-xs"> · {e.page.trim()}</span>
-                  {e.acknowledged ? (
-                    <Badge color="gray" size="sm" variant="outline" className="ml-2">
-                      known gap
-                    </Badge>
-                  ) : null}
-                </li>
-              ))}
-              {data.figma_only.length === 0 ? (
-                <Text c="secondary" size="sm">
-                  Everything drawn has a counterpart in the kit.
-                </Text>
-              ) : null}
-            </ul>
-          </Card.Content>
-        </Card>
-        <Card>
-          <Card.Header>
-            <Card.Title>Shipped, not drawn ({c.react_only_expected})</Card.Title>
-          </Card.Header>
-          <Card.Content>
-            <ul className="flex flex-col gap-1">
-              {data.react_only
-                .filter((r) => r.drawn)
-                .map((r) => (
-                  <li key={r.react} className="text-sm">
-                    <code className={`${TYPO.mono()} text-gray-dark-200 text-xs`}>
-                      {r.react}
-                    </code>
-                    <span className="text-gray-dark-500 text-xs"> · {r.category}</span>
-                  </li>
-                ))}
-            </ul>
-            {/* Not counted as holes, and said so: a Flex or a ThemeScript drawn in a UI
-                kit would be the anomaly. Hiding them silently would leave a reader
-                wondering why the two counts do not add up. */}
-            <Text size="xs" c="muted" className="mt-2">
-              {data.react_only.length - c.react_only_expected} layout primitives and
-              typography helpers are excluded: they are not meant to be drawn.
-            </Text>
-          </Card.Content>
-        </Card>
-      </div>
-
-      <div className="flex flex-col gap-3">
-        <Title order={2} size="md" className={TYPO.title()}>
-          The {c.pairs} pairs
-        </Title>
-        {data.pairs.map((p) => (
-          <Pair key={p.react} pair={p} dark={dark} frames={data.sources.figma.frames !== false} />
-        ))}
       </div>
     </div>
   )
