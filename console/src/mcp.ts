@@ -649,6 +649,9 @@ export type ParityPair = {
 /** Every finding names an OWNER — that is the difference between an audit and a tool.
  *  `kit` the code moves, `figma` the file moves, `both` nobody can settle it alone. */
 export type ParityFinding = {
+  /** STABLE across reports — `kind:component:subject`, never derived from the title, so
+   *  a reviewer's "ignore" lands on the same finding after the next sync. */
+  id: string
   owner: "kit" | "figma" | "both"
   severity: "high" | "medium" | "low"
   kind: string
@@ -656,6 +659,17 @@ export type ParityFinding = {
   title: string
   detail: string
   evidence: string
+  /** The reviewer said "not ours". Still served, so the tab can show it under "ignored"
+   *  with a way back; left out of the brief and of every count. */
+  ignored: boolean
+  ignored_by?: string
+  ignored_at?: string
+  ignored_why?: string
+  /** The reviewer ADDED it: something the browser measured on a rendered variant (a
+   *  padding, a colour) that no catalogue carries. Kind `reviewed`. */
+  flagged?: boolean
+  flagged_by?: string
+  flagged_at?: string
 }
 
 export type ParityReport = {
@@ -678,9 +692,25 @@ export type ParityReport = {
     react_only_expected: number
     figma_components: number
     react_components: number
+    /** ACTIVE findings — the ignored ones are not in this number, nor in `by_owner`. The
+     *  card, the list and the brief show the same number; that was the first complaint. */
     findings: number
+    ignored: number
+    flagged: number
     by_owner: Record<string, number>
     described: number
+  }
+  /** Whether the reviewer's file can be written from here. `false` under READ_ONLY (no
+   *  commit helper): the tab draws no button whose route would answer 503. */
+  review: {
+    can_write: boolean
+    path: string
+    ignored: number
+    flagged: number
+    /** Every ignored id, findings or not — a surface line the page measures itself is
+     *  not a finding until flagged, so its "ignored" state travels here. */
+    ignored_ids: string[]
+    flagged_ids: string[]
   }
   sources: {
     /** `frames` is a boolean, not a string: it says whether the server can RENDER a
@@ -718,6 +748,9 @@ export async function getParity(fresh = false): Promise<ParityReport> {
  *  the kit is missing anything. */
 export type CoverageAxis = {
   axis: string
+  /** The KIND of axis (`surface`, `palette`, `scale`, `content`, `state-controlled`…) —
+   *  what lets the grid open on `variant × color` rather than on a sample axis. */
+  nature: string
   react: string
   register: string
   readable: boolean
@@ -803,15 +836,67 @@ export async function getParityFrame(
 }
 
 /** The findings as markdown, to paste into a ticket. The console is not where a front-end
- *  dev works: the list has to be able to leave with them. */
-export async function getParityBrief(): Promise<string> {
+ *  dev works: the list has to be able to leave with them — as one owner's whole list, or
+ *  as one component's. Ignored findings are left out and said to be. */
+export async function getParityBrief(
+  filter: { owner?: "kit" | "figma" | "both"; component?: string } = {},
+): Promise<string> {
   const key = readKey()
-  const r = await fetch(`${BASE}/console/parity/brief.md`, {
+  const q = new URLSearchParams()
+  if (filter.owner) q.set("owner", filter.owner)
+  if (filter.component) q.set("component", filter.component)
+  const qs = q.toString()
+  const r = await fetch(`${BASE}/console/parity/brief.md${qs ? `?${qs}` : ""}`, {
     headers: key ? { "X-DS-Key": key } : {},
   })
   if (r.status === 401) throw new AccessError("Key rejected by the server.")
   if (!r.ok) throw new Error(`brief.md → HTTP ${r.status}`)
   return r.text()
+}
+
+/** ONE decision of the reviewer, committed to `analysis/parity-review.json` by the MCP
+ *  server (the same commit helper as the component sync, so READ_ONLY darkens both).
+ *
+ *   `ignore`  — the finding leaves the brief and the counts; `why` is what the next
+ *               reader sees in its place;
+ *   `restore` — the reverse;
+ *   `flag`    — a difference THIS BROWSER measured on a rendered variant is handed to the
+ *               dev as a finding of its own. The server cannot measure a padding; the
+ *               human who saw it can say it counts;
+ *   `unflag`  — the reverse.
+ *
+ *  Signed: `by` is the name `who.ts` holds, and the server refuses an unsigned change —
+ *  a decision nobody can go back and question is not worth committing. */
+export type ReviewChange = {
+  op: "ignore" | "restore" | "flag" | "unflag"
+  id: string
+  by: string
+  why?: string
+  title?: string
+  detail?: string
+  evidence?: string
+  component?: string
+  owner?: "kit" | "figma" | "both"
+}
+
+export async function reviewParity(change: ReviewChange): Promise<{ commit: string }> {
+  const key = readKey()
+  const r = await fetch(`${BASE}/console/parity/review.json`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...(key ? { "X-DS-Key": key } : {}) },
+    body: JSON.stringify(change),
+  })
+  if (r.status === 401) throw new AccessError("Key rejected by the server.")
+  if (!r.ok) {
+    let detail = `review.json → HTTP ${r.status}`
+    try {
+      detail = ((await r.json()) as { error?: string }).error ?? detail
+    } catch {
+      /* non-JSON body: the status is enough */
+    }
+    throw r.status === 503 ? new NotConfigured(detail) : new Error(detail)
+  }
+  return (await r.json()) as { commit: string }
 }
 
 // ---------------------------------------------------------------- foundations (tokens)

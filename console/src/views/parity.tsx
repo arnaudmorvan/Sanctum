@@ -1,31 +1,38 @@
-/** The Parity tab — the Figma catalogue and `@42/ui-react`, side by side.
+/** The Parity tab — the Figma catalogue and `@42/ui-react`, side by side, and REVIEWED.
  *
  *  Until this tab there was one answer to "what does the kit have that the file does not,
  *  and the other way round": `audit/parity-figma-vs-react.md`, hand-written in July 2026
  *  and stale the week after. It counted 29 pairs. There are 43, and nothing said so.
  *
- *  Three things are on this page, in the order a front-end dev needs them:
+ *  ## What this page is for, in the order a reviewer needs it
  *
- *    1. **Where the two sides come from and how fresh they are.** First, deliberately. A
- *       comparison against a stale snapshot looks exactly like a fresh one, and a report
- *       whose provenance is buried is a report nobody dares expire;
- *    2. **The findings, grouped by OWNER** — the kit moves, the file moves, or nobody can
- *       settle it alone. That grouping is the whole difference between an audit and
- *       something to act on, and it is why the copy button exists: this console is not
- *       where a dev works, so the list has to leave with them;
- *    3. **The pairs**, one row each, with the component RENDERED on both sides — Figma's
- *       own PNG against the live `@42/ui-react` component mounted in this browser. Two
- *       tables of prop names would answer "do the axes match" and never "does the built
- *       thing look like the drawn thing".
+ *    1. **One component, both sides, and what differs — with nothing to open.** Reported
+ *       on 2026-09-10: "je dois encore trop rentrer dans des sous-menus". The previous
+ *       version showed two renders and two toggles ("Show the 5 axes", "Show the coverage
+ *       grid"); the differences were behind both. Now the list of what differs is the first
+ *       thing under the renders, and what is BY DESIGN (a runtime state, a slot, the
+ *       palette living in `color`) is folded under one line that says how many and why;
+ *    2. **One number.** The card said "2 differences", the surface panel under it said "4".
+ *       Two different measures, one word. Now the number on the list, on the card and in
+ *       the brief is the same: the ACTIVE findings of that component. The surface panel
+ *       measures something else (the paint of one rendered variant) and says so — and
+ *       what it measures only becomes a finding when the reviewer FLAGS it;
+ *    3. **The reviewer decides, and the decision persists.** "Ignore" takes a finding out
+ *       of the brief and the counts; "flag" puts a measured difference in. Committed by the
+ *       server to `analysis/parity-review.json`, signed with the name `who.ts` holds —
+ *       because the brief is what reaches the front-end dev, and the whole point of the
+ *       review is that what reaches them is what is left;
+ *    4. **The holes, at a glance.** "In Figma only" and "In the kit only" are LISTS you
+ *       open by clicking the number, not two cards at the bottom of an overview.
  *
  *  ⚠️ **The verdicts are computed server-side** (`parity.py`) and this file only paints
  *  them. That is not an accident of layering: the classification encodes the four
  *  documented model divergences — `variant` × `color`, the `Field` extraction, runtime
  *  states, the `size` scale — and it belongs where it is tested offline, not in a browser.
  *
- *  Nothing here writes. The Figma-side findings are candidates for `ds-actions.yaml`,
- *  which the MCP server writes after a human said so; a console that filed them itself
- *  would be a second writer on a file the triage already corrupted once.
+ *  The ONE thing this page writes is the reviewer's file, through the server, and never
+ *  `ds-actions.yaml`: a console that filed findings itself would be a second writer on a
+ *  file the triage already corrupted once.
  */
 import { Alert } from "@42/ui-react/alert"
 import { Badge } from "@42/ui-react/badge"
@@ -37,14 +44,28 @@ import { Title } from "@42/ui-react/title"
 import {
   ArrowRight,
   Check,
+  ChevronDown,
+  ChevronRight,
   Copy,
-  Grid3x3,
+  EyeOff,
+  Flag,
   ImageOff,
-  RefreshCw,
-  Sun,
   Moon,
+  RefreshCw,
+  RotateCcw,
+  Sun,
 } from "lucide-react"
-import { type ReactNode, useCallback, useEffect, useState } from "react"
+import {
+  createContext,
+  type ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react"
+import { Signature } from "../../../src/layout/identity"
+import { useAuthor } from "../../../src/layout/who"
 import { TYPO } from "../../../src/typo"
 import {
   AccessError,
@@ -55,12 +76,16 @@ import {
   getParityBrief,
   getParityDetail,
   getParityFrame,
+  NotConfigured,
   type Paint,
   type ParityAxis,
+  type ParityDetail,
   type ParityFinding,
   type ParityPair,
   type ParityReport,
   readKey,
+  type ReviewChange,
+  reviewParity,
   type VariantVisual,
 } from "../mcp"
 import { NOT_PREVIEWABLE, PREVIEWS, PreviewBoundary } from "./previews"
@@ -91,7 +116,8 @@ const VERDICT: Record<string, { color: string; label: string; means: string }> =
   unreadable: {
     color: "purple",
     label: "not readable",
-    means: "The manifest cannot see the values — a cva outside the file, a type alias. Says nothing about the kit.",
+    means:
+      "The manifest cannot see the values — a cva outside the file, a type alias. Says nothing about the kit.",
   },
   "code-only": {
     color: "gray",
@@ -105,25 +131,168 @@ const VERDICT: Record<string, { color: string; label: string; means: string }> =
   },
 }
 
-const OWNER: Record<string, { label: string; hint: string; color: string }> = {
+/** The verdicts that mean "nothing to do, and here is why". Folded under one line. */
+const BY_DESIGN = new Set(["by-design", "composed", "code-only", "unreadable"])
+
+const OWNER: Record<string, { label: string; short: string; hint: string; color: string }> = {
   kit: {
     label: "For the kit",
+    short: "kit",
     hint: "@42/ui-react has to move: a value is drawn and cannot be rendered.",
     color: "blue",
   },
   both: {
     label: "To settle together",
+    short: "both",
     hint: "Neither side can decide alone — two defaults for the same component.",
     color: "purple",
   },
   figma: {
     label: "For the Figma file",
+    short: "Figma",
     hint: "The file has to move: an unnamed axis, a missing description, a diverging name.",
     color: "orange",
   },
 }
 
 const SEVERITY: Record<string, string> = { high: "red", medium: "orange", low: "gray" }
+
+/** The order in which an axis deserves to be a grid axis. A dev opens a coverage grid to
+ *  see `variant × color`; opening it on `value × size` — the thumb position of a Slider,
+ *  a SAMPLE frozen for the spec — is what made the pickers look like they did nothing. */
+const AXIS_RANK: Record<string, number> = {
+  surface: 0,
+  palette: 1,
+  scale: 2,
+  layout: 3,
+  slot: 4,
+  "state-controlled": 5,
+  "state-runtime": 6,
+  content: 7,
+}
+
+const slugify = (s: string) =>
+  s
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "")
+
+const sameName = (a: string, b: string) => a.toLowerCase() === b.toLowerCase()
+
+// ---------------------------------------------------------------- the review (context)
+
+/** What every row that offers "ignore" or "flag" needs: who signs, whether the server
+ *  can write, which ids are already decided, and ONE function that commits a change and
+ *  reloads the report. A context rather than six props drilled through four levels — the
+ *  finding rows, the surface lines and the overview lists all sign the same way. */
+type Review = {
+  author: string
+  canWrite: boolean
+  busy: string
+  ignored: Set<string>
+  flagged: Set<string>
+  act: (change: Omit<ReviewChange, "by">) => Promise<void>
+}
+
+const ReviewContext = createContext<Review>({
+  author: "",
+  canWrite: false,
+  busy: "",
+  ignored: new Set(),
+  flagged: new Set(),
+  act: async () => {},
+})
+
+const useReview = () => useContext(ReviewContext)
+
+/** "Ignore" is two steps and both are worth it: the click, and ONE line saying why. The
+ *  reason is what the next reader — the dev opening the brief, the PO six weeks later —
+ *  sees in place of the finding. Optional, because a decision taken is worth more than a
+ *  decision postponed for lack of a sentence; Enter confirms, Escape backs out. */
+const IgnoreButton = ({
+  id,
+  title,
+  compact,
+}: {
+  id: string
+  title: string
+  compact?: boolean
+}) => {
+  const review = useReview()
+  const [asking, setAsking] = useState(false)
+  const [why, setWhy] = useState("")
+  if (!review.canWrite) return null
+  const disabled = review.busy === id
+
+  if (!asking)
+    return (
+      <button
+        type="button"
+        disabled={disabled}
+        title={
+          review.author ? "Leave it out of the brief and the counts" : "Say who you are first"
+        }
+        onClick={() => setAsking(true)}
+        className="flex shrink-0 items-center gap-1 rounded px-1.5 py-0.5 text-[11px] text-gray-dark-500 hover:bg-white/5 hover:text-white disabled:opacity-40"
+      >
+        <EyeOff size={11} />
+        {compact ? null : "Ignore"}
+      </button>
+    )
+  return (
+    <span className="flex shrink-0 items-center gap-1">
+      <input
+        // biome-ignore lint/a11y/noAutofocus: the field appears because the reader clicked "Ignore"
+        autoFocus
+        value={why}
+        onChange={(e) => setWhy(e.target.value)}
+        placeholder="why (optional)"
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            void review.act({ op: "ignore", id, why, title })
+            setAsking(false)
+          }
+          if (e.key === "Escape") setAsking(false)
+        }}
+        className={`${TYPO.mono()} w-44 rounded border border-white/15 bg-transparent px-1.5 py-0.5 text-[11px] text-gray-dark-200`}
+      />
+      <button
+        type="button"
+        disabled={disabled}
+        onClick={() => {
+          void review.act({ op: "ignore", id, why, title })
+          setAsking(false)
+        }}
+        className="rounded bg-white/10 px-1.5 py-0.5 text-[11px] text-white hover:bg-white/15"
+      >
+        Ignore
+      </button>
+      <button
+        type="button"
+        onClick={() => setAsking(false)}
+        className="px-1 text-[11px] text-gray-dark-500 hover:text-white"
+      >
+        cancel
+      </button>
+    </span>
+  )
+}
+
+const RestoreButton = ({ id }: { id: string }) => {
+  const review = useReview()
+  if (!review.canWrite) return null
+  return (
+    <button
+      type="button"
+      disabled={review.busy === id}
+      onClick={() => void review.act({ op: "restore", id })}
+      className="flex shrink-0 items-center gap-1 rounded px-1.5 py-0.5 text-[11px] text-gray-dark-400 hover:bg-white/5 hover:text-white disabled:opacity-40"
+    >
+      <RotateCcw size={11} />
+      Restore
+    </button>
+  )
+}
 
 // ---------------------------------------------------------------- the two sides rendered
 
@@ -206,14 +375,25 @@ const FigmaFrame = ({ slug, variant }: { slug: string; variant: string }) => {
 
 /** The live component. `NOT_PREVIEWABLE` and "no preview written" are two different
  *  statements and both are said out loud — a blank cell next to a Figma frame reads as
- *  "the kit renders nothing", which is a lie about the kit. */
-const KitPreview = ({ name }: { name: string }) => {
+ *  "the kit renders nothing", which is a lie about the kit.
+ *
+ *  `props` are the Figma DEFAULT variant's values, mapped to the kit's props: the two
+ *  sides then show the SAME variant, and the surface measured underneath compares like
+ *  with like. Without them the kit's own default (`<Badge />`, neutral) sat beside
+ *  Figma's (brand) and every colour "differed" for a reason that was not a defect. */
+const KitPreview = ({ name, props }: { name: string; props?: Record<string, unknown> }) => {
   const render = PREVIEWS[name]
   if (render)
     return (
       <PreviewBoundary name={name}>
-        <div className="flex max-w-full items-center justify-center overflow-x-auto">
-          {render()}
+        {/* `data-preview-wrap`: the surface measure descends through it to the component
+            itself. Measuring this div compared Figma's badge with a transparent flex box —
+            seven "differences", all about the wrong node. */}
+        <div
+          data-preview-wrap=""
+          className="flex max-w-full items-center justify-center overflow-x-auto"
+        >
+          {render(props)}
         </div>
       </PreviewBoundary>
     )
@@ -227,9 +407,60 @@ const KitPreview = ({ name }: { name: string }) => {
 
 // ---------------------------------------------------------------- the visual diff
 
+/** OKLab → sRGB, the standard matrices (Björn Ottosson, 2020). Exact, so a colour the kit
+ *  reaches through `color-mix(in oklab, …)` compares channel for channel with Figma's hex
+ *  — a canvas read-back would come within a unit or two, and a comparison that says
+ *  "differs" on a rounding is the false finding this panel exists not to make. */
+const oklabToRgb = (L: number, a: number, b: number): [number, number, number] => {
+  const l_ = L + 0.3963377774 * a + 0.2158037573 * b
+  const m_ = L - 0.1055613458 * a - 0.0638541728 * b
+  const s_ = L - 0.0894841775 * a - 1.291485548 * b
+  const l = l_ ** 3
+  const m = m_ ** 3
+  const s3 = s_ ** 3
+  const lin = [
+    4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s3,
+    -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s3,
+    -0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s3,
+  ]
+  return lin.map((c) => {
+    const v = Math.max(0, Math.min(1, c))
+    const srgb = v <= 0.0031308 ? 12.92 * v : 1.055 * v ** (1 / 2.4) - 0.055
+    return Math.round(srgb * 255)
+  }) as [number, number, number]
+}
+
+/** A computed colour in ANY syntax, brought back to `rgba()`.
+ *
+ *  ⚠️ Chrome answers `getComputedStyle` with `oklab(0.99 0.00004 0.00002 / 0.16)` for a
+ *  `color-mix()` — which is what the kit's `light` variants are made of — and a regex for
+ *  `rgb()` read that as "no colour", so the kit's whole `light` family compared as
+ *  "differs". `oklab()`, `oklch()` and `color(srgb …)` are converted here, exactly. */
+const normalise = (css: string): string => {
+  const v = (css || "").trim()
+  const m = /^(oklab|oklch|color)\(([^)]+)\)$/.exec(v)
+  if (!m) return v
+  const body = m[2].replace("/", " ").replace(/^srgb\s+/, "").trim()
+  const parts = body.split(/\s+/).map((x) => (x.endsWith("%") ? Number(x.slice(0, -1)) / 100 : Number(x)))
+  if (parts.some((n) => Number.isNaN(n))) return v
+  const alpha = parts.length > 3 ? parts[3] : 1
+  let rgb: [number, number, number]
+  if (m[1] === "color") {
+    if (!/^srgb\s/.test(m[2].trim())) return v
+    rgb = [parts[0], parts[1], parts[2]].map((c) => Math.round(Math.max(0, Math.min(1, c)) * 255)) as [number, number, number]
+  } else if (m[1] === "oklch") {
+    const h = (parts[2] * Math.PI) / 180
+    rgb = oklabToRgb(parts[0], parts[1] * Math.cos(h), parts[1] * Math.sin(h))
+  } else {
+    rgb = oklabToRgb(parts[0], parts[1], parts[2])
+  }
+  return `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${alpha})`
+}
+
 /** `rgb(99, 136, 227)` → `#6388e3`. A computed style never gives a hex, and Figma never
  *  gives an rgb() — one of the two has to move for a comparison to be possible at all. */
-const toHex = (css: string): string => {
+const toHex = (raw: string): string => {
+  const css = normalise(raw)
   const m = /rgba?\(([^)]+)\)/.exec(css || "")
   if (!m) return (css || "").trim().toLowerCase()
   const [r, g, b, a] = m[1].split(",").map((n) => Number.parseFloat(n.trim()))
@@ -253,6 +484,9 @@ const sameColour = (a: string, b: string): boolean => {
 const px = (v: string): number => Number.parseFloat(v || "0") || 0
 
 type Line = {
+  /** The id's tail — explicit, because `Padding ↕` and `Padding ↔` slugify to the same
+   *  word, and one ignore would have hidden both. */
+  key: string
   what: string
   figma: string
   react: string
@@ -267,104 +501,158 @@ type Line = {
  *  become a colour and a width; `ui-manifest.json` carries the API, and `theme.css` carries
  *  the tokens, but neither says what `variant="outline" color="brand"` finally paints.
  *
- *  The Figma half is the plugin's `variant_visuals`, which is why this panel says so
- *  plainly when the file has not been re-synced: with nothing on the left there is nothing
- *  to compare, and an empty table would read as agreement. */
-const VisualDiff = ({
+ *  The Figma half is the plugin's per-variant surface. Pure: a visual and a node in, lines
+ *  out — the same function measures the default variant under the renders and a cell of
+ *  the grid. */
+const measureSurface = (visual: VariantVisual, node: HTMLElement): Line[] => {
+  // The rendered preview wraps the component; the component itself is the first element
+  // that is not one of OUR wrappers (`data-preview-wrap`). Measuring a wrapper would
+  // compare Figma's surface with a transparent div — true, and about the wrong node.
+  let el: HTMLElement = node
+  while (el.firstElementChild && (el === node || el.hasAttribute("data-preview-wrap")))
+    el = el.firstElementChild as HTMLElement
+  const cs = window.getComputedStyle(el)
+  const out: Line[] = []
+
+  const colour = (
+    key: string,
+    what: string,
+    drawn: Paint | undefined,
+    got: string,
+    hint?: string,
+  ) => {
+    if (!drawn?.hex && !drawn?.token) return
+    const react = toHex(got)
+    out.push({
+      key,
+      what,
+      figma: drawn.token ? `${drawn.token} · ${drawn.hex}` : drawn.hex,
+      react,
+      same: sameColour(drawn.hex, react),
+      note: hint,
+    })
+  }
+
+  colour("background", "Background", visual.fill, cs.backgroundColor)
+  if (visual.stroke) {
+    colour("border-color", "Border colour", visual.stroke.color, cs.borderTopColor)
+    const w = px(cs.borderTopWidth)
+    out.push({
+      key: "border-width",
+      what: "Border width",
+      figma: `${visual.stroke.width}px`,
+      react: `${w}px`,
+      same: Math.abs(w - Number(visual.stroke.width)) < 0.51,
+      note: "Figma draws sub-pixel borders; anything under half a pixel is a rounding.",
+    })
+  }
+  if (typeof visual.radius === "number") {
+    const r = px(cs.borderTopLeftRadius)
+    out.push({
+      key: "radius",
+      what: "Radius",
+      figma: `${visual.radius}px`,
+      react: `${r}px`,
+      same: Math.abs(r - visual.radius) < 0.51,
+    })
+  }
+  if (visual.padding) {
+    const v = visual.padding.v ?? visual.padding.t
+    const h = visual.padding.h ?? visual.padding.l
+    if (v !== undefined) {
+      const got = px(cs.paddingTop)
+      out.push({
+        key: "padding-v",
+        what: "Padding ↕",
+        figma: `${v}px`,
+        react: `${got}px`,
+        same: got === v,
+      })
+    }
+    if (h !== undefined) {
+      const got = px(cs.paddingLeft)
+      out.push({
+        key: "padding-h",
+        what: "Padding ↔",
+        figma: `${h}px`,
+        react: `${got}px`,
+        same: got === h,
+      })
+    }
+  }
+  if (visual.gap !== undefined) {
+    const got = px(cs.columnGap || cs.gap)
+    out.push({
+      key: "gap",
+      what: "Gap",
+      figma: `${visual.gap}px`,
+      react: `${got}px`,
+      same: got === visual.gap,
+    })
+  }
+  if (visual.text) {
+    colour("text-color", "Text colour", visual.text.fill, cs.color)
+    if (visual.text.size !== undefined) {
+      const got = px(cs.fontSize)
+      out.push({
+        key: "font-size",
+        what: "Font size",
+        figma: `${visual.text.size}px`,
+        react: `${got}px`,
+        same: Math.abs(got - visual.text.size) < 0.51,
+        // The text may live on a child; the root's font-size is inherited and usually
+        // right, but it is not a guarantee and saying so costs one line.
+        note: "Measured on the component's root — a nested label may differ.",
+      })
+    }
+  }
+  return out
+}
+
+/** The surface of ONE variant, drawn against rendered, and what the reviewer does with a
+ *  line that differs. Two gestures, both persisted:
+ *
+ *   • FLAG — the line becomes a finding the dev will read (`surface:<component>:<prop>`,
+ *     owner kit). The server cannot measure a rendered padding; the human who saw it can
+ *     say it counts. That is what puts the "Padding ↕ 38px drawn, 0px rendered" of the
+ *     Slider card into the brief, where before it could only be looked at;
+ *   • IGNORE — the line stops being shown here. A Figma root that reserves 38px for a
+ *     value bubble is a fact about the mockup, not a defect of the kit.
+ *
+ *  ⚠️ The count on this panel is NOT the component's count and is never added to it: it
+ *  says how many properties differ on this one variant. The card's number is the active
+ *  findings, and a flagged line is one of them. */
+const SurfacePanel = ({
+  react,
+  variant,
   visual,
   node,
   exported,
+  title,
 }: {
+  react: string
+  variant: string
   visual?: VariantVisual
   node: HTMLElement | null
   exported: boolean
+  title: string
 }) => {
+  const review = useReview()
   const [lines, setLines] = useState<Line[] | null>(null)
+  const [showIgnored, setShowIgnored] = useState(false)
 
   useEffect(() => {
     if (!node || !visual) return setLines(null)
-    // The rendered preview wraps the component; the component itself is the first element
-    // child that actually paints. Measuring the wrapper would compare Figma's surface with
-    // a transparent div — true, and about the wrong node.
-    const el = (node.querySelector("*") as HTMLElement) ?? node
-    const cs = window.getComputedStyle(el)
-    const out: Line[] = []
-
-    const colour = (what: string, drawn: Paint | undefined, got: string, hint?: string) => {
-      if (!drawn?.hex && !drawn?.token) return
-      const react = toHex(got)
-      out.push({
-        what,
-        figma: drawn.token ? `${drawn.token} · ${drawn.hex}` : drawn.hex,
-        react,
-        same: sameColour(drawn.hex, react),
-        note: hint,
-      })
-    }
-
-    colour("Background", visual.fill, cs.backgroundColor)
-    if (visual.stroke) {
-      colour("Border colour", visual.stroke.color, cs.borderTopColor)
-      const w = px(cs.borderTopWidth)
-      out.push({
-        what: "Border width",
-        figma: `${visual.stroke.width}px`,
-        react: `${w}px`,
-        same: Math.abs(w - Number(visual.stroke.width)) < 0.51,
-        note: "Figma draws sub-pixel borders; anything under half a pixel is a rounding.",
-      })
-    }
-    if (typeof visual.radius === "number") {
-      const r = px(cs.borderTopLeftRadius)
-      out.push({
-        what: "Radius",
-        figma: `${visual.radius}px`,
-        react: `${r}px`,
-        same: Math.abs(r - visual.radius) < 0.51,
-      })
-    }
-    if (visual.padding) {
-      const v = visual.padding.v ?? visual.padding.t
-      const h = visual.padding.h ?? visual.padding.l
-      if (v !== undefined) {
-        const got = px(cs.paddingTop)
-        out.push({ what: "Padding ↕", figma: `${v}px`, react: `${got}px`, same: got === v })
-      }
-      if (h !== undefined) {
-        const got = px(cs.paddingLeft)
-        out.push({ what: "Padding ↔", figma: `${h}px`, react: `${got}px`, same: got === h })
-      }
-    }
-    if (visual.gap !== undefined) {
-      const got = px(cs.columnGap || cs.gap)
-      out.push({ what: "Gap", figma: `${visual.gap}px`, react: `${got}px`, same: got === visual.gap })
-    }
-    if (visual.text) {
-      colour("Text colour", visual.text.fill, cs.color)
-      if (visual.text.size !== undefined) {
-        const got = px(cs.fontSize)
-        out.push({
-          what: "Font size",
-          figma: `${visual.text.size}px`,
-          react: `${got}px`,
-          same: Math.abs(got - visual.text.size) < 0.51,
-          // The text may live on a child; the root's font-size is inherited and usually
-          // right, but it is not a guarantee and saying so costs one line.
-          note: "Measured on the component's root — a nested label may differ.",
-        })
-      }
-    }
-    setLines(out)
+    setLines(measureSurface(visual, node))
   }, [node, visual])
 
   if (!exported)
     return (
-      <Alert
-        type="info"
-        variant="outline"
-        title="The drawn surface has not been exported for this component"
-        description="What each variant paints — fill, border, radius, padding — is exported by the Figma plugin alongside the catalogue, into its own file: inline in the fiches it would double the context an agent reads on every generation. If this is empty, either the sync predates the 2026-09-10 plugin, or no variant of this component paints anything on its own root — its surface comes from a nested layer, which the export deliberately leaves out. Re-run the plugin sync; nothing on this page fills it."
-      />
+      <Text size="xs" c="muted">
+        The drawn surface (fill, border, radius, padding) is not in this export: the Figma
+        plugin writes it per variant since 2026-09-10, into its own file. Re-run the plugin
+        sync in Figma; nothing on this page fills it.
+      </Text>
     )
   if (!visual)
     return (
@@ -373,25 +661,46 @@ const VisualDiff = ({
         the export deliberately leaves out.
       </Text>
     )
+  if (!node)
+    return (
+      <Text size="xs" c="muted">
+        No live render to measure against for this component.
+      </Text>
+    )
   if (!lines) return null
 
+  const lineId = (l: Line) => `surface:${slugify(react)}:${slugify(variant)}:${l.key}`
   const off = lines.filter((l) => !l.same)
+  const hidden = off.filter((l) => review.ignored.has(lineId(l)))
+  const shown = lines.filter((l) => l.same || !review.ignored.has(lineId(l)))
+  const left = off.length - hidden.length
+
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <Text size="sm" className={TYPO.title("semibold")}>
-          The surface, drawn against rendered
+          {title}
         </Text>
-        {off.length === 0 ? (
+        {left === 0 ? (
           <Badge color="green" size="sm">
             <Check size={13} />
-            identical
+            {off.length === 0 ? "identical" : "nothing left"}
           </Badge>
         ) : (
-          <Badge color="orange" size="sm">
-            {off.length} difference{off.length > 1 ? "s" : ""}
+          <Badge color="orange" size="sm" variant="light">
+            {left} propert{left === 1 ? "y" : "ies"} differ{left === 1 ? "s" : ""}
           </Badge>
         )}
+        <code className={`${TYPO.mono()} text-[10px] text-gray-dark-600`}>{variant}</code>
+        {hidden.length > 0 ? (
+          <button
+            type="button"
+            onClick={() => setShowIgnored((s) => !s)}
+            className="text-[11px] text-gray-dark-500 hover:text-white"
+          >
+            {showIgnored ? "hide" : "show"} {hidden.length} ignored
+          </button>
+        ) : null}
       </div>
       <table className="w-full text-left">
         <thead>
@@ -403,31 +712,83 @@ const VisualDiff = ({
           </tr>
         </thead>
         <tbody>
-          {lines.map((l) => (
-            <tr key={l.what} className="border-white/6 border-t align-top">
-              <td className="py-1 pr-3 text-gray-dark-300 text-xs">{l.what}</td>
-              <td className={`${TYPO.mono()} py-1 pr-3 text-gray-dark-300 text-[11px]`}>
-                {l.figma}
-              </td>
-              <td className={`${TYPO.mono()} py-1 pr-3 text-gray-dark-300 text-[11px]`}>
-                {l.react}
-              </td>
-              <td className="py-1">
-                {l.same ? (
-                  <Check size={13} className="text-green-500" />
-                ) : (
-                  <Badge color="orange" size="sm" variant="light">
-                    differs
-                  </Badge>
-                )}
-                {!l.same && l.note ? (
-                  <div className="mt-0.5 max-w-xs text-[10px] text-gray-dark-500">
-                    {l.note}
-                  </div>
-                ) : null}
-              </td>
-            </tr>
-          ))}
+          {(showIgnored ? lines : shown).map((l) => {
+            const id = lineId(l)
+            const isIgnored = !l.same && review.ignored.has(id)
+            const isFlagged = review.flagged.has(id)
+            return (
+              <tr
+                key={l.what}
+                className={`border-white/6 border-t align-top ${isIgnored ? "opacity-50" : ""}`}
+              >
+                <td className="py-1 pr-3 text-gray-dark-300 text-xs">{l.what}</td>
+                <td className={`${TYPO.mono()} py-1 pr-3 text-gray-dark-300 text-[11px]`}>
+                  {l.figma}
+                </td>
+                <td className={`${TYPO.mono()} py-1 pr-3 text-gray-dark-300 text-[11px]`}>
+                  {l.react}
+                </td>
+                <td className="py-1">
+                  {l.same ? (
+                    <Check size={13} className="text-green-500" />
+                  ) : (
+                    <div className="flex flex-wrap items-center gap-1">
+                      <Badge color="orange" size="sm" variant="light">
+                        differs
+                      </Badge>
+                      {isIgnored ? (
+                        <RestoreButton id={id} />
+                      ) : isFlagged ? (
+                        <>
+                          <Badge color="blue" size="sm" variant="light">
+                            <Flag size={11} />
+                            in the brief
+                          </Badge>
+                          {review.canWrite ? (
+                            <button
+                              type="button"
+                              disabled={review.busy === id}
+                              onClick={() => void review.act({ op: "unflag", id })}
+                              className="px-1 text-[11px] text-gray-dark-500 hover:text-white"
+                            >
+                              unflag
+                            </button>
+                          ) : null}
+                        </>
+                      ) : review.canWrite ? (
+                        <>
+                          <button
+                            type="button"
+                            disabled={review.busy === id}
+                            title="Hand it to the dev: it becomes a finding for the kit"
+                            onClick={() =>
+                              void review.act({
+                                op: "flag",
+                                id,
+                                component: react,
+                                owner: "kit",
+                                title: `${react}: ${l.what} is ${l.figma} drawn, ${l.react} rendered`,
+                                detail: `Measured in the console on the rendered variant ${variant}, against the surface the Figma plugin exported for it.`,
+                                evidence: l.note ?? "",
+                              })
+                            }
+                            className="flex items-center gap-1 rounded px-1.5 py-0.5 text-[11px] text-gray-dark-400 hover:bg-white/5 hover:text-white disabled:opacity-40"
+                          >
+                            <Flag size={11} />
+                            Flag for the dev
+                          </button>
+                          <IgnoreButton id={id} title={`${react}: ${l.what}`} compact />
+                        </>
+                      ) : null}
+                    </div>
+                  )}
+                  {!l.same && l.note ? (
+                    <div className="mt-0.5 max-w-xs text-[10px] text-gray-dark-500">{l.note}</div>
+                  ) : null}
+                </td>
+              </tr>
+            )
+          })}
         </tbody>
       </table>
     </div>
@@ -442,30 +803,41 @@ const CELL = {
   both: {
     ring: "border-white/10",
     dot: "bg-green-500",
-    label: "in Figma and in the kit",
-    short: "both sides",
+    label: "drawn in Figma, renders in the kit",
   },
   "kit-only": {
     ring: "border-white/10 opacity-45",
     dot: "bg-gray-500",
-    label: "in the kit only — nobody drew it",
-    short: "kit only",
+    label: "renders in the kit — nobody drew it",
   },
   "figma-only": {
     ring: "border-red-500/60 bg-red-500/5",
     dot: "bg-red-500",
-    label: "in Figma only — the kit refuses this value",
-    short: "Figma only",
+    label: "drawn in Figma — the kit refuses this value",
   },
   neither: {
     ring: "border-dashed border-white/8",
     dot: "",
     label: "in neither",
-    short: "neither",
   },
 } as const
 
 type CellState = keyof typeof CELL
+
+/** The two axes a grid should open on, ranked by what they MEAN (`AXIS_RANK`) and, within
+ *  a rank, by where the holes are. Pure, so the choice is the same on every visit. */
+const pickAxes = (axes: CoverageAxis[]): [string, string] => {
+  const ranked = [...axes].sort((a, b) => {
+    const ra = AXIS_RANK[a.nature] ?? 8
+    const rb = AXIS_RANK[b.nature] ?? 8
+    if (ra !== rb) return ra - rb
+    const ha = a.only_figma.length + a.only_kit.length
+    const hb = b.only_figma.length + b.only_kit.length
+    if (ha !== hb) return hb - ha
+    return b.figma.length + b.kit.length - (a.figma.length + a.kit.length)
+  })
+  return [ranked[0]?.axis ?? "", ranked[1]?.axis ?? ""]
+}
 
 /** The coverage matrix: two axes crossed, one live React render per cell.
  *
@@ -478,7 +850,13 @@ type CellState = keyof typeof CELL
  *  The cells render the KIT, not Figma, and that is a deliberate asymmetry: a React render
  *  is free and instant, where sixty Figma frames would be sixty render jobs of one to three
  *  seconds against someone else's rate limit. Figma's own drawing of one exact combination
- *  is a click away — which is the gesture you make once you have spotted the odd cell. */
+ *  is a click away — which is the gesture you make once you have spotted the odd cell.
+ *
+ *  ⚠️ The pickers are drawn ONLY when there is a choice to make (three axes or more), and
+ *  they open on the two axes that mean something — `AXIS_RANK`. Reported on 2026-09-10:
+ *  "j'ai des sélecteurs, je ne sais pas à quoi ils servent, ils ne font rien". They did
+ *  something; on a Slider it opened on `value × size` with a `range = any` filter, and
+ *  changing the filter moved a dot nobody was looking at. */
 const CoverageGrid = ({
   slug,
   react,
@@ -495,17 +873,9 @@ const CoverageGrid = ({
   frames: boolean
 }) => {
   const axes = cov.axes
-  // Default to the two widest axes, `variant` and `color` first when they exist: that is
-  // the pair a designer means by "the colours next to each other".
-  const preferred = (names: string[]) =>
-    names.find((n) => axes.some((a) => a.axis === n)) ?? ""
-  const widest = [...axes].sort((a, b) => b.figma.length + b.kit.length - a.figma.length - a.kit.length)
-  const [rowAxis, setRowAxis] = useState(
-    preferred(["variant", "variants", "type", "style"]) || widest[0]?.axis || "",
-  )
-  const [colAxis, setColAxis] = useState(
-    preferred(["color"]) || widest.find((a) => a.axis !== rowAxis)?.axis || "",
-  )
+  const [defaultRow, defaultCol] = useMemo(() => pickAxes(axes), [axes])
+  const [rowAxis, setRowAxis] = useState(defaultRow)
+  const [colAxis, setColAxis] = useState(defaultCol)
   const [fixed, setFixed] = useState<Record<string, string>>({})
   const [zoom, setZoom] = useState<CoverageCombo | null>(null)
   // The rendered element of the zoomed cell — the ONLY place the kit's classes have become
@@ -513,13 +883,21 @@ const CoverageGrid = ({
   const [zoomNode, setZoomNode] = useState<HTMLElement | null>(null)
 
   const find = (name: string) => axes.find((a) => a.axis === name)
-  const rowDef = find(rowAxis)
-  const colDef = find(colAxis)
-  if (!rowDef || !colDef || rowAxis === colAxis)
+  // The FIRST axis goes across (columns): `variant` reads better as a row of swatches. ONE
+  // axis is still a grid — a single row. The previous version refused to draw it and sent
+  // the reader back to the table, which cannot show a hole as a red cell.
+  const colDef = find(colAxis) ?? find(defaultCol) ?? find(defaultRow) ?? axes[0]
+  const rowDef = axes.length > 1 ? (find(rowAxis) ?? find(defaultRow)) : undefined
+  if (!colDef)
     return (
       <Text size="xs" c="muted">
-        This component varies on a single axis — the table above already says everything a
-        grid could.
+        No drawn combination could be decoded for this component.
+      </Text>
+    )
+  if (rowDef && rowDef.axis === colDef.axis)
+    return (
+      <Text size="xs" c="muted">
+        Pick two different axes.
       </Text>
     )
 
@@ -527,26 +905,30 @@ const CoverageGrid = ({
   // exactly the rows worth looking at.
   const union = (a: CoverageAxis) => {
     const seen = new Map<string, string>()
-    for (const v of [...a.figma, ...a.kit]) if (!seen.has(v.toLowerCase())) seen.set(v.toLowerCase(), v)
+    for (const v of [...a.figma, ...a.kit])
+      if (!seen.has(v.toLowerCase())) seen.set(v.toLowerCase(), v)
     return [...seen.values()]
   }
-  const rows = union(rowDef)
+  const rows = rowDef ? union(rowDef) : [""]
   const cols = union(colDef)
-  const others = axes.filter((a) => a.axis !== rowAxis && a.axis !== colAxis)
+  const others = axes.filter((a) => a.axis !== rowDef?.axis && a.axis !== colDef.axis)
 
   const matching = (r: string, c: string) =>
     cov.combinations.filter(
       (k) =>
-        k.values[rowAxis]?.toLowerCase() === r.toLowerCase() &&
-        k.values[colAxis]?.toLowerCase() === c.toLowerCase() &&
+        (!rowDef || sameName(k.values[rowDef.axis] ?? "", r)) &&
+        sameName(k.values[colDef.axis] ?? "", c) &&
         others.every((o) => !fixed[o.axis] || k.values[o.axis] === fixed[o.axis]),
     )
 
-  const inKit = (a: CoverageAxis, v: string) =>
+  const inKit = (a: CoverageAxis | undefined, v: string) =>
     // ⚠️ An axis whose values the manifest cannot read is treated as ACCEPTING the value.
     // The alternative is painting a whole grid red on the strength of what this report
     // cannot see — the accusation the whole module refuses to make.
-    !a.readable || a.kit.some((k) => k.toLowerCase() === v.toLowerCase())
+    !a || !a.readable || a.kit.some((k) => sameName(k, v))
+
+  const drawnBy = (a: CoverageAxis | undefined, v: string) =>
+    !a || a.figma.some((f) => sameName(f, v))
 
   const state = (r: string, c: string): CellState => {
     const drawn = matching(r, c).length > 0
@@ -558,11 +940,8 @@ const CoverageGrid = ({
 
   const props = (r: string, c: string): Record<string, unknown> => {
     const out: Record<string, unknown> = {}
-    for (const [axis, value] of [
-      [rowDef, r],
-      [colDef, c],
-    ] as const)
-      if (axis.react && axis.readable) out[axis.react] = value
+    if (rowDef?.react && rowDef.readable) out[rowDef.react] = r
+    if (colDef.react && colDef.readable) out[colDef.react] = c
     for (const o of others)
       if (fixed[o.axis] && o.react && o.readable) out[o.react] = fixed[o.axis]
     return out
@@ -573,61 +952,79 @@ const CoverageGrid = ({
     (n, r) => n + cols.filter((c) => state(r, c) === "both").length,
     0,
   )
+  const refusedCells = rows.reduce(
+    (n, r) => n + cols.filter((c) => state(r, c) === "figma-only").length,
+    0,
+  )
   const renderableCells = rows.reduce(
-    (n, r) => n + cols.filter((c) => state(r, c) !== "neither" && state(r, c) !== "figma-only").length,
+    (n, r) =>
+      n +
+      cols.filter((c) => state(r, c) !== "neither" && state(r, c) !== "figma-only").length,
     0,
   )
 
-  const Picker = ({
-    value,
-    onChange,
-    label,
-  }: {
-    value: string
-    onChange: (v: string) => void
-    label: string
-  }) => (
-    <label className="flex items-center gap-1 text-gray-dark-500 text-xs">
-      {label}
-      <select
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className={`${TYPO.mono()} rounded border border-white/15 bg-transparent px-1.5 py-0.5 text-gray-dark-200 text-xs`}
-      >
-        {axes.map((a) => (
+  const select = (value: string, onChange: (v: string) => void, exclude: string) => (
+    <select
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      className={`${TYPO.mono()} rounded border border-white/15 bg-transparent px-1.5 py-0.5 text-gray-dark-200 text-xs`}
+    >
+      {axes
+        .filter((a) => a.axis !== exclude)
+        .map((a) => (
           <option key={a.axis} value={a.axis} className="bg-gray-dark-900">
             {a.axis}
           </option>
         ))}
-      </select>
-    </label>
+    </select>
   )
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex flex-wrap items-center gap-3">
-        <Picker label="rows" value={rowAxis} onChange={setRowAxis} />
-        <Picker label="columns" value={colAxis} onChange={setColAxis} />
-        {others.map((o) => (
-          <label key={o.axis} className="flex items-center gap-1 text-gray-dark-500 text-xs">
-            {o.axis}
-            <select
-              value={fixed[o.axis] ?? ""}
-              onChange={(e) => setFixed((f) => ({ ...f, [o.axis]: e.target.value }))}
-              className={`${TYPO.mono()} rounded border border-white/15 bg-transparent px-1.5 py-0.5 text-gray-dark-200 text-xs`}
-            >
-              <option value="" className="bg-gray-dark-900">
-                any
-              </option>
-              {union(o).map((v) => (
-                <option key={v} value={v} className="bg-gray-dark-900">
-                  {v}
-                </option>
-              ))}
-            </select>
+      {/* What the grid IS, in one sentence, before any control. */}
+      <Text size="xs" c="muted">
+        Each cell renders the kit at <code className={TYPO.mono()}>{colDef.axis}</code>
+        {rowDef ? (
+          <>
+            {" "}
+            (columns) × <code className={TYPO.mono()}>{rowDef.axis}</code> (rows)
+          </>
+        ) : null}
+        ; the dot says whether Figma drew that combination.
+        {others.length > 0
+          ? ` The other ${others.length === 1 ? "axis" : "axes"} (${others.map((o) => o.axis).join(", ")}) ${others.length === 1 ? "is" : "are"} not fixed: a cell counts as drawn if any of their values was.`
+          : ""}
+      </Text>
+
+      {axes.length > 2 ? (
+        <div className="flex flex-wrap items-center gap-3 text-gray-dark-500 text-xs">
+          <label className="flex items-center gap-1">
+            columns {select(colDef.axis, setColAxis, rowDef?.axis ?? "")}
           </label>
-        ))}
-      </div>
+          <label className="flex items-center gap-1">
+            rows {select(rowDef?.axis ?? "", setRowAxis, colDef.axis)}
+          </label>
+          {others.map((o) => (
+            <label key={o.axis} className="flex items-center gap-1">
+              fix {o.axis} to
+              <select
+                value={fixed[o.axis] ?? ""}
+                onChange={(e) => setFixed((f) => ({ ...f, [o.axis]: e.target.value }))}
+                className={`${TYPO.mono()} rounded border border-white/15 bg-transparent px-1.5 py-0.5 text-gray-dark-200 text-xs`}
+              >
+                <option value="" className="bg-gray-dark-900">
+                  any value
+                </option>
+                {union(o).map((v) => (
+                  <option key={v} value={v} className="bg-gray-dark-900">
+                    {v}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ))}
+        </div>
+      ) : null}
 
       {/* ⚠️ The answer, IN WORDS, above the grid. The first version encoded it in the
           border colour of a cell and left the reader to decode it through a legend at the
@@ -638,48 +1035,45 @@ const CoverageGrid = ({
         <Text size="sm">
           <strong>{drawnCells}</strong> of the {renderableCells} combinations the kit can
           render are drawn in Figma.
-          {cells !== renderableCells
+          {refusedCells > 0 ? (
+            <span className="text-red-300">
+              {" "}
+              <strong>{refusedCells}</strong> drawn combination{refusedCells > 1 ? "s" : ""}{" "}
+              cannot be rendered.
+            </span>
+          ) : null}
+          {cells !== renderableCells && refusedCells === 0
             ? ` ${cells - renderableCells} more cell${cells - renderableCells > 1 ? "s" : ""} exist${cells - renderableCells > 1 ? "" : "s"} on one side only.`
             : ""}
         </Text>
-        {[rowDef, colDef].map((a) => (
-          <div key={a.axis} className="flex flex-col gap-0.5">
-            {a.only_figma.length > 0 ? (
-              <Text size="xs" className="text-red-300">
-                <code className={TYPO.mono()}>{a.axis}</code>: Figma draws{" "}
-                <strong>{a.only_figma.join(", ")}</strong> — the kit does not accept
-                {a.only_figma.length > 1 ? " those values" : " that value"}, so
-                {a.axis === rowAxis ? " those rows" : " those columns"} cannot be built.
-              </Text>
-            ) : null}
-            {a.only_kit.length > 0 ? (
-              <Text size="xs" c="muted">
-                <code className={TYPO.mono()}>{a.axis}</code>: the kit ships{" "}
-                <strong>{a.only_kit.join(", ")}</strong> — nothing in Figma draws
-                {a.only_kit.length > 1 ? " them" : " it"}.
-              </Text>
-            ) : null}
-            {!a.readable ? (
-              <Text size="xs" c="muted">
-                <code className={TYPO.mono()}>{a.axis}</code>: the manifest cannot read the
-                kit's values here, so every cell is given the benefit of the doubt.
-              </Text>
-            ) : null}
-          </div>
-        ))}
-        {rowDef.only_figma.length === 0 &&
-        rowDef.only_kit.length === 0 &&
-        colDef.only_figma.length === 0 &&
-        colDef.only_kit.length === 0 ? (
-          <Text size="xs" c="muted">
-            Both axes hold the same values on both sides — what is left is which
-            combinations were drawn.
-          </Text>
-        ) : null}
+        {[colDef, rowDef]
+          .filter((a): a is CoverageAxis => Boolean(a))
+          .map((a) => (
+            <div key={a.axis} className="flex flex-col gap-0.5">
+              {a.only_figma.length > 0 ? (
+                <Text size="xs" className="text-red-300">
+                  <code className={TYPO.mono()}>{a.axis}</code>: Figma draws{" "}
+                  <strong>{a.only_figma.join(", ")}</strong> — the kit does not accept
+                  {a.only_figma.length > 1 ? " those values" : " that value"}.
+                </Text>
+              ) : null}
+              {a.only_kit.length > 0 ? (
+                <Text size="xs" c="muted">
+                  <code className={TYPO.mono()}>{a.axis}</code>: the kit ships{" "}
+                  <strong>{a.only_kit.join(", ")}</strong> — nothing in Figma draws
+                  {a.only_kit.length > 1 ? " them" : " it"}.
+                </Text>
+              ) : null}
+              {!a.readable ? (
+                <Text size="xs" c="muted">
+                  <code className={TYPO.mono()}>{a.axis}</code>: the manifest cannot read the
+                  kit's values here, so every cell is given the benefit of the doubt.
+                </Text>
+              ) : null}
+            </div>
+          ))}
       </div>
 
-      {/* The legend, ABOVE the grid and showing real cells: a swatch of the thing itself
-          beats a dot that has to be matched to a sentence forty rows further down. */}
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-[11px] text-gray-dark-400">
         {(Object.keys(CELL) as CellState[]).map((k) => (
           <span key={k} className="flex items-center gap-1.5">
@@ -709,10 +1103,6 @@ const CoverageGrid = ({
         </Text>
       ) : null}
 
-      {/* ⚠️ No edge fade here, and that was tried first: a permanent mask on the trailing
-          40px hides the LAST column once you have scrolled to the end, which is worse than
-          the clipping it was meant to explain. The line above says the grid scrolls; a
-          sentence that is always true beats a gradient that lies at one end of the range. */}
       <div className="overflow-x-auto" data-theme={dark ? "dark" : "light"}>
         <table className="border-separate border-spacing-1">
           <thead>
@@ -731,7 +1121,7 @@ const CoverageGrid = ({
                       at 11px is not a statement anyone should have to decode. */}
                   {!inKit(colDef, c) ? (
                     <div className="text-[10px] text-red-400">Figma only</div>
-                  ) : !colDef.figma.some((v) => v.toLowerCase() === c.toLowerCase()) ? (
+                  ) : !drawnBy(colDef, c) ? (
                     <div className="text-[10px] text-gray-dark-600">kit only</div>
                   ) : null}
                 </th>
@@ -740,10 +1130,7 @@ const CoverageGrid = ({
           </thead>
           <tbody>
             {rows.map((r) => (
-              <tr key={r}>
-                {/* Sticky: `color` alone is thirteen columns wide once both sides' values
-                    are unioned, so the grid scrolls — and a row whose label has scrolled
-                    off is a row of anonymous swatches. */}
+              <tr key={r || "-"}>
                 <th
                   className={`sticky left-0 z-10 pr-2 text-right font-normal ${
                     dark ? "bg-gray-dark-950" : "bg-white"
@@ -756,9 +1143,9 @@ const CoverageGrid = ({
                   >
                     {r}
                   </div>
-                  {!inKit(rowDef, r) ? (
+                  {rowDef && !inKit(rowDef, r) ? (
                     <div className="text-[10px] text-red-400">Figma only</div>
-                  ) : !rowDef.figma.some((v) => v.toLowerCase() === r.toLowerCase()) ? (
+                  ) : rowDef && !drawnBy(rowDef, r) ? (
                     <div className="text-[10px] text-gray-dark-600">kit only</div>
                   ) : null}
                 </th>
@@ -766,11 +1153,6 @@ const CoverageGrid = ({
                   const s = state(r, c)
                   const hits = matching(r, c)
                   const tone = CELL[s]
-                  // ⚠️ NOT gated on `frames`. The zoom used to exist only to fetch Figma's
-                  // render, so it was disabled without a token; it now also carries the
-                  // visual diff, which is measured on the component rendered right here and
-                  // needs nothing from Figma. Keeping the old condition made the comparison
-                  // unreachable on exactly the servers that cannot render a frame.
                   const clickable = hits.length > 0
                   return (
                     <td key={c}>
@@ -785,7 +1167,7 @@ const CoverageGrid = ({
                       <div
                         role={clickable ? "button" : undefined}
                         tabIndex={clickable ? 0 : undefined}
-                        title={`${rowAxis}=${r} · ${colAxis}=${c} — ${tone.label}`}
+                        title={`${rowDef ? `${rowDef.axis}=${r} · ` : ""}${colDef.axis}=${c} — ${tone.label}`}
                         onClick={clickable ? () => setZoom(hits[0]) : undefined}
                         onKeyDown={
                           clickable
@@ -823,8 +1205,6 @@ const CoverageGrid = ({
         </table>
       </div>
 
-      {/* Said out loud rather than swallowed: an undecoded key-variant is a combination
-          missing from this grid, so the count above is short by that many. */}
       {cov.unparsed.length > 0 ? (
         <Text size="xs" className="text-orange-300">
           {cov.unparsed.length} Figma variant name{cov.unparsed.length > 1 ? "s" : ""} could
@@ -847,10 +1227,6 @@ const CoverageGrid = ({
           </div>
           <div className="grid gap-3 md:grid-cols-2">
             <div className="flex min-h-24 items-center justify-center">
-              {/* Same guard as the pair card. Ungating the CELL from `frames` (so the
-                  visual diff is reachable without a Figma token) let this side fire a
-                  fetch that cannot even complete its preflight — a CORS error in the
-                  console for a route the server never mounted. */}
               {frames ? (
                 <FigmaFrame slug={slug} variant={zoom.variant} />
               ) : (
@@ -878,10 +1254,13 @@ const CoverageGrid = ({
             </div>
           </div>
           <div className="mt-3">
-            <VisualDiff
+            <SurfacePanel
+              react={react}
+              variant={zoom.variant}
               visual={visuals.variants[zoom.variant]}
               node={zoomNode}
               exported={visuals.exported}
+              title="This variant's surface, drawn against rendered"
             />
           </div>
         </div>
@@ -893,16 +1272,8 @@ const CoverageGrid = ({
 // ---------------------------------------------------------------- one axis row
 
 /** ONE axis, the two sides facing each other, and the difference SPELLED OUT underneath.
- *
- *  ⚠️ This replaced a five-column table (axis · drawn · → · in the kit · verdict). It held
- *  the same facts and nobody could read a difference out of it: the values ran together in
- *  narrow cells, and the only thing saying what was wrong was a coloured badge. Reported on
- *  2026-09-10 — "j'ai encore du mal à distinguer les différences au niveau des props et des
- *  variantes".
- *
- *  So the values get room, the two sides are aligned so the eye can compare them without
- *  scanning across a table, and every divergence is a SENTENCE. The badge stays, in the
- *  corner, as a second reading of it. */
+ *  The values get room, the two sides are aligned so the eye can compare them without
+ *  scanning across a table, and every divergence is a SENTENCE. */
 const AxisPair = ({ a }: { a: ParityAxis }) => {
   const v = VERDICT[a.verdict] ?? VERDICT.unpaired
   const missingKit = a.missing_in_kit ?? []
@@ -929,17 +1300,13 @@ const AxisPair = ({ a }: { a: ParityAxis }) => {
       <div className="mb-1 flex items-baseline gap-2">
         <span className="text-[10px] text-gray-dark-500 uppercase">{label}</span>
         <code className={`${TYPO.mono()} text-gray-dark-200 text-xs`}>{name || "—"}</code>
-        {register ? (
-          <span className="text-[10px] text-gray-dark-600">{register}</span>
-        ) : null}
+        {register ? <span className="text-[10px] text-gray-dark-600">{register}</span> : null}
       </div>
       {values.length > 0 ? (
         <div className="flex flex-wrap gap-1">
           {values.map((val) => {
-            // The value that exists on ONE side only is picked out where it lives. A list
-            // of eleven values with a note underneath makes the reader do the diffing.
-            const only = highlight.some((h) => h.toLowerCase() === val.toLowerCase())
-            const isDefault = def && def.toLowerCase() === val.toLowerCase()
+            const only = highlight.some((h) => sameName(h, val))
+            const isDefault = def && sameName(def, val)
             return (
               <span
                 key={val}
@@ -991,7 +1358,6 @@ const AxisPair = ({ a }: { a: ParityAxis }) => {
           fallback={a.react ? "no enumerable value" : "nothing of that name"}
         />
       </div>
-      {/* The difference, in words. A reader should never have to subtract two lists. */}
       <div className="mt-1.5 flex flex-col gap-0.5">
         {missingKit.length > 0 ? (
           <Text size="xs" className="text-orange-300">
@@ -1005,9 +1371,7 @@ const AxisPair = ({ a }: { a: ParityAxis }) => {
             {missingFigma.length > 1 ? " them" : " it"}.
           </Text>
         ) : null}
-        {a.figma_default &&
-        a.react_default &&
-        a.figma_default.toLowerCase() !== a.react_default.toLowerCase() ? (
+        {a.figma_default && a.react_default && !sameName(a.figma_default, a.react_default) ? (
           <Text size="xs" className="text-red-300">
             Defaults disagree: an instance dropped in Figma is{" "}
             <strong>{a.figma_default}</strong>, the code with no prop is{" "}
@@ -1024,261 +1388,823 @@ const AxisPair = ({ a }: { a: ParityAxis }) => {
   )
 }
 
-// ---------------------------------------------------------------- one pair
-
-const Pair = ({ pair, dark, frames }: { pair: ParityPair; dark: boolean; frames: boolean }) => {
+/** An axis that is BY DESIGN, in one line: what it is, where it lands, why it is not a
+ *  finding. The reader who wants the two value lists opens the row. */
+const AxisLine = ({ a }: { a: ParityAxis }) => {
   const [open, setOpen] = useState(false)
-  const [variant, setVariant] = useState("")
-  const holes = pair.axes.filter((a) => a.verdict === "values" || a.verdict === "unpaired")
-  // ⚠️ "aligned" and "nothing could be compared" are not the same statement, and the first
-  // version said the former for both: `Alert` showed a green tick while BOTH its axes were
-  // unreadable (its cva lives in `alertRoot`). A green tick on an unmeasured component is
-  // the one thing this tab must never print.
-  const [onlyDiff, setOnlyDiff] = useState(true)
-  const [covOpen, setCovOpen] = useState(false)
-  const [cov, setCov] = useState<Coverage | null>(null)
-  const [visuals, setVisuals] = useState<{
-    exported: boolean
-    variants: Record<string, VariantVisual>
-  }>({ exported: false, variants: {} })
-  const [covError, setCovError] = useState("")
-  const blind = pair.axes.filter((a) => a.verdict === "unreadable")
-  // Default to the differences: a healthy component is a page of "aligned", and the reader
-  // came for what is not.
-  const shownAxes = onlyDiff
-    ? pair.axes.filter((a) => a.verdict !== "aligned" && a.verdict !== "by-design")
-    : pair.axes
-  const comparable = pair.axes.length > blind.length
-
+  const v = VERDICT[a.verdict] ?? VERDICT.unpaired
   return (
-    <Card>
-      <Card.Header>
-        <div className="flex flex-wrap items-center gap-2">
-          <Card.Title>{pair.react}</Card.Title>
-          <code className={`${TYPO.mono()} text-gray-dark-500 text-xs`}>
-            {pair.figma.slug}
-          </code>
-          {pair.category ? (
-            <Badge color="gray" size="sm" variant="outline">
-              {pair.category}
-            </Badge>
-          ) : null}
-          {holes.length > 0 ? (
-            <Badge color="orange" size="sm">
-              {holes.length} difference{holes.length > 1 ? "s" : ""}
-            </Badge>
-          ) : comparable ? (
-            <Badge color="green" size="sm">
-              <Check size={13} />
-              aligned
-            </Badge>
-          ) : (
-            <Badge color="purple" size="sm" variant="light">
-              nothing comparable
-            </Badge>
-          )}
-          {blind.length > 0 && comparable ? (
-            <Badge color="purple" size="sm" variant="light">
-              {blind.length} axis{blind.length > 1 ? "es" : ""} not readable
-            </Badge>
-          ) : null}
-          {!pair.figma.described ? (
-            <Badge color="orange" size="sm" variant="outline">
-              no description in Figma
-            </Badge>
-          ) : null}
+    <div className="border-white/6 border-t first:border-t-0">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className="flex w-full items-start gap-2 py-1.5 text-left hover:bg-white/3"
+      >
+        {open ? (
+          <ChevronDown size={12} className="mt-0.5 shrink-0 text-gray-dark-600" />
+        ) : (
+          <ChevronRight size={12} className="mt-0.5 shrink-0 text-gray-dark-600" />
+        )}
+        <code className={`${TYPO.mono()} shrink-0 text-gray-dark-200 text-xs`}>
+          {a.axis || a.react}
+        </code>
+        {a.react && a.axis ? (
+          <>
+            <ArrowRight size={11} className="mt-1 shrink-0 text-gray-dark-600" />
+            <code className={`${TYPO.mono()} shrink-0 text-gray-dark-400 text-xs`}>
+              {a.react}
+            </code>
+          </>
+        ) : null}
+        <Badge color={v.color} size="sm" variant="light" className="shrink-0">
+          {v.label}
+        </Badge>
+        <span className="min-w-0 flex-1 truncate text-[11px] text-gray-dark-500">
+          {a.note || v.means}
+        </span>
+      </button>
+      {open ? (
+        <div className="pb-2 pl-5">
+          <AxisPair a={a} />
         </div>
-      </Card.Header>
-      <Card.Content>
-        <div className="flex flex-col gap-4">
-          {/* The two sides, at the same width so the eye can actually compare them. */}
-          <div className="grid gap-3 md:grid-cols-2">
-            <div className="rounded-lg border border-white/10 p-3">
-              <div className="mb-2 flex items-center justify-between gap-2">
-                <Text size="xs" c="muted">
-                  Figma · {pair.figma.page.trim()}
-                </Text>
-                {pair.figma.variant_count > 0 ? (
-                  <span className={`${TYPO.mono()} text-gray-dark-500 text-[11px]`}>
-                    {pair.figma.variant_count} variants
-                  </span>
-                ) : null}
-              </div>
-              <div className="flex min-h-24 items-center justify-center">
-                {frames ? (
-                  <FigmaFrame slug={pair.figma.slug} variant={variant} />
-                ) : (
-                  // Said once, plainly, rather than forty failed fetches: the server has
-                  // no FIGMA_TOKEN, so nothing here can render — and that is a
-                  // configuration fact, not a fault of this component.
-                  <Text size="xs" c="muted" className="text-center">
-                    No FIGMA_TOKEN on the server: the comparison works, the picture cannot
-                    be rendered.
-                  </Text>
-                )}
-              </div>
-            </div>
-            <div
-              className="rounded-lg border border-white/10 p-3"
-              data-theme={dark ? "dark" : "light"}
-            >
-              <div className="mb-2 flex items-center justify-between gap-2">
-                <Text size="xs" c="muted">
-                  {pair.import ? "@42/ui-react" : "the kit"}
-                </Text>
-                <code className={`${TYPO.mono()} text-gray-dark-500 text-[11px]`}>
-                  {pair.snippet}
-                </code>
-              </div>
-              <div
-                className={`flex min-h-24 items-center justify-center rounded ${
-                  dark ? "bg-black/20" : "bg-white"
-                } p-3`}
-              >
-                <KitPreview name={pair.react} />
-              </div>
-            </div>
-          </div>
-
-          {/* The axes. Open on demand: a healthy component is ten rows of "aligned", and
-              the reader came for the differences. */}
-          <div>
-            {/* The grid is fetched on demand, per component: `buttonsbutton-` alone
-                carries 300 named variants, and forty of those in the list payload is a
-                megabyte nobody scrolls. */}
-            {pair.figma.variant_count > 1 ? (
-              <button
-                type="button"
-                className="mr-4 cursor-pointer text-gray-dark-400 text-xs hover:text-gray-dark-200"
-                onClick={() => {
-                  if (cov) return setCovOpen((o) => !o)
-                  setCovOpen(true)
-                  setCovError("")
-                  getParityDetail(pair.figma.slug, pair.react)
-                    .then((d) => {
-                      setCov(d.coverage)
-                      setVisuals(d.visuals ?? { exported: false, variants: {} })
-                    })
-                    .catch((e: Error) => setCovError(e.message))
-                }}
-              >
-                <Grid3x3 size={12} className="mr-1 inline" />
-                {covOpen ? "Hide" : "Show"} the coverage grid
-              </button>
-            ) : null}
-            {pair.axes.length === 0 ? (
-              <Text size="xs" c="muted">
-                This Figma component declares no axis and no property: there is nothing to
-                compare but the drawing itself.
-              </Text>
-            ) : (
-              <button
-                type="button"
-                className="cursor-pointer text-gray-dark-400 text-xs hover:text-gray-dark-200"
-                onClick={() => setOpen((o) => !o)}
-              >
-                {open ? "Hide" : "Show"} the {pair.axes.length} ax
-                {pair.axes.length > 1 ? "es" : "is"}
-              </button>
-            )}
-            {open ? (
-              <div className="mt-2">
-                <label className="mb-1 flex items-center gap-2 text-gray-dark-400 text-xs">
-                  <input
-                    type="checkbox"
-                    checked={onlyDiff}
-                    onChange={(e) => setOnlyDiff(e.target.checked)}
-                  />
-                  Only the axes that differ
-                </label>
-                {shownAxes.length === 0 ? (
-                  <Text size="xs" c="muted">
-                    Every axis lines up on both sides.
-                  </Text>
-                ) : (
-                  shownAxes.map((a) => <AxisPair key={`${a.axis}-${a.react}`} a={a} />)
-                )}
-                {pair.figma.variant_count > 1 ? (
-                  <div className="mt-3 flex items-center gap-2">
-                    <Text size="xs" c="muted">
-                      Render another Figma variant:
-                    </Text>
-                    <input
-                      className={`${TYPO.mono()} rounded border border-white/15 bg-transparent px-2 py-1 text-xs text-gray-dark-200`}
-                      placeholder="variant-outline-type-error"
-                      defaultValue={variant}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter")
-                          setVariant((e.target as HTMLInputElement).value.trim())
-                      }}
-                    />
-                  </div>
-                ) : null}
-              </div>
-            ) : null}
-          </div>
-
-          {covOpen ? (
-            covError ? (
-              <Text size="xs" className="text-orange-300">
-                {covError}
-              </Text>
-            ) : cov ? (
-              <CoverageGrid
-                slug={pair.figma.slug}
-                react={pair.react}
-                cov={cov}
-                visuals={visuals}
-                dark={dark}
-                frames={frames}
-              />
-            ) : (
-              <div className="flex items-center gap-2 py-2">
-                <Spinner size="sm" />
-                <Text size="xs" c="muted">
-                  Decoding the drawn combinations…
-                </Text>
-              </div>
-            )
-          ) : null}
-
-          {pair.others.length > 0 ? (
-            <Text size="xs" c="muted">
-              Also on this Figma page:{" "}
-              {pair.others.map((o) => o.slug).join(", ")} — page blocks or private parts,
-              not library components. If they are neither, they belong on another page.
-            </Text>
-          ) : null}
-        </div>
-      </Card.Content>
-    </Card>
+      ) : null}
+    </div>
   )
 }
 
-/** What the right-hand column shows while no component is picked: the findings by owner and
- *  the two gap lists. They used to sit ABOVE the component list, which pushed the working
- *  surface off the first screen — the tab's whole point is now component by component, and
- *  the overview is what fills the space until one is chosen. */
+// ---------------------------------------------------------------- one finding
+
+/** A finding NAMES a component, so it links to it. `paired` guards it: a finding about
+ *  something that exists on one side only has no pair to open. `here` says the reader is
+ *  already on that component, so the link would go nowhere. */
+const FindingRow = ({
+  f,
+  paired,
+  here,
+}: {
+  f: ParityFinding
+  paired: boolean
+  here?: boolean
+}) => {
+  const review = useReview()
+  const o = OWNER[f.owner]
+  return (
+    <li
+      className={`border-white/6 border-t py-2 first:border-t-0 ${f.ignored ? "opacity-60" : ""}`}
+    >
+      <div className="flex flex-wrap items-baseline gap-2">
+        <Badge color={SEVERITY[f.severity]} size="sm" variant="light">
+          {f.severity}
+        </Badge>
+        <Badge color={o.color} size="sm" variant="outline">
+          {o.short}
+        </Badge>
+        {f.flagged ? (
+          <Badge color="blue" size="sm" variant="light">
+            <Flag size={11} />
+            seen in the browser
+          </Badge>
+        ) : null}
+        {paired && !here ? (
+          <a
+            href={`#/parity/${encodeURIComponent(f.component)}`}
+            className={`${TYPO.title("semibold")} text-sm underline decoration-dotted underline-offset-2 hover:text-white ${
+              f.ignored ? "line-through" : ""
+            }`}
+          >
+            {f.title}
+          </a>
+        ) : (
+          <Text
+            size="sm"
+            className={`${TYPO.title("semibold")} ${f.ignored ? "line-through" : ""}`}
+          >
+            {f.title}
+          </Text>
+        )}
+        <span className="ml-auto flex items-center gap-1">
+          {f.ignored ? (
+            <RestoreButton id={f.id} />
+          ) : (
+            <>
+              {f.flagged && review.canWrite ? (
+                <button
+                  type="button"
+                  disabled={review.busy === f.id}
+                  onClick={() => void review.act({ op: "unflag", id: f.id })}
+                  className="px-1 text-[11px] text-gray-dark-500 hover:text-white"
+                >
+                  unflag
+                </button>
+              ) : null}
+              <IgnoreButton id={f.id} title={f.title} />
+            </>
+          )}
+        </span>
+      </div>
+      {f.ignored ? (
+        <Text size="xs" c="muted" className="mt-1">
+          Ignored by {f.ignored_by || "?"}
+          {f.ignored_at ? ` · ${f.ignored_at.slice(0, 10)}` : ""}
+          {f.ignored_why ? ` — ${f.ignored_why}` : ""}
+        </Text>
+      ) : (
+        <>
+          <Text size="sm" c="secondary" className="mt-1">
+            {f.detail}
+          </Text>
+          {f.evidence ? (
+            <div className={`${TYPO.mono()} mt-1 text-[11px] text-gray-dark-500`}>
+              {f.evidence}
+            </div>
+          ) : null}
+        </>
+      )}
+    </li>
+  )
+}
+
+/** One collapsible group with its count in the title. The page is made of these: what
+ *  differs, what is by design, what is aligned, what is ignored — each foldable, the
+ *  first one open. */
+const Group = ({
+  title,
+  count,
+  open: initial,
+  tone,
+  hint,
+  children,
+}: {
+  title: string
+  count: number
+  open?: boolean
+  tone?: string
+  hint?: string
+  children: ReactNode
+}) => {
+  const [open, setOpen] = useState(Boolean(initial))
+  return (
+    <div className="rounded-lg border border-white/10">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className="flex w-full items-center gap-2 px-3 py-2 text-left hover:bg-white/3"
+      >
+        {open ? (
+          <ChevronDown size={14} className="shrink-0 text-gray-dark-500" />
+        ) : (
+          <ChevronRight size={14} className="shrink-0 text-gray-dark-500" />
+        )}
+        <Text size="sm" className={TYPO.title("semibold")}>
+          {title}
+        </Text>
+        <Badge color={count > 0 ? (tone ?? "gray") : "gray"} size="sm" variant="light">
+          {count}
+        </Badge>
+        {hint ? (
+          <span className="ml-1 truncate text-[11px] text-gray-dark-500">{hint}</span>
+        ) : null}
+      </button>
+      {open ? <div className="border-white/8 border-t px-3 py-2">{children}</div> : null}
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------- one pair
+
+/** ONE component, everything on one screen, the differences first.
+ *
+ *  Order, top to bottom: the two renders · what differs (the active findings, each with
+ *  its owner and an Ignore) · the surface of the default variant, measured · what is by
+ *  design, folded · what is aligned, folded · what was ignored, folded · the coverage
+ *  grid, folded. Nothing a reviewer needs is behind a toggle they have to know exists. */
+const Pair = ({
+  pair,
+  findings,
+  dark,
+  frames,
+}: {
+  pair: ParityPair
+  findings: ParityFinding[]
+  dark: boolean
+  frames: boolean
+}) => {
+  const [variant, setVariant] = useState("")
+  const [detail, setDetail] = useState<ParityDetail | null>(null)
+  const [detailError, setDetailError] = useState("")
+  const [copied, setCopied] = useState(false)
+  const [error, setError] = useState("")
+  // The default render's node — where the surface of the default variant is measured.
+  const [previewNode, setPreviewNode] = useState<HTMLElement | null>(null)
+
+  // The detail is read on open, once per component: it carries the named variants (for
+  // the picker), the per-variant surfaces (for the measure) and the coverage (for the
+  // grid). One call instead of three toggles that each fetched the same thing.
+  useEffect(() => {
+    let alive = true
+    setDetail(null)
+    setDetailError("")
+    if (!pair.figma.detail) return
+    getParityDetail(pair.figma.slug, pair.react)
+      .then((d) => alive && setDetail(d))
+      .catch((e: Error) => alive && setDetailError(e.message))
+    return () => {
+      alive = false
+    }
+  }, [pair.figma.slug, pair.react, pair.figma.detail])
+
+  const active = findings.filter((f) => !f.ignored)
+  const ignored = findings.filter((f) => f.ignored)
+  const byDesign = pair.axes.filter((a) => BY_DESIGN.has(a.verdict))
+  const aligned = pair.axes.filter((a) => a.verdict === "aligned")
+  // The axes behind the active findings. An axis whose only finding was IGNORED is
+  // settled and leaves this block with it — otherwise the reviewer reads "unpaired" in red
+  // under a list that no longer mentions it.
+  const names = (f: ParityFinding) => f.id.split(":").slice(2).join(":")
+  const about = (a: ParityAxis, list: ParityFinding[]) =>
+    list.some((f) => {
+      const tail = names(f)
+      return (a.axis && tail === slugify(a.axis)) || (a.react && tail === slugify(a.react))
+    })
+  const differing = pair.axes.filter(
+    (a) =>
+      (a.verdict === "values" || a.verdict === "unpaired") &&
+      (about(a, active) || !about(a, ignored)),
+  )
+  const blind = pair.axes.filter((a) => a.verdict === "unreadable")
+  const comparable = pair.axes.length > blind.length
+
+  // The default variant's surface: the key_variant whose node is the default node.
+  const defaultVariant = detail
+    ? (Object.entries(detail.key_variants).find(([, node]) => node === detail.default_node)?.[0] ??
+      "")
+    : ""
+  const visuals = detail?.visuals ?? { exported: false, variants: {} }
+  // Figma's default variant, as kit props — only the axes the kit reads and the values it
+  // accepts. `coverage.axes` is the single owner of that mapping (server-side).
+  const defaultProps = useMemo(() => {
+    if (!detail) return undefined
+    const out: Record<string, unknown> = {}
+    for (const [axis, value] of Object.entries(detail.defaults)) {
+      const row = detail.coverage.axes.find((a) => sameName(a.axis, axis))
+      if (!row?.react || !row.readable) continue
+      if (row.kit.length && !row.kit.some((k) => sameName(k, value))) continue
+      out[row.react] = value
+    }
+    return Object.keys(out).length ? out : undefined
+  }, [detail])
+
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(await getParityBrief({ component: pair.react }))
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e))
+    }
+  }
+
+  return (
+    <div className="flex flex-col gap-4">
+      {/* The header: ONE number, and it is the same one as in the list and the brief. */}
+      <div className="flex flex-wrap items-center gap-2">
+        <code className={`${TYPO.mono()} text-gray-dark-500 text-xs`}>{pair.figma.slug}</code>
+        {pair.category ? (
+          <Badge color="gray" size="sm" variant="outline">
+            {pair.category}
+          </Badge>
+        ) : null}
+        {active.length > 0 ? (
+          <Badge color="orange" size="sm">
+            {active.length} to review
+          </Badge>
+        ) : comparable ? (
+          <Badge color="green" size="sm">
+            <Check size={13} />
+            nothing to review
+          </Badge>
+        ) : (
+          <Badge color="purple" size="sm" variant="light">
+            nothing comparable
+          </Badge>
+        )}
+        {ignored.length > 0 ? (
+          <Badge color="gray" size="sm" variant="outline">
+            {ignored.length} ignored
+          </Badge>
+        ) : null}
+        {!pair.figma.described ? (
+          <Badge color="orange" size="sm" variant="outline">
+            no description in Figma
+          </Badge>
+        ) : null}
+        <span className="ml-auto">
+          <Button size="sm" variant="outline" onClick={copy}>
+            {copied ? <Check size={14} /> : <Copy size={14} />}
+            {copied ? "Copied" : "Copy this component's brief"}
+          </Button>
+        </span>
+      </div>
+      {error ? (
+        <Alert color="red" variant="light" title="Cannot copy" description={error} />
+      ) : null}
+
+      {/* The two sides, at the same width so the eye can actually compare them. */}
+      <div className="grid gap-3 md:grid-cols-2">
+        <div className="rounded-lg border border-white/10 p-3">
+          <div className="mb-2 flex items-center justify-between gap-2">
+            <Text size="xs" c="muted">
+              Figma · {pair.figma.page.trim()}
+            </Text>
+            {detail && Object.keys(detail.key_variants).length > 1 ? (
+              <select
+                value={variant}
+                onChange={(e) => setVariant(e.target.value)}
+                title="Render another drawn variant"
+                className={`${TYPO.mono()} max-w-[60%] rounded border border-white/15 bg-transparent px-1.5 py-0.5 text-[11px] text-gray-dark-300`}
+              >
+                <option value="" className="bg-gray-dark-900">
+                  default variant
+                </option>
+                {Object.keys(detail.key_variants).map((k) => (
+                  <option key={k} value={k} className="bg-gray-dark-900">
+                    {k}
+                  </option>
+                ))}
+              </select>
+            ) : pair.figma.variant_count > 0 ? (
+              <span className={`${TYPO.mono()} text-gray-dark-500 text-[11px]`}>
+                {pair.figma.variant_count} variants
+              </span>
+            ) : null}
+          </div>
+          <div className="flex min-h-24 items-center justify-center">
+            {frames ? (
+              <FigmaFrame slug={pair.figma.slug} variant={variant} />
+            ) : (
+              <Text size="xs" c="muted" className="text-center">
+                No FIGMA_TOKEN on the server: the comparison works, the picture cannot be
+                rendered.
+              </Text>
+            )}
+          </div>
+        </div>
+        <div
+          className="rounded-lg border border-white/10 p-3"
+          data-theme={dark ? "dark" : "light"}
+        >
+          <div className="mb-2 flex items-center justify-between gap-2">
+            <Text size="xs" c="muted" className="shrink-0">
+              {pair.import ? "@42/ui-react" : "the kit"}
+              {defaultProps ? " · at Figma's default" : ""}
+            </Text>
+            <code className={`${TYPO.mono()} truncate text-gray-dark-500 text-[11px]`}>
+              {defaultProps
+                ? `<${pair.react} ${Object.entries(defaultProps)
+                    .map(([k, v]) => `${k}="${String(v)}"`)
+                    .join(" ")} />`
+                : pair.snippet}
+            </code>
+          </div>
+          <div
+            ref={setPreviewNode}
+            className={`flex min-h-24 items-center justify-center rounded ${
+              dark ? "bg-black/20" : "bg-white"
+            } p-3`}
+          >
+            <KitPreview name={pair.react} props={defaultProps} />
+          </div>
+        </div>
+      </div>
+
+      {/* 1. What differs — the active findings of this component. The list the brief
+          carries, the number the card shows. */}
+      <Group
+        title="What differs"
+        count={active.length}
+        open
+        tone="orange"
+        hint={
+          active.length === 0
+            ? comparable
+              ? "nothing left to hand to a dev"
+              : "no axis could be compared"
+            : `${active.filter((f) => f.owner === "kit").length} for the kit · ${active.filter((f) => f.owner === "both").length} to settle · ${active.filter((f) => f.owner === "figma").length} for Figma`
+        }
+      >
+        {active.length === 0 ? (
+          <Text size="xs" c="muted">
+            {comparable
+              ? "Every axis that could be compared lines up, or was settled."
+              : "The manifest cannot read this component's values — nothing here says anything about the kit."}
+          </Text>
+        ) : (
+          <ul className="flex flex-col">
+            {active.map((f) => (
+              <FindingRow key={f.id} f={f} paired here />
+            ))}
+          </ul>
+        )}
+        {differing.length > 0 ? (
+          <div className="mt-3 border-white/8 border-t pt-2">
+            <Text size="xs" c="muted" className="mb-1">
+              The {differing.length === 1 ? "axis" : "axes"} behind{" "}
+              {differing.length === 1 ? "it" : "them"}, both sides:
+            </Text>
+            {differing.map((a) => (
+              <AxisPair key={`${a.axis}-${a.react}`} a={a} />
+            ))}
+          </div>
+        ) : null}
+      </Group>
+
+      {/* 2. The surface of the DEFAULT variant, measured right here. Its count is its own. */}
+      {pair.figma.detail ? (
+        <div className="rounded-lg border border-white/10 px-3 py-2">
+          {detailError ? (
+            <Text size="xs" className="text-orange-300">
+              {detailError}
+            </Text>
+          ) : !detail ? (
+            <div className="flex items-center gap-2 py-1">
+              <Spinner size="sm" />
+              <Text size="xs" c="muted">
+                Reading the drawn variants…
+              </Text>
+            </div>
+          ) : (
+            <SurfacePanel
+              react={pair.react}
+              variant={defaultVariant || "default"}
+              visual={defaultVariant ? visuals.variants[defaultVariant] : undefined}
+              node={PREVIEWS[pair.react] ? previewNode : null}
+              exported={visuals.exported}
+              title="The default variant's surface, drawn against rendered"
+            />
+          )}
+        </div>
+      ) : null}
+
+      {/* 3. By design — folded. The count says how much of the component is expected
+          divergence; the lines say why, one each. */}
+      <Group
+        title="By design — nothing to do"
+        count={byDesign.length}
+        hint="runtime states, slots, the palette living in color, what Field owns"
+      >
+        {byDesign.length === 0 ? (
+          <Text size="xs" c="muted">
+            No axis of this component is an expected divergence.
+          </Text>
+        ) : (
+          byDesign.map((a) => <AxisLine key={`${a.axis}-${a.react}`} a={a} />)
+        )}
+      </Group>
+
+      <Group title="Aligned" count={aligned.length} tone="green">
+        {aligned.length === 0 ? (
+          <Text size="xs" c="muted">
+            No axis lines up value for value on both sides.
+          </Text>
+        ) : (
+          aligned.map((a) => <AxisLine key={`${a.axis}-${a.react}`} a={a} />)
+        )}
+      </Group>
+
+      {ignored.length > 0 ? (
+        <Group
+          title="Ignored"
+          count={ignored.length}
+          hint="left out of the brief and the counts"
+        >
+          <ul className="flex flex-col">
+            {ignored.map((f) => (
+              <FindingRow key={f.id} f={f} paired here />
+            ))}
+          </ul>
+        </Group>
+      ) : null}
+
+      {/* 4. The coverage grid — folded: forty live renders are paid for only when asked. */}
+      {pair.figma.variant_count > 1 ? (
+        <Group
+          title="Drawn combinations"
+          count={pair.figma.variant_count}
+          hint="every drawn variant against what the kit renders — red cells are what a mockup uses and the code refuses"
+        >
+          {detailError ? (
+            <Text size="xs" className="text-orange-300">
+              {detailError}
+            </Text>
+          ) : detail ? (
+            <CoverageGrid
+              slug={pair.figma.slug}
+              react={pair.react}
+              cov={detail.coverage}
+              visuals={visuals}
+              dark={dark}
+              frames={frames}
+            />
+          ) : (
+            <div className="flex items-center gap-2 py-2">
+              <Spinner size="sm" />
+              <Text size="xs" c="muted">
+                Decoding the drawn combinations…
+              </Text>
+            </div>
+          )}
+        </Group>
+      ) : null}
+
+      {pair.others.length > 0 ? (
+        <Text size="xs" c="muted">
+          Also on this Figma page: {pair.others.map((o) => o.slug).join(", ")} — page blocks
+          or private parts, not library components. If they are neither, they belong on
+          another page.
+        </Text>
+      ) : null}
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------- the overview
+
+type OverviewTab = "findings" | "pairs" | "figma-only" | "kit-only" | "ignored"
+
+/** The finding that stands for a one-sided entry: `missing-in-kit` (or the acknowledged
+ *  gap) for a Figma-only component, `missing-in-figma` for a kit-only one. It is what the
+ *  Ignore on those lists acts on. */
+const findingFor = (findings: ParityFinding[], component: string, kinds: string[]) =>
+  findings.find((f) => sameName(f.component, component) && kinds.includes(f.kind))
+
+/** What the right-hand column shows while no component is picked — and the tab is chosen
+ *  by clicking a NUMBER at the top: "In Figma only (4)" opens the four. The holes used to
+ *  be two cards at the bottom of the findings; reported on 2026-09-10 ("In Figma only doit
+ *  être cliquable, In the kit only aussi, pour voir en un clin d'œil les trous"). */
 const Overview = ({
   data,
+  tab,
   owner,
   setOwner,
+  counts,
 }: {
   data: ParityReport
+  tab: OverviewTab
   owner: "kit" | "both" | "figma"
   setOwner: (o: "kit" | "both" | "figma") => void
+  counts: Record<string, { active: number; kit: number; ignored: number }>
 }) => {
   const c = data.counts
-  const grouped = data.findings.filter((f) => f.owner === owner)
+  const [copied, setCopied] = useState("")
+  const [error, setError] = useState("")
+  const paired = (name: string) => data.pairs.some((p) => sameName(p.react, name))
+
+  const copyOwner = async (o: "kit" | "both" | "figma") => {
+    try {
+      await navigator.clipboard.writeText(await getParityBrief({ owner: o }))
+      setCopied(o)
+      setTimeout(() => setCopied(""), 2000)
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e))
+    }
+  }
+
+  const decision = (f: ParityFinding | undefined) =>
+    f ? (
+      f.ignored ? (
+        <RestoreButton id={f.id} />
+      ) : (
+        <IgnoreButton id={f.id} title={f.title} />
+      )
+    ) : null
+
+  if (tab === "pairs")
+    return (
+      <div className="flex flex-col gap-3">
+        <Title order={2} size="md" className={TYPO.title()}>
+          The {c.pairs} pairs, at a glance
+        </Title>
+        <Text size="xs" c="muted">
+          One row per paired component: how many findings are left, and how many of them are
+          the kit's. Click a name to open it.
+        </Text>
+        <Card>
+          <Card.Content>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left">
+                <thead>
+                  <tr className="text-[11px] text-gray-dark-500 uppercase">
+                    <th className="pb-1 pr-3 font-normal">Component</th>
+                    <th className="pb-1 pr-3 font-normal">Figma</th>
+                    <th className="pb-1 pr-3 font-normal">Page</th>
+                    <th className="pb-1 pr-3 text-right font-normal">To review</th>
+                    <th className="pb-1 pr-3 text-right font-normal">For the kit</th>
+                    <th className="pb-1 text-right font-normal">Ignored</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.pairs.map((p) => {
+                    const k = counts[p.react] ?? { active: 0, kit: 0, ignored: 0 }
+                    return (
+                      <tr key={p.react} className="border-white/6 border-t">
+                        <td className="py-1 pr-3">
+                          <a
+                            href={`#/parity/${encodeURIComponent(p.react)}`}
+                            className="text-sm text-white underline decoration-dotted underline-offset-2"
+                          >
+                            {p.react}
+                          </a>
+                        </td>
+                        <td className={`${TYPO.mono()} py-1 pr-3 text-gray-dark-400 text-xs`}>
+                          {p.figma.slug}
+                        </td>
+                        <td className="py-1 pr-3 text-gray-dark-500 text-xs">
+                          {p.figma.page.trim()}
+                        </td>
+                        <td className={`${TYPO.mono()} py-1 pr-3 text-right text-xs`}>
+                          {k.active > 0 ? (
+                            <span className="text-orange-300">{k.active}</span>
+                          ) : (
+                            <Check size={12} className="ml-auto text-green-600" />
+                          )}
+                        </td>
+                        <td className={`${TYPO.mono()} py-1 pr-3 text-right text-xs`}>
+                          {k.kit > 0 ? <span className="text-blue-300">{k.kit}</span> : "·"}
+                        </td>
+                        <td
+                          className={`${TYPO.mono()} py-1 text-right text-gray-dark-500 text-xs`}
+                        >
+                          {k.ignored > 0 ? k.ignored : "·"}
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </Card.Content>
+        </Card>
+      </div>
+    )
+
+  if (tab === "figma-only")
+    return (
+      <div className="flex flex-col gap-3">
+        <Title order={2} size="md" className={TYPO.title()}>
+          Drawn, not shipped ({data.figma_only.length})
+        </Title>
+        <Text size="xs" c="muted">
+          Components of the Figma file with no counterpart in @42/ui-react. A screen that uses
+          one is composed by hand. "Known gap" means the file itself declares the page as
+          still to add on the React side.
+        </Text>
+        <Card>
+          <Card.Content>
+            {data.figma_only.length === 0 ? (
+              <Text c="secondary" size="sm">
+                Everything drawn has a counterpart in the kit.
+              </Text>
+            ) : (
+              <ul className="flex flex-col">
+                {data.figma_only.map((e) => {
+                  const f = findingFor(data.findings, e.slug, [
+                    "missing-in-kit",
+                    "acknowledged-gap",
+                  ])
+                  return (
+                    <li key={e.slug} className="border-white/6 border-t py-2 first:border-t-0">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <code className={`${TYPO.mono()} text-gray-dark-100 text-sm`}>
+                          {e.slug}
+                        </code>
+                        <span className="text-gray-dark-500 text-xs">{e.page.trim()}</span>
+                        {e.acknowledged ? (
+                          <Badge color="gray" size="sm" variant="outline">
+                            known gap
+                          </Badge>
+                        ) : null}
+                        {e.internal ? (
+                          <Badge color="gray" size="sm" variant="outline">
+                            private part
+                          </Badge>
+                        ) : null}
+                        {f?.ignored ? (
+                          <Badge color="gray" size="sm" variant="light">
+                            ignored
+                          </Badge>
+                        ) : null}
+                        <span className="ml-auto">{decision(f)}</span>
+                      </div>
+                      {Object.keys(e.axes).length > 0 ? (
+                        <div className={`${TYPO.mono()} mt-1 text-[11px] text-gray-dark-500`}>
+                          axes: {Object.keys(e.axes).join(", ")}
+                        </div>
+                      ) : null}
+                      {f?.ignored && f.ignored_why ? (
+                        <Text size="xs" c="muted" className="mt-1">
+                          {f.ignored_by}: {f.ignored_why}
+                        </Text>
+                      ) : null}
+                    </li>
+                  )
+                })}
+              </ul>
+            )}
+          </Card.Content>
+        </Card>
+      </div>
+    )
+
+  if (tab === "kit-only")
+    return (
+      <div className="flex flex-col gap-3">
+        <Title order={2} size="md" className={TYPO.title()}>
+          Shipped, not drawn ({c.react_only_expected})
+        </Title>
+        <Text size="xs" c="muted">
+          Components of @42/ui-react that no page of the Figma file draws. A designer has no
+          instance to reach for, and an agent reading the catalogue does not know they exist.{" "}
+          {data.react_only.length - c.react_only_expected} layout primitives and typography
+          helpers are excluded: they are not meant to be drawn.
+        </Text>
+        <Card>
+          <Card.Content>
+            <ul className="flex flex-col">
+              {data.react_only
+                .filter((r) => r.drawn)
+                .map((r) => {
+                  const f = findingFor(data.findings, r.react, ["missing-in-figma"])
+                  return (
+                    <li key={r.react} className="border-white/6 border-t py-2 first:border-t-0">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className={`${TYPO.title("semibold")} text-sm`}>{r.react}</span>
+                        <span className="text-gray-dark-500 text-xs">{r.category}</span>
+                        <code className={`${TYPO.mono()} text-[11px] text-gray-dark-600`}>
+                          {r.snippet}
+                        </code>
+                        {f?.ignored ? (
+                          <Badge color="gray" size="sm" variant="light">
+                            ignored
+                          </Badge>
+                        ) : null}
+                        <span className="ml-auto">{decision(f)}</span>
+                      </div>
+                      {r.summary ? (
+                        <Text size="xs" c="muted" className="mt-0.5">
+                          {r.summary}
+                        </Text>
+                      ) : null}
+                      {f?.ignored && f.ignored_why ? (
+                        <Text size="xs" c="muted" className="mt-1">
+                          {f.ignored_by}: {f.ignored_why}
+                        </Text>
+                      ) : null}
+                    </li>
+                  )
+                })}
+            </ul>
+          </Card.Content>
+        </Card>
+      </div>
+    )
+
+  if (tab === "ignored") {
+    const list = data.findings.filter((f) => f.ignored)
+    return (
+      <div className="flex flex-col gap-3">
+        <Title order={2} size="md" className={TYPO.title()}>
+          Ignored by the reviewer ({list.length})
+        </Title>
+        <Text size="xs" c="muted">
+          Left out of the brief and of every count, with who and why. Committed in{" "}
+          <code className={TYPO.mono()}>{data.review.path}</code>; a restore puts one back.
+        </Text>
+        <Card>
+          <Card.Content>
+            {list.length === 0 ? (
+              <Text c="secondary" size="sm">
+                Nothing has been ignored yet.
+              </Text>
+            ) : (
+              <ul className="flex flex-col">
+                {list.map((f) => (
+                  <FindingRow key={f.id} f={f} paired={paired(f.component)} />
+                ))}
+              </ul>
+            )}
+          </Card.Content>
+        </Card>
+      </div>
+    )
+  }
+
+  const grouped = data.findings.filter((f) => f.owner === owner && !f.ignored)
   return (
-    <div className="flex flex-col gap-6">
-      {/* The findings, by owner. The tabs are the recommendation: a front-end dev opens
-        "For the kit" and has their list; the rest is somebody else's column. */}
     <div className="flex flex-col gap-3">
       <Title order={2} size="md" className={TYPO.title()}>
         What to change, and who changes it
       </Title>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         {(["kit", "both", "figma"] as const).map((o) => (
           <Button
             key={o}
@@ -1290,10 +2216,19 @@ const Overview = ({
             {OWNER[o].label} ({c.by_owner[o] ?? 0})
           </Button>
         ))}
+        <span className="ml-auto">
+          <Button size="sm" variant="subtle" onClick={() => void copyOwner(owner)}>
+            {copied === owner ? <Check size={14} /> : <Copy size={14} />}
+            {copied === owner ? "Copied" : "Copy this list"}
+          </Button>
+        </span>
       </div>
       <Text size="sm" c="secondary">
         {OWNER[owner].hint}
       </Text>
+      {error ? (
+        <Alert color="red" variant="light" title="Cannot copy" description={error} />
+      ) : null}
       <Card>
         <Card.Content>
           {grouped.length === 0 ? (
@@ -1302,90 +2237,26 @@ const Overview = ({
             </Text>
           ) : (
             <ul className="flex flex-col">
-              {grouped.map((f, i) => (
-                <Finding
-                  key={`${f.kind}-${f.component}-${i}`}
-                  f={f}
-                  paired={data.pairs.some((p) => p.react === f.component)}
-                />
+              {grouped.map((f) => (
+                <FindingRow key={f.id} f={f} paired={paired(f.component)} />
               ))}
             </ul>
           )}
         </Card.Content>
       </Card>
     </div>
-
-    {/* The gaps, said plainly before the table of pairs: they are the answer to "what is
-        missing", and a reader should not have to infer them from forty rows. */}
-    <div className="grid gap-3 md:grid-cols-2">
-      <Card>
-        <Card.Header>
-          <Card.Title>Drawn, not shipped ({data.figma_only.length})</Card.Title>
-        </Card.Header>
-        <Card.Content>
-          <ul className="flex flex-col gap-1">
-            {data.figma_only.map((e) => (
-              <li key={e.slug} className="text-sm">
-                <code className={`${TYPO.mono()} text-gray-dark-200 text-xs`}>{e.slug}</code>
-                <span className="text-gray-dark-500 text-xs"> · {e.page.trim()}</span>
-                {e.acknowledged ? (
-                  <Badge color="gray" size="sm" variant="outline" className="ml-2">
-                    known gap
-                  </Badge>
-                ) : null}
-              </li>
-            ))}
-            {data.figma_only.length === 0 ? (
-              <Text c="secondary" size="sm">
-                Everything drawn has a counterpart in the kit.
-              </Text>
-            ) : null}
-          </ul>
-        </Card.Content>
-      </Card>
-      <Card>
-        <Card.Header>
-          <Card.Title>Shipped, not drawn ({c.react_only_expected})</Card.Title>
-        </Card.Header>
-        <Card.Content>
-          <ul className="flex flex-col gap-1">
-            {data.react_only
-              .filter((r) => r.drawn)
-              .map((r) => (
-                <li key={r.react} className="text-sm">
-                  <code className={`${TYPO.mono()} text-gray-dark-200 text-xs`}>
-                    {r.react}
-                  </code>
-                  <span className="text-gray-dark-500 text-xs"> · {r.category}</span>
-                </li>
-              ))}
-          </ul>
-          {/* Not counted as holes, and said so: a Flex or a ThemeScript drawn in a UI
-              kit would be the anomaly. Hiding them silently would leave a reader
-              wondering why the two counts do not add up. */}
-          <Text size="xs" c="muted" className="mt-2">
-            {data.react_only.length - c.react_only_expected} layout primitives and
-            typography helpers are excluded: they are not meant to be drawn.
-          </Text>
-        </Card.Content>
-      </Card>
-    </div>
-    </div>
   )
 }
 
 // ---------------------------------------------------------------- the sub-navigation
 
-/** The component list — and the reason it exists is not tidiness.
+/** The component list. Cheap — a row and a number — and exactly one component is mounted
+ *  at a time. The selection lives in the HASH (`#/parity/Badge`): a reload lands back on
+ *  the same component, and a link to one can be pasted to a colleague.
  *
- *  ⚠️ The tab used to mount all 44 pairs at once: 44 live React previews, and once opened,
- *  44 coverage grids and 44 visual diffs on top. Reported on 2026-09-10 ("analyse composant
- *  par composant pour ne pas tout charger d'un coup"). Now the list is cheap — a row and a
- *  badge — and exactly one component is mounted at a time.
- *
- *  The selection lives in the HASH (`#/parity/Badge`), like the Context tab's corpora: a
- *  reload lands back on the same component, and a link to one can be pasted to a colleague.
- *  That is worth more than local state for something a front-end dev will want to send. */
+ *  The number beside a name is the component's ACTIVE findings — the same number the card
+ *  and the brief carry. Blue when some of them are the kit's, which is what a front-end dev
+ *  scans the list for. */
 const ComponentList = ({
   pairs,
   selected,
@@ -1393,13 +2264,13 @@ const ComponentList = ({
 }: {
   pairs: ParityPair[]
   selected: string
-  counts: Record<string, { holes: number; blind: number }>
+  counts: Record<string, { active: number; kit: number; ignored: number }>
 }) => {
   const [filter, setFilter] = useState("")
   const [onlyGaps, setOnlyGaps] = useState(false)
   const needle = filter.trim().toLowerCase()
   const shown = pairs.filter((p) => {
-    if (onlyGaps && (counts[p.react]?.holes ?? 0) === 0) return false
+    if (onlyGaps && (counts[p.react]?.active ?? 0) === 0) return false
     if (!needle) return true
     return (
       p.react.toLowerCase().includes(needle) ||
@@ -1422,11 +2293,11 @@ const ComponentList = ({
           checked={onlyGaps}
           onChange={(e) => setOnlyGaps(e.target.checked)}
         />
-        Only those with differences
+        Only those with something to review
       </label>
       <div className="flex max-h-[70vh] flex-col overflow-y-auto">
         {shown.map((p) => {
-          const holes = counts[p.react]?.holes ?? 0
+          const k = counts[p.react] ?? { active: 0, kit: 0, ignored: 0 }
           const on = p.react === selected
           return (
             <a
@@ -1442,9 +2313,14 @@ const ComponentList = ({
                   {p.figma.slug}
                 </span>
               </span>
-              {holes > 0 ? (
-                <span className={`${TYPO.mono()} shrink-0 text-[10px] text-orange-300`}>
-                  {holes}
+              {k.active > 0 ? (
+                <span
+                  title={`${k.active} to review, ${k.kit} for the kit`}
+                  className={`${TYPO.mono()} shrink-0 text-[10px] ${
+                    k.kit > 0 ? "text-blue-300" : "text-orange-300"
+                  }`}
+                >
+                  {k.active}
                 </span>
               ) : (
                 <Check size={12} className="shrink-0 text-green-600" />
@@ -1467,39 +2343,6 @@ const ComponentList = ({
 
 // ---------------------------------------------------------------- the page
 
-/** A finding NAMES a component, so it links to it. Reading "Button: `variant` is drawn as
- *  link" and then hunting for Button in a list of forty-four is a step the page can take
- *  for the reader — and it writes the same address the sub-navigation does, so the two
- *  gestures land in the same place. `paired` guards it: a finding about something that
- *  exists on one side only has no pair to open. */
-const Finding = ({ f, paired }: { f: ParityFinding; paired: boolean }) => (
-  <li className="border-white/6 border-t py-2 first:border-t-0">
-    <div className="flex flex-wrap items-baseline gap-2">
-      <Badge color={SEVERITY[f.severity]} size="sm" variant="light">
-        {f.severity}
-      </Badge>
-      {paired ? (
-        <a
-          href={`#/parity/${encodeURIComponent(f.component)}`}
-          className={`${TYPO.title("semibold")} text-sm underline decoration-dotted underline-offset-2 hover:text-white`}
-        >
-          {f.title}
-        </a>
-      ) : (
-        <Text size="sm" className={TYPO.title("semibold")}>
-          {f.title}
-        </Text>
-      )}
-    </div>
-    <Text size="sm" c="secondary" className="mt-1">
-      {f.detail}
-    </Text>
-    {f.evidence ? (
-      <div className={`${TYPO.mono()} mt-1 text-[11px] text-gray-dark-500`}>{f.evidence}</div>
-    ) : null}
-  </li>
-)
-
 /** Where the two sides come from, and how fresh each is. FIRST on the page on purpose: a
  *  parity report is only worth its provenance, and the failure mode this whole tab exists
  *  to prevent — a stale catalogue that looks current — starts here. */
@@ -1519,8 +2362,8 @@ const Sources = ({ s }: { s: ParityReport["sources"] }) => {
             </span>
           </Text>
           <Text size="xs" c="muted" className="mt-1">
-            Written by the “42 — Sync Design System” plugin. Re-run a sync in Figma to
-            refresh this side.
+            Written by the “42 — Sync Design System” plugin. Re-run a sync in Figma to refresh
+            this side.
           </Text>
         </div>
         <div>
@@ -1546,12 +2389,10 @@ const Sources = ({ s }: { s: ParityReport["sources"] }) => {
               {s.react.error}
             </Text>
           ) : null}
-          {/* The one thing a live scan is FOR: saying the committed snapshot has drifted,
-              which is invisible from anywhere else. */}
           {live && (s.react.snapshot_stale?.length ?? 0) > 0 ? (
             <Text size="xs" className="mt-1 text-orange-300">
-              The committed ui-manifest.json disagrees on{" "}
-              {s.react.snapshot_stale?.join(", ")} — regenerate it with{" "}
+              The committed ui-manifest.json disagrees on {s.react.snapshot_stale?.join(", ")}{" "}
+              — regenerate it with{" "}
               <code className={TYPO.mono()}>python3 tools/gen-ui-manifest.py &lt;kit&gt;</code>.
             </Text>
           ) : null}
@@ -1563,12 +2404,16 @@ const Sources = ({ s }: { s: ParityReport["sources"] }) => {
 
 export const ParityView = ({ selected = "" }: { selected?: string }) => {
   const key = readKey()
+  const author = useAuthor()
   const [data, setData] = useState<ParityReport | null>(null)
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
   const [copied, setCopied] = useState(false)
   const [dark, setDark] = useState(true)
   const [owner, setOwner] = useState<"kit" | "both" | "figma">("kit")
+  const [tab, setTab] = useState<OverviewTab>("findings")
+  const [busy, setBusy] = useState("")
+  const [reviewError, setReviewError] = useState("")
 
   const load = useCallback(
     (fresh: boolean) => {
@@ -1592,6 +2437,50 @@ export const ParityView = ({ selected = "" }: { selected?: string }) => {
   useEffect(() => {
     load(false)
   }, [load])
+
+  // ONE function commits a decision and re-reads the report. The server keeps the
+  // expensive computation cached and stamps the review on at serve time, so this
+  // round-trip is one small file read, not a rebuild.
+  const act = useCallback(
+    async (change: Omit<ReviewChange, "by">) => {
+      if (!author) {
+        setReviewError(
+          "Say who you are first — the name at the top of the page. A decision nobody signs cannot be questioned later.",
+        )
+        return
+      }
+      setBusy(change.id)
+      setReviewError("")
+      try {
+        await reviewParity({ ...change, by: author })
+        // Quietly: the spinner of a full load would blank the component being reviewed.
+        setData(await getParity(false))
+      } catch (e) {
+        setReviewError(
+          e instanceof NotConfigured
+            ? `The review cannot be written on this server: ${e.message}`
+            : e instanceof Error
+              ? e.message
+              : String(e),
+        )
+      } finally {
+        setBusy("")
+      }
+    },
+    [author],
+  )
+
+  const review = useMemo<Review>(
+    () => ({
+      author,
+      canWrite: Boolean(data?.review?.can_write),
+      busy,
+      ignored: new Set(data?.review?.ignored_ids ?? []),
+      flagged: new Set(data?.review?.flagged_ids ?? []),
+      act,
+    }),
+    [author, data, busy, act],
+  )
 
   const copy = async () => {
     try {
@@ -1623,103 +2512,164 @@ export const ParityView = ({ selected = "" }: { selected?: string }) => {
     )
 
   const c = data.counts
-  const grouped = data.findings.filter((f) => f.owner === owner)
-  // Computed once for the list's badges: a component's axes that genuinely differ, which
-  // is the only number worth showing next to forty-four names.
-  const holeCounts = Object.fromEntries(
-    data.pairs.map((p) => [
-      p.react,
-      {
-        holes: p.axes.filter((a) => a.verdict === "values" || a.verdict === "unpaired").length,
-        blind: p.axes.filter((a) => a.verdict === "unreadable").length,
-      },
-    ]),
-  )
+  // ONE owner of "how many findings does this component have": the list, the card and
+  // the pairs table all read this. Per component: active, of which the kit's, ignored.
+  const counts: Record<string, { active: number; kit: number; ignored: number }> = {}
+  for (const p of data.pairs) counts[p.react] = { active: 0, kit: 0, ignored: 0 }
+  for (const f of data.findings) {
+    const name = data.pairs.find((p) => sameName(p.react, f.component))?.react
+    if (!name) continue
+    if (f.ignored) counts[name].ignored += 1
+    else {
+      counts[name].active += 1
+      if (f.owner === "kit") counts[name].kit += 1
+    }
+  }
   // The hash carries the selection. Matched case-insensitively so a hand-typed link works,
   // and falling back to nothing rather than to the first component — landing on a page
   // that silently shows something else than what the URL says is worse than an empty one.
-  const current =
-    data.pairs.find((p) => p.react.toLowerCase() === selected.toLowerCase()) ?? null
+  const current = data.pairs.find((p) => sameName(p.react, selected)) ?? null
+  const currentFindings = current
+    ? data.findings.filter((f) => sameName(f.component, current.react))
+    : []
+
+  const stat = (label: string, value: number, t: OverviewTab, tone?: string) => {
+    const on = !current && tab === t
+    return (
+      <a
+        key={t}
+        href="#/parity"
+        onClick={() => setTab(t)}
+        className={`rounded-lg border p-3 no-underline transition ${
+          on ? "border-white/40 bg-white/5" : "border-white/10 hover:border-white/25"
+        }`}
+      >
+        <Text c="muted" size="sm">
+          {label}
+        </Text>
+        <div className={`${TYPO.mono()} text-2xl ${tone ?? "text-white"}`}>{value}</div>
+      </a>
+    )
+  }
 
   return (
-    <div className="flex flex-col gap-6">
-      <Sources s={data.sources} />
+    <ReviewContext.Provider value={review}>
+      <div className="flex flex-col gap-6">
+        <Sources s={data.sources} />
 
-      <div className="flex flex-wrap items-center gap-2">
-        {/* ⚠️ ONE sync gesture, and it is not here. Until 2026-09-10 this bar also carried
-            "Sync from Figma", which read the Figma API and committed the catalogue — a
-            SECOND producer of items/ and of the index, the very thing that was removed for
-            the surfaces the same day. Worse by then: it no longer wrote the surfaces, so
-            pressing it produced a half-fresh export, catalogue new and surfaces stale. The
-            Figma → repo sync is the plugin's, whole. This button only re-reads what the
-            plugin has committed. */}
-        <Button size="sm" variant="outline" color="brand"
-                onClick={() => load(true)} disabled={loading}>
-          <RefreshCw size={14} />
-          {loading ? "Reading the catalogue…" : "Refresh"}
-        </Button>
-        <Button size="sm" variant="outline" onClick={copy}>
-          {copied ? <Check size={14} /> : <Copy size={14} />}
-          {copied ? "Copied" : "Copy the brief"}
-        </Button>
-        <Button size="sm" variant="subtle" onClick={() => setDark((d) => !d)}>
-          {dark ? <Moon size={14} /> : <Sun size={14} />}
-          {dark ? "Dark" : "Light"} previews
-        </Button>
-        <Text size="xs" c="muted">
-          The Figma file defaults to Dark — match it here to compare like for like.
-        </Text>
-      </div>
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-        {[
-          ["Paired", c.pairs],
-          ["In Figma only", c.figma_only],
-          ["In the kit only", c.react_only_expected],
-          ["Findings", c.findings],
-        ].map(([label, value]) => (
-          <Card key={String(label)} variant="outline" padding="sm">
-            <Text c="muted" size="sm">
-              {label}
+        <div className="flex flex-wrap items-center gap-2">
+          {/* ⚠️ ONE sync gesture, and it is not here: the Figma → repo sync is the
+              plugin's, whole. This button only re-reads what the plugin has committed. */}
+          <Button
+            size="sm"
+            variant="outline"
+            color="brand"
+            onClick={() => load(true)}
+            disabled={loading}
+          >
+            <RefreshCw size={14} />
+            {loading ? "Reading the catalogue…" : "Refresh"}
+          </Button>
+          <Button size="sm" variant="outline" onClick={copy}>
+            {copied ? <Check size={14} /> : <Copy size={14} />}
+            {copied ? "Copied" : "Copy the whole brief"}
+          </Button>
+          <Button size="sm" variant="subtle" onClick={() => setDark((d) => !d)}>
+            {dark ? <Moon size={14} /> : <Sun size={14} />}
+            {dark ? "Dark" : "Light"} previews
+          </Button>
+          {/* On the LEFT, after the buttons: the picker it opens is anchored to its left
+              edge, and at the right end of the bar it ran off the page. */}
+          <span className="ml-2 flex items-center gap-2 border-white/10 border-l pl-3">
+            <Text size="xs" c="muted">
+              Reviewing as
             </Text>
-            <div className={`${TYPO.mono()} text-2xl text-white`}>{value}</div>
-          </Card>
-        ))}
-      </div>
-
-      {/* ⚠️ ONE component at a time. Mounting the 44 pairs together meant 44 live React
-          previews, and once opened 44 coverage grids and 44 visual diffs — the page took
-          seconds to settle and the browser held all of it. The list is cheap; the detail
-          is paid for only where the reader is looking. */}
-      <div className="flex flex-col gap-3">
-        <Title order={2} size="md" className={TYPO.title()}>
-          {current ? current.react : `The ${c.pairs} pairs`}
-        </Title>
-        {current ? (
-          <a href="#/parity" className="text-gray-dark-400 text-xs hover:text-gray-dark-200">
-            ← back to the findings
-          </a>
-        ) : (
+            <Signature />
+          </span>
+        </div>
+        {!data.review.can_write ? (
           <Text size="xs" c="muted">
-            Pick a component on the left to compare it. The number beside a name is how many
-            of its axes differ; the address bar follows the selection, so a link to one can
-            be sent as it is.
+            The review is read-only on this server (no write access, or READ_ONLY): findings
+            can be read and copied, not ignored or flagged.
           </Text>
-        )}
-        <div className="grid gap-4 md:grid-cols-[minmax(200px,260px)_1fr]">
-          <ComponentList pairs={data.pairs} selected={current?.react ?? ""} counts={holeCounts} />
-          {current ? (
-            <Pair
-              key={current.react}
-              pair={current}
-              dark={dark}
-              frames={data.sources.figma.frames !== false}
-            />
-          ) : (
-            <Overview data={data} owner={owner} setOwner={setOwner} />
+        ) : !author ? (
+          <Text size="xs" className="text-blue-200">
+            Say who you are (top right) to ignore or flag a finding — a decision is signed.
+          </Text>
+        ) : null}
+        {reviewError ? (
+          <Alert
+            color="red"
+            variant="light"
+            title="The decision was not saved"
+            description={reviewError}
+          />
+        ) : null}
+
+        {/* The numbers are DOORS. Each opens the list it counts. */}
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
+          {stat("Paired", c.pairs, "pairs")}
+          {stat(
+            "To review",
+            c.findings,
+            "findings",
+            c.findings > 0 ? "text-orange-300" : "text-white",
           )}
+          {stat(
+            "In Figma only",
+            c.figma_only,
+            "figma-only",
+            c.figma_only > 0 ? "text-red-300" : "text-white",
+          )}
+          {stat("In the kit only", c.react_only_expected, "kit-only")}
+          {stat("Ignored", c.ignored, "ignored", "text-gray-dark-400")}
+        </div>
+
+        {/* ⚠️ ONE component at a time. Mounting the 44 pairs together meant 44 live React
+            previews, and once opened 44 coverage grids and 44 visual diffs. The list is
+            cheap; the detail is paid for only where the reader is looking. */}
+        <div className="flex flex-col gap-3">
+          <Title order={2} size="md" className={TYPO.title()}>
+            {current ? current.react : "Component by component"}
+          </Title>
+          {current ? (
+            <a href="#/parity" className="text-gray-dark-400 text-xs hover:text-gray-dark-200">
+              ← back to the overview
+            </a>
+          ) : (
+            <Text size="xs" c="muted">
+              Pick a component on the left. The number beside a name is what is left to review
+              on it — the same number the brief carries; the address bar follows the selection,
+              so a link to one can be sent as it is.
+            </Text>
+          )}
+          <div className="grid gap-4 md:grid-cols-[minmax(200px,260px)_minmax(0,1fr)]">
+            <ComponentList pairs={data.pairs} selected={current?.react ?? ""} counts={counts} />
+            {/* `min-w-0`: a `1fr` track is `minmax(auto, 1fr)`, and a twelve-column grid
+                inside it widened the whole page instead of scrolling in its own box. */}
+            <div className="min-w-0">
+              {current ? (
+                <Pair
+                  key={current.react}
+                  pair={current}
+                  findings={currentFindings}
+                  dark={dark}
+                  frames={data.sources.figma.frames !== false}
+                />
+              ) : (
+                <Overview
+                  data={data}
+                  tab={tab}
+                  owner={owner}
+                  setOwner={setOwner}
+                  counts={counts}
+                />
+              )}
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </ReviewContext.Provider>
   )
 }
 
