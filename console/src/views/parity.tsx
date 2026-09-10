@@ -38,6 +38,7 @@ import {
   ArrowRight,
   Check,
   Copy,
+  DownloadCloud,
   Grid3x3,
   ImageOff,
   RefreshCw,
@@ -56,6 +57,7 @@ import {
   getParityDetail,
   getParityFrame,
   type Paint,
+  syncComponents,
   type ParityAxis,
   type ParityFinding,
   type ParityPair,
@@ -362,8 +364,8 @@ const VisualDiff = ({
       <Alert
         type="info"
         variant="outline"
-        title="The drawn surface is not in the export yet"
-        description="The Figma plugin learned to write each variant's fill, border, radius and padding on 2026-09-10. Re-run a sync from Figma and this panel compares them against what the kit actually paints, measured on the component rendered here."
+        title="This component has not been synced from Figma yet"
+        description="What each variant paints — fill, border, radius, padding — is read from Figma by the component sync, not by the plugin. Run « Sync from Figma » above, and this panel compares it against what the kit actually paints, measured on the component rendered here."
       />
     )
   if (!visual)
@@ -1567,6 +1569,8 @@ export const ParityView = ({ selected = "" }: { selected?: string }) => {
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [syncing, setSyncing] = useState(false)
+  const [syncNote, setSyncNote] = useState("")
   const [dark, setDark] = useState(true)
   const [owner, setOwner] = useState<"kit" | "both" | "figma">("kit")
 
@@ -1592,6 +1596,27 @@ export const ParityView = ({ selected = "" }: { selected?: string }) => {
   useEffect(() => {
     load(false)
   }, [load])
+
+  /** The sync reads Figma and commits the catalogue. It takes a while — a hundred-odd
+   *  calls — so the button says what it is doing rather than going quiet, and the report
+   *  is reloaded from the new commit afterwards. */
+  const runSync = async () => {
+    setSyncing(true)
+    setSyncNote("")
+    try {
+      const out = await syncComponents()
+      setSyncNote(
+        `${out.components} components and ${out.surfaces} surface files written in commit ` +
+          `${out.commit} · ${out.pages}/${out.pages_declared} declared pages found · ` +
+          `${out.variables_resolved} variable ids resolved through the plugin's file.`,
+      )
+      load(true)
+    } catch (e) {
+      setSyncNote(e instanceof Error ? e.message : String(e))
+    } finally {
+      setSyncing(false)
+    }
+  }
 
   const copy = async () => {
     try {
@@ -1654,6 +1679,21 @@ export const ParityView = ({ selected = "" }: { selected?: string }) => {
           {copied ? <Check size={14} /> : <Copy size={14} />}
           {copied ? "Copied" : "Copy the brief"}
         </Button>
+        {/* Only drawn when the server says it exists. A button that appears and then
+            answers 503 is worse than one that is absent — the reader tries it, believes
+            the feature is broken, and looks for the fault in the wrong place. */}
+        {data.sources.figma.can_sync ? (
+          <Button
+            size="sm"
+            variant="outline"
+            color="brand"
+            onClick={runSync}
+            disabled={syncing}
+          >
+            <DownloadCloud size={14} />
+            {syncing ? "Reading Figma…" : "Sync from Figma"}
+          </Button>
+        ) : null}
         <Button size="sm" variant="subtle" onClick={() => setDark((d) => !d)}>
           {dark ? <Moon size={14} /> : <Sun size={14} />}
           {dark ? "Dark" : "Light"} previews
@@ -1662,6 +1702,11 @@ export const ParityView = ({ selected = "" }: { selected?: string }) => {
           The Figma file defaults to Dark — match it here to compare like for like.
         </Text>
       </div>
+      {syncNote ? (
+        <Text size="xs" c="secondary">
+          {syncNote}
+        </Text>
+      ) : null}
 
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         {[

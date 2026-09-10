@@ -686,7 +686,7 @@ export type ParityReport = {
     /** `frames` is a boolean, not a string: it says whether the server can RENDER a
      *  component (FIGMA_TOKEN set). Without it the tab must not draw forty image slots
      *  whose fetches cannot even complete a preflight. */
-    figma: Record<string, string> & { frames?: boolean }
+    figma: Record<string, string> & { frames?: boolean; can_sync?: boolean }
     react: {
       /** ⚠️ `snapshot` means the kit was NOT read live: the comparison is against a
        *  hand-regenerated `ui-manifest.json`. The tab says so rather than looking fresh. */
@@ -912,4 +912,44 @@ export async function getTokensBrief(): Promise<string> {
   if (r.status === 401) throw new AccessError("Key rejected by the server.")
   if (!r.ok) throw new Error((await r.text()) || `tokens/brief.md → HTTP ${r.status}`)
   return r.text()
+}
+
+/** Running the component sync: the API reads Figma and commits the catalogue.
+ *
+ *  ⚠️ It writes `context/components/**` — what an agent reads — so it is a WRITE: off under
+ *  READ_ONLY, and the report's `can_sync` says whether it exists at all before the console
+ *  draws a button for it. `only` narrows it to one component, which is the trial run.
+ *
+ *  It does NOT touch the Variables: no token this account can mint reads them, so the
+ *  colour modes still come from the Figma plugin. Two producers, two gestures. */
+export type SyncResult = {
+  commit: string
+  files: string[]
+  components: number
+  surfaces: number
+  pages: number
+  pages_declared: number
+  variables_resolved: number
+  only: string
+}
+
+export async function syncComponents(only = ""): Promise<SyncResult> {
+  const key = readKey()
+  const r = await fetch(`${BASE}/console/parity/sync.json`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...(key ? { "X-DS-Key": key } : {}) },
+    body: JSON.stringify({ only }),
+  })
+  if (r.status === 401) throw new AccessError("Key rejected by the server.")
+  if (!r.ok) {
+    let detail = ""
+    try {
+      detail = ((await r.json()) as { error?: string }).error ?? ""
+    } catch {
+      /* non-JSON body */
+    }
+    const message = detail || `sync → HTTP ${r.status}`
+    throw r.status === 503 ? new NotConfigured(message) : new Error(message)
+  }
+  return (await r.json()) as SyncResult
 }
