@@ -3719,8 +3719,25 @@ const ComponentList = ({
 /** Where the two sides come from, and how fresh each is. FIRST on the page on purpose: a
  *  parity report is only worth its provenance, and the failure mode this whole tab exists
  *  to prevent — a stale catalogue that looks current — starts here. */
+/** A commit stamp as « 11/09 18:50:28 », in the reader's own timezone — the server sends
+ *  UTC and a difference measured at 20:50 local reads as two hours old otherwise. */
+const stamp = (iso?: string) => {
+  if (!iso) return ""
+  const d = new Date(iso)
+  return Number.isNaN(d.getTime())
+    ? ""
+    : `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")} ${d.toLocaleTimeString([], { hour12: false })}`
+}
+
 const Sources = ({ s }: { s: ParityReport["sources"] }) => {
   const live = s.react.mode === "live"
+  // ⚠️ The two stamps answer two halves, and the GAP between them is the answer nobody
+  // could get before: the plugin PUTs every file on every run, so a run that changed
+  // nothing leaves no trace in the catalogue. « J'ai corrigé et ça remonte encore » is
+  // that state as often as it is a real difference — said here rather than guessed.
+  const synced = stamp(s.figma.synced?.at)
+  const changed = stamp(s.figma.changed?.at)
+  const idle = Boolean(synced && changed && synced !== changed)
   return (
     <Card variant="outline" padding="sm">
       <div className="grid gap-3 md:grid-cols-2">
@@ -3731,12 +3748,19 @@ const Sources = ({ s }: { s: ParityReport["sources"] }) => {
           <Text size="sm">
             {s.figma.ds_name || "the DS file"}{" "}
             <span className={`${TYPO.mono()} text-gray-dark-500`}>
-              · synced {s.figma.generated_at || "?"}
+              · synced {synced || s.figma.generated_at || "?"}
             </span>
           </Text>
+          {idle ? (
+            <Text size="xs" className="mt-1 text-orange-200">
+              That run changed nothing: the catalogue you are comparing against is the one of{" "}
+              <span className={TYPO.mono()}>{changed}</span>. A difference still on screen is
+              still drawn that way in Figma.
+            </Text>
+          ) : null}
           <Text size="xs" c="muted" className="mt-1">
             Written by the “42 — Sync Design System” plugin. Re-run a sync in Figma to refresh
-            this side.
+            this side{changed && !idle ? ", and this line moves with it" : ""}.
           </Text>
         </div>
         <div>

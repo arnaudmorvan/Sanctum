@@ -804,7 +804,19 @@ export type ParityReport = {
     /** `frames` is a boolean, not a string: it says whether the server can RENDER a
      *  component (FIGMA_TOKEN set). Without it the tab must not draw forty image slots
      *  whose fetches cannot even complete a preflight. */
-    figma: Record<string, string> & { frames?: boolean; can_sync?: boolean }
+    figma: Record<string, unknown> & {
+      ds_name?: string
+      generated_at?: string
+      frames?: boolean
+      can_sync?: boolean
+      /** WHEN the plugin last ran, and when the catalogue last MOVED — both to the second,
+       *  from the commits. The index only carries a DAY, which cannot tell "synced ten
+       *  minutes ago" from "synced this morning". The GAP between the two is an answer of
+       *  its own: a run later than the last change means the sync went through and found
+       *  nothing to change. */
+      synced?: { at?: string; sha?: string }
+      changed?: { at?: string; sha?: string }
+    }
     react: {
       /** ⚠️ `snapshot` means the kit was NOT read live: the comparison is against a
        *  hand-regenerated `ui-manifest.json`. The tab says so rather than looking fresh. */
