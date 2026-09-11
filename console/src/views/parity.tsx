@@ -1509,11 +1509,16 @@ const BranchCard = ({
   b,
   react,
   onShow,
+  decision,
 }: {
   b: BranchBlock
   react: string
   /** Renders one variant of this branch in the two big frames at the top of the page. */
   onShow: (variant: string) => void
+  /** The REPORT's finding for this block, when a human has already declared it: the live
+   *  block is fresher and carries the drawing, but the decision lives in the review file
+   *  and is what routes it to a person. Without it a flagged branch showed no owner. */
+  decision?: ParityFinding
 }) => {
   const review = useReview()
   const [open, setOpen] = useState(false)
@@ -1534,6 +1539,13 @@ const BranchCard = ({
         {shared ? (
           <Badge color="orange" size="sm" variant="light">
             shared · {b.scope.count} components
+          </Badge>
+        ) : null}
+        {decision?.flagged || decision?.assigned_by ? (
+          <Badge color={OWNER[decision.owner]?.color ?? "gray"} size="sm" variant="outline">
+            {OWNER[decision.owner]?.short ?? decision.owner}
+            {" · "}
+            {decision.flagged_by || decision.assigned_by}
           </Badge>
         ) : null}
         <span className="ml-auto flex items-center gap-1">
@@ -2747,6 +2759,93 @@ const Group = ({
   )
 }
 
+/** The brief of ONE component, for ONE person.
+ *
+ *  Reported on 2026-09-11: « je voudrais le brief que pour le designer ou que pour le dev
+ *  sur le composant en question ». The route has taken `?owner=` and `?component=`
+ *  together since it existed; what was missing was the gesture — the header offered one
+ *  button, which copied the whole component to whoever asked. An audience with nothing on
+ *  this component is dimmed and dead: that is the answer to "is there anything for me".
+ *
+ *  ⚠️ The counts filter on `owner`, which is where the report ROUTES a finding — the
+ *  reviewer's assignment when there is one, the computed suggestion otherwise. The brief
+ *  itself still sections by AUTHORITY, so a person opening their list sees what was
+ *  decided apart from what is still a question. */
+const ComponentBrief = ({
+  component,
+  counts,
+}: {
+  component: string
+  counts: Record<string, number>
+}) => {
+  const [copied, setCopied] = useState("")
+  const [error, setError] = useState("")
+  const [asPrompt, setAsPrompt] = useState(false)
+  const total = (counts.kit ?? 0) + (counts.figma ?? 0) + (counts.both ?? 0)
+
+  const grab = async (owner?: Owner) => {
+    try {
+      await navigator.clipboard.writeText(
+        await getParityBrief({ component, owner, prompt: asPrompt }),
+      )
+      setCopied(owner ?? "all")
+      setTimeout(() => setCopied(""), 2000)
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e))
+    }
+  }
+
+  const chip = (key: string, n: number, label: string, title: string, owner?: Owner) => (
+    <button
+      key={key}
+      type="button"
+      disabled={n === 0}
+      title={title}
+      onClick={() => void grab(owner)}
+      className="flex items-center gap-1 rounded border border-white/15 px-2 py-1 text-[11px] text-gray-dark-200 hover:border-white/35 hover:text-white disabled:opacity-35"
+    >
+      {copied === key ? <Check size={12} /> : <Copy size={12} />}
+      {label}
+      <span className={`${TYPO.mono()} text-gray-dark-500`}>{n}</span>
+    </button>
+  )
+
+  return (
+    <div className="flex flex-col items-end gap-1">
+      <div className="flex flex-wrap items-center justify-end gap-1">
+        <span className="text-[10px] text-gray-dark-600 uppercase">
+          copy this component{asPrompt ? "'s prompt" : "'s brief"}
+        </span>
+        {chip("all", total, "everything", `Every finding on ${component}`)}
+        {(["kit", "figma", "both"] as const).map((o) =>
+          chip(
+            o,
+            counts[o] ?? 0,
+            OWNER[o].short,
+            counts[o]
+              ? `${OWNER[o].person}: ${counts[o]} on ${component} → ${OWNER[o].where}`
+              : `Nothing on ${component} is routed to ${OWNER[o].person.toLowerCase()}`,
+            o,
+          ),
+        )}
+        <label
+          title="The same findings, prefaced so an agent can run them: where the work happens, which conventions hold, and to stop on anything undecided"
+          className="flex cursor-pointer items-center gap-1 rounded border border-white/10 px-2 py-1 text-[11px] text-gray-dark-400 hover:text-white"
+        >
+          <input
+            type="checkbox"
+            checked={asPrompt}
+            onChange={(e) => setAsPrompt(e.target.checked)}
+            className="size-3 accent-orange-400"
+          />
+          as a prompt
+        </label>
+      </div>
+      {error ? <Text size="xs" className="text-red-300">{error}</Text> : null}
+    </div>
+  )
+}
+
 // ---------------------------------------------------------------- one pair
 
 /** ONE component, everything on one screen, the differences first.
@@ -2779,8 +2878,6 @@ const Pair = ({
   const [branches, setBranches] = useState<BranchResult | null>(null)
   const [detail, setDetail] = useState<ParityDetail | null>(null)
   const [detailError, setDetailError] = useState("")
-  const [copied, setCopied] = useState(false)
-  const [error, setError] = useState("")
   // The default render's node — where the surface of the default variant is measured.
   const [previewNode, setPreviewNode] = useState<HTMLElement | null>(null)
 
@@ -2808,6 +2905,20 @@ const Pair = ({
   const active = fromReport.filter((f) => !f.ignored)
   const ignored = fromReport.filter((f) => f.ignored)
   const blocks = (branches?.blocks ?? []).filter((b) => !review.ignored.has(b.id))
+  // A live block's DECISION, when one was taken: the block is fresher, the routing lives
+  // in the review file and reaches the page through the report's own finding.
+  const decided = useMemo(() => new Map(findings.map((f) => [f.id, f])), [findings])
+  // Who each difference is routed to, live blocks included — the counts the per-person
+  // copy uses, and the only place the two halves of the list are added up.
+  const briefCounts = useMemo(() => {
+    const out: Record<string, number> = { kit: 0, figma: 0, both: 0 }
+    for (const f of active) out[f.owner] = (out[f.owner] ?? 0) + 1
+    for (const b of blocks) {
+      const owner = decided.get(b.id)?.owner ?? "both"
+      out[owner] = (out[owner] ?? 0) + 1
+    }
+    return out
+  }, [active, blocks, decided])
   const byDesign = pair.axes.filter((a) => BY_DESIGN.has(a.verdict))
   const aligned = pair.axes.filter((a) => a.verdict === "aligned")
   // The axes behind the active findings. An axis whose only finding was IGNORED is
@@ -2853,16 +2964,6 @@ const Pair = ({
   // variant, and its surface must not be held against the drawing's.
   const unmapped = detail && shownValues ? unmappedAxis(shownValues, detail.coverage.axes) : ""
 
-  const copy = async () => {
-    try {
-      await navigator.clipboard.writeText(await getParityBrief({ component: pair.react }))
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    } catch (e) {
-      setError(e instanceof Error ? e.message : String(e))
-    }
-  }
-
   return (
     <div className="flex flex-col gap-4">
       {/* The header: ONE number, and it is the same one as in the list and the brief. */}
@@ -2898,15 +2999,9 @@ const Pair = ({
           </Badge>
         ) : null}
         <span className="ml-auto">
-          <Button size="sm" variant="outline" onClick={copy}>
-            {copied ? <Check size={14} /> : <Copy size={14} />}
-            {copied ? "Copied" : "Copy this component's brief"}
-          </Button>
+          <ComponentBrief component={pair.react} counts={briefCounts} />
         </span>
       </div>
-      {error ? (
-        <Alert color="red" variant="light" title="Cannot copy" description={error} />
-      ) : null}
 
       {/* The two sides, at the same width so the eye can actually compare them. */}
       <div className="grid gap-3 md:grid-cols-2">
@@ -3003,7 +3098,13 @@ const Pair = ({
         {blocks.length > 0 ? (
           <ul className="mb-2 flex flex-col gap-2">
             {blocks.map((b) => (
-              <BranchCard key={b.id} b={b} react={pair.react} onShow={setVariant} />
+              <BranchCard
+                key={b.id}
+                b={b}
+                react={pair.react}
+                onShow={setVariant}
+                decision={decided.get(b.id)}
+              />
             ))}
           </ul>
         ) : null}
