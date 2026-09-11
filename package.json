@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@42/ui-react": "file:./vendor/ui-react",
+    "@42/ui-react-next": "file:./vendor/ui-react-0.8",
     "@ark-ui/react": "^5.37.2",
     "@tanstack/react-table": "^8.21.3",
     "lucide-react": "^1.21.0",

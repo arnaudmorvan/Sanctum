@@ -1,4 +1,10 @@
 {
   "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "@42/ui-react/*": ["./node_modules/@42/ui-react-next/dist/components/*/index.d.ts"],
+      "@42/ui-react": ["./node_modules/@42/ui-react-next/dist/index.d.ts"]
+    }
+  },
   "include": ["console/src"]
 }

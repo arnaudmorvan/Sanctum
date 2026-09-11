@@ -1,0 +1,198 @@
+/**
+ * CodeBlock (Shiki) — dual-theme token color + line gutter.
+ * See `code-block.tsx` and `highlighter.ts`. Imported separately from
+ * `colors.css`/`theme.css` — only consumers who render a `CodeBlock` need
+ * this file:
+ *
+ *   import "@42/ui-react/code-block/styles.css";
+ *
+ * `defaultColor:false` means Shiki never inlines a plain `color` /
+ * `background-color` — every token carries only `--shiki-light`/
+ * `--shiki-dark`. Gated behind `[data-theme="dark"]` like every other
+ * dark-mode override in this kit, never Shiki's own `.dark`/media-query
+ * hookup. No `!important` needed — nothing inline to beat.
+ *
+ * Deliberately no *named-feature* rules here (no `.line-highlighted` /
+ * `.line-diff-*` / `.blame-line`) — a tag's `className`/`style` escape
+ * hatch is styled entirely by whatever the consumer passes, never by a class
+ * name tied to a concept like "diff" or "highlight" (those are just
+ * consumer-chosen notation-tag names, see `notation.ts`). `.decoration-bg`/
+ * `.decoration-text` below are the one generic exception: they're what a
+ * tag's own `background`/`color` props (the same theme-aware `Color` tokens
+ * every colored component uses) compile down to, not a named feature.
+ */
+.shiki,
+.shiki span {
+  color: var(--shiki-light);
+}
+[data-theme="dark"] .shiki,
+[data-theme="dark"] .shiki span {
+  color: var(--shiki-dark);
+}
+.shiki {
+  margin: 0;
+  background: transparent; /* CodeBlock's own wrapper supplies bg/padding/radius */
+}
+
+/**
+ * `<code>` defaults to `display:inline`, which sizes to the *visible*
+ * scrolling container's width, not its own natural (possibly wider, when a
+ * line overflows) content width. `.line`'s `width:100%` below resolves
+ * against that same wrong, clipped width — so a highlighted long line's
+ * background stopped at the container's edge while its (unwrapped,
+ * `white-space:pre`) text kept going, scrollable past it. `inline-block`
+ * makes `<code>` shrink/grow to its own widest line instead (like a
+ * `<table>` sizing to its widest row), so `.line`'s 100% — and the
+ * `overflow-x:auto` wrapper's scroll range — both track the *real* full
+ * width. But shrink-to-fit alone would make `<code>` *narrower* than the
+ * container for a short snippet (every line's background would then stop
+ * short of the panel's edge, not fill it) — `min-width: 100%` sets that as a
+ * floor, not a ceiling, so `<code>` is exactly `max(natural content width,
+ * container width)`: fills the panel when every line fits, still grows past
+ * it when one doesn't. Verified with a standalone Playwright check for both:
+ * a short snippet's line fills the full container width, and after
+ * scrolling to the end of an overflowing line, every line's box (highlighted
+ * or not) matches `<code>`'s own `scrollWidth`, not the viewport.
+ */
+.shiki code {
+  display: inline-block;
+  min-width: 100%;
+}
+
+/**
+ * `inline-block` + `width:100%` (not `block`): Shiki's raw output separates
+ * `<span class="line">` elements with a literal newline text node, and
+ * `white-space: pre` (inherited from `<pre>`) preserves it as a real line
+ * break on its own — `.line` staying `inline-level` (just sized to 100%)
+ * keeps that break mechanism intact. The payoff: a `display:inline`
+ * (default) span's background only covers its own glyph area per line box,
+ * leaving a visible gap between adjacent decorated lines and stopping short
+ * of the container's edge for a short line. An `inline-block` box paints its
+ * background over its own full padding-box instead — full line-height
+ * (lines connect, no gap) and, at `width:100%`, the full (now correctly
+ * `<code>`-sized) width — verified with a standalone Playwright check (no
+ * extra blank lines from the preserved newline, consistent per-line box
+ * heights, full-width boxes).
+ *
+ * `padding-inline` lives here, not on `CodeBlock`'s own wrapper, so a
+ * decorated line's background hugs the panel's actual left/right edges
+ * instead of stopping at an outer padding boundary a rem short of it — the
+ * *text* still gets the same inset, just from inside each line's own box
+ * (`box-sizing: border-box`, from Tailwind's preflight, keeps the box itself
+ * at exactly 100% either way).
+ */
+.shiki .line {
+  display: inline-block;
+  width: 100%;
+  padding-inline: 1rem;
+}
+
+/**
+ * Every rule below that overrides a token's `color` repeats its own class
+ * at least twice (`.gutter-column.gutter-column`, not just `.gutter-column`)
+ * to reach (0,3,0). `.shiki span` above is (0,1,1) — already beaten by a
+ * plain (0,2,0) — but *fumadocs-ui* (this kit's own docs site, and
+ * potentially any other consumer with fumadocs-ui elsewhere on the same
+ * page) ships its own global `.shiki:not(.not-fumadocs-codeblock *) code
+ * span { color: var(--shiki-light) }`, at (0,2,2): two classes from
+ * `.shiki` + the `:not(.not-fumadocs-codeblock *)` guard (a `:not()`'s
+ * specificity is its argument's — here `.not-fumadocs-codeblock *`, one
+ * class plus a zero-specificity universal selector), plus two element tiers
+ * from the chained `code`/`span`. That's a real *structural* match here,
+ * not just a name collision — it doesn't require `.shiki` and `code` on the
+ * same node (this file's own `.shiki` lives on `<pre>`, unclassed `<code>`
+ * inside it), only that a `<span>` sits somewhere under a `<code>` somewhere
+ * under a `.shiki`-classed ancestor, which every token/gutter span here
+ * does. A plain `.shiki .gutter-column` (0,2,0) loses to it; doubling the
+ * class to reach (0,3,0) beats it — confirmed live on the original single-
+ * column version of this rule (computed color came back as
+ * `--shiki-light`'s value, not this file's, until the repeated class pushed
+ * the class tier to 3).
+ *
+ * fumadocs-ui ALSO ships a *dark-mode-specific* sibling of that same rule —
+ * `.dark .shiki:not(.not-fumadocs-codeblock *) code span { color:
+ * var(--shiki-dark) }` — with an extra leading `.dark` class, at (0,3,2).
+ * Doubling only reaches (0,3,0): tied at 3 classes, so the comparison falls
+ * through to the element tier, where fumadocs' 2 beats this file's 0 —
+ * meaning a merely-doubled rule silently loses, *only in dark mode*, to
+ * whatever `--shiki-dark` resolves to, no matter what this file says.
+ * Confirmed live: a content column's own `color` (`.decoration-text`,
+ * further below) computed to the ambient token color instead of the
+ * requested one, in dark mode only — `getComputedStyle` showed the correct
+ * value already sitting in the `--c-text` custom property, just never
+ * applied, because `.dark .shiki:not(...) code span` was the winning rule.
+ * Any rule here that sets `color` (not `background-color` — fumadocs' rule
+ * never touches that property, so `.decoration-bg` doesn't need this)
+ * therefore triples its class, reaching (0,4,0) — strictly greater than
+ * (0,3,2) by class count alone, before element count is ever compared, so
+ * it wins in both light and dark mode without depending on knowing which of
+ * fumadocs' two rules is currently active.
+ */
+
+/**
+ * A stacked `gutters` column — an arbitrary number of independently-sized
+ * columns (line numbers, a diff's old/new counters, a blame name, a
+ * coverage badge, ...), so there's no fixed set to enumerate as one class
+ * per feature the way the old single hardcoded line-number/marker slots
+ * were. Per-column `width`/`align` are written as inline `style` by
+ * `gutters.ts`'s resolver instead (`min-width`, not `width` — content can
+ * still grow past it rather than clipping); this rule only carries the
+ * layout every column shares regardless of kind or count. Every rendered
+ * line emits a span for every configured column — a blank placeholder when
+ * that column has nothing to show on that line — so alignment holds down
+ * the whole block even with a mix of matched/unmatched lines.
+ */
+.shiki .gutter-column.gutter-column {
+  display: inline-block;
+  margin-inline-end: 0.5ch;
+  user-select: none;
+}
+
+/* A counter column (plain line numbers, a diff's old/new position) — dims
+   toward whatever's actually behind it (a translucent black/white, not a
+   fixed gray hex) rather than a flat shade that can read almost as bright
+   as the surrounding text on a dark theme. Deliberately does NOT inherit
+   the line's own tag color: a position number rendering in diff-red/green
+   would read as if the number itself changed, not the line. */
+.shiki .gutter-counter.gutter-counter.gutter-counter {
+  color: color-mix(in oklab, black 45%, transparent);
+}
+[data-theme="dark"] .shiki .gutter-counter.gutter-counter.gutter-counter {
+  color: color-mix(in oklab, white 45%, transparent);
+}
+
+/* A content column (a diff's "+"/"-", a blame name, a tutorial-step number
+   — whatever a `gutters` content column's `tags` mapping renders for a
+   matched line). `color: inherit` so it picks up whatever color the
+   matched tag's own `className`/`color` put on the *line* — no separate
+   color prop needed on the column itself — falling back to the ambient
+   token color when the tag sets no color of its own. */
+.shiki .gutter-content.gutter-content.gutter-content {
+  color: inherit;
+}
+
+/**
+ * What a tag's `background`/`color` props compile down to — the same
+ * `data-color` + `--c-soft`/`--c-text` mechanism every colored component in
+ * the kit uses (theme-aware, not a fixed shade), applied directly to the
+ * styled line hast node. `background-color` isn't touched by the token-
+ * color rule above, so a plain class is enough there; `.decoration-text`
+ * repeats its class for the same reason `.gutter-column` above does.
+ *
+ * `.gutter-content` columns reuse `.decoration-text` too, for a content
+ * column's own optional per-tag `colors` (`gutters.ts`) — same mechanism,
+ * just applied directly to the gutter span instead of the line, and it
+ * needs to win over `.gutter-content`'s own `color: inherit` above: tied
+ * specificity (both triple their class, per the fumadocs dark-mode note
+ * above), so this rule being declared LATER in the file is load-bearing
+ * for that override — don't reorder it above `.gutter-content`.
+ */
+.shiki .decoration-bg {
+  /* Matches Mark's own `bg-(--c-soft)/60` — a plain CSS `opacity` would fade
+     the line's *text* too, not just the fill, so the alpha has to live on
+     the color itself via `color-mix()`. */
+  background-color: color-mix(in oklab, var(--c-soft) 60%, transparent);
+}
+.shiki .decoration-text.decoration-text.decoration-text {
+  color: var(--c-text);
+}

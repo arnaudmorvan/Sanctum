@@ -3,8 +3,8 @@
    The second @source covers what the console shares with the skeleton (typo.ts, the
    logomark): the Vite root is console/, and automatic detection stops there. */
 @import "tailwindcss";
-@import "@42/ui-react/theme.css";
-@source "../../node_modules/@42/ui-react/dist/**/*.js";
+@import "@42/ui-react-next/theme.css";
+@source "../../node_modules/@42/ui-react-next/dist/**/*.js";
 @source "../../src";
 
 html, body, #root { height: 100%; }

@@ -30,7 +30,7 @@
 import { ActionIcon } from "@42/ui-react/action-icon"
 import { Alert } from "@42/ui-react/alert"
 import { Autocomplete } from "@42/ui-react/autocomplete"
-import { Avatar, AvatarGroup } from "@42/ui-react/avatar"
+import { Avatar } from "@42/ui-react/avatar"
 import { Badge } from "@42/ui-react/badge"
 import { Breadcrumb } from "@42/ui-react/breadcrumb"
 import { Button } from "@42/ui-react/button"
@@ -112,11 +112,11 @@ export const PREVIEWS: Record<string, Preview> = {
   Autocomplete: (p) => <Autocomplete data={OPTIONS} placeholder="Search a cursus"  {...p}/>,
   Avatar: (p) => <Avatar name="Amanda Lowery"  {...p}/>,
   AvatarGroup: (p) => (
-    <AvatarGroup {...p}>
+    <Avatar.Group {...p}>
       <Avatar name="Amanda Lowery" />
       <Avatar name="Adil Floyd" />
       <Avatar name="Alec Whitten" />
-    </AvatarGroup>
+    </Avatar.Group>
   ),
   Badge: (p) => <Badge {...p}>Label</Badge>,
   Breadcrumb: (p) => (
@@ -157,11 +157,15 @@ export const PREVIEWS: Record<string, Preview> = {
   Menu: (p) => <Menu data={["Rename", "Duplicate", "Delete"]} {...p}><Button variant="outline">Open menu</Button></Menu>,
   MultiComboboxList: (p) => <MultiComboboxList data={OPTIONS} placeholder="Pick several"  {...p}/>,
   MultiSelect: (p) => <MultiSelect data={OPTIONS} placeholder="Pick several"  {...p}/>,
-  NavLink: (p) => <NavLink label="Dashboard" icon={<Star size={16} />}  {...p}/>,
+  NavLink: (p) => <NavLink label="Dashboard" startSlot={<Star size={16} />} {...p} />,
   Notification: (p) => <Notification type="success" title="Saved" description="Your changes are live."  {...p}/>,
   NumberInput: (p) => <NumberInput defaultValue={3}  {...p}/>,
   PasswordInput: (p) => <PasswordInput placeholder="••••••••"  {...p}/>,
-  Pill: (p) => <Pill withRemoveButton {...p}>Piscine</Pill>,
+  Pill: (p) => (
+    <Pill withRemoveButton onRemove={() => {}} {...p}>
+      Piscine
+    </Pill>
+  ),
   PinInput: (p) => <PinInput length={4}  {...p}/>,
   Progress: (p) => <Progress value={62}  {...p}/>,
   RadioGroup: (p) => <RadioGroup data={OPTIONS}  {...p}/>,

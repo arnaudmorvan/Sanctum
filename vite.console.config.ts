@@ -12,16 +12,19 @@ import { defineConfig } from "vite"
  *  than a section of the console: it is opened from INSIDE a flow, in a new tab, and it
  *  asks for no sign-in — a live flow is public, and the key is only needed the moment a
  *  side is a past version that is not built yet. */
-/** The kit the console RENDERS — `vendor/ui-react`, the built copy the previews import.
- *  The Parity tab compares Figma against a render of this version and the API against
- *  the manifest's; when the two differ, a measured difference may be a difference
- *  between versions, and the tab has to say which one it measured (2026-09-11: the
- *  vendored kit was 0.5.0, the manifest 0.8.0, and a radius 0.8.0 had already changed
- *  went into a brief as a parity gap). */
+/** The kit the CONSOLE renders — `vendor/ui-react-0.8`, a second built copy, aliased
+ *  below (C6, 2026-09-11). The flows keep `vendor/ui-react` (0.5.0): refreshing that one
+ *  breaks their skeleton (NavLink, AvatarGroup, Pill changed API), and migrating every
+ *  flow is its own piece of work. The Parity tab measures a render of THIS copy and reads
+ *  the API from the manifest; the two have to be the same version, or a measured
+ *  difference may be a difference between versions — which is what happened with the
+ *  Badge radius (0.5.0's `rounded-md` filed as a parity gap). `__KIT_VERSION__` says
+ *  which one was measured, and the tab compares it with the manifest's. */
+const KIT_DIR = "vendor/ui-react-0.8"
 const kitVersion = (): string => {
   try {
     return JSON.parse(
-      fs.readFileSync(path.resolve(import.meta.dirname, "vendor/ui-react/package.json"), "utf8"),
+      fs.readFileSync(path.resolve(import.meta.dirname, `${KIT_DIR}/package.json`), "utf8"),
     ).version as string
   } catch {
     return ""
@@ -33,6 +36,12 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   base: "/",
   define: { __KIT_VERSION__: JSON.stringify(kitVersion()) },
+  resolve: {
+    // `@42/ui-react/*` in the console's own sources resolves to the 0.8.0 copy, installed
+    // as `@42/ui-react-next` so its `exports` map (subpaths, CSS) keeps working. The
+    // shared `src/` files the console imports (typo, who) carry no kit import.
+    alias: [{ find: /^@42\/ui-react(?=\/|$)/, replacement: "@42/ui-react-next" }],
+  },
   build: {
     outDir: "../dist",
     emptyOutDir: false,

@@ -1,0 +1,50 @@
+/**
+ * Chart (TanStack Charts) — chrome + DOM tooltip theming. Imported separately
+ * from `colors.css`/`theme.css` — only consumers who render a `Chart` need
+ * this file:
+ *
+ *   import "@42/ui-react/chart/styles.css";
+ *
+ * TanStack Charts' own default theme (`defaultChartTheme` in
+ * `@tanstack/charts`) paints axis/grid/frame/legend/crosshair marks with the
+ * literal CSS keyword `currentColor` — no dedicated `--ts-chart-*` var for
+ * any of those exists to override. So chrome theming here is just `color` on
+ * `.chart-root`, gated by `[data-theme="dark"]` like every other dark-mode
+ * rule in this kit — never TanStack's own suggested `.light`/`.dark` classes,
+ * and never `prefers-color-scheme` directly, both of which would track the
+ * OS scheme instead of the kit's own manual theme toggle.
+ *
+ * The DOM tooltip (`.ts-chart-tooltip`, TanStack's own class — appended as a
+ * sibling inside this root, not a child of the `<svg>`) themes through the
+ * `--ts-chart-tooltip-*` custom properties it already reads via
+ * `var(--x, fallback)` at the point of use — defining the var anywhere in
+ * scope is enough, no specificity fight needed. Only the panel-level knobs
+ * are overridden below; the "active row" highlight and crosshair marker
+ * geometry already key off `currentColor`/the panel's own vars and need no
+ * separate override.
+ */
+.chart-root {
+  color: var(--color-gray-light-600);
+
+  --ts-chart-tooltip-background: color-mix(in srgb, var(--color-brand-50) 90%, transparent);
+  --ts-chart-tooltip-color: var(--color-gray-light-900);
+  --ts-chart-tooltip-border: 1px solid color-mix(in srgb, var(--color-brand-900) 20%, transparent);
+  --ts-chart-tooltip-border-radius: var(--radius-input, 0.25rem);
+  --ts-chart-tooltip-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --ts-chart-tooltip-font: 500 0.75rem/1.3 var(--font-sans, sans-serif);
+
+  --ts-chart-crosshair-label-halo: var(--color-gray-light-25);
+  --ts-chart-crosshair-marker-fill: var(--color-gray-light-25);
+  --ts-chart-focus-fill: var(--color-gray-light-25);
+}
+[data-theme="dark"] .chart-root {
+  color: var(--color-gray-dark-400);
+
+  --ts-chart-tooltip-background: color-mix(in srgb, var(--color-brand-950) 85%, transparent);
+  --ts-chart-tooltip-color: var(--color-gray-dark-50);
+  --ts-chart-tooltip-border: 1px solid color-mix(in srgb, white 15%, transparent);
+
+  --ts-chart-crosshair-label-halo: var(--color-gray-dark-950);
+  --ts-chart-crosshair-marker-fill: var(--color-gray-dark-950);
+  --ts-chart-focus-fill: var(--color-gray-dark-950);
+}

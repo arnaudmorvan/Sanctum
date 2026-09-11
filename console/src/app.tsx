@@ -366,7 +366,7 @@ export const App = () => {
               <NavLink
                 key={s.v}
                 label={s.label}
-                icon={s.icon}
+                startSlot={s.icon}
                 current={section.v === s.v}
                 open={contextOpen}
                 onOpenChange={setContextOpen}
@@ -378,7 +378,7 @@ export const App = () => {
                     key={c.key}
                     label={c.label}
                     current={section.v === "context" && corpus === c.key}
-                    suffix={signedIn ? <Count n={counts[c.key]} /> : undefined}
+                    endSlot={signedIn ? <Count n={counts[c.key]} /> : undefined}
                     {...link("context", c.key)}
                   />
                 ))}
@@ -387,9 +387,9 @@ export const App = () => {
               <NavLink
                 key={s.v}
                 label={s.label}
-                icon={s.icon}
+                startSlot={s.icon}
                 current={section.v === s.v}
-                suffix={s.v === "protos" ? <Count n={flowCount} /> : undefined}
+                endSlot={s.v === "protos" ? <Count n={flowCount} /> : undefined}
                 classNames={{ row: TYPO.nav }}
                 {...link(s.v)}
               />
@@ -411,7 +411,7 @@ export const App = () => {
               ) : null}
               <NavLink
                 label="Sign out"
-                icon={<LogOut size={16} />}
+                startSlot={<LogOut size={16} />}
                 linkComponent="button"
                 linkOptions={{ type: "button", onClick: signOut }}
               />
@@ -419,8 +419,8 @@ export const App = () => {
           ) : (
             <NavLink
               label="Sign in"
-              icon={<KeyRound size={16} />}
-              suffix={status === "checking" ? <Spinner size="xs" /> : undefined}
+              startSlot={<KeyRound size={16} />}
+              endSlot={status === "checking" ? <Spinner size="xs" /> : undefined}
               {...link("protos")}
             />
           )}
