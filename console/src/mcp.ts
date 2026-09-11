@@ -859,6 +859,10 @@ export type VariantVisual = {
   radius?: number | string | Record<string, number>
   padding?: Record<string, number>
   gap?: number
+  /** The root's own height, exported only when Figma FIXES it (plugin ≥ 2026-09-11). A
+   *  root that hugs its content has none, and the console derives it from the padding
+   *  and the line height as before. */
+  height?: number
   opacity?: number
   text?: { fill?: Paint; size?: number; weight?: string; lineHeight?: number }
 }

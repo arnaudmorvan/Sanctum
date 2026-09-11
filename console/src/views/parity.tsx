@@ -737,27 +737,47 @@ const compareSurface = (
       note: pill ? "Both past half the height: a pill either way, whatever the number." : via,
     })
   }
-  if (visual.padding) {
-    const v = visual.padding.v ?? visual.padding.t ?? visual.padding.all
-    const h = visual.padding.h ?? visual.padding.l ?? visual.padding.all
-    if (v !== undefined && !r.padVDerived)
+  const padV = visual.padding
+    ? (visual.padding.v ?? visual.padding.t ?? visual.padding.all)
+    : undefined
+  const padH = visual.padding
+    ? (visual.padding.h ?? visual.padding.l ?? visual.padding.all)
+    : undefined
+  if (padV !== undefined && !r.padVDerived)
+    out.push({
+      key: "padding-v",
+      what: "Padding ↕",
+      figma: `${padV}px`,
+      react: `${r.padV}px`,
+      same: Math.abs(r.padV - padV) < 0.51,
+      note: via,
+    })
+  else if (r.padVDerived && (typeof visual.height === "number" || padV !== undefined)) {
+    // The kit fixes a HEIGHT (`h-8`) and centres the content, with no padding at all.
+    // "8px drawn, 0px rendered" on forty buttons was the panel counting the mechanism
+    // rather than the result; the result is the height, so that is what is compared.
+    // A real finding reads "40px drawn, 32px rendered": the kit's buttons ARE shorter
+    // than the mockup's.
+    const got = Math.round(r.height * 100) / 100
+    if (typeof visual.height === "number") {
+      // ⚠️ Figma FIXES the height too, and the export says so (plugin ≥ 2026-09-11). It
+      // used to be derived from the padding and the line height — and a Badge drawn 20px
+      // tall with a vertical padding of 0 came out as 16 (2 × 0 + 16), a false "16px
+      // Figma, 22px React" on every sm variant. The frame's own height is the number.
       out.push({
-        key: "padding-v",
-        what: "Padding ↕",
-        figma: `${v}px`,
-        react: `${r.padV}px`,
-        same: Math.abs(r.padV - v) < 0.51,
-        note: via,
+        key: "height",
+        what: "Height",
+        figma: `${visual.height}px`,
+        react: `${got}px`,
+        same: Math.abs(got - visual.height) < 1,
+        note: "Both sides fix a height and centre the content: Figma's is the frame's own height, the kit's is its box.",
       })
-    else if (v !== undefined) {
-      // The kit fixes a HEIGHT (`h-8`) and centres the content, with no padding at all.
-      // "8px drawn, 0px rendered" on forty buttons was the panel counting the mechanism
-      // rather than the result; the result is the height, so that is what is compared —
-      // Figma's being its padding around the label's line box. A real finding reads
-      // "40px drawn, 32px rendered": the kit's buttons ARE shorter than the mockup's.
+    } else {
+      // Figma hugs its content — or the export predates the height: Figma's height is
+      // its padding around the label's line box.
+      const v = padV as number
       const lh = visual.text?.lineHeight
       const drawn = typeof lh === "number" ? 2 * v + lh : null
-      const got = Math.round(r.height * 100) / 100
       if (drawn === null)
         out.push({
           key: "height",
@@ -774,18 +794,18 @@ const compareSurface = (
           figma: `${drawn}px`,
           react: `${got}px`,
           same: Math.abs(got - drawn) < 1,
-          note: `The kit fixes the height and centres the content; Figma's is ${v}px of padding around a ${lh}px line box. Compared as heights, since a padding is not what the kit uses.`,
+          note: `The kit fixes the height and centres the content; Figma's is DERIVED — ${v}px of padding around a ${lh}px line box. If the frame fixes its own height in Figma, that number is not in this export: a sync with the plugin of 2026-09-11 or later carries it.`,
         })
     }
-    if (h !== undefined)
-      out.push({
-        key: "padding-h",
-        what: "Padding ↔",
-        figma: `${h}px`,
-        react: `${r.padH}px`,
-        same: Math.abs(r.padH - h) < 0.51,
-      })
   }
+  if (padH !== undefined)
+    out.push({
+      key: "padding-h",
+      what: "Padding ↔",
+      figma: `${padH}px`,
+      react: `${r.padH}px`,
+      same: Math.abs(r.padH - padH) < 0.51,
+    })
   if (visual.gap !== undefined) {
     if (r.gap === null)
       out.push({
