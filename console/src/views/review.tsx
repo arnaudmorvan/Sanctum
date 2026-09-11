@@ -12,11 +12,17 @@
  *  who signed a comment on a flow signs a review the same way. */
 import { Badge } from "@42/ui-react/badge"
 import { Text } from "@42/ui-react/text"
-import { Check, Copy, EyeOff, Flag, RotateCcw, Sparkles } from "lucide-react"
+import { Check, ChevronDown, ChevronRight, Copy, EyeOff, Flag, RotateCcw, Sparkles } from "lucide-react"
 import { createContext, useCallback, useContext, useMemo, useState } from "react"
 import { useAuthor } from "../../../src/layout/who"
 import { TYPO } from "../../../src/typo"
-import { NotConfigured, type ParityFinding, type ReviewChange, reviewParity } from "../mcp"
+import {
+  type FindingHistory,
+  NotConfigured,
+  type ParityFinding,
+  type ReviewChange,
+  reviewParity,
+} from "../mcp"
 
 /** ⚠️ An owner is a PERSON, and the labels say so. It used to name the artefact — "For
  *  the kit", "For the Figma file" — while the flag buttons on every row already said "the
@@ -498,6 +504,67 @@ export const HandOff = ({
     </ul>
   </div>
 )
+
+/** What has been CLOSED — findings the report stopped producing, struck through with the
+ *  day they went.
+ *
+ *  ⚠️ A finding that disappears is ambiguous: fixed, or no longer seen. The console cannot
+ *  tell, and neither can the server — what it CAN do is refuse to record a mass
+ *  disappearance as progress (`refused`, said here in as many words) and show the rest so
+ *  a reviewer sees their own work land. A review where fixed things silently vanish gives
+ *  no sense of progress, and a report that goes blind looks exactly like a job well done. */
+export const Closed = ({ history }: { history?: FindingHistory }) => {
+  const [open, setOpen] = useState(false)
+  if (!history) return null
+  const list = history.closed
+  if (list.length === 0 && !history.refused)
+    return (
+      <Text size="xs" c="muted">
+        Nothing has been closed yet — the report is tracking {history.tracked} findings, and
+        strikes one through here the day it stops producing it.
+      </Text>
+    )
+  return (
+    <div className="flex flex-col gap-1">
+      {history.refused ? (
+        <Text size="xs" className="text-orange-300">
+          ⚠️ {history.refused} Check the sources above before reading this as progress.
+        </Text>
+      ) : null}
+      {list.length > 0 ? (
+        <>
+          <button
+            type="button"
+            onClick={() => setOpen((v) => !v)}
+            className="flex items-center gap-1.5 text-left text-gray-dark-400 text-xs hover:text-white"
+          >
+            {open ? <ChevronDown size={13} /> : <ChevronRight size={13} />}
+            <strong className="text-green-300">{history.closed_total} closed</strong> — the
+            report no longer produces them
+            {history.reopened.length > 0 ? (
+              <span className="text-orange-300">
+                · {history.reopened.length} came back
+              </span>
+            ) : null}
+          </button>
+          {open ? (
+            <ul className="flex flex-col gap-0.5 pl-5">
+              {list.map((f) => (
+                <li key={f.id} className="flex flex-wrap items-baseline gap-2 text-xs">
+                  <span className="text-gray-dark-500 line-through">{f.title}</span>
+                  <span className={`${TYPO.mono()} text-[10px] text-gray-dark-600`}>
+                    {f.owner ? `${OWNER[f.owner]?.short ?? f.owner} · ` : ""}
+                    seen {f.first} → {f.closed}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </>
+      ) : null}
+    </div>
+  )
+}
 
 /** The three owner buttons — a FILTER for reading the list below, not the hand-off. */
 export const OwnerBar = ({

@@ -79,6 +79,7 @@ import {
   IgnoreButton,
   OWNER,
   type Owner,
+  Closed,
   HandOff,
   OwnerBar,
   RestoreButton,
@@ -2875,6 +2876,7 @@ const Overview = ({
       {/* WHO gets what, before the list: the per-owner brief existed behind a filter and
           two buttons that copied "the current one", which is not a hand-off. */}
       <HandOff counts={c.by_owner} copy={(o, prompt) => void copyOwner(o, prompt)} copied={copied} />
+      <Closed history={data.history} />
       <Text size="xs" c="muted">
         Below: the same findings, to read here. Pick a side.
       </Text>

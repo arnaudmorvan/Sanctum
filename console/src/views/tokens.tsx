@@ -49,6 +49,7 @@ import {
 } from "../mcp"
 import {
   AssignButtons,
+  Closed,
   FindingRow,
   IgnoreButton,
   OWNER,
@@ -909,6 +910,10 @@ KIT_TOKEN=<a PAT with Contents: Read on that repo>`}</pre>
           copy={(o, prompt) => void copy({ owner: o, prompt }, prompt ? `${o}:prompt` : o)}
           copied={copied}
         />
+
+        {/* What has landed: the findings the report stopped producing, struck through.
+            Without it a fix vanishes silently and a reviewer never sees their own work. */}
+        <Closed history={data.history} />
 
         {/* 3. What is left once the colours are out: three lines, no fold, no filter. A
             filter over three rows is a menu that hides two of them. */}

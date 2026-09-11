@@ -713,6 +713,28 @@ export type ParityFinding = {
   assigned_at?: string
 }
 
+/** What a source's findings have DONE over time: the ones that stopped being produced,
+ *  most recent first. A finding that disappears is ambiguous — fixed, or no longer seen —
+ *  and this is what lets a reviewer tell the difference and see their own progress. */
+export type FindingHistory = {
+  closed: {
+    id: string
+    title: string
+    owner: string
+    kind: string
+    /** The day it was first produced, and the day it stopped. */
+    first: string
+    closed: string
+  }[]
+  closed_total: number
+  /** How many ids of this source the history holds, open and closed. */
+  tracked: number
+  /** ⚠️ Set when NOTHING was closed although findings vanished: half of them going at
+   *  once is a measurement that moved, not a review. Said, never silently recorded. */
+  refused: string
+  reopened: string[]
+}
+
 export type ParityReport = {
   pairs: ParityPair[]
   figma_only: ParityFigma[]
@@ -743,6 +765,7 @@ export type ParityReport = {
   }
   /** Whether the reviewer's file can be written from here. `false` under READ_ONLY (no
    *  commit helper): the tab draws no button whose route would answer 503. */
+  history?: FindingHistory
   review: {
     can_write: boolean
     path: string
@@ -1063,6 +1086,7 @@ export type TokensReport = {
     by_owner: Record<string, number>
   }
   /** Same file and same semantics as the components' review. */
+  history?: FindingHistory
   review: {
     can_write: boolean
     path: string
