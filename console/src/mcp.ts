@@ -682,6 +682,22 @@ export type ParityFinding = {
   flagged?: boolean
   flagged_by?: string
   flagged_at?: string
+  /** ⚠️ No LIVE measurement carries this id: what is shown is the copy the reviewer
+   *  signed, not a measurement taken now. The measurements live in the server's memory,
+   *  so every flag reads like this after a restart — dating it today would be a lie. */
+  from_review?: boolean
+  /** The catalogue CONTRADICTS the copy: Figma no longer draws what this flag froze, on
+   *  the very variants it named. Struck through, out of every count and out of both
+   *  briefs — a correction made in Figma used to orphan a flag instead of closing it,
+   *  and the tab showed yesterday's numbers however often the plugin was re-synced.
+   *  `note` is written server-side: one owner of the sentence. */
+  stale?: {
+    was: string
+    now: string[]
+    named: number
+    found: number
+    note: string
+  }
   /** Colour findings only (tokens): the class, the root-cause family, the tokens on this
    *  colour and the components that paint with it. */
   class?: "semantic" | "primitive"
@@ -760,6 +776,9 @@ export type ParityReport = {
     findings: number
     ignored: number
     flagged: number
+    /** Flagged, then corrected in Figma: struck through and counted apart. A finding that
+     *  merely VANISHED is ambiguous — fixed, or no longer seen? — and this one can say. */
+    stale?: number
     by_owner: Record<string, number>
     described: number
   }
@@ -777,6 +796,9 @@ export type ParityReport = {
     flagged_ids: string[]
     /** Findings whose owner a human decided, against the computed one. */
     assigned_ids: string[]
+    /** The components the console has measured SINCE THE SERVER STARTED. A flagged copy
+     *  whose component is absent was never re-measured against today's catalogue. */
+    measured?: string[]
   }
   sources: {
     /** `frames` is a boolean, not a string: it says whether the server can RENDER a

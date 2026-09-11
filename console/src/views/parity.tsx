@@ -2902,8 +2902,12 @@ const Pair = ({
   // earlier visit. Once this page has measured, the live blocks below are fresher and
   // carry their own drawing: the copies would be the same differences, listed twice.
   const fromReport = branches ? findings.filter((f) => f.kind !== "branch") : findings
-  const active = fromReport.filter((f) => !f.ignored)
-  const ignored = fromReport.filter((f) => f.ignored)
+  // ⚠️ Three buckets. A flag the CATALOGUE contradicts is neither active nor ignored: it
+  // is a difference the reader CORRECTED in Figma, and counting it would tell them their
+  // own fix did not land. It keeps its own fold, struck through, with the unflag on it.
+  const active = fromReport.filter((f) => !f.ignored && !f.stale)
+  const ignored = fromReport.filter((f) => f.ignored && !f.stale)
+  const corrected = fromReport.filter((f) => f.stale)
   const blocks = (branches?.blocks ?? []).filter((b) => !review.ignored.has(b.id))
   // A live block's DECISION, when one was taken: the block is fresher, the routing lives
   // in the review file and reaches the page through the report's own finding.
@@ -3217,6 +3221,21 @@ const Pair = ({
           aligned.map((a) => <AxisLine key={`${a.axis}-${a.react}`} a={a} />)
         )}
       </Group>
+
+      {corrected.length > 0 ? (
+        <Group
+          title="Corrected in Figma since they were flagged"
+          count={corrected.length}
+          tone="green"
+          hint="the mockup no longer says what these froze — out of the brief and the counts"
+        >
+          <ul className="flex flex-col">
+            {corrected.map((f) => (
+              <FindingRow key={f.id} f={f} />
+            ))}
+          </ul>
+        </Group>
+      ) : null}
 
       {ignored.length > 0 ? (
         <Group
@@ -3558,7 +3577,7 @@ const Overview = ({
     )
   }
 
-  const grouped = data.findings.filter((f) => f.owner === owner && !f.ignored)
+  const grouped = data.findings.filter((f) => f.owner === owner && !f.ignored && !f.stale)
   return (
     <div className="flex flex-col gap-3">
       <Title order={2} size="md" className={TYPO.title()}>
@@ -3861,12 +3880,17 @@ export const ParityView = ({ selected = "" }: { selected?: string }) => {
   const c = data.counts
   // ONE owner of "how many findings does this component have": the list, the card and
   // the pairs table all read this. Per component: active, of which the kit's, ignored.
-  const counts: Record<string, { active: number; kit: number; ignored: number }> = {}
-  for (const p of data.pairs) counts[p.react] = { active: 0, kit: 0, ignored: 0 }
+  const counts: Record<
+    string,
+    { active: number; kit: number; ignored: number; corrected: number }
+  > = {}
+  for (const p of data.pairs)
+    counts[p.react] = { active: 0, kit: 0, ignored: 0, corrected: 0 }
   for (const f of data.findings) {
     const name = data.pairs.find((p) => sameName(p.react, f.component))?.react
     if (!name) continue
-    if (f.ignored) counts[name].ignored += 1
+    if (f.stale) counts[name].corrected += 1
+    else if (f.ignored) counts[name].ignored += 1
     else {
       counts[name].active += 1
       if (f.owner === "kit") counts[name].kit += 1

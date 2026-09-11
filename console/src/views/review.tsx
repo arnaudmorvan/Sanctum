@@ -99,6 +99,10 @@ export type Review = {
   busy: string
   ignored: Set<string>
   flagged: Set<string>
+  /** The components the console has measured since the SERVER started. What is absent
+   *  from it has no live measurement behind it: a flagged row is then a signed copy, and
+   *  says so rather than reading as a difference measured just now. */
+  measured: string[]
   pending: Map<string, Pending>
   act: (change: Omit<ReviewChange, "by">) => Promise<void>
   unstage: (id: string) => void
@@ -112,6 +116,7 @@ export const ReviewContext = createContext<Review>({
   busy: "",
   ignored: new Set(),
   flagged: new Set(),
+  measured: [],
   pending: new Map(),
   act: async () => {},
   unstage: () => {},
@@ -136,7 +141,14 @@ const INVERSE: Record<ReviewChange["op"], ReviewChange["op"]> = {
  *  batch is committed — the server keeps the expensive computation cached and stamps the
  *  file on at serve time, so the round-trip is one small file read, never a rebuild. */
 export const useReviewState = (
-  state: { can_write: boolean; ignored_ids: string[]; flagged_ids: string[] } | undefined,
+  state:
+    | {
+        can_write: boolean
+        ignored_ids: string[]
+        flagged_ids: string[]
+        measured?: string[]
+      }
+    | undefined,
   reload: () => Promise<void>,
 ): { review: Review; error: string; clearError: () => void } => {
   const author = useAuthor()
@@ -239,6 +251,7 @@ export const useReviewState = (
       busy,
       ignored,
       flagged,
+      measured: state?.measured ?? [],
       pending,
       act,
       unstage,
@@ -551,10 +564,16 @@ export const FindingRow = ({ f, href }: { f: ParityFinding; href?: string }) => 
   ) as Owner
   const ignored = p?.op === "ignore" ? true : p?.op === "restore" ? false : f.ignored
   const flagged = p?.op === "unflag" ? false : f.flagged
+  // ⚠️ Struck through, not hidden: « j'ai corrigé dans Figma et ça se réaffiche » was this
+  // line — a flag is a COPY, re-emitted whenever no live measurement carries its id, so a
+  // correction orphaned it instead of closing it. The server re-read the catalogue at the
+  // exact variants the flag named; when it disagrees, the row says so and offers the
+  // unflag. What it does NOT claim is that the React half was re-measured.
+  const stale = f.stale
   const o = OWNER[owner]
   return (
     <li
-      className={`border-white/6 border-t py-2 first:border-t-0 ${ignored ? "opacity-60" : ""} ${
+      className={`border-white/6 border-t py-2 first:border-t-0 ${ignored || stale ? "opacity-60" : ""} ${
         p ? "-ml-2 border-l-2 border-l-orange-400/60 pl-2" : ""
       }`}
     >
@@ -578,7 +597,11 @@ export const FindingRow = ({ f, href }: { f: ParityFinding; href?: string }) => 
             {f.assigned_by || f.flagged ? "" : " ?"}
           </Badge>
         </span>
-        {flagged ? (
+        {stale ? (
+          <Badge color="green" size="sm" variant="light">
+            corrected in Figma
+          </Badge>
+        ) : flagged ? (
           <Badge color="blue" size="sm" variant="light">
             <Flag size={11} />
             seen in the browser
@@ -588,7 +611,7 @@ export const FindingRow = ({ f, href }: { f: ParityFinding; href?: string }) => 
           <a
             href={href}
             className={`${TYPO.title("semibold")} text-sm underline decoration-dotted underline-offset-2 hover:text-white ${
-              ignored ? "line-through" : ""
+              ignored || stale ? "line-through" : ""
             }`}
           >
             {f.title}
@@ -596,7 +619,7 @@ export const FindingRow = ({ f, href }: { f: ParityFinding; href?: string }) => 
         ) : (
           <Text
             size="sm"
-            className={`${TYPO.title("semibold")} ${ignored ? "line-through" : ""}`}
+            className={`${TYPO.title("semibold")} ${ignored || stale ? "line-through" : ""}`}
           >
             {f.title}
           </Text>
@@ -642,11 +665,28 @@ export const FindingRow = ({ f, href }: { f: ParityFinding; href?: string }) => 
                 f.ignored_why ? ` — ${f.ignored_why}` : ""
               }`}
         </Text>
+      ) : stale ? (
+        <Text size="xs" className="mt-1 text-green-200">
+          {stale.note}
+          {f.flagged_by
+            ? ` Flagged by ${f.flagged_by}${f.flagged_at ? ` on ${f.flagged_at.slice(0, 10)}` : ""} — unflag it, or re-measure the component to check the React half.`
+            : ""}
+        </Text>
       ) : (
         <>
           <Text size="sm" c="secondary" className="mt-1">
             {f.cause || f.detail}
           </Text>
+          {/* A flag with no live block behind it is yesterday's measurement: the console
+              has not re-measured this component since the server started (the blocks live
+              in memory). Said once, quietly — it is a freshness note, not a finding. */}
+          {f.from_review && !review.measured.includes(f.component) ? (
+            <Text size="xs" c="muted" className="mt-1">
+              Signed copy{f.flagged_at ? ` of ${f.flagged_at.slice(0, 10)}` : ""} — Figma
+              still draws it this way; the React half has not been re-measured since the
+              server restarted. Open the component to measure it again.
+            </Text>
+          ) : null}
           {/* The structured half (2026-09-11): what an agent needs to act on this, or to
               stop. Only the lines the flag carried. */}
           {f.question ? (
