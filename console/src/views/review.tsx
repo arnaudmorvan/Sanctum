@@ -554,9 +554,22 @@ export const FindingRow = ({ f, href }: { f: ParityFinding; href?: string }) => 
         <Badge color={SEVERITY[f.severity]} size="sm" variant="light">
           {f.severity}
         </Badge>
-        <Badge color={o.color} size="sm" variant="outline">
-          {o.short}
-        </Badge>
+        {/* The owner the REPORT computed is a suggestion until a human assigns or flags
+            (C3): said on the badge, so a reader does not take a derivation for a
+            decision. */}
+        <span
+          title={
+            f.assigned_by || f.flagged
+              ? `Declared by ${f.assigned_by || f.flagged_by || "the reviewer"}`
+              : "Suggested by the report — assign it to decide; until then the brief lists it as undecided"
+          }
+          className={f.assigned_by || f.flagged ? "" : "opacity-70"}
+        >
+          <Badge color={o.color} size="sm" variant="outline">
+            {o.short}
+            {f.assigned_by || f.flagged ? "" : " ?"}
+          </Badge>
+        </span>
         {flagged ? (
           <Badge color="blue" size="sm" variant="light">
             <Flag size={11} />
