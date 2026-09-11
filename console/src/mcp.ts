@@ -696,6 +696,16 @@ export type ParityFinding = {
   owner_computed?: string
   assigned_by?: string
   assigned_at?: string
+  /** The structured half of a FLAGGED finding (2026-09-11): the cause in one sentence,
+   *  the locus in the code (file · axis.value · classes), the scope (local, or a shared
+   *  token and its consumers), the question to settle, the proposed edit, and the kit
+   *  version the browser measured. Absent on flags taken before them. */
+  cause?: string
+  locus?: string
+  scope?: string
+  question?: string
+  proposed?: string
+  measured?: string
 }
 
 /** What a source's findings have DONE over time: the ones that stopped being produced,
@@ -781,6 +791,8 @@ export type ParityReport = {
       snapshot_version?: string
       snapshot_generated_at?: string
       snapshot_stale?: string[]
+      /** The kit commit the snapshot was generated from (`kit_commit` in the manifest). */
+      commit?: string
     }
   }
   generated_at: string
@@ -879,6 +891,16 @@ export type ParityDetail = {
     import: string
     snippet: string
     docs: string
+    /** The LOCUS side (2026-09-11): the file, the classes behind every axis value, the
+     *  comment above an axis, the CSS variables the cva reaches for and who else reads
+     *  them, and the kit's own scales (px) so a proposed class can be named. Empty on a
+     *  manifest generated before these keys. */
+    file?: string
+    classes?: Record<string, Record<string, string>>
+    notes?: Record<string, string>
+    tokens?: string[]
+    tokenConsumers?: Record<string, string[]>
+    scales?: { radius: Record<string, number>; text: Record<string, number>; spacing: number }
   } | null
 }
 
@@ -925,6 +947,25 @@ export async function getParityBrief(
   return r.text()
 }
 
+/** The same brief as DATA — `brief.json`: one issue per decision with `authority`,
+ *  `locus`, `scope`, `proposed`, `question`, `verify`. What an agent is handed; the
+ *  markdown is a view of it. Returned pretty-printed, ready for a clipboard. */
+export async function getParityBriefJson(
+  filter: { owner?: "kit" | "figma" | "both"; component?: string } = {},
+): Promise<string> {
+  const key = readKey()
+  const q = new URLSearchParams()
+  if (filter.owner) q.set("owner", filter.owner)
+  if (filter.component) q.set("component", filter.component)
+  const qs = q.toString()
+  const r = await fetch(`${BASE}/console/parity/brief.json${qs ? `?${qs}` : ""}`, {
+    headers: key ? { "X-DS-Key": key } : {},
+  })
+  if (r.status === 401) throw new AccessError("Key rejected by the server.")
+  if (!r.ok) throw new Error(`brief.json → HTTP ${r.status}`)
+  return JSON.stringify(await r.json(), null, 2)
+}
+
 /** ONE decision of the reviewer, committed to `analysis/parity-review.json` by the MCP
  *  server (the same commit helper as the component sync, so READ_ONLY darkens both).
  *
@@ -948,6 +989,14 @@ export type ReviewChange = {
   evidence?: string
   component?: string
   owner?: "kit" | "figma" | "both"
+  /** A flag's structured half (2026-09-11) — what makes the brief an issue an agent can
+   *  act on, or stop on: `cause`, `locus`, `scope`, `question`, `proposed`, `measured`. */
+  cause?: string
+  locus?: string
+  scope?: string
+  question?: string
+  proposed?: string
+  measured?: string
 }
 
 export async function reviewParity(change: ReviewChange): Promise<{ commit: string }> {

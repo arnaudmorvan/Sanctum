@@ -51,7 +51,16 @@ import {
   Moon,
   RefreshCw,
 } from "lucide-react"
-import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react"
+import {
+  createContext,
+  type ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react"
 import { Signature } from "../../../src/layout/identity"
 import { TYPO } from "../../../src/typo"
 import {
@@ -61,6 +70,7 @@ import {
   type CoverageCombo,
   getParity,
   getParityBrief,
+  getParityBriefJson,
   getParityDetail,
   getParityFrame,
   type Paint,
@@ -347,6 +357,36 @@ const alphaOf = (hex: string): number => {
   return h.length === 8 ? Number.parseInt(h.slice(6, 8), 16) / 255 : 1
 }
 
+/** sRGB hex → CIE L*a*b* (D65). The space where a distance MEANS something to the eye;
+ *  a unit per RGB channel does not. */
+const labOf = (hex: string): [number, number, number] | null => {
+  const h = hex.replace("#", "").slice(0, 6)
+  if (!/^[0-9a-f]{6}$/i.test(h)) return null
+  const lin = (c: number) => {
+    const v = c / 255
+    return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4
+  }
+  const [r, g, b] = [0, 2, 4].map((i) => lin(Number.parseInt(h.slice(i, i + 2), 16)))
+  const x = (0.4124 * r + 0.3576 * g + 0.1805 * b) / 0.95047
+  const y = 0.2126 * r + 0.7152 * g + 0.0722 * b
+  const z = (0.0193 * r + 0.1192 * g + 0.9505 * b) / 1.08883
+  const f = (t: number) => (t > 0.008856 ? Math.cbrt(t) : 7.787 * t + 16 / 116)
+  return [116 * f(y) - 16, 500 * (f(x) - f(y)), 200 * (f(y) - f(z))]
+}
+
+/** CIE76 ΔE between the RGB halves of two hexes — `null` when either is not a colour. */
+const deltaE = (a: string, b: string): number | null => {
+  const p = labOf(a)
+  const q = labOf(b)
+  if (!p || !q) return null
+  return Math.sqrt((p[0] - q[0]) ** 2 + (p[1] - q[1]) ** 2 + (p[2] - q[2]) ** 2)
+}
+
+/** Under this ΔE two colours are one colour to the eye (the just-noticeable difference is
+ *  about 2.3). A difference below it is REPORTED as close and counted nowhere: hard-coding
+ *  a literal to close a gap nobody can see is a regression committed with confidence. */
+const SUB_PERCEPTUAL = 2
+
 /** `opacity` is the rendered element's own (the product up to the component's root):
  *  Figma's `#f044381a` and the kit's opaque red under `opacity-10` are the SAME paint,
  *  and only the product says so. The alpha halves are then held together within 0.1 —
@@ -377,6 +417,10 @@ const px = (v: string): number => Number.parseFloat(v || "0") || 0
 
 type Theme = "dark" | "light"
 
+/** The kit version the API side describes (`sources.react.version`), for the panels that
+ *  measure a render: held against `__KIT_VERSION__`, the one the browser renders. */
+const ApiVersionContext = createContext("")
+
 type Line = {
   /** The id's tail — explicit, because `Padding ↕` and `Padding ↔` slugify to the same
    *  word, and one ignore would have hidden both. */
@@ -390,6 +434,12 @@ type Line = {
    *  space, a token the foundations do not carry) is neither "same" nor "differs", and
    *  saying either would be the report accusing — or absolving — on its own blindness. */
   skip?: string
+  /** Set on a colour whose two sides differ by LESS than a just-noticeable difference
+   *  (ΔE < `SUB_PERCEPTUAL`, alpha agreeing): not "same" — the bytes differ — and not a
+   *  finding either. `#75e0a7` against `#73e2a3` is 2, 2, 4 on 255: invisible to the eye
+   *  and to a contrast check, and posted at the same level as "blue drawn, near-black
+   *  rendered" it made a reader classify the whole report as unreliable (2026-09-11). */
+  close?: boolean
   note?: string
 }
 
@@ -698,13 +748,23 @@ const compareSurface = (
     // Same hue, other opacity: say which half differs, or the reader compares two hexes
     // that look alike and reads the line as a rounding.
     const hueSame = !same && sameColour(hex.slice(0, 7), react.slice(0, 7), 1)
+    // Sub-perceptual: the RGB halves within a just-noticeable difference and the alpha
+    // halves agreeing. A third state — not the same bytes, not a finding.
+    const dE = same ? 0 : deltaE(hex, react)
+    const alphaSame = Math.abs(alphaOf(hex) - alphaOf(react) * opacity) <= 0.1
+    const close = !same && dE !== null && dE < SUB_PERCEPTUAL && alphaSame
     out.push({
       key,
       what,
       figma: label(hex),
       react: opacity < 1 ? `${react} × opacity ${Math.round(opacity * 100) / 100}` : react,
       same,
-      note: hueSame ? "Same hue, other opacity." : hint,
+      close,
+      note: close
+        ? `Sub-perceptual: ΔE ${dE?.toFixed(1)} (under ${SUB_PERCEPTUAL}) — invisible to the eye and to a contrast check, not a finding.`
+        : hueSame
+          ? "Same hue, other opacity."
+          : hint,
     })
   }
 
@@ -1037,9 +1097,11 @@ const SurfacePanel = ({
   if (!lines) return null
 
   const lineId = (l: Line) => `surface:${slugify(react)}:${slugify(variant)}:${l.key}`
-  const off = lines.filter((l) => !l.same && !l.skip)
+  const off = lines.filter((l) => !l.same && !l.skip && !l.close)
   const hidden = off.filter((l) => review.ignored.has(lineId(l)))
-  const shown = lines.filter((l) => l.same || l.skip || !review.ignored.has(lineId(l)))
+  const shown = lines.filter(
+    (l) => l.same || l.skip || l.close || !review.ignored.has(lineId(l)),
+  )
   const left = off.length - hidden.length
 
   return (
@@ -1085,7 +1147,7 @@ const SurfacePanel = ({
         <tbody>
           {(showIgnored ? lines : shown).map((l) => {
             const id = lineId(l)
-            const isIgnored = !l.same && review.ignored.has(id)
+            const isIgnored = !l.same && !l.close && review.ignored.has(id)
             const isFlagged = review.flagged.has(id)
             return (
               <tr
@@ -1109,6 +1171,13 @@ const SurfacePanel = ({
                     </div>
                   ) : l.same ? (
                     <Check size={13} className="text-green-500" />
+                  ) : l.close ? (
+                    <div className="flex flex-wrap items-center gap-1">
+                      <Badge color="gray" size="sm" variant="outline">
+                        ≈ close
+                      </Badge>
+                      <span className="max-w-xs text-[10px] text-gray-dark-500">{l.note}</span>
+                    </div>
                   ) : (
                     <div className="flex flex-wrap items-center gap-1">
                       <Badge color="orange" size="sm" variant="light">
@@ -1170,12 +1239,17 @@ type Aggregate = {
  *  covers. An axis that spans everything says nothing and is dropped (every colour differs
  *  here — that is not what picks the row out); an axis the group narrows IS the row's
  *  name. Fewest values first: one value is a cause, four are a coincidence. */
-const signature = (
+type Trait = { axis: string; react: string; nature: string; values: string[] }
+
+/** Per axis, the values a group of variants covers where the compared population covers
+ *  more — the axes that NAME the group. An axis the group spans entirely says nothing and
+ *  is dropped; fewest values first. */
+const signatureParts = (
   variants: string[],
   population: string[],
   axes: CoverageAxis[],
   values: Map<string, Record<string, string>>,
-): string => {
+): Trait[] => {
   const spread = (list: string[], axis: string) => {
     const out = new Set<string>()
     for (const v of list) {
@@ -1184,21 +1258,351 @@ const signature = (
     }
     return out
   }
-  const parts: { text: string; n: number }[] = []
+  const parts: Trait[] = []
   for (const a of axes) {
     if (a.nature === "unnamed") continue
     const used = spread(variants, a.axis)
     if (used.size === 0 || used.size === spread(population, a.axis).size) continue
-    const list = [...used]
-    parts.push({
-      n: used.size,
-      text: `${a.axis} ${list.slice(0, 3).join(", ")}${list.length > 3 ? ` +${list.length - 3}` : ""}`,
+    parts.push({ axis: a.axis, react: a.react, nature: a.nature, values: [...used] })
+  }
+  return parts.sort((x, y) => x.values.length - y.values.length)
+}
+
+const signature = (
+  variants: string[],
+  population: string[],
+  axes: CoverageAxis[],
+  values: Map<string, Record<string, string>>,
+): string =>
+  signatureParts(variants, population, axes, values)
+    .map(
+      (p) =>
+        `${p.axis} ${p.values.slice(0, 3).join(", ")}${p.values.length > 3 ? ` +${p.values.length - 3}` : ""}`,
+    )
+    .join(" · ")
+
+// ---------------------------------------------------------------- causes
+
+/** The measured properties that are COLOURS: grouped across hues, never proposed. */
+const COLOUR_KEYS = new Set(["background", "border-color", "text-color"])
+
+/** Which classes of an axis value concern a measured property — the LOCUS of a finding
+ *  within a class string. Tailwind variant prefixes (`dark:`, `data-color:`) are allowed
+ *  in front. Deliberately loose: a class this misses is a locus a human completes, a
+ *  class it wrongly includes is one word too many on a line. */
+const FAMILY: Record<string, RegExp> = {
+  background: /^(?:[a-z-]+:)*bg-/,
+  "border-color": /^(?:[a-z-]+:)*border-(?![tblrxy]-|\d|solid|dashed|dotted|none)/,
+  "border-width": /^(?:[a-z-]+:)*border(?:-[tblrxy])?(?:-\d+)?$/,
+  radius: /^(?:[a-z-]+:)*rounded/,
+  height: /^(?:[a-z-]+:)*(?:min-|max-)?h-/,
+  "padding-v": /^(?:[a-z-]+:)*p[y]?-/,
+  "padding-h": /^(?:[a-z-]+:)*p[x]?-/,
+  gap: /^(?:[a-z-]+:)*gap-/,
+  "font-size": /^(?:[a-z-]+:)*text-(?:\[\d|xs$|sm$|md$|lg$|xl$|\d|display-)/,
+  "text-color": /^(?:[a-z-]+:)*text-(?!\[\d|xs$|sm$|md$|lg$|xl$|\d|display-|center|left|right|start|end)/,
+}
+
+/** The class that would render Figma's value, from the kit's OWN scales — `4px` →
+ *  `rounded-xs` because `--radius-xs` is 4px in theme.css, `22px` → `min-h-5.5` because
+ *  the spacing unit is 4. Named from the scales the server read out of the kit's CSS,
+ *  never from a list typed here; `null` when no scale applies (a colour) so nothing is
+ *  proposed rather than something guessed. */
+const proposeClass = (
+  key: string,
+  px: number,
+  current: string,
+  scales: NonNullable<ParityDetail["react"]>["scales"],
+): string | null => {
+  if (!scales) return null
+  const unit = scales.spacing || 4
+  const step = (v: number) => {
+    const n = v / unit
+    return Number.isInteger(n * 4) ? String(n) : null
+  }
+  const named = (table: Record<string, number>) =>
+    Object.entries(table).find(([, v]) => Math.abs(v - px) < 0.01)?.[0]
+  switch (key) {
+    case "radius": {
+      const n = named(scales.radius)
+      return n ? `rounded-${n}` : `rounded-[${px}px]`
+    }
+    case "height": {
+      const base = /^(?:[a-z-]+:)*min-h-/.test(current) ? "min-h" : "h"
+      const n = step(px)
+      return n ? `${base}-${n}` : `${base}-[${px}px]`
+    }
+    case "padding-h": {
+      const n = step(px)
+      return n ? `px-${n}` : `px-[${px}px]`
+    }
+    case "padding-v": {
+      const n = step(px)
+      return n ? `py-${n}` : `py-[${px}px]`
+    }
+    case "gap": {
+      const n = step(px)
+      return n ? `gap-${n}` : `gap-[${px}px]`
+    }
+    case "font-size": {
+      const n = named(scales.text)
+      return n ? `text-${n}` : `text-[${px}px]`
+    }
+    default:
+      return null
+  }
+}
+
+/** ONE cause — the unit a flag is taken on, and the unit the brief leaves in.
+ *
+ *  Reviewed on 2026-09-11, on Badge: the table above grouped by (property, Figma value,
+ *  React value), which is one row per MEASUREMENT — seven hues of `variant light`, seven
+ *  rows for the background and seven for the border, fourteen flags for ONE line of the
+ *  cva; and the size `sm` disagreement split into four rows that a reviewer routed to two
+ *  owners. A cause groups by what the variants SHARE once the palette axis is removed
+ *  (`variant light`, `size sm`), or by a property whose Figma value never moves while the
+ *  kit's does (`radius`, 4px everywhere against 6/6/8) — and it carries the locus in the
+ *  code, the scope of a change there, and the question when nobody can be named. */
+type CauseBlock = {
+  id: string
+  key: string
+  kind: "prop" | "key"
+  groups: Aggregate[]
+  variants: string[]
+  hues: string[]
+  title: string
+  cause: string
+  question: string
+  locus: string
+  scope: string
+  proposed: string
+  note: string
+  evidence: string[]
+  /** Whether "to settle" is offered: a shared token, or several properties at once. */
+  settle: boolean
+}
+
+const buildCauses = (
+  list: Aggregate[],
+  present: Map<string, string[]>,
+  axes: CoverageAxis[],
+  values: Map<string, Record<string, string>>,
+  react: string,
+  detail: ParityDetail,
+  skew: { measured: string; api: string } | null,
+): CauseBlock[] => {
+  const kit = detail.react
+  const palette = new Set(axes.filter((a) => a.nature === "palette").map((a) => a.axis))
+  type Entry = {
+    g: Aggregate
+    hues: string[]
+    rest: Trait[]
+    key: string
+    total: number
+  }
+  const entries: Entry[] = list.map((g) => {
+    const population = present.get(g.key) ?? []
+    const parts = signatureParts(g.variants, population, axes, values)
+    return {
+      g,
+      hues: parts.filter((p) => palette.has(p.axis)).flatMap((p) => p.values),
+      rest: parts.filter((p) => !palette.has(p.axis)),
+      key: parts
+        .filter((p) => !palette.has(p.axis))
+        .map((p) => `${p.axis} ${p.values.join(", ")}`)
+        .join(" · "),
+      total: population.length,
+    }
+  })
+
+  // The classes behind (axis, value) that concern the block's properties, and the
+  // tokens they read.
+  const classesFor = (trait: Trait, value: string, props: string[]): string => {
+    const all = kit?.classes?.[trait.react]?.[value] ?? ""
+    if (!all) return ""
+    const fams = props.map((k) => FAMILY[k]).filter(Boolean)
+    return all
+      .split(/\s+/)
+      .filter((c) => fams.some((re) => re.test(c)))
+      .join(" ")
+  }
+  const tokensIn = (classes: string): string[] => {
+    const out: string[] = []
+    for (const m of classes.matchAll(/\(--([a-z0-9-]+)\)|var\(--([a-z0-9-]+)/g)) {
+      const t = `--${m[1] ?? m[2]}`
+      if (!out.includes(t)) out.push(t)
+    }
+    return out
+  }
+  const scopeOf = (tokens: string[]): { text: string; shared: boolean } => {
+    const shared = tokens
+      .map((t) => ({ t, who: kit?.tokenConsumers?.[t] ?? [] }))
+      .filter((x) => x.who.length > 1)
+    if (shared.length === 0) return { text: `local — ${kit?.file || react}`, shared: false }
+    return {
+      shared: true,
+      text: shared
+        .map(
+          (x) =>
+            `shared — \`${x.t}\` is read by the root cva of ${x.who.length} components (${x.who.join(", ")}): a change to it repaints them all`,
+        )
+        .join("; "),
+    }
+  }
+  const noteFor = (traits: Trait[]): string =>
+    traits
+      .map((t) => (kit?.notes?.[t.react] ? `The kit's own comment on \`${t.react}\`: “${kit.notes[t.react]}”` : ""))
+      .filter(Boolean)
+      .join(" ")
+  const px = (v: string) => Number.parseFloat(v)
+  const skewNote = skew
+    ? ` ⚠️ Measured on ${skew.measured}; the API side (and these classes) describe ${skew.api} — verify there before acting.`
+    : ""
+  const file = kit?.file ? `${kit.file} · ` : ""
+
+  const blocks: CauseBlock[] = []
+  const taken = new Set<Entry>()
+
+  // 1. A property Figma holds constant while the kit varies it with an axis: one cause.
+  const byProp = new Map<string, Entry[]>()
+  for (const e of entries) byProp.set(e.g.key, [...(byProp.get(e.g.key) ?? []), e])
+  for (const [prop, es] of byProp) {
+    if (es.length < 2 || COLOUR_KEYS.has(prop)) continue
+    if (new Set(es.map((e) => e.g.figma)).size !== 1) continue
+    if (new Set(es.map((e) => e.key)).size < 2) continue
+    for (const e of es) taken.add(e)
+    const what = es[0].g.what
+    const figma = es[0].g.figma
+    const pairs = es.flatMap((e) =>
+      e.rest.flatMap((t) => t.values.map((v) => ({ t, v, e }))),
+    )
+    const locus = pairs
+      .map(({ t, v }) => {
+        const c = classesFor(t, v, [prop])
+        return c ? `${t.react}.${v} \`${c}\`` : ""
+      })
+      .filter(Boolean)
+      .join(" · ")
+    const proposed = skew
+      ? ""
+      : pairs
+          .map(({ t, v }) => {
+            const c = classesFor(t, v, [prop])
+            const next = c ? proposeClass(prop, px(figma), c, kit?.scales) : null
+            return c && next && next !== c ? `${t.react}.${v}: \`${c}\` → \`${next}\`` : ""
+          })
+          .filter(Boolean)
+          .join(" · ")
+    const traits = es.flatMap((e) => e.rest)
+    blocks.push({
+      id: `cause:${slugify(react)}:${prop}`,
+      key: what,
+      kind: "prop",
+      groups: es.map((e) => e.g),
+      variants: [...new Set(es.flatMap((e) => e.g.variants))],
+      hues: [],
+      title: `${react}: ${what} is ${figma} in Figma on every variant; React renders ${es
+        .map((e) => `${e.g.react} (${e.key || "all"})`)
+        .join(", ")}`,
+      cause:
+        `Figma draws ${what.toLowerCase()} ${figma} whatever the variant; the kit varies it with \`${[
+          ...new Set(traits.map((t) => t.react)),
+        ].join("`, `")}\`. ${noteFor(traits)}`.trim() + skewNote,
+      question: "",
+      locus: locus ? file + locus : "",
+      scope: scopeOf(tokensIn(pairs.map(({ t, v }) => classesFor(t, v, [prop])).join(" "))).text,
+      proposed,
+      note: noteFor(traits),
+      evidence: es.map(
+        (e) =>
+          `${e.key || "every variant"}: ${what} ${figma} → ${e.g.react} (${e.g.variants.length} of ${e.total})`,
+      ),
+      settle: false,
     })
   }
-  return parts
-    .sort((x, y) => x.n - y.n)
-    .map((x) => x.text)
-    .join(" · ")
+
+  // 2. What the variants share — the axis values behind them, palette removed.
+  const byKey = new Map<string, Entry[]>()
+  for (const e of entries) {
+    if (taken.has(e)) continue
+    byKey.set(e.key, [...(byKey.get(e.key) ?? []), e])
+  }
+  for (const [key, es] of byKey) {
+    const props = [...new Set(es.map((e) => e.g.key))]
+    const whats = [...new Set(es.map((e) => e.g.what))]
+    const hues = [...new Set(es.flatMap((e) => e.hues))]
+    const traits = es[0].rest
+    const pairs = traits.flatMap((t) => t.values.map((v) => ({ t, v })))
+    const classes = pairs.map(({ t, v }) => classesFor(t, v, props)).filter(Boolean)
+    const locus = pairs
+      .map(({ t, v }) => {
+        const c = classesFor(t, v, props)
+        return c ? `${t.react}.${v} \`${c}\`` : ""
+      })
+      .filter(Boolean)
+      .join(" · ")
+    const tokens = tokensIn(classes.join(" "))
+    const scope = scopeOf(tokens)
+    const colour = props.some((k) => COLOUR_KEYS.has(k))
+    const oneOf = (k: string) => es.filter((e) => e.g.key === k)
+    // A proposal only on a scale property with ONE measured pair and one class behind it.
+    const proposed = skew
+      ? ""
+      : props
+          .filter((k) => !COLOUR_KEYS.has(k) && oneOf(k).length === 1 && pairs.length === 1)
+          .map((k) => {
+            const e = oneOf(k)[0]
+            const c = classesFor(pairs[0].t, pairs[0].v, [k])
+            const next = c ? proposeClass(k, px(e.g.figma), c, kit?.scales) : null
+            return c && next && next !== c
+              ? `${pairs[0].t.react}.${pairs[0].v}: \`${c}\` → \`${next}\``
+              : ""
+          })
+          .filter(Boolean)
+          .join(" · ")
+    const evidence = es.map((e) =>
+      e.hues.length
+        ? `${e.hues.join("+")}: ${e.g.what} ${e.g.figma} → ${e.g.react}`
+        : `${e.g.what}: ${e.g.figma} → ${e.g.react} (${e.g.variants.length} of ${e.total})`,
+    )
+    const label = key || "every variant"
+    let title: string
+    let cause: string
+    let question = ""
+    if (colour) {
+      title = `${react} · ${label}: ${whats.join(" and ").toLowerCase()} differ from Figma on ${hues.length || es.length} ${hues.length ? `hue${hues.length > 1 ? "s" : ""} (${hues.join(", ")})` : "variants"}`
+      cause = `With ${label}, the kit paints ${tokens.length ? tokens.map((t) => `\`${t}\``).join(", ") : classes.length ? `\`${classes.join(" ")}\`` : "its own classes"}; Figma draws each hue's own token (${[...new Set(es.map((e) => e.g.figma.split(" · ")[0]))].slice(0, 3).join(", ")}${es.length > 3 ? ", …" : ""}). Same colour mode on both sides.`
+      question = `Which is right — the token the kit reads (${tokens.join(", ") || "its classes"}${scope.shared ? ", shared" : ""}) or the value Figma draws? ${scope.shared ? "A change to a shared token repaints every component that reads it; a change here alone is an override." : ""}`.trim()
+    } else if (props.length > 1) {
+      title = `${react} · ${label}: ${props.length} properties differ from Figma (${whats.join(", ").toLowerCase()})`
+      cause = `With ${label}, Figma and the kit disagree on ${es
+        .map((e) => `${e.g.what.toLowerCase()} ${e.g.figma} → ${e.g.react}`)
+        .join(", ")}: one disagreement — what \`${label}\` is — not ${props.length}.`
+      question = `What is \`${label}\`? Figma and the kit disagree on ${props.length} properties at once — one decision, one owner.`
+    } else {
+      title = `${react} · ${label}: ${whats[0]} ${es[0].g.figma} in Figma, ${es[0].g.react} in React`
+      cause = `With ${label}, the kit renders ${whats[0].toLowerCase()} ${es[0].g.react} where Figma draws ${es[0].g.figma}.`
+    }
+    const note = noteFor(traits)
+    blocks.push({
+      id: `cause:${slugify(react)}:${slugify(key) || "all"}`,
+      key: label,
+      kind: "key",
+      groups: es.map((e) => e.g),
+      variants: [...new Set(es.flatMap((e) => e.g.variants))],
+      hues,
+      title,
+      cause: `${cause} ${note}`.trim() + skewNote,
+      question,
+      locus: locus ? file + locus : "",
+      scope: scope.text,
+      proposed,
+      note,
+      evidence,
+      settle: colour || scope.shared || props.length > 1,
+    })
+  }
+  return blocks.sort((a, b) => b.variants.length - a.variants.length)
 }
 
 /** The surface of EVERY drawn variant the kit can render, measured in one pass and
@@ -1302,6 +1706,7 @@ const AllVariantsSurface = ({
     const skipped = new Map<string, { what: string; reason: string; variants: number }>()
     let compared = 0
     let broken = 0
+    let close = 0
     const theme: Theme = dark ? "dark" : "light"
     for (const [sig, r] of renders) {
       const rendered = measured.get(sig)
@@ -1323,6 +1728,10 @@ const AllVariantsSurface = ({
           }
           present.set(l.key, [...(present.get(l.key) ?? []), v])
           if (l.same) continue
+          if (l.close) {
+            close += 1
+            continue
+          }
           const gk = `${l.key}|${l.figma}|${l.react}`
           const g = groups.get(gk) ?? {
             key: l.key,
@@ -1338,8 +1747,27 @@ const AllVariantsSurface = ({
       }
     }
     const list = [...groups.values()].sort((a, b) => b.variants.length - a.variants.length)
-    return { list, present, compared, broken, skipped: [...skipped.values()] }
+    return { list, present, compared, broken, close, skipped: [...skipped.values()] }
   }, [measured, renders, detail, dark])
+
+  // The kit the browser RENDERS against the kit the API side describes. When they differ,
+  // a measured difference may be a difference between versions: said on every block, and
+  // no edit is proposed on classes that were not rendered.
+  const api = useContext(ApiVersionContext)
+  const measuredOn = __KIT_VERSION__ ? `@42/ui-react ${__KIT_VERSION__}` : ""
+  const skew =
+    __KIT_VERSION__ && api && api !== __KIT_VERSION__
+      ? { measured: measuredOn, api: `@42/ui-react ${api}` }
+      : null
+  const causes = useMemo(
+    () =>
+      rows
+        ? buildCauses(rows.list, rows.present, detail.coverage.axes, comboValues, react, detail, skew)
+        : null,
+    [rows, detail, comboValues, react, skew],
+  )
+  const [showLines, setShowLines] = useState(false)
+  const [openCause, setOpenCause] = useState("")
 
   const id = (g: Aggregate) =>
     `surface:${slugify(react)}:all:${g.key}:${slugify(g.figma)}-${slugify(g.react)}`
@@ -1407,6 +1835,17 @@ const AllVariantsSurface = ({
             {states > 0 ? ` · ${states} interaction states left out (the kit renders them at runtime)` : ""}
             {uncompared > 0 ? ` · ${uncompared} with no exported surface` : ""}
             {rows.broken > 0 ? ` · ${rows.broken} whose render threw` : ""}
+            {rows.close > 0
+              ? ` · ${rows.close} sub-perceptual colour difference${rows.close > 1 ? "s" : ""} (ΔE < ${SUB_PERCEPTUAL}) left out`
+              : ""}
+            {measuredOn ? ` · measured on ${measuredOn}` : ""}
+          </span>
+        ) : null}
+        {skew ? (
+          <span className="text-[11px] text-orange-300">
+            ⚠️ Version skew: the browser renders {skew.measured}, the API side describes{" "}
+            {skew.api}. A difference below may be a difference between those versions; nothing
+            is proposed until the vendored kit is refreshed.
           </span>
         ) : null}
         {hidden.length > 0 ? (
@@ -1420,7 +1859,110 @@ const AllVariantsSurface = ({
         ) : null}
       </div>
 
+      {/* THE CAUSES — one block, one decision. The table of measured lines is folded
+          under them: it is evidence, and flagging it line by line is what put 25 issues
+          on one component. */}
+      {causes && causes.length > 0 ? (
+        <ul className="flex flex-col gap-2">
+          {causes
+            .filter((c) => showIgnored || !review.ignored.has(c.id))
+            .map((c) => {
+              const isIgnored = review.ignored.has(c.id)
+              const open = openCause === c.id
+              return (
+                <li
+                  key={c.id}
+                  className={`rounded-md border border-white/10 px-3 py-2 ${isIgnored ? "opacity-50" : ""}`}
+                >
+                  <div className="flex flex-wrap items-start gap-2">
+                    <div className="min-w-0 flex-1">
+                      <Text size="sm" className={TYPO.title("semibold")}>
+                        {c.title}
+                      </Text>
+                      <Text size="xs" c="secondary" className="mt-0.5">
+                        {c.cause}
+                      </Text>
+                      {c.question ? (
+                        <Text size="xs" className="mt-0.5 text-purple-200">
+                          To settle: {c.question}
+                        </Text>
+                      ) : null}
+                      {c.locus ? (
+                        <div
+                          className={`${TYPO.mono()} mt-1 whitespace-pre-wrap break-all text-[10px] text-gray-dark-400`}
+                        >
+                          Code: {c.locus}
+                        </div>
+                      ) : null}
+                      <Text size="xs" c="muted" className="mt-0.5">
+                        Scope: {c.scope}
+                      </Text>
+                      {c.proposed ? (
+                        <div className={`${TYPO.mono()} mt-0.5 text-[10px] text-green-200/80`}>
+                          Proposed: {c.proposed}
+                        </div>
+                      ) : null}
+                      <button
+                        type="button"
+                        onClick={() => setOpenCause(open ? "" : c.id)}
+                        className="mt-1 text-[10px] text-orange-300 underline decoration-dotted underline-offset-2"
+                      >
+                        {c.evidence.length} measurement{c.evidence.length > 1 ? "s" : ""} ·{" "}
+                        {c.variants.length} variant{c.variants.length > 1 ? "s" : ""}
+                      </button>
+                      {open ? (
+                        <ul className={`${TYPO.mono()} mt-1 flex flex-col gap-0.5 text-[10px] text-gray-dark-500`}>
+                          {c.evidence.map((e) => (
+                            <li key={e}>{e}</li>
+                          ))}
+                        </ul>
+                      ) : null}
+                    </div>
+                    <div className="flex shrink-0 items-center gap-1">
+                      {isIgnored ? (
+                        <RestoreButton id={c.id} />
+                      ) : (
+                        <>
+                          <FlagButtons
+                            id={c.id}
+                            settle={c.settle}
+                            flag={{
+                              component: react,
+                              title: c.title,
+                              detail: c.cause,
+                              evidence: c.evidence.join("\n"),
+                              cause: c.cause,
+                              locus: c.locus,
+                              scope: c.scope,
+                              question: c.question,
+                              proposed: c.proposed,
+                              measured: measuredOn,
+                            }}
+                          />
+                          {review.flagged.has(c.id) ? null : (
+                            <IgnoreButton id={c.id} title={c.title} compact />
+                          )}
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </li>
+              )
+            })}
+        </ul>
+      ) : null}
       {rows && shown.length > 0 ? (
+        <button
+          type="button"
+          onClick={() => setShowLines((v) => !v)}
+          className="flex items-center gap-1 self-start text-[11px] text-gray-dark-400 hover:text-white"
+        >
+          {showLines ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
+          {showLines ? "hide" : "show"} the {shown.length} measured line
+          {shown.length > 1 ? "s" : ""} behind the causes
+        </button>
+      ) : null}
+      {rows && shown.length > 0 && showLines ? (
         <table className="w-full text-left">
           <thead>
             <tr className="text-[11px] text-gray-dark-500 uppercase">
@@ -1446,9 +1988,6 @@ const AllVariantsSurface = ({
                 >
                   <td className="py-1 pr-3 text-xs">
                     <div className="text-gray-dark-300">{g.what}</div>
-                    {/* The row's NAME: what its variants share. `size sm` is a cause; "20
-                        of 60" is a quantity, and the reader was left to click to find out
-                        which twenty. */}
                     <div className={`${TYPO.mono()} mt-0.5 text-[10px] text-orange-200/80`}>
                       {trait || "every variant"}
                     </div>
@@ -1475,26 +2014,12 @@ const AllVariantsSurface = ({
                     ) : null}
                   </td>
                   <td className="whitespace-nowrap py-1">
-                    <div className="flex items-center gap-1">
-                      {isIgnored ? (
-                        <RestoreButton id={gid} />
-                      ) : (
-                        <>
-                          <FlagButtons
-                            id={gid}
-                            flag={{
-                              component: react,
-                              title: `${react}: ${g.what} is ${g.figma} drawn, ${g.react} rendered — on ${g.variants.length} of ${total} variants${trait ? ` (${trait})` : ""}`,
-                              detail: `Measured in the console on every drawn variant the kit renders, against the surface the Figma plugin exported. Variants: ${g.variants.slice(0, 12).join(", ")}${g.variants.length > 12 ? "…" : ""}.`,
-                              evidence: g.note ?? "",
-                            }}
-                          />
-                          {review.flagged.has(gid) ? null : (
-                            <IgnoreButton id={gid} title={`${react}: ${g.what}`} compact />
-                          )}
-                        </>
-                      )}
-                    </div>
+                    {/* A line is IGNORED here, never flagged: a flag is taken on a cause. */}
+                    {isIgnored ? (
+                      <RestoreButton id={gid} />
+                    ) : (
+                      <IgnoreButton id={gid} title={`${react}: ${g.what}`} compact />
+                    )}
                   </td>
                 </tr>
               )
@@ -2649,6 +3174,15 @@ const Overview = ({
       ? `#/parity/${encodeURIComponent(name)}`
       : undefined
 
+  const copyOwnerJson = async (o: Owner) => {
+    try {
+      await navigator.clipboard.writeText(await getParityBriefJson({ owner: o }))
+      setCopied(`${o}:json`)
+      setTimeout(() => setCopied(""), 2000)
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e))
+    }
+  }
   const copyOwner = async (o: Owner, prompt: boolean) => {
     try {
       await navigator.clipboard.writeText(await getParityBrief({ owner: o, prompt }))
@@ -2896,7 +3430,12 @@ const Overview = ({
       </Title>
       {/* WHO gets what, before the list: the per-owner brief existed behind a filter and
           two buttons that copied "the current one", which is not a hand-off. */}
-      <HandOff counts={c.by_owner} copy={(o, prompt) => void copyOwner(o, prompt)} copied={copied} />
+      <HandOff
+        counts={c.by_owner}
+        copy={(o, prompt) => void copyOwner(o, prompt)}
+        copyJson={(o) => void copyOwnerJson(o)}
+        copied={copied}
+      />
       <Closed history={data.history} />
       <Text size="xs" c="muted">
         Below: the same findings, to read here. Pick a side.
@@ -3055,9 +3594,25 @@ const Sources = ({ s }: { s: ParityReport["sources"] }) => {
             </Badge>
           </div>
           <Text size="sm">
-            {s.react.package} {s.react.version}{" "}
+            {s.react.package} {s.react.version}
+            {s.react.commit ? (
+              <span className={`${TYPO.mono()} text-gray-dark-500`}> ({s.react.commit})</span>
+            ) : null}{" "}
             <span className={`${TYPO.mono()} text-gray-dark-500`}>· {s.react.origin}</span>
           </Text>
+          {/* Two kits, said apart (2026-09-11): the one the API side describes, and the
+              one this console RENDERS and measures. When they differ, a measured
+              difference may be a difference between versions. */}
+          {__KIT_VERSION__ ? (
+            <Text
+              size="xs"
+              className={`mt-1 ${__KIT_VERSION__ === s.react.version ? "text-gray-dark-500" : "text-orange-300"}`}
+            >
+              {__KIT_VERSION__ === s.react.version
+                ? `Measured in this browser on the same version (${__KIT_VERSION__}).`
+                : `⚠️ Measured in this browser on ${s.react.package} ${__KIT_VERSION__} (vendor/ui-react in Sanctum), not ${s.react.version}: a measured difference may be a difference between the two versions. Refresh the vendored kit to compare like with like.`}
+            </Text>
+          ) : null}
           {s.react.note ? (
             <Text size="xs" className="mt-1 text-orange-300">
               {s.react.note}
@@ -3210,6 +3765,7 @@ export const ParityView = ({ selected = "" }: { selected?: string }) => {
 
   return (
     <ReviewContext.Provider value={review}>
+      <ApiVersionContext.Provider value={data.sources.react.version}>
       <div className="flex flex-col gap-6">
         <Sources s={data.sources} />
 
@@ -3350,6 +3906,7 @@ export const ParityView = ({ selected = "" }: { selected?: string }) => {
           </div>
         </div>
       </div>
+      </ApiVersionContext.Provider>
     </ReviewContext.Provider>
   )
 }

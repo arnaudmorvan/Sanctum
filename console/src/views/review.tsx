@@ -371,18 +371,46 @@ export const RestoreButton = ({ id }: { id: string }) => {
  *  targets, because a measured difference has two possible owners: the kit paints it
  *  wrong (the dev), or the mockup was drawn against a value the system never had (the
  *  designer). The reviewer is the one who knows which, so the row offers both. */
+/** What a flag carries (2026-09-11): the title is the ISSUE's, the rest is what an agent
+ *  needs to act — or to stop. `cause` in one sentence; `locus` = file · axis.value ·
+ *  the classes; `scope` = local, or the shared token and its consumers; `question` when
+ *  nobody can be named; `proposed` = the edit, when the console could name it;
+ *  `measured` = the kit version the browser rendered. */
+export type FlagPayload = {
+  component: string
+  title: string
+  detail: string
+  evidence?: string
+  cause?: string
+  locus?: string
+  scope?: string
+  question?: string
+  proposed?: string
+  measured?: string
+}
+
 export const FlagButtons = ({
   id,
   flag,
+  settle,
 }: {
   id: string
-  flag: { component: string; title: string; detail: string; evidence?: string }
+  flag: FlagPayload
+  /** Offer "to settle" (owner `both`, authority undecided): for a CAUSE where neither
+   *  side can be named from the data — a shared token, a size nobody defined. An agent
+   *  handed that finding asks the question and edits nothing. */
+  settle?: boolean
 }) => {
   const review = useReview()
   if (!review.canWrite) return null
   const p = review.pending.get(id)
   if (p?.op === "flag")
-    return <PendingMark id={id} what={`for ${OWNER[p.owner ?? "kit"].short}`} />
+    return (
+      <PendingMark
+        id={id}
+        what={p.owner === "both" ? "to settle" : `for ${OWNER[p.owner ?? "kit"].short}`}
+      />
+    )
   if (p?.op === "unflag") return <PendingMark id={id} what="unflagged" />
   if (review.flagged.has(id))
     return (
@@ -418,6 +446,13 @@ export const FlagButtons = ({
       <span className="text-[10px] text-gray-dark-600">flag for</span>
       {one("kit", "the dev", "The kit paints it wrong: it becomes a finding for the kit")}
       {one("figma", "the designer", "The mockup is off: it becomes a finding for the Figma file")}
+      {settle
+        ? one(
+            "both",
+            "to settle",
+            "Neither side can be named from the data: it becomes a QUESTION, and no agent edits on it",
+          )
+        : null}
     </span>
   )
 }
@@ -589,12 +624,39 @@ export const FindingRow = ({ f, href }: { f: ParityFinding; href?: string }) => 
       ) : (
         <>
           <Text size="sm" c="secondary" className="mt-1">
-            {f.detail}
+            {f.cause || f.detail}
           </Text>
+          {/* The structured half (2026-09-11): what an agent needs to act on this, or to
+              stop. Only the lines the flag carried. */}
+          {f.question ? (
+            <Text size="xs" className="mt-1 text-purple-200">
+              To settle: {f.question}
+            </Text>
+          ) : null}
+          {f.locus ? (
+            <div className={`${TYPO.mono()} mt-1 whitespace-pre-wrap break-all text-[11px] text-gray-dark-400`}>
+              Code: {f.locus}
+            </div>
+          ) : null}
+          {f.scope ? (
+            <Text size="xs" c="muted" className="mt-0.5">
+              Scope: {f.scope}
+            </Text>
+          ) : null}
+          {f.proposed ? (
+            <div className={`${TYPO.mono()} mt-0.5 text-[11px] text-green-200/80`}>
+              Proposed: {f.proposed}
+            </div>
+          ) : null}
           {f.evidence ? (
-            <div className={`${TYPO.mono()} mt-1 text-[11px] text-gray-dark-500`}>
+            <div className={`${TYPO.mono()} mt-1 whitespace-pre-wrap text-[11px] text-gray-dark-500`}>
               {f.evidence}
             </div>
+          ) : null}
+          {f.measured ? (
+            <Text size="xs" c="muted" className="mt-0.5">
+              Measured on {f.measured}
+            </Text>
           ) : null}
         </>
       )}
@@ -707,10 +769,14 @@ export const HandOff = ({
   counts,
   copy,
   copied,
+  copyJson,
 }: {
   counts: Record<string, number>
   copy: (owner: Owner, prompt: boolean) => void
   copied: string
+  /** The same findings as DATA (`brief.json`) — what an agent is handed. Only the tab
+   *  that serves one passes it. */
+  copyJson?: (owner: Owner) => void
 }) => (
   <div className="rounded-lg border border-white/10">
     <div className="flex flex-wrap items-baseline gap-2 px-3 py-2">
@@ -764,6 +830,18 @@ export const HandOff = ({
                 {copied === `${o}:prompt` ? <Check size={12} /> : <Sparkles size={12} />}
                 {copied === `${o}:prompt` ? "Copied" : "as a prompt for Claude"}
               </button>
+              {copyJson ? (
+                <button
+                  type="button"
+                  disabled={n === 0}
+                  title="The same issues as JSON: authority, locus, scope, proposed, question — what an agent reads without parsing"
+                  onClick={() => copyJson(o)}
+                  className="flex items-center gap-1 rounded border border-white/15 px-2 py-1 text-[11px] text-gray-dark-200 hover:border-white/35 hover:text-white disabled:opacity-40"
+                >
+                  {copied === `${o}:json` ? <Check size={12} /> : <Copy size={12} />}
+                  {copied === `${o}:json` ? "Copied" : "as JSON"}
+                </button>
+              ) : null}
             </span>
           </li>
         )
