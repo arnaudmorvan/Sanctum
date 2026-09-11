@@ -4,9 +4,11 @@
  *  expose `Access-Control-Allow-Origin: *`, so calling it directly works — no proxy to
  *  write.
  *
- *  ⚠️ `DASHBOARD_KEY` is a SHARED secret, typed once and kept in the browser. It is not an
- *  identity: it does not say WHO is looking. Per-person auth exists on the server side
- *  (access/users.json, `42ds_…` tokens) — the Access tab shows it.
+ *  What the stored key IS changed on 2026-09-11. It used to be `DASHBOARD_KEY`, a SHARED
+ *  secret that named nobody. It is now, for a person, their own `42ds_…` access token —
+ *  the same one their MCP connector carries — and the server answers with WHO they are and
+ *  which sections their role opens (`Me`). The shared key still works: it is the
+ *  operator's, reads as admin, and is simply not what anyone is handed any more.
  */
 const BASE = (
   import.meta.env.VITE_MCP_URL ?? "https://mcp-42-production.up.railway.app"
@@ -37,6 +39,12 @@ export const writeKey = (v: string): void => {
 }
 
 export class AccessError extends Error {}
+
+/** Signed in, but the section is not open to this role: the server answered 403 with a
+ *  sentence naming the role it takes. Separate from `AccessError` because the two call
+ *  for opposite gestures — a 401 means re-paste the token, a 403 means the token is right
+ *  and re-pasting it changes nothing. */
+export class RoleError extends Error {}
 
 /** The administration key was refused (or never typed). Separate from `AccessError`: the
  *  console holds TWO keys and telling the person to re-type the wrong one is the fastest
@@ -87,7 +95,9 @@ export async function get<T>(route: string): Promise<T> {
       /* a non-JSON body (a proxy error page): the status is all there is */
     }
     const message = detail || `${route} → HTTP ${r.status}`
-    throw r.status === 503 ? new NotConfigured(message) : new Error(message)
+    if (r.status === 503) throw new NotConfigured(message)
+    if (r.status === 403) throw new RoleError(message)
+    throw new Error(message)
   }
   return (await r.json()) as T
 }
@@ -509,12 +519,29 @@ export async function accessAction(
   return (await r.json()) as AccessChange
 }
 
+/** Who the server recognised behind the stored key — served by `/console/summary.json`
+ *  (the sign-in check) and `/console/access.json`. `sections` is the list the sidebar
+ *  draws: the SERVER owns which role opens which section (`auth.CONSOLE_SECTIONS`) and
+ *  enforces the same table on every route, so this is a mirror of it, never a decision
+ *  taken here. */
+export type Me = {
+  id: string
+  name: string
+  role: string
+  /** `key` — the operator's DASHBOARD_KEY, which names nobody; `token` — a person. */
+  via: "key" | "token"
+  sections: string[]
+}
+
 export type Summary = {
   skills?: number
   foundations?: number
   product?: number
   reports?: number
   components?: number
+  /** Absent on a server from before 2026-09-11: the console then shows every section, as
+   *  it always did. */
+  me?: Me
 }
 
 /** Written by `scripts/build-all.mjs`. `repo` is null when the build found neither Railway

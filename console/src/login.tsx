@@ -14,7 +14,9 @@ import { MCP_URL } from "./mcp"
  *  page: the flow gallery itself asks for no key.
  *
  *  It does not repeat what the page already says (the section title sits above it): it talks
- *  about the key, and nothing else. */
+ *  about the token, and nothing else. Since 2026-09-11 that token is the person's OWN
+ *  `42ds_…` access token — the one their MCP connector carries — and not a key shared by
+ *  everyone: one secret per person, and the server knows who is looking. */
 export const Login = ({
   onSubmit,
   error,
@@ -33,12 +35,13 @@ export const Login = ({
           <Card.Header>
             <Card.Title className="flex items-center gap-2">
               <KeyRound size={18} aria-hidden="true" />
-              Read key
+              Access token
             </Card.Title>
             <Card.Description>
-              This section reads the MCP server. The key is the service's{" "}
-              <span className="font-mono">DASHBOARD_KEY</span> variable, in the Railway
-              variables. It stays in your browser.
+              This section reads the MCP server. Paste your{" "}
+              <span className="font-mono">42ds_…</span> access token — the same one your MCP
+              connector uses. It stays in your browser, and what you see next depends on
+              your role.
             </Card.Description>
           </Card.Header>
 
@@ -50,13 +53,13 @@ export const Login = ({
                 if (key.trim()) onSubmit(key.trim())
               }}
             >
-              <Field label="Key">
+              <Field label="Token">
                 <Input
                   type="password"
                   value={key}
                   autoFocus
                   autoComplete="current-password"
-                  placeholder="paste the key here"
+                  placeholder="42ds_…"
                   onChange={(e) => setKey(e.currentTarget.value)}
                 />
               </Field>

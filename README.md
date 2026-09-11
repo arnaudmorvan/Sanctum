@@ -9,10 +9,15 @@ The repo is called `Sanctum`; the MCP server that writes into it, `mcp-Omniscien
 A flow is published **from a Claude conversation** (42 Design connector), not through git:
 the PO describes their flow, the MCP server commits here, Railway builds and deploys.
 
-- **Console**: `/` — Prototypes, Context, Observability, Sessions, Quality, Access
-  sections. A single navigation, the sidebar (the kit's AppShell + NavLink); the URL carries
-  the section (`#/context/skills`). The gallery is public; the other sections ask for the
-  read key (the MCP service's `DASHBOARD_KEY`).
+- **Console**: `/` — Prototypes, Context, Parity, Tokens, Observability, Sessions,
+  Connectors, Quality, Access, Configuration. A single navigation, the sidebar (the kit's
+  AppShell + NavLink); the URL carries the section (`#/context/skills`). The gallery is
+  public; the other sections ask for the person's **access token** — since 2026-09-11 the
+  same `42ds_…` token as their MCP connector — and show what the ROLE opens: a `po` sees
+  Prototypes and Context, a `designer` adds Parity and Tokens, an `admin` everything. The
+  list comes from the server (`me.sections` on `/console/summary.json`), which refuses the
+  other routes with a 403; the console draws it and decides nothing. The MCP service's
+  `DASHBOARD_KEY` still works as the operator's key.
 - **A flow**: `/p/<slug>/`
 
 ## For a PO: adding or evolving a flow

@@ -35,6 +35,7 @@ import {
   writeKey,
 } from "./mcp"
 import { Notifications } from "./notifier"
+import { NotYourRole } from "./state"
 import { AccessView } from "./views/access"
 import { ConfigView } from "./views/config"
 import { ContextView, CORPORA, type CorpusKey, corpusOf } from "./views/context"
@@ -70,7 +71,9 @@ type Section = {
   v: string
   label: string
   icon: ReactNode
-  /** This section reads the MCP server: with no key, it shows the sign-in screen. */
+  /** This section reads the MCP server: with no key, it shows the sign-in screen. Once
+   *  signed in, it is drawn only if the server lists it in `me.sections` — the ROLE
+   *  decides, and the server owns that table (`auth.CONSOLE_SECTIONS`). */
   keyRequired: boolean
   sub: string
 }
@@ -202,7 +205,7 @@ export const App = () => {
       .catch((e: Error) => {
         setError(
           e instanceof AccessError
-            ? "This is not the server's key. It is the DASHBOARD_KEY variable, not its name."
+            ? "The server does not know this token. It is your 42ds_… access token — the one your MCP connector uses."
             : e.message,
         )
         setStatus("out")
@@ -226,6 +229,14 @@ export const App = () => {
   const signedIn = status === "in"
   const section = SECTIONS.find((s) => s.v === route.section) ?? SECTIONS[0]
   const corpus = corpusOf(route.param).key as CorpusKey
+
+  // Who the server recognised, and which sections that role opens. Absent on a server
+  // from before 2026-09-11 (and before sign-in): every section is drawn, as it always was.
+  // The list is the server's — hiding a tab here while its route still answered would be
+  // a decoration, and the routes refuse with a 403 that this same list predicts.
+  const me = summary?.me
+  const opens = (s: Section): boolean =>
+    !signedIn || !me || !s.keyRequired || me.sections.includes(s.v)
 
   // The Context group opens when you enter it (by link, by URL, by the footer) and stays
   // collapsible by hand afterwards. `defaultOpen` would not be enough: it only applies on the
@@ -287,6 +298,12 @@ export const App = () => {
   // The sign-in screen takes the place of the requested section: it occupies the field of
   // vision where something is missing, without confiscating the rest of the console.
   const content = (): ReactNode => {
+    if (signedIn && !opens(section))
+      return (
+        <NotYourRole
+          detail={`The ${section.label} section is not open to the ${me?.role ?? ""} role. Ask an administrator if you need it.`}
+        />
+      )
     if (!section.keyRequired || signedIn) return view()
     if (status === "checking")
       return (
@@ -320,7 +337,7 @@ export const App = () => {
         </AppShell.SidebarHeader>
 
         <AppShell.SidebarBody className="flex flex-col gap-1">
-          {SECTIONS.map((s) =>
+          {SECTIONS.filter(opens).map((s) =>
             s.v === "context" ? (
               // The corpora are SUB-ENTRIES, with their count: what the header counters showed
               // without letting you go there, and what the row of buttons in the view
@@ -361,15 +378,26 @@ export const App = () => {
 
         <AppShell.SidebarFooter className="flex flex-col gap-2 border-white/10 border-t">
           {signedIn ? (
-            <NavLink
-              label="Sign out"
-              icon={<LogOut size={16} />}
-              linkComponent="button"
-              linkOptions={{ type: "button", onClick: signOut }}
-            />
+            <>
+              {/* Who the server sees. A person's token names them; the operator's shared
+                  key names nobody, and the footer says so rather than inventing a name. */}
+              {me ? (
+                <Text c="muted" size="xs" className="px-2.5">
+                  {me.via === "token" ? me.name || me.id : "Operator key"}
+                  {" · "}
+                  <span className="font-mono">{me.role}</span>
+                </Text>
+              ) : null}
+              <NavLink
+                label="Sign out"
+                icon={<LogOut size={16} />}
+                linkComponent="button"
+                linkOptions={{ type: "button", onClick: signOut }}
+              />
+            </>
           ) : (
             <NavLink
-              label="Read key"
+              label="Sign in"
               icon={<KeyRound size={16} />}
               suffix={status === "checking" ? <Spinner size="xs" /> : undefined}
               // A closed section: the sign-in screen shows up in its place.

@@ -19,11 +19,12 @@ import { MCP_URL, readConsoleKey } from "./env"
  *      into every commit afterwards is the one the registry spells;
  *   3. typed by hand — the fallback for whoever only ever opens a flow.
  *
- *  ⚠️ The registry cannot say which of its people is holding the page: the console key is
- *  SHARED, not personal. So this is a choice, not an authentication, and it is worth being
- *  plain about it — the name in a commit is what this setup has instead of an identity,
- *  and it has always been that. Picking from the registry only makes it spelt the same
- *  way twice.
+ *  Since 2026-09-11 the stored key may be the person's OWN `42ds_…` token, and then the
+ *  registry DOES say who is holding the page (`me` in the answer): the name is taken from
+ *  it the moment the flow opens, and the question is never asked. The operator's shared
+ *  key still names nobody — with it this stays a choice, not an authentication, and the
+ *  picker is what remains: the name in a commit is what this setup has instead of an
+ *  identity, and picking from the registry only makes it spelt the same way twice.
  *
  *  Read through a module store rather than a hook per form: the identity is asked for by
  *  the panel, by every thread and by the pins layer, and two copies of it would drift the
@@ -86,13 +87,26 @@ export const people = (): Promise<Person[]> => {
       ? Promise.resolve([])
       : fetch(`${MCP_URL}/console/access.json`, { headers: { "X-DS-Key": key } })
           .then((r) => (r.ok ? r.json() : Promise.resolve({ users: [] })))
-          .then((body: { users?: { id?: string; name?: string; role?: string; active?: boolean }[] }) =>
-            (body.users ?? [])
-              // A revoked access is not a person to file a note as.
-              .filter((u) => u.active !== false && (u.name || u.id))
-              .map((u) => ({ id: String(u.id ?? ""), name: String(u.name || u.id), role: u.role })),
+          .then(
+            (body: {
+              users?: { id?: string; name?: string; role?: string; active?: boolean }[]
+              me?: { name?: string; via?: string }
+            }) => {
+              // The server knows who holds a personal token: that name, and no question.
+              if (body.me?.via === "token" && body.me.name && !name) setAuthor(body.me.name)
+              return (
+                (body.users ?? [])
+                  // A revoked access is not a person to file a note as.
+                  .filter((u) => u.active !== false && (u.name || u.id))
+                  .map((u) => ({ id: String(u.id ?? ""), name: String(u.name || u.id), role: u.role }))
+              )
+            },
           )
           .catch(() => [])
   }
   return roster
 }
+
+// Claimed when the flow OPENS, not when the picker does: the point of a personal token is
+// that "who are you?" is never asked. One request, cached for the picker; none without a key.
+if (!name && readConsoleKey()) void people()

@@ -3,7 +3,7 @@ import { Card } from "@42/ui-react/card"
 import { Spinner } from "@42/ui-react/spinner"
 import { Text } from "@42/ui-react/text"
 import { type ReactNode, useEffect, useState } from "react"
-import { AccessError, get } from "./mcp"
+import { AccessError, get, RoleError } from "./mcp"
 import { TYPO } from "../../src/typo"
 
 /** One loading state, one error, one render — the same machinery in the five tabs that read
@@ -12,6 +12,9 @@ import { TYPO } from "../../src/typo"
 export function useRoute<T>(route: string, key: string) {
   const [data, setData] = useState<T | null>(null)
   const [error, setError] = useState("")
+  // A 403: the token is right and the section is not this role's. Drawn apart from a
+  // failure, because "cannot read" sends someone re-pasting a token that was fine.
+  const [closed, setClosed] = useState(false)
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
@@ -26,15 +29,17 @@ export function useRoute<T>(route: string, key: string) {
     }
     setLoading(true)
     setError("")
+    setClosed(false)
     get<T>(route)
       .then((d) => alive && setData(d))
       .catch((e: Error) => {
         if (!alive) return
         setError(
           e instanceof AccessError
-            ? "Key rejected. It is DASHBOARD_KEY, in the MCP service variables."
+            ? "Token rejected. Sign in again with your 42ds_… access token — the one your MCP connector uses."
             : e.message,
         )
+        setClosed(e instanceof RoleError)
       })
       .finally(() => alive && setLoading(false))
     return () => {
@@ -42,15 +47,29 @@ export function useRoute<T>(route: string, key: string) {
     }
   }, [route, key])
 
-  return { data, error, loading, noKey: !key }
+  return { data, error, loading, closed, noKey: !key }
 }
 
 export const NoKey = () => (
   <Alert
     type="info"
     variant="outline"
-    title="This section reads the MCP server: it needs the read key."
-    description="It is the DASHBOARD_KEY variable of the MCP service. It stays in your browser."
+    title="This section reads the MCP server: it needs your access token."
+    description="The same 42ds_… token your MCP connector uses. It stays in your browser."
+  />
+)
+
+/** The section exists and the server said no — not to the token, to the ROLE. The
+ *  server's sentence names the role it takes; nothing to re-type, someone to ask. */
+export const NotYourRole = ({ detail }: { detail?: string }) => (
+  <Alert
+    type="info"
+    variant="outline"
+    title="Not open to your role"
+    description={
+      detail ||
+      "This section is not open to the role your access carries. Ask an administrator if you need it."
+    }
   />
 )
 
@@ -61,6 +80,7 @@ export const State = ({
   children,
   empty,
   noKey,
+  closed,
 }: {
   loading: boolean
   error: string
@@ -68,8 +88,10 @@ export const State = ({
   children: ReactNode
   empty?: string
   noKey?: boolean
+  closed?: boolean
 }) => {
   if (noKey) return <NoKey />
+  if (closed) return <NotYourRole detail={error} />
   if (error) return <Alert color="red" variant="light" title="Cannot read" description={error} />
   if (loading && !data)
     return (
