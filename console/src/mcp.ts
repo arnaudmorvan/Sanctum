@@ -950,6 +950,96 @@ export async function getParityBrief(
 /** The same brief as DATA — `brief.json`: one issue per decision with `authority`,
  *  `locus`, `scope`, `proposed`, `question`, `verify`. What an agent is handed; the
  *  markdown is a view of it. Returned pretty-printed, ready for a clipboard. */
+/** ONE measured difference the console posts to the server — a line of `compareSurface`
+ *  that was not the same and not skipped (the sub-perceptual ones go too: the server
+ *  applies the threshold itself and reports how many it dropped). */
+export type MeasuredLine = {
+  variant: string
+  key: string
+  what: string
+  figma: string
+  react: string
+  close: boolean
+}
+
+/** A measured difference attributed by the SERVER to the cva branch that produced it —
+ *  the unit of a correction (C4, 2026-09-11). Everything an edit tool or a reviewer needs
+ *  is here: the exact anchors, the classes concerned, the scope by consumers, the kit's own
+ *  comment, the candidate edit (exposed as `proposed` only once declared for the kit), and
+ *  a `verify` one edit can satisfy. */
+export type BranchBlock = {
+  id: string
+  component: string
+  slug: string
+  cva: { axis: string; value: string }
+  title: string
+  cause: string
+  question: string
+  verify: string
+  locus: { file: string; axis: string; value: string; anchors: string[]; relevant: string[] }
+  locus_text: string
+  source_comment: string
+  scope: { kind: "shared" | "local"; tokens: string[]; consumers: string[]; count: number }
+  scope_text: string
+  candidates: string[]
+  measured: string
+  measured_in: { browser_mode: string; figma_mode: string }
+  summary: { prop: string; what: string; figma: string; react: string; count: number; hues: string[] }[]
+  evidence: { variant: string; prop: string; what: string; figma: string; react: string; hue: string }[]
+  evidence_lines: string[]
+  props: string[]
+  hues: string[]
+  variants: string[]
+  settle: boolean
+}
+
+export type BranchResult = {
+  component: string
+  slug: string
+  measured: string
+  theme: string
+  measured_in: { browser_mode: string; figma_mode: string }
+  blocks: BranchBlock[]
+  sub_perceptual: number
+  refused: number
+  unknown_variants: number
+  compared: number
+  at?: string
+}
+
+/** Posts what this browser measured on one component; the server attributes, groups and
+ *  answers with the blocks. Memory only on its side — a restart loses the blocks, never a
+ *  flag (a flag copies the block's fields into the review file). */
+export async function postParityMeasurements(payload: {
+  component: string
+  slug: string
+  measured: string
+  theme: string
+  modes: string[]
+  compared: number
+  present: Record<string, number>
+  lines: MeasuredLine[]
+}): Promise<BranchResult> {
+  const key = readKey()
+  const r = await fetch(`${BASE}/console/parity/measurements.json`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...(key ? { "X-DS-Key": key } : {}) },
+    body: JSON.stringify(payload),
+  })
+  if (r.status === 401) throw new AccessError("Key rejected by the server.")
+  if (r.status === 404) throw new Error("this server has no measurements route yet (deploy mcp-42)")
+  if (!r.ok) {
+    let detail = `measurements.json → HTTP ${r.status}`
+    try {
+      detail = ((await r.json()) as { error?: string }).error ?? detail
+    } catch {
+      /* the status is enough */
+    }
+    throw new Error(detail)
+  }
+  return (await r.json()) as BranchResult
+}
+
 export async function getParityBriefJson(
   filter: { owner?: "kit" | "figma" | "both"; component?: string } = {},
 ): Promise<string> {
