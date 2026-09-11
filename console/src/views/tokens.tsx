@@ -204,7 +204,7 @@ const Family = ({ fam }: { fam: TokenFamily }) => {
                   <tr className="text-[11px] text-gray-dark-500 uppercase">
                     <th className="pb-1 pr-3 font-normal">Token</th>
                     <th className="pb-1 pr-3 font-normal">Figma</th>
-                    <th className="pb-1 pr-3 font-normal">Kit</th>
+                    <th className="pb-1 pr-3 font-normal">React</th>
                     <th className="pb-1 font-normal">Verdict</th>
                   </tr>
                 </thead>
@@ -392,11 +392,7 @@ const Colours = ({
                 : "border-white/15 text-gray-dark-400 hover:border-white/30"
             }`}
           >
-            {f === "missing"
-              ? "Not in the kit"
-              : f === "carried"
-                ? "In the kit"
-                : "All"}{" "}
+            {f === "missing" ? "Not in React" : f === "carried" ? "In React" : "All"}{" "}
             ({counted[f]})
           </button>
         ))}
@@ -448,8 +444,11 @@ const Colours = ({
         <table className="w-full text-left">
           <thead className="sticky top-0 z-10 bg-gray-dark-950">
             <tr className="text-[11px] text-gray-dark-500 uppercase">
-              <th className="pb-1 pr-3 font-normal">Drawn in Figma</th>
-              <th className="pb-1 pr-3 font-normal">In the kit</th>
+              {/* ⚠️ FIGMA and REACT, the same two words as the Parity tab and as the
+                  scales table below — a reader navigates by the side, not by how the
+                  value was obtained. */}
+              <th className="pb-1 pr-3 font-normal">Figma</th>
+              <th className="pb-1 pr-3 font-normal">React</th>
               <th className="pb-1 pr-3 font-normal">Who settles it</th>
               <th className="pb-1 pr-3 font-normal">What they do</th>
               <th className="pb-1 font-normal" />
@@ -858,7 +857,7 @@ KIT_TOKEN=<a PAT with Contents: Read on that repo>`}</pre>
           {offColours > 0 ? (
             <>
               <strong className="text-orange-200">{offColours} colours</strong> drawn in Figma
-              land on nothing the kit ships
+              land on nothing React ships
               {(() => {
                 const blocking = data.colors.off_palette_groups.filter(
                   (g) => g.kind === "semantic" && g.used_by.length > 0,
@@ -894,11 +893,11 @@ KIT_TOKEN=<a PAT with Contents: Read on that repo>`}</pre>
         <div className="flex flex-col gap-2">
           <div className="flex flex-wrap items-baseline gap-2">
             <Title order={2} size="md" className={TYPO.title()}>
-              Every colour, side by side
+              Every colour: Figma against React
             </Title>
             <span className="text-[11px] text-gray-dark-500">
               {data.colors.counts.in_palette} of {data.colors.counts.tokens} tokens land on a
-              colour the kit ships ({data.colors.palette_size} in its palette)
+              colour React ships ({data.colors.palette_size} in its palette)
             </span>
           </div>
           <Colours colors={data.colors} findings={data.findings} />

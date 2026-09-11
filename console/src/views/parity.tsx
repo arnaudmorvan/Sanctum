@@ -1051,8 +1051,12 @@ const SurfacePanel = ({
         <thead>
           <tr className="text-[11px] text-gray-dark-500 uppercase">
             <th className="pb-1 pr-3 font-normal">Property</th>
+            {/* ⚠️ The two sides are named FIGMA and REACT, here and everywhere else.
+                "Drawn" and "Rendered" said how each value was obtained, which is true and
+                is not what a reader navigates by: « je veux toujours avoir ces termes pour
+                que ce soit facile de m'y retrouver ». */}
             <th className="pb-1 pr-3 font-normal">Figma</th>
-            <th className="pb-1 pr-3 font-normal">Rendered</th>
+            <th className="pb-1 pr-3 font-normal">React</th>
             <th className="pb-1 font-normal" />
           </tr>
         </thead>
@@ -1347,7 +1351,7 @@ const AllVariantsSurface = ({
 
       <div className="flex flex-wrap items-center gap-2">
         <Text size="sm" className={TYPO.title("semibold")}>
-          The surface across every drawn variant
+          The surface of every variant: Figma against React
         </Text>
         {!rows ? (
           <Badge color="gray" size="sm" variant="light">
@@ -1399,8 +1403,8 @@ const AllVariantsSurface = ({
           <thead>
             <tr className="text-[11px] text-gray-dark-500 uppercase">
               <th className="pb-1 pr-3 font-normal">Property</th>
-              <th className="pb-1 pr-3 font-normal">Drawn</th>
-              <th className="pb-1 pr-3 font-normal">Rendered</th>
+              <th className="pb-1 pr-3 font-normal">Figma</th>
+              <th className="pb-1 pr-3 font-normal">React</th>
               <th className="pb-1 pr-3 font-normal">Variants</th>
               <th className="pb-1 font-normal" />
             </tr>
@@ -1507,17 +1511,17 @@ const CELL = {
   both: {
     ring: "border-white/10",
     dot: "bg-green-500",
-    label: "drawn in Figma, renders in the kit",
+    label: "in Figma and in React",
   },
   "kit-only": {
     ring: "border-white/10 opacity-45",
     dot: "bg-gray-500",
-    label: "renders in the kit — nobody drew it",
+    label: "in React — nobody drew it in Figma",
   },
   "figma-only": {
     ring: "border-red-500/60 bg-red-500/5",
     dot: "bg-red-500",
-    label: "drawn in Figma — the kit refuses this value",
+    label: "in Figma — React refuses this value",
   },
   neither: {
     ring: "border-dashed border-white/8",
@@ -1970,7 +1974,7 @@ const CoverageGrid = ({
               visual={visuals.variants[zoom.variant]}
               node={zoomProps === null ? null : zoomNode}
               exported={visuals.exported}
-              title="This variant's surface, drawn against rendered"
+              title="This variant's surface: Figma against React"
               theme={dark ? "dark" : "light"}
               modes={visuals.modes ?? []}
               resting={atRest(zoom.values, axes, defaults)}
@@ -2053,7 +2057,7 @@ const AxisPair = ({ a }: { a: ParityAxis }) => {
       </div>
       <div className="flex flex-col gap-2 md:flex-row md:items-stretch">
         <Side
-          label="Figma axis"
+          label="Figma"
           name={a.axis}
           values={a.figma}
           def={a.figma_default}
@@ -2489,8 +2493,8 @@ const Pair = ({
                 exported={visuals.exported}
                 title={
                   variant
-                    ? "This variant's surface, drawn against rendered"
-                    : "The default variant's surface, drawn against rendered"
+                    ? "This variant's surface: Figma against React"
+                    : "The default variant's surface: Figma against React"
                 }
                 theme={dark ? "dark" : "light"}
                 modes={visuals.modes ?? []}
@@ -2548,9 +2552,9 @@ const Pair = ({
       {/* 4. The coverage grid — folded: forty live renders are paid for only when asked. */}
       {pair.figma.variant_count > 1 ? (
         <Group
-          title="Drawn combinations"
+          title="Every combination, Figma against React"
           count={pair.figma.variant_count}
-          hint="every drawn variant against what the kit renders — red cells are what a mockup uses and the code refuses"
+          hint="red cells are what Figma draws and React refuses"
         >
           {detailError ? (
             <Text size="xs" className="text-orange-300">
@@ -2715,7 +2719,7 @@ const Overview = ({
     return (
       <div className="flex flex-col gap-3">
         <Title order={2} size="md" className={TYPO.title()}>
-          Drawn, not shipped ({data.figma_only.length})
+          In Figma, not in React ({data.figma_only.length})
         </Title>
         <Text size="xs" c="muted">
           Components of the Figma file with no counterpart in @42/ui-react. A screen that uses
@@ -2783,7 +2787,7 @@ const Overview = ({
     return (
       <div className="flex flex-col gap-3">
         <Title order={2} size="md" className={TYPO.title()}>
-          Shipped, not drawn ({c.react_only_expected})
+          In React, not in Figma ({c.react_only_expected})
         </Title>
         <Text size="xs" c="muted">
           Components of @42/ui-react that no page of the Figma file draws. A designer has no
@@ -3273,7 +3277,7 @@ export const ParityView = ({ selected = "" }: { selected?: string }) => {
             "figma-only",
             c.figma_only > 0 ? "text-red-300" : "text-white",
           )}
-          {stat("In the kit only", c.react_only_expected, "kit-only")}
+          {stat("In React only", c.react_only_expected, "kit-only")}
           {stat("Ignored", c.ignored, "ignored", "text-gray-dark-400")}
         </div>
 
