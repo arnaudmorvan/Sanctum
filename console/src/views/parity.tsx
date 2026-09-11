@@ -73,6 +73,7 @@ import {
   getParityBrief,
   getParityBriefJson,
   getParityDetail,
+  type BranchBlock,
   type BranchResult,
   type MeasuredLine,
   postParityMeasurements,
@@ -1320,6 +1321,322 @@ const signature = (
     )
     .join(" · ")
 
+// ---------------------------------------------------------------- the redline
+
+/** A measured value's number, or `null` — `"20px"` → 20, `"6px drawn"` → 6. */
+const pxIn = (s: string): number | null => {
+  const m = /(-?\d+(?:\.\d+)?)\s*px/.exec(s || "")
+  return m ? Number.parseFloat(m[1]) : null
+}
+
+/** A measured value's colour, or `null` — `"bg-blue-secondary · #6388e34d"` → `#6388e34d`. */
+const hexIn = (s: string): string | null => {
+  const m = /#[0-9a-fA-F]{6}(?:[0-9a-fA-F]{2})?/.exec(s || "")
+  return m ? m[0] : null
+}
+
+type Shape = {
+  height?: number
+  radius?: number
+  padH?: number
+  border?: number
+  borderColor?: string
+  bg?: string
+  font?: number
+  textColor?: string
+}
+
+/** Which measured property sets which side of the drawing. A property that is not here
+ *  (a gap, a shadow) is in the legend and not in the shape: a schematic that pretends to
+ *  draw what it cannot place is worse than one that says nothing about it. */
+const SHAPE_KEY: Record<string, keyof Shape> = {
+  height: "height",
+  radius: "radius",
+  "padding-h": "padH",
+  "border-width": "border",
+  "border-color": "borderColor",
+  background: "bg",
+  "font-size": "font",
+  "text-color": "textColor",
+}
+
+const shapeOf = (rows: BranchBlock["summary"], side: "figma" | "react"): Shape => {
+  const out: Shape = {}
+  for (const r of rows) {
+    const key = SHAPE_KEY[r.prop]
+    if (!key || out[key] !== undefined) continue
+    const raw = side === "figma" ? r.figma : r.react
+    const value =
+      key === "borderColor" || key === "bg" || key === "textColor" ? hexIn(raw) : pxIn(raw)
+    if (value !== null) (out as Record<string, unknown>)[key] = value
+  }
+  return out
+}
+
+const clamp = (lo: number, v: number, hi: number) => Math.max(lo, Math.min(hi, v))
+
+/** THE REDLINE — the two sides of one branch, drawn to scale, split down the middle.
+ *
+ *  Reported on 2026-09-11: « je suis un peu perdu … on ne peut pas montrer sur le
+ *  composant directement la différence plutôt que des pavés de texte ? » A Badge is 68×20
+ *  px, so comparing two screenshots of it answers nothing; the NUMBERS are exact and can
+ *  be drawn at any magnification. Left half is what Figma draws, right half what React
+ *  renders, one box, one seam: a 2px height difference shows as a step at the seam, a
+ *  radius as a different corner, a fill and a border as two colours, the horizontal
+ *  padding as two insets, the text as two bars.
+ *
+ *  ⚠️ A property the branch does not measure is drawn the SAME on both sides — the shape
+ *  is a schematic of the difference, not of the component. A property with several
+ *  measured pairs (one per hue) is drawn on its first, and the legend says how many. */
+const ShapeDiff = ({ rows }: { rows: BranchBlock["summary"] }) => {
+  const fig = shapeOf(rows, "figma")
+  const rea = shapeOf(rows, "react")
+  const has = (k: keyof Shape) => fig[k] !== undefined || rea[k] !== undefined
+  // What is not measured is shared: the drawing must not invent a difference.
+  const v = <T,>(a: T | undefined, b: T | undefined, fallback: T): T => a ?? b ?? fallback
+  const figH = v(fig.height, rea.height, 28)
+  const reaH = v(rea.height, fig.height, 28)
+  const figR = v(fig.radius, rea.radius, 6)
+  const reaR = v(rea.radius, fig.radius, 6)
+  const figP = v(fig.padH, rea.padH, 12)
+  const reaP = v(rea.padH, fig.padH, 12)
+  const figB = v(fig.border, rea.border, 1)
+  const reaB = v(rea.border, fig.border, 1)
+  const figF = v(fig.font, rea.font, 12)
+  const reaF = v(rea.font, fig.font, 12)
+
+  const tall = Math.max(figH, reaH)
+  const z = clamp(2, Math.round(84 / tall), 7)
+  const W = 216
+  const half = W / 2
+  const boxH = tall * z + 24
+  const side = (
+    h: number,
+    r: number,
+    b: number,
+    colour: string | undefined,
+    bg: string | undefined,
+    left: boolean,
+  ) => ({
+    position: "absolute" as const,
+    left: 0,
+    width: W,
+    top: (boxH - h * z) / 2,
+    height: h * z,
+    borderRadius: Math.min(r * z, (h * z) / 2),
+    border: `${Math.max(1, b * z)}px ${left ? "dashed" : "solid"} ${colour ?? (left ? "rgba(251,146,60,.9)" : "rgba(96,165,250,.9)")}`,
+    background: bg ?? "transparent",
+    clipPath: left ? `inset(0 ${half}px 0 0)` : `inset(0 0 0 ${half}px)`,
+  })
+  const bar = (p: number, f: number, colour: string | undefined, left: boolean) => ({
+    position: "absolute" as const,
+    top: (boxH - f * z) / 2,
+    height: f * z,
+    left: left ? p * z : half + 3,
+    width: Math.max(6, half - p * z - 3),
+    borderRadius: 2,
+    background: colour ?? "rgba(148,163,184,.55)",
+  })
+
+  return (
+    <div className="flex shrink-0 flex-col gap-1">
+      <div className="flex items-center justify-between text-[9px] uppercase">
+        <span className="text-orange-300">Figma</span>
+        <span className={`${TYPO.mono()} text-gray-dark-600`}>×{z}</span>
+        <span className="text-blue-300">React</span>
+      </div>
+      <div className="relative rounded bg-black/30 p-1" style={{ width: W + 8, height: boxH }}>
+        <div className="relative" style={{ width: W, height: boxH }}>
+          <div style={side(reaH, reaR, reaB, rea.borderColor, rea.bg, false)} />
+          <div style={side(figH, figR, figB, fig.borderColor, fig.bg, true)} />
+          {has("font") || has("textColor") ? (
+            <>
+              <div style={bar(figP, figF, fig.textColor, true)} />
+              <div style={bar(reaP, reaF, rea.textColor, false)} />
+            </>
+          ) : null}
+          {/* The seam: where one side stops and the other starts. */}
+          <div
+            className="absolute top-0 bottom-0 border-white/25 border-l border-dashed"
+            style={{ left: half }}
+          />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/** One measured pair as a line of the legend — the numbers, once, beside the drawing. */
+const DiffLegend = ({ rows }: { rows: BranchBlock["summary"] }) => (
+  <ul className="flex min-w-0 flex-col gap-0.5">
+    {rows.map((r) => {
+      const colour = r.prop === "background" || r.prop === "border-color" || r.prop === "text-color"
+      const swatch = (raw: string, ring: string) => {
+        const hex = hexIn(raw)
+        return hex ? (
+          <span
+            className={`inline-block size-2.5 shrink-0 rounded-[2px] ring-1 ${ring}`}
+            style={{ background: hex }}
+          />
+        ) : null
+      }
+      return (
+        <li
+          key={`${r.prop}|${r.figma}|${r.react}`}
+          className="flex min-w-0 flex-wrap items-center gap-1 text-[11px]"
+        >
+          <span className="text-gray-dark-300">{r.what}</span>
+          {colour ? swatch(r.figma, "ring-orange-400/60") : null}
+          <span className={`${TYPO.mono()} text-orange-200/90`}>{r.figma}</span>
+          <span className="text-gray-dark-600">→</span>
+          {colour ? swatch(r.react, "ring-blue-400/60") : null}
+          <span className={`${TYPO.mono()} text-blue-200/90`}>{r.react}</span>
+          <span className="text-[10px] text-gray-dark-600">
+            ×{r.count}
+            {r.hues.length ? ` · ${r.hues.join(", ")}` : ""}
+          </span>
+        </li>
+      )
+    })}
+  </ul>
+)
+
+/** ONE branch of the cva, as a card: the redline first, the numbers beside it, the code
+ *  location under them, and the decision. Everything else — the sentence, the anchors,
+ *  the per-variant evidence — behind "why & where", because a reviewer opens this page to
+ *  SEE a difference and only then to read about it. */
+const BranchCard = ({
+  b,
+  react,
+  onShow,
+}: {
+  b: BranchBlock
+  react: string
+  /** Renders one variant of this branch in the two big frames at the top of the page. */
+  onShow: (variant: string) => void
+}) => {
+  const review = useReview()
+  const [open, setOpen] = useState(false)
+  const isIgnored = review.ignored.has(b.id)
+  const shared = b.scope.kind === "shared"
+  const branch = b.cva.axis === "base" ? "base classes" : b.cva.axis === "unlocated" ? "no branch" : `${b.cva.axis}=${b.cva.value}`
+  return (
+    <li
+      className={`rounded-md border px-3 py-2 ${shared ? "border-orange-400/30" : "border-white/10"} ${isIgnored ? "opacity-50" : ""}`}
+    >
+      <div className="flex flex-wrap items-baseline gap-2">
+        <code className={`${TYPO.mono()} rounded bg-white/8 px-1.5 py-0.5 text-[11px] text-white`}>
+          {branch}
+        </code>
+        <Text size="sm" className={TYPO.title("semibold")}>
+          {b.props.map((p) => b.summary.find((s) => s.prop === p)?.what ?? p).join(", ")}
+        </Text>
+        {shared ? (
+          <Badge color="orange" size="sm" variant="light">
+            shared · {b.scope.count} components
+          </Badge>
+        ) : null}
+        <span className="ml-auto flex items-center gap-1">
+          {isIgnored ? (
+            <RestoreButton id={b.id} />
+          ) : (
+            <>
+              <FlagButtons
+                id={b.id}
+                settle={b.settle}
+                confirmKit={
+                  shared
+                    ? `${b.scope.tokens.join(", ")} is read by ${b.scope.count} components (${b.scope.consumers.join(", ")}).\n\nDeclaring "the kit moves" on this branch means either changing that token for all of them, or overriding it here. Declare it for the dev anyway?`
+                    : undefined
+                }
+                flag={{ component: react, title: b.title, detail: b.cause }}
+              />
+              {review.flagged.has(b.id) ? null : (
+                <IgnoreButton id={b.id} title={b.title} compact />
+              )}
+            </>
+          )}
+        </span>
+      </div>
+
+      <div className="mt-2 flex flex-wrap items-start gap-3">
+        <ShapeDiff rows={b.summary} />
+        <div className="min-w-[12rem] flex-1">
+          <DiffLegend rows={b.summary} />
+          <div className="mt-1.5 flex flex-wrap items-center gap-2 text-[10px]">
+            <code className={`${TYPO.mono()} text-gray-dark-500`}>
+              {(b.locus.file || react).split("/").pop()} · {branch}
+            </code>
+            {b.variants.length > 0 ? (
+              <button
+                type="button"
+                onClick={() => onShow(b.variants[0])}
+                className="text-blue-300 underline decoration-dotted underline-offset-2 hover:text-white"
+              >
+                see it above
+              </button>
+            ) : null}
+            <button
+              type="button"
+              onClick={() => setOpen((o) => !o)}
+              className="text-gray-dark-500 hover:text-white"
+            >
+              {open ? "hide" : "why & where"}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {open ? (
+        <div className="mt-2 flex flex-col gap-1 border-white/8 border-t pt-2">
+          <Text size="xs" c="secondary">
+            {b.cause}
+          </Text>
+          {b.question ? (
+            <Text size="xs" className="text-purple-200">
+              To settle: {b.question}
+            </Text>
+          ) : null}
+          <div className={`${TYPO.mono()} text-[10px] text-gray-dark-400`}>
+            {b.locus.file || react}
+            {b.locus.anchors.map((a) => (
+              <code
+                key={a}
+                className="mt-0.5 block whitespace-pre-wrap break-all rounded bg-white/5 px-1.5 py-0.5 text-gray-dark-200"
+              >
+                {a}
+              </code>
+            ))}
+            {b.locus.relevant.length > 0 ? (
+              <span className="mt-0.5 block">classes: {b.locus.relevant.join(" ")}</span>
+            ) : null}
+          </div>
+          {shared ? (
+            <Text size="xs" className="text-orange-300">
+              {b.scope.tokens.join(", ")} is read by {b.scope.count} components:{" "}
+              {b.scope.consumers.join(", ")}.
+            </Text>
+          ) : null}
+          {b.candidates.length > 0 ? (
+            <div className={`${TYPO.mono()} text-[10px] text-green-200/80`}>
+              Candidate edit, once declared for the kit: {b.candidates.join(" · ")}
+            </div>
+          ) : null}
+          <ul className={`${TYPO.mono()} max-h-40 overflow-auto text-[10px] text-gray-dark-500`}>
+            {b.evidence_lines.map((e) => (
+              <li key={e}>{e}</li>
+            ))}
+          </ul>
+          <Text size="xs" c="muted">
+            Measured on {b.measured} · Figma at {b.measured_in.figma_mode}, browser at{" "}
+            {b.measured_in.browser_mode}
+          </Text>
+        </div>
+      ) : null}
+    </li>
+  )
+}
+
 /** The surface of EVERY drawn variant the kit can render, measured in one pass and
  *  grouped by what differs.
  *
@@ -1342,11 +1659,16 @@ const AllVariantsSurface = ({
   detail,
   dark,
   part,
+  onResult,
 }: {
   react: string
   detail: ParityDetail
   dark: boolean
   part?: string
+  /** The attributed branches, handed UP: the page shows them in its ONE list of
+   *  differences, and this block keeps only the measuring and the evidence (2026-09-11 —
+   *  three lists saying "difference" on one screen is what made the page unreadable). */
+  onResult?: (r: BranchResult | null) => void
 }) => {
   const review = useReview()
   const host = useRef<HTMLDivElement | null>(null)
@@ -1490,6 +1812,7 @@ const AllVariantsSurface = ({
     }
     let alive = true
     setBranchError("")
+    onResult?.(null)
     postParityMeasurements({
       component: react,
       slug: detail.slug,
@@ -1501,7 +1824,9 @@ const AllVariantsSurface = ({
       lines: rows.sent,
     })
       .then((r) => {
-        if (alive) setBranches(r)
+        if (!alive) return
+        setBranches(r)
+        onResult?.(r)
       })
       .catch((e) => {
         if (alive) setBranchError(e instanceof Error ? e.message : String(e))
@@ -1509,9 +1834,10 @@ const AllVariantsSurface = ({
     return () => {
       alive = false
     }
+    // biome-ignore lint/correctness/useExhaustiveDependencies: `onResult` is the parent's
+    // setter and would re-run the POST on every render of the page
   }, [rows, react, detail, dark, measuredOn])
   const [showLines, setShowLines] = useState(false)
-  const [openCause, setOpenCause] = useState("")
 
   const id = (g: Aggregate) =>
     `surface:${slugify(react)}:all:${g.key}:${slugify(g.figma)}-${slugify(g.react)}`
@@ -1545,7 +1871,7 @@ const AllVariantsSurface = ({
 
       <div className="flex flex-wrap items-center gap-2">
         <Text size="sm" className={TYPO.title("semibold")}>
-          The surface of every variant: Figma against React
+          Evidence: every drawn variant, measured
         </Text>
         {!rows ? (
           <Badge color="gray" size="sm" variant="light">
@@ -1603,9 +1929,8 @@ const AllVariantsSurface = ({
         ) : null}
       </div>
 
-      {/* THE BRANCHES — one block, one decision, attributed by the server (C4). The table
-          of measured lines is folded under them: it is evidence, and flagging it line by
-          line is what put 25 issues on one component. */}
+      {/* The BRANCHES are drawn by the page, in its one list of differences. What stays
+          here is what produced them: the counts, and the measured lines as evidence. */}
       {branchError ? (
         <Text size="xs" className="text-orange-300">
           The server could not attribute the measurements to cva branches: {branchError}. The
@@ -1626,128 +1951,6 @@ const AllVariantsSurface = ({
           {branches.unknown_variants > 0 ? ` · ${branches.unknown_variants} on unknown variants` : ""}{" "}
           · Figma at {branches.measured_in.figma_mode}, browser at {branches.measured_in.browser_mode}
         </Text>
-      ) : null}
-      {branches && branches.blocks.length > 0 ? (
-        <ul className="flex flex-col gap-2">
-          {branches.blocks
-            .filter((b) => showIgnored || !review.ignored.has(b.id))
-            .map((b) => {
-              const isIgnored = review.ignored.has(b.id)
-              const open = openCause === b.id
-              const shared = b.scope.kind === "shared"
-              return (
-                <li
-                  key={b.id}
-                  className={`rounded-md border px-3 py-2 ${shared ? "border-orange-400/30" : "border-white/10"} ${isIgnored ? "opacity-50" : ""}`}
-                >
-                  <div className="flex flex-wrap items-start gap-2">
-                    <div className="min-w-0 flex-1">
-                      <Text size="sm" className={TYPO.title("semibold")}>
-                        {b.title}
-                      </Text>
-                      <Text size="xs" c="secondary" className="mt-0.5">
-                        {b.cause}
-                      </Text>
-                      {b.question ? (
-                        <Text size="xs" className="mt-0.5 text-purple-200">
-                          To settle: {b.question}
-                        </Text>
-                      ) : null}
-                      {/* The LOCUS: the file, the branch, and its anchors EXACTLY as the
-                          source spells them — what an edit tool searches for. */}
-                      <div className="mt-1 text-[10px] text-gray-dark-400">
-                        <span className={TYPO.mono()}>
-                          {b.locus.file || react} · {b.cva.axis}
-                          {b.cva.value ? `.${b.cva.value}` : ""}
-                        </span>
-                        {b.locus.anchors.map((anchor) => (
-                          <code
-                            key={anchor}
-                            className={`${TYPO.mono()} mt-0.5 block whitespace-pre-wrap break-all rounded bg-white/5 px-1.5 py-0.5 text-gray-dark-200`}
-                          >
-                            {anchor}
-                          </code>
-                        ))}
-                        {b.locus.relevant.length > 0 ? (
-                          <span className="mt-0.5 block">
-                            classes concerned:{" "}
-                            <span className={TYPO.mono()}>{b.locus.relevant.join(" ")}</span>
-                          </span>
-                        ) : null}
-                      </div>
-                      <Text
-                        size="xs"
-                        className={`mt-0.5 ${shared ? "text-orange-300" : "text-gray-dark-500"}`}
-                      >
-                        Scope:{" "}
-                        {shared
-                          ? `shared — ${b.scope.tokens.join(", ")} is read by ${b.scope.count} components (${b.scope.consumers.join(", ")}). Declaring "the kit moves" here is not a local edit.`
-                          : `local — ${b.locus.file || react}`}
-                      </Text>
-                      {b.source_comment ? (
-                        <Text size="xs" c="muted" className="mt-0.5">
-                          The kit says, above `{b.cva.axis}`: “{b.source_comment}”
-                        </Text>
-                      ) : null}
-                      {b.candidates.length > 0 ? (
-                        <div className={`${TYPO.mono()} mt-0.5 text-[10px] text-green-200/80`}>
-                          Candidate edit (proposed only once declared for the kit):{" "}
-                          {b.candidates.join(" · ")}
-                        </div>
-                      ) : null}
-                      <ul className={`${TYPO.mono()} mt-1 flex flex-col gap-0.5 text-[10px] text-gray-dark-400`}>
-                        {b.summary.map((row) => (
-                          <li key={`${row.prop}|${row.figma}|${row.react}`}>
-                            {row.what}: Figma {row.figma} → React {row.react} × {row.count}
-                            {row.hues.length ? ` (${row.hues.join(", ")})` : ""}
-                          </li>
-                        ))}
-                      </ul>
-                      <button
-                        type="button"
-                        onClick={() => setOpenCause(open ? "" : b.id)}
-                        className="mt-1 text-[10px] text-orange-300 underline decoration-dotted underline-offset-2"
-                      >
-                        {b.evidence.length} measurement{b.evidence.length > 1 ? "s" : ""} on{" "}
-                        {b.variants.length} variant{b.variants.length > 1 ? "s" : ""} · measured on{" "}
-                        {b.measured}
-                      </button>
-                      {open ? (
-                        <ul className={`${TYPO.mono()} mt-1 flex flex-col gap-0.5 text-[10px] text-gray-dark-500`}>
-                          {b.evidence_lines.map((e) => (
-                            <li key={e}>{e}</li>
-                          ))}
-                        </ul>
-                      ) : null}
-                    </div>
-                    <div className="flex shrink-0 items-center gap-1">
-                      {isIgnored ? (
-                        <RestoreButton id={b.id} />
-                      ) : (
-                        <>
-                          {/* The flag names the block; the SERVER copies the block's own
-                              fields into the review file. */}
-                          <FlagButtons
-                            id={b.id}
-                            settle={b.settle}
-                            confirmKit={
-                              shared
-                                ? `${b.scope.tokens.join(", ")} is read by ${b.scope.count} components (${b.scope.consumers.join(", ")}).\n\nDeclaring "the kit moves" on this branch means either changing that token for all of them, or overriding it here. Declare it for the dev anyway?`
-                                : undefined
-                            }
-                            flag={{ component: react, title: b.title, detail: b.cause }}
-                          />
-                          {review.flagged.has(b.id) ? null : (
-                            <IgnoreButton id={b.id} title={b.title} compact />
-                          )}
-                        </>
-                      )}
-                    </div>
-                  </div>
-                </li>
-              )
-            })}
-        </ul>
       ) : null}
       {rows && shown.length > 0 ? (
         <button
@@ -2548,10 +2751,17 @@ const Group = ({
 
 /** ONE component, everything on one screen, the differences first.
  *
- *  Order, top to bottom: the two renders · what differs (the active findings, each with
- *  its owner and an Ignore) · the surface of the default variant, measured · what is by
- *  design, folded · what is aligned, folded · what was ignored, folded · the coverage
- *  grid, folded. Nothing a reviewer needs is behind a toggle they have to know exists. */
+ *  Order, top to bottom: the two renders · WHAT DIFFERS · what is by design, folded ·
+ *  what is aligned, folded · what was ignored, folded · the variant shown above property
+ *  by property, folded · the evidence behind the measurements, folded · the coverage
+ *  grid, folded.
+ *
+ *  ⚠️ ONE list of differences, whatever its origin (2026-09-11: « je suis un peu perdu …
+ *  je ne comprends plus les vues entre What differs et The surface of every »). The page
+ *  held three: the axis findings, the measured branches, and one variant's properties —
+ *  all called differences, all in prose, none of them showing the thing. Now a difference
+ *  is a row of one list; a MEASURED one carries its redline, drawn to scale, and the
+ *  prose is behind "why & where". */
 const Pair = ({
   pair,
   findings,
@@ -2564,6 +2774,9 @@ const Pair = ({
   frames: boolean
 }) => {
   const [variant, setVariant] = useState("")
+  // What the browser measured on every drawn variant, attributed by the server to the cva
+  // branch that produced it. Held HERE because it is half of the one list below.
+  const [branches, setBranches] = useState<BranchResult | null>(null)
   const [detail, setDetail] = useState<ParityDetail | null>(null)
   const [detailError, setDetailError] = useState("")
   const [copied, setCopied] = useState(false)
@@ -2587,8 +2800,14 @@ const Pair = ({
     }
   }, [pair.figma.slug, pair.react, pair.figma.detail])
 
-  const active = findings.filter((f) => !f.ignored)
-  const ignored = findings.filter((f) => f.ignored)
+  const review = useReview()
+  // ⚠️ A `branch` finding of the REPORT is the server's copy of a measurement taken on an
+  // earlier visit. Once this page has measured, the live blocks below are fresher and
+  // carry their own drawing: the copies would be the same differences, listed twice.
+  const fromReport = branches ? findings.filter((f) => f.kind !== "branch") : findings
+  const active = fromReport.filter((f) => !f.ignored)
+  const ignored = fromReport.filter((f) => f.ignored)
+  const blocks = (branches?.blocks ?? []).filter((b) => !review.ignored.has(b.id))
   const byDesign = pair.axes.filter((a) => BY_DESIGN.has(a.verdict))
   const aligned = pair.axes.filter((a) => a.verdict === "aligned")
   // The axes behind the active findings. An axis whose only finding was IGNORED is
@@ -2764,34 +2983,43 @@ const Pair = ({
         </div>
       </div>
 
-      {/* 1. What differs — the active findings of this component. The list the brief
-          carries, the number the card shows. */}
+      {/* 1. WHAT DIFFERS — one list, two origins: what the two CATALOGUES disagree on
+          (an axis, a default, a value the kit refuses) and what the two RENDERS paint
+          differently (a branch of the cva, measured here and drawn to scale). One list,
+          one count, because a reader does not navigate by where a number came from. */}
       <Group
         title="What differs"
-        count={active.length}
+        count={active.length + blocks.length}
         open
         tone="orange"
         hint={
-          active.length === 0
+          blocks.length + active.length === 0
             ? comparable
               ? "nothing left to hand to a dev"
               : "no axis could be compared"
-            : `${active.filter((f) => f.owner === "kit").length} for the kit · ${active.filter((f) => f.owner === "both").length} to settle · ${active.filter((f) => f.owner === "figma").length} for Figma`
+            : `${blocks.length} seen on the render · ${active.length} from the two catalogues`
         }
       >
-        {active.length === 0 ? (
+        {blocks.length > 0 ? (
+          <ul className="mb-2 flex flex-col gap-2">
+            {blocks.map((b) => (
+              <BranchCard key={b.id} b={b} react={pair.react} onShow={setVariant} />
+            ))}
+          </ul>
+        ) : null}
+        {active.length === 0 && blocks.length === 0 ? (
           <Text size="xs" c="muted">
             {comparable
               ? "Every axis that could be compared lines up, or was settled."
               : "The manifest cannot read this component's values — nothing here says anything about the kit."}
           </Text>
-        ) : (
+        ) : active.length > 0 ? (
           <ul className="flex flex-col">
             {active.map((f) => (
               <FindingRow key={f.id} f={f} />
             ))}
           </ul>
-        )}
+        ) : null}
         {differing.length > 0 ? (
           <div className="mt-3 border-white/8 border-t pt-2">
             <Text size="xs" c="muted" className="mb-1">
@@ -2805,8 +3033,12 @@ const Pair = ({
         ) : null}
       </Group>
 
-      {/* 2. The surface, measured right here — ACROSS EVERY drawn variant the kit can
-          render, then the one shown above in detail. Its counts are its own. */}
+      {/* 2. EVIDENCE — how the measured differences above were obtained. Not a second
+          list of differences: the branches are up there, in the one list. What is here is
+          the machine (the off-screen renders, the counts, the measured lines) and one
+          variant read property by property, folded. ⚠️ `AllVariantsSurface` stays MOUNTED
+          whatever is folded — it is what measures and hands the branches up; inside a
+          fold it would unmount and the list above would empty. */}
       {pair.figma.detail ? (
         <div className="flex flex-col gap-3 rounded-lg border border-white/10 px-3 py-2">
           {detailError ? (
@@ -2828,27 +3060,32 @@ const Pair = ({
                   detail={detail}
                   dark={dark}
                   part={partSelector(pair.react, pair.figma.slug)}
+                  onResult={setBranches}
                 />
               ) : null}
-              <SurfacePanel
-                react={pair.react}
-                variant={shownVariant || "default"}
-                visual={shownVariant ? visuals.variants[shownVariant] : undefined}
-                node={PREVIEWS[pair.react] && !refused ? previewNode : null}
-                exported={visuals.exported}
-                title={
-                  variant
-                    ? "This variant's surface: Figma against React"
-                    : "The default variant's surface: Figma against React"
-                }
-                theme={dark ? "dark" : "light"}
-                modes={visuals.modes ?? []}
-                resting={
-                  !detail || !shownValues || atRest(shownValues, detail.coverage.axes, detail.defaults)
-                }
-                unmapped={unmapped}
-                part={partSelector(pair.react, pair.figma.slug)}
-              />
+              <Group
+                title="The variant shown above, property by property"
+                count={0}
+                hint="every property of one variant, including the ones that agree"
+              >
+                <SurfacePanel
+                  react={pair.react}
+                  variant={shownVariant || "default"}
+                  visual={shownVariant ? visuals.variants[shownVariant] : undefined}
+                  node={PREVIEWS[pair.react] && !refused ? previewNode : null}
+                  exported={visuals.exported}
+                  title={variant ? shownVariant : "the default variant"}
+                  theme={dark ? "dark" : "light"}
+                  modes={visuals.modes ?? []}
+                  resting={
+                    !detail ||
+                    !shownValues ||
+                    atRest(shownValues, detail.coverage.axes, detail.defaults)
+                  }
+                  unmapped={unmapped}
+                  part={partSelector(pair.react, pair.figma.slug)}
+                />
+              </Group>
             </>
           )}
         </div>
