@@ -85,6 +85,7 @@ import {
   RestoreButton,
   ReviewContext,
   useReview,
+  PendingBar,
   useReviewState,
 } from "./review"
 
@@ -3283,6 +3284,8 @@ export const ParityView = ({ selected = "" }: { selected?: string }) => {
             description={reviewError}
           />
         ) : null}
+        {/* What has been checked and not yet written — one commit when validated. */}
+        <PendingBar />
 
         {/* The numbers are DOORS. Each opens the list it counts. */}
         <div className="grid grid-cols-2 gap-3 md:grid-cols-5">

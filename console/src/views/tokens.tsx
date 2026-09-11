@@ -57,6 +57,7 @@ import {
   type Owner,
   RestoreButton,
   ReviewContext,
+  PendingBar,
   useReviewState,
 } from "./review"
 
@@ -850,6 +851,8 @@ KIT_TOKEN=<a PAT with Contents: Read on that repo>`}</pre>
             description={reviewError}
           />
         ) : null}
+        {/* What has been checked and not yet written — one commit when validated. */}
+        <PendingBar />
 
         {/* ONE line before anything: what is missing, and how much of it. The four big
             numbers that used to sit here WERE the navigation — a reader saw figures and

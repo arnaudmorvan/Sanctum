@@ -966,11 +966,27 @@ export type ReviewChange = {
 }
 
 export async function reviewParity(change: ReviewChange): Promise<{ commit: string }> {
+  return reviewPost(change)
+}
+
+/** SEVERAL decisions in ONE commit — the console checks the rows and validates them
+ *  together (2026-09-11: every click used to be a GitHub round-trip, felt as a stutter
+ *  and left forty commits behind one session). Same route, same rules per decision;
+ *  ATOMIC: one bad decision refuses the whole batch and nothing lands. `by` signs them
+ *  all. */
+export async function reviewParityBatch(
+  changes: Omit<ReviewChange, "by">[],
+  by: string,
+): Promise<{ commit: string }> {
+  return reviewPost({ by, changes })
+}
+
+async function reviewPost(body: unknown): Promise<{ commit: string }> {
   const key = readKey()
   const r = await fetch(`${BASE}/console/parity/review.json`, {
     method: "POST",
     headers: { "Content-Type": "application/json", ...(key ? { "X-DS-Key": key } : {}) },
-    body: JSON.stringify(change),
+    body: JSON.stringify(body),
   })
   if (r.status === 401) throw new AccessError("Key rejected by the server.")
   if (!r.ok) {
