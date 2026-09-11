@@ -3100,6 +3100,17 @@ export const ParityView = ({ selected = "" }: { selected?: string }) => {
   const { review, error: reviewError } = useReviewState(data?.review, reload)
   const author = review.author
 
+  const [copiedFor, setCopiedFor] = useState("")
+  const copyFor = async (owner: Owner) => {
+    try {
+      await navigator.clipboard.writeText(await getParityBrief({ owner }))
+      setCopiedFor(owner)
+      setTimeout(() => setCopiedFor(""), 2000)
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e))
+    }
+  }
+
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(await getParityBrief())
@@ -3188,9 +3199,29 @@ export const ParityView = ({ selected = "" }: { selected?: string }) => {
             <RefreshCw size={14} />
             {loading ? "Reading the catalogue…" : "Refresh"}
           </Button>
+          {/* The export, per person, in the toolbar — the same three lists the hand-off
+              block hands out further down, where a reader looks for them first. */}
           <Button size="sm" variant="outline" onClick={copy}>
             {copied ? <Check size={14} /> : <Copy size={14} />}
-            {copied ? "Copied" : "Copy the whole brief"}
+            {copied ? "Copied" : "Everything"}
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            title="The findings the kit has to act on, as a list"
+            onClick={() => void copyFor("kit")}
+          >
+            {copiedFor === "kit" ? <Check size={14} /> : <Copy size={14} />}
+            Brief · dev
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            title="The findings the Figma file has to act on, as a list"
+            onClick={() => void copyFor("figma")}
+          >
+            {copiedFor === "figma" ? <Check size={14} /> : <Copy size={14} />}
+            Brief · designer
           </Button>
           <span
             className="flex items-center gap-1 text-[11px] text-gray-dark-500"

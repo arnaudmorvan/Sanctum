@@ -48,6 +48,7 @@ import {
   type TokensReport,
 } from "../mcp"
 import {
+  AssignButtons,
   FindingRow,
   IgnoreButton,
   OWNER,
@@ -575,11 +576,25 @@ const Colours = ({
                     {c.kit.length > 0 ? null : isIgnored ? (
                       <RestoreButton id={id} />
                     ) : (
-                      <IgnoreButton
-                        id={id}
-                        title={`${c.hex} (${c.family}) is not in the kit's palette`}
-                        compact
-                      />
+                      <span className="flex items-center gap-1">
+                        {/* Hand THIS colour to someone, right where it is read. The owner
+                            the report computed is a default; the reviewer knows which
+                            side is taking it. */}
+                        {finding ? (
+                          <AssignButtons
+                            id={finding.id}
+                            title={finding.title}
+                            owner={finding.owner as Owner}
+                            assignedBy={finding.assigned_by}
+                            computed={finding.owner_computed}
+                          />
+                        ) : null}
+                        <IgnoreButton
+                          id={id}
+                          title={`${c.hex} (${c.family}) is not in the kit's palette`}
+                          compact
+                        />
+                      </span>
                     )}
                   </td>
                 </tr>
@@ -785,9 +800,30 @@ KIT_TOKEN=<a PAT with Contents: Read on that repo>`}</pre>
             <RefreshCw size={14} />
             {loading ? "Re-reading…" : "Re-read"}
           </Button>
+          {/* The export, per person, in the toolbar — where a reader looks for it before
+              scrolling. The same three lists the hand-off block hands out further down;
+              one gesture, two places, because this one is the one you reach for. */}
           <Button size="sm" variant="outline" onClick={() => void copy({}, "all")}>
             {copied === "all" ? <Check size={14} /> : <Copy size={14} />}
-            {copied === "all" ? "Copied" : "Copy the whole brief"}
+            {copied === "all" ? "Copied" : "Everything"}
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            title="The findings the kit has to act on, as a list"
+            onClick={() => void copy({ owner: "kit" }, "kit")}
+          >
+            {copied === "kit" ? <Check size={14} /> : <Copy size={14} />}
+            Brief · dev
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            title="The findings the Figma file has to act on, as a list"
+            onClick={() => void copy({ owner: "figma" }, "figma")}
+          >
+            {copied === "figma" ? <Check size={14} /> : <Copy size={14} />}
+            Brief · designer
           </Button>
           <span className="ml-2 flex items-center gap-2 border-white/10 border-l pl-3">
             <Text size="xs" c="muted">

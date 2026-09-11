@@ -679,6 +679,11 @@ export type ParityFinding = {
   /** What settles this colour, in one line — written server-side, where the class and the
    *  nearest kit colour are both known. An owner says WHO; this says what they do. */
   action?: string
+  /** Set when a HUMAN overruled the computed owner: what the report had derived, and who
+   *  decided otherwise. `owner` already carries the decision. */
+  owner_computed?: string
+  assigned_by?: string
+  assigned_at?: string
 }
 
 export type ParityReport = {
@@ -720,6 +725,8 @@ export type ParityReport = {
      *  not a finding until flagged, so its "ignored" state travels here. */
     ignored_ids: string[]
     flagged_ids: string[]
+    /** Findings whose owner a human decided, against the computed one. */
+    assigned_ids: string[]
   }
   sources: {
     /** `frames` is a boolean, not a string: it says whether the server can RENDER a
@@ -893,7 +900,7 @@ export async function getParityBrief(
  *  Signed: `by` is the name `who.ts` holds, and the server refuses an unsigned change —
  *  a decision nobody can go back and question is not worth committing. */
 export type ReviewChange = {
-  op: "ignore" | "restore" | "flag" | "unflag"
+  op: "ignore" | "restore" | "flag" | "unflag" | "assign" | "unassign"
   id: string
   by: string
   why?: string
@@ -1029,7 +1036,13 @@ export type TokensReport = {
     by_owner: Record<string, number>
   }
   /** Same file and same semantics as the components' review. */
-  review: { can_write: boolean; path: string; ignored_ids: string[]; flagged_ids: string[] }
+  review: {
+    can_write: boolean
+    path: string
+    ignored_ids: string[]
+    flagged_ids: string[]
+    assigned_ids: string[]
+  }
   sources: {
     figma: Record<string, string>
     /** ⚠️ `snapshot` means the kit was NOT read from its own repo: the comparison ran

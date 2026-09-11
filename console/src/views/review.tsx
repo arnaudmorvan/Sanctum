@@ -273,6 +273,62 @@ export const FlagButtons = ({
   )
 }
 
+/** ROUTE a finding to a person. The computed owner is a DEFAULT — and `both` is in
+ *  nobody's brief, so a finding left there is a finding nobody does. The reviewer knows
+ *  the plan ("the dev takes this red this sprint") and says so; the per-person brief
+ *  follows, and the report keeps what it had derived (`owner_computed`) so the next sync
+ *  does not look like it changed its mind.
+ *
+ *  Shown as the three destinations, the current one marked. One click is one commit. */
+export const AssignButtons = ({
+  id,
+  title,
+  owner,
+  assignedBy,
+  computed,
+}: {
+  id: string
+  title: string
+  owner: Owner
+  assignedBy?: string
+  computed?: string
+}) => {
+  const review = useReview()
+  if (!review.canWrite) return null
+  const disabled = review.busy === id
+  return (
+    <span className="flex items-center gap-0.5 whitespace-nowrap">
+      <span className="text-[10px] text-gray-dark-600">for</span>
+      {(["kit", "figma", "both"] as const).map((o) => (
+        <button
+          key={o}
+          type="button"
+          disabled={disabled}
+          title={
+            o === owner && assignedBy
+              ? `${assignedBy} put it here${computed ? ` — the report said ${OWNER[computed].short}` : ""}`
+              : `Hand it to ${OWNER[o].person.toLowerCase()}: it moves to that brief`
+          }
+          onClick={() =>
+            void review.act(
+              o === owner && assignedBy
+                ? { op: "unassign", id }
+                : { op: "assign", id, owner: o, title },
+            )
+          }
+          className={`rounded px-1.5 py-0.5 text-[11px] transition disabled:opacity-40 ${
+            o === owner
+              ? `border border-white/25 bg-white/10 text-white ${assignedBy ? "" : "opacity-80"}`
+              : "text-gray-dark-500 hover:bg-white/5 hover:text-white"
+          }`}
+        >
+          {OWNER[o].short}
+        </button>
+      ))}
+    </span>
+  )
+}
+
 /** A finding, with its decision. `href` links to what it is about (a component) when the
  *  reader is not already there. */
 export const FindingRow = ({ f, href }: { f: ParityFinding; href?: string }) => {
@@ -317,6 +373,13 @@ export const FindingRow = ({ f, href }: { f: ParityFinding; href?: string }) => 
             <RestoreButton id={f.id} />
           ) : (
             <>
+              <AssignButtons
+                id={f.id}
+                title={f.title}
+                owner={f.owner as Owner}
+                assignedBy={f.assigned_by}
+                computed={f.owner_computed}
+              />
               {f.flagged && review.canWrite ? (
                 <button
                   type="button"
