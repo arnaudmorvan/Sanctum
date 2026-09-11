@@ -393,6 +393,7 @@ export const FlagButtons = ({
   id,
   flag,
   settle,
+  confirmKit,
 }: {
   id: string
   flag: FlagPayload
@@ -400,6 +401,10 @@ export const FlagButtons = ({
    *  side can be named from the data — a shared token, a size nobody defined. An agent
    *  handed that finding asks the question and edits nothing. */
   settle?: boolean
+  /** Asked before "the dev" is checked when the scope is SHARED (C5): declaring that the
+   *  kit moves on a token eighteen components read is not the decision it is on a local
+   *  class, and the sentence says how many. */
+  confirmKit?: string
 }) => {
   const review = useReview()
   if (!review.canWrite) return null
@@ -434,7 +439,10 @@ export const FlagButtons = ({
       type="button"
       disabled={review.busy !== ""}
       title={`${hint} — checked here, written when you validate`}
-      onClick={() => void review.act({ op: "flag", id, owner, ...flag, evidence: flag.evidence ?? "" })}
+      onClick={() => {
+        if (owner === "kit" && confirmKit && !window.confirm(confirmKit)) return
+        void review.act({ op: "flag", id, owner, ...flag, evidence: flag.evidence ?? "" })
+      }}
       className="flex items-center gap-0.5 rounded px-1 py-0.5 text-[11px] text-gray-dark-400 hover:bg-white/5 hover:text-white disabled:opacity-40"
     >
       <Square size={10} />
@@ -645,6 +653,41 @@ export const FindingRow = ({ f, href }: { f: ParityFinding; href?: string }) => 
             <Text size="xs" className="mt-1 text-purple-200">
               To settle: {f.question}
             </Text>
+          ) : null}
+          {/* A fold of line-by-line flags (C5): where it came from, the conflict when the
+              inherited owners disagree, and the one way out — unflag them all and re-flag
+              the branch from the surface panel. The server chooses nothing. */}
+          {f.conflict && f.conflict.length > 0 ? (
+            <div className="mt-1 rounded border border-orange-400/40 px-2 py-1">
+              <Text size="xs" className="text-orange-200">
+                ⚠️ Inherited declarations disagree — arbitrate by re-flagging the branch:
+              </Text>
+              <ul className={`${TYPO.mono()} mt-0.5 text-[10px] text-gray-dark-400`}>
+                {f.conflict.map((c) => (
+                  <li key={c.title}>
+                    {c.title} → {OWNER[c.owner]?.short ?? c.owner}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+          {f.members && f.members.length > 0 ? (
+            <div className="mt-1 flex flex-wrap items-center gap-2">
+              <Text size="xs" c="muted">
+                Folded from {f.members.length} line-by-line flag{f.members.length > 1 ? "s" : ""} taken
+                before the branch grouping — no locus, no scope. Re-flag the branch to get them.
+              </Text>
+              {review.canWrite && !f.flagged ? (
+                <button
+                  type="button"
+                  disabled={review.busy !== ""}
+                  onClick={() => void review.act({ op: "unflag", id: f.id })}
+                  className="px-1 text-[11px] text-gray-dark-500 hover:text-white"
+                >
+                  unflag the {f.members.length} inherited
+                </button>
+              ) : null}
+            </div>
           ) : null}
           {f.locus ? (
             <div className={`${TYPO.mono()} mt-1 whitespace-pre-wrap break-all text-[11px] text-gray-dark-400`}>

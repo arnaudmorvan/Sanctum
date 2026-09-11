@@ -46,6 +46,7 @@ import {
   Check,
   ChevronDown,
   ChevronRight,
+  Flag,
   Copy,
   ImageOff,
   Moon,
@@ -1224,23 +1225,20 @@ const SurfacePanel = ({
                       <Badge color="orange" size="sm" variant="light">
                         differs
                       </Badge>
+                      {/* A line is IGNORED here, never flagged (C5): a flag is taken on
+                          a cva branch, in the all-variants panel, where the locus and the
+                          scope are. Line by line is what put 25 issues on one component. */}
                       {isIgnored ? (
                         <RestoreButton id={id} />
                       ) : review.canWrite ? (
-                        <>
-                          <FlagButtons
-                            id={id}
-                            flag={{
-                              component: react,
-                              title: `${react}: ${l.what} is ${l.figma} drawn, ${l.react} rendered`,
-                              detail: `Measured in the console on the rendered variant ${variant}, against the surface the Figma plugin exported for it.`,
-                              evidence: l.note ?? "",
-                            }}
-                          />
-                          {isFlagged ? null : (
-                            <IgnoreButton id={id} title={`${react}: ${l.what}`} compact />
-                          )}
-                        </>
+                        isFlagged ? (
+                          <Badge color="blue" size="sm" variant="light">
+                            <Flag size={11} />
+                            flagged line by line
+                          </Badge>
+                        ) : (
+                          <IgnoreButton id={id} title={`${react}: ${l.what}`} compact />
+                        )
                       ) : null}
                     </div>
                   )}
@@ -1732,6 +1730,11 @@ const AllVariantsSurface = ({
                           <FlagButtons
                             id={b.id}
                             settle={b.settle}
+                            confirmKit={
+                              shared
+                                ? `${b.scope.tokens.join(", ")} is read by ${b.scope.count} components (${b.scope.consumers.join(", ")}).\n\nDeclaring "the kit moves" on this branch means either changing that token for all of them, or overriding it here. Declare it for the dev anyway?`
+                                : undefined
+                            }
                             flag={{ component: react, title: b.title, detail: b.cause }}
                           />
                           {review.flagged.has(b.id) ? null : (

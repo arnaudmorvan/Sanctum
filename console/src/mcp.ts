@@ -706,6 +706,11 @@ export type ParityFinding = {
   question?: string
   proposed?: string
   measured?: string
+  /** A FOLD of line-by-line flags taken before the branch grouping (C5): the member
+   *  flags, and — when their owners disagreed — the conflict, surfaced and never resolved
+   *  by the server. An unflag on the fold removes every member. */
+  members?: string[]
+  conflict?: { title: string; owner: string }[]
 }
 
 /** What a source's findings have DONE over time: the ones that stopped being produced,
