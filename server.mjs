@@ -1,6 +1,11 @@
 /** Static server for dist/ on Railway. No dependency: adding `serve` or express would pull
  *  a whole npm tree in just to read files off disk.
  *
+ *  Since 2026-09-11 the flows are NOT public: `scripts/gate.mjs` sits in front of
+ *  `/protos.json`, `/p/` and `/v/` and lets through the browsers whose `ds_token` cookie the
+ *  MCP server recognises — the console's sign-in writes that cookie. The console itself
+ *  stays open: it is the sign-in screen.
+ *
  *  Plus TWO routes that are not static (scripts/hot-build.mjs, mounted only when `BUILD_KEY`
  *  is set): `POST /build/<slug>` rebuilds a single flow inside this container, seconds after
  *  `publish_proto`, instead of making the PO wait for the Railway redeploy; and
@@ -9,6 +14,7 @@
 import fs from "node:fs"
 import http from "node:http"
 import path from "node:path"
+import { guard } from "./scripts/gate.mjs"
 import { handleBuild, selfCheck } from "./scripts/hot-build.mjs"
 
 const DIST = path.join(import.meta.dirname, "dist")
@@ -25,6 +31,9 @@ http
   .createServer(async (req, res) => {
     const url = decodeURIComponent((req.url || "/").split("?")[0])
     if (await handleBuild(req, res, url)) return
+    // The flows are behind the person's token (scripts/gate.mjs): a static file under
+    // /p/, /v/ or the gallery list is served only to a browser the MCP server recognises.
+    if (await guard(req, res, url)) return
     // Traversal: we resolve first, then check we stayed under dist/.
     let target = path.join(DIST, url)
     if (!target.startsWith(DIST)) {

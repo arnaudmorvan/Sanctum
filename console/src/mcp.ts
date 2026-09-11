@@ -10,33 +10,18 @@
  *  which sections their role opens (`Me`). The shared key still works: it is the
  *  operator's, reads as admin, and is simply not what anyone is handed any more.
  */
+import { readConsoleKey, writeConsoleKey } from "../../src/layout/env"
+
 const BASE = (
   import.meta.env.VITE_MCP_URL ?? "https://mcp-42-production.up.railway.app"
 ).replace(/\/$/, "")
 
-const KEY = "42ds.console.key"
-/** Deployment shim: the key used to live under this name. We read it once so nobody who
- *  already signed in gets kicked out by the rename — we never write it back. Delete once
- *  every browser has rolled over. */
-const LEGACY_KEY = "42ds.console.cle"
-
-export const readKey = (): string => {
-  try {
-    return localStorage.getItem(KEY) ?? localStorage.getItem(LEGACY_KEY) ?? ""
-  } catch {
-    return "" // private browsing, storage blocked: we ask for the key again
-  }
-}
-
-export const writeKey = (v: string): void => {
-  try {
-    v ? localStorage.setItem(KEY, v) : localStorage.removeItem(KEY)
-    // Whatever happens, the old entry stops being a second source of truth.
-    localStorage.removeItem(LEGACY_KEY)
-  } catch {
-    /* without storage the key lives for the session — everything else still works */
-  }
-}
+/** The stored token has ONE owner, `src/layout/env.ts` — the flows share the origin and
+ *  the storage, and since 2026-09-11 the same write also sets the cookie the Sanctum
+ *  server checks before serving a flow. Two writers would mean a console that signs in
+ *  and flows that stay closed. */
+export const readKey = readConsoleKey
+export const writeKey = writeConsoleKey
 
 export class AccessError extends Error {}
 

@@ -83,8 +83,10 @@ const SECTIONS: Section[] = [
     v: "protos",
     label: "Prototypes",
     icon: <LayoutGrid size={16} />,
-    keyRequired: false,
-    sub: "The clickable flows published by the POs. Open to anyone with the URL.",
+    // Behind the token since 2026-09-11, like the flows themselves (scripts/gate.mjs):
+    // the gallery lists screens of an internal product.
+    keyRequired: true,
+    sub: "The clickable flows published by the POs.",
   },
   {
     v: "context",
@@ -181,16 +183,24 @@ export const App = () => {
     return () => window.removeEventListener("hashchange", onHash)
   }, [])
 
-  // Same origin, no key: the number of flows and the build stamp are files written by the
-  // build. They have no reason to wait for sign-in.
+  // The build stamp is a file written by the build, same origin, open: it has no reason to
+  // wait for sign-in. The number of flows does — `protos.json` is behind the gate.
   useEffect(() => {
-    getFlows<unknown[]>()
-      .then((l) => setFlowCount(l.length))
-      .catch(() => setFlowCount(undefined))
     getVersion()
       .then(setVersion)
       .catch(() => setVersion(null))
   }, [])
+
+  const signedIn = status === "in"
+  useEffect(() => {
+    if (!signedIn) {
+      setFlowCount(undefined)
+      return
+    }
+    getFlows<unknown[]>()
+      .then((l) => setFlowCount(l.length))
+      .catch(() => setFlowCount(undefined))
+  }, [signedIn])
 
   const signIn = (candidate: string) => {
     setError("")
@@ -198,6 +208,14 @@ export const App = () => {
     checkKey(candidate)
       .then((r) => {
         writeKey(candidate)
+        // A flow's URL opened cold lands on the sign-in with `?next=` (the gate on the
+        // Sanctum server writes it): once the token is stored — and its cookie with it —
+        // go back there. Only a path of this origin: never a `//host` or a scheme.
+        const next = new URLSearchParams(window.location.search).get("next") ?? ""
+        if (next.startsWith("/") && !next.startsWith("//")) {
+          window.location.replace(next)
+          return
+        }
         setApiKey(candidate)
         setSummary(r)
         setStatus("in")
@@ -226,7 +244,6 @@ export const App = () => {
     setStatus("out")
   }
 
-  const signedIn = status === "in"
   const section = SECTIONS.find((s) => s.v === route.section) ?? SECTIONS[0]
   const corpus = corpusOf(route.param).key as CorpusKey
 
@@ -295,24 +312,28 @@ export const App = () => {
     }
   }
 
-  // The sign-in screen takes the place of the requested section: it occupies the field of
-  // vision where something is missing, without confiscating the rest of the console.
+  // Before sign-in there is ONE screen, whatever the URL asked for: the sign-in. Since
+  // 2026-09-11 nothing of the console is open — the gallery listed screens of an internal
+  // product, and the sidebar named sections a stranger has no business reading the names
+  // of. The navigation appears with the identity, and shows what that identity opens.
   const content = (): ReactNode => {
-    if (signedIn && !opens(section))
+    if (!signedIn) {
+      if (status === "checking")
+        return (
+          <div className="flex items-center gap-2 py-8">
+            <Spinner size="sm" />
+            <Text c="secondary">Checking the token…</Text>
+          </div>
+        )
+      return <Login onSubmit={signIn} error={error} busy={false} />
+    }
+    if (!opens(section))
       return (
         <NotYourRole
           detail={`The ${section.label} section is not open to the ${me?.role ?? ""} role. Ask an administrator if you need it.`}
         />
       )
-    if (!section.keyRequired || signedIn) return view()
-    if (status === "checking")
-      return (
-        <div className="flex items-center gap-2 py-8">
-          <Spinner size="sm" />
-          <Text c="secondary">Checking the key…</Text>
-        </div>
-      )
-    return <Login onSubmit={signIn} error={error} busy={false} />
+    return view()
   }
 
   const link = (section: string, param?: string) => ({
@@ -337,7 +358,7 @@ export const App = () => {
         </AppShell.SidebarHeader>
 
         <AppShell.SidebarBody className="flex flex-col gap-1">
-          {SECTIONS.filter(opens).map((s) =>
+          {(signedIn ? SECTIONS.filter(opens) : []).map((s) =>
             s.v === "context" ? (
               // The corpora are SUB-ENTRIES, with their count: what the header counters showed
               // without letting you go there, and what the row of buttons in the view
@@ -400,8 +421,7 @@ export const App = () => {
               label="Sign in"
               icon={<KeyRound size={16} />}
               suffix={status === "checking" ? <Spinner size="xs" /> : undefined}
-              // A closed section: the sign-in screen shows up in its place.
-              {...link("context")}
+              {...link("protos")}
             />
           )}
           {/* The build stamp, in the footer: "which commit is being served?" must not require
@@ -441,9 +461,11 @@ export const App = () => {
             </AppShell.SidebarTrigger>
             <div className="flex flex-col gap-1">
               <Title order={1} size="2xl" className={TYPO.title()}>
-                {section.v === "context" ? corpusOf(corpus).label : section.label}
+                {!signedIn ? "Sign in" : section.v === "context" ? corpusOf(corpus).label : section.label}
               </Title>
-              <Text c="secondary">{section.sub}</Text>
+              <Text c="secondary">
+                {signedIn ? section.sub : "Your access token opens the console and the flows."}
+              </Text>
             </div>
           </header>
           {content()}

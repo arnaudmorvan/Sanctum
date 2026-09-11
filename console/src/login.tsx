@@ -38,7 +38,7 @@ export const Login = ({
               Access token
             </Card.Title>
             <Card.Description>
-              This section reads the MCP server. Paste your{" "}
+              The console and the flows read the MCP server. Paste your{" "}
               <span className="font-mono">42ds_…</span> access token — the same one your MCP
               connector uses. It stays in your browser, and what you see next depends on
               your role.

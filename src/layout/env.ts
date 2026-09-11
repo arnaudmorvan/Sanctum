@@ -58,12 +58,29 @@ export const MCP_URL = (
   "https://mcp-42-production.up.railway.app"
 ).replace(/\/$/, "")
 
-/** The console's read key, SHARED with the console: the flows live under `/p/<slug>/` on
- *  the same origin as `/`, so `localStorage` is one and the same. A PO who signed into the
- *  console once does not type the key again in a flow — and the reverse holds. Same names
- *  as `console/src/mcp.ts` (the legacy one read as a fallback, never written). */
+/** The person's access token, SHARED with the console: the flows live under `/p/<slug>/`
+ *  on the same origin as `/`, so `localStorage` is one and the same. A PO who signed into
+ *  the console once does not type it again in a flow — and the reverse holds. The console
+ *  (`console/src/mcp.ts`) reads and writes it THROUGH these two functions: one owner.
+ *
+ *  Since 2026-09-11 the token is ALSO written to a cookie (`ds_token`). The flows are
+ *  static files behind a gate on the Sanctum server (`scripts/gate.mjs`), and a navigation,
+ *  an iframe or an asset request carries no header — a cookie is the only thing they carry.
+ *  The server never reads localStorage; the console never reads the cookie: two carriers
+ *  of one value, written together and cleared together. */
 const CONSOLE_KEY = "42ds.console.key"
 const CONSOLE_KEY_LEGACY = "42ds.console.cle"
+export const CONSOLE_COOKIE = "ds_token"
+
+const writeCookie = (v: string): void => {
+  try {
+    document.cookie = v
+      ? `${CONSOLE_COOKIE}=${encodeURIComponent(v)}; Path=/; Max-Age=31536000; SameSite=Lax; Secure`
+      : `${CONSOLE_COOKIE}=; Path=/; Max-Age=0; SameSite=Lax; Secure`
+  } catch {
+    /* no document (a test, a worker): the gate will ask again */
+  }
+}
 
 export const readConsoleKey = (): string => {
   try {
@@ -80,5 +97,6 @@ export const writeConsoleKey = (v: string): void => {
   } catch {
     /* without storage the key lives for the session */
   }
+  writeCookie(v)
 }
 

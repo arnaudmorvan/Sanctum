@@ -11,14 +11,20 @@ the PO describes their flow, the MCP server commits here, Railway builds and dep
 
 - **Console**: `/` — Prototypes, Context, Parity, Tokens, Observability, Sessions,
   Connectors, Quality, Access, Configuration. A single navigation, the sidebar (the kit's
-  AppShell + NavLink); the URL carries the section (`#/context/skills`). The gallery is
-  public; the other sections ask for the person's **access token** — since 2026-09-11 the
-  same `42ds_…` token as their MCP connector — and show what the ROLE opens: a `po` sees
+  AppShell + NavLink); the URL carries the section (`#/context/skills`). Everything — the
+  gallery and the flows included, since 2026-09-11 — asks for the person's **access
+  token**, the same `42ds_…` token as their MCP connector, and shows what the ROLE opens: a `po` sees
   Prototypes and Context, a `designer` adds Parity and Tokens, an `admin` everything. The
   list comes from the server (`me.sections` on `/console/summary.json`), which refuses the
   other routes with a 403; the console draws it and decides nothing. The MCP service's
   `DASHBOARD_KEY` still works as the operator's key.
-- **A flow**: `/p/<slug>/`
+- **A flow**: `/p/<slug>/` — behind the same token. The flows are static files, so the
+  gate is on the Sanctum server (`scripts/gate.mjs`): `/protos.json`, `/p/` and `/v/` are
+  served only to a browser whose `ds_token` cookie the MCP server recognises (the sign-in
+  writes it next to the stored token). A cold flow URL lands on the sign-in and comes back
+  after (`?next=`). The console owns no secret and no registry: it asks `/console/summary.json`
+  and caches the answer per token for a minute. Unreachable MCP ⇒ 503, never a pass.
+  `npm test` drives the gate with no network.
 
 ## For a PO: adding or evolving a flow
 
@@ -126,8 +132,9 @@ drive nothing), and they talk to the page (`src/layout/embed.ts`: `sanctum:state
 **Sync** — navigate on one side, the other follows. Picking a different screen on one
 side turns the sync off: that is the "two screens" question. The frames are rendered
 at a fixed width (1280 or 1440) and scaled to their column, so what is compared is the
-layout, not its response to half a window; "Fit" gives the native width. A live side
-is public; a past version that is not built yet asks for the console key, once.
+layout, not its response to half a window; "Fit" gives the native width. Both sides are
+behind the person's token like every flow; a past version that is not built yet asks the
+MCP server for its build, once.
 
 ## For a dev: getting a flow's code
 
