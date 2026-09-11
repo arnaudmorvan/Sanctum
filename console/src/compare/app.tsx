@@ -1042,8 +1042,9 @@ export const CompareApp = () => {
         {showKey && !key ? (
           <form onSubmit={submitKey} className="flex w-full flex-wrap items-center gap-2">
             <p className="text-gray-dark-400 text-xs">
-              Versions and their build go through the MCP server — the console's{" "}
-              <span className="font-mono">DASHBOARD_KEY</span>. It stays in this browser.
+              Versions and their build go through the MCP server — your{" "}
+              <span className="font-mono">42ds_…</span> access token, the one the console
+              takes. It stays in this browser.
             </p>
             <input
               type="password"

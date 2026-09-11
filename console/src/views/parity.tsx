@@ -3085,7 +3085,7 @@ export const ParityView = ({ selected = "" }: { selected?: string }) => {
         .catch((e: Error) =>
           setError(
             e instanceof AccessError
-              ? "Key rejected. It is DASHBOARD_KEY, in the MCP service variables."
+              ? "Token rejected. Sign in again with your 42ds_… access token — the one your MCP connector uses."
               : e.message,
           ),
         )
@@ -3130,8 +3130,8 @@ export const ParityView = ({ selected = "" }: { selected?: string }) => {
       <Alert
         type="info"
         variant="outline"
-        title="This section reads the MCP server: it needs the read key."
-        description="It is the DASHBOARD_KEY variable of the MCP service. It stays in your browser."
+        title="This section reads the MCP server: it needs your access token."
+        description="The same 42ds_… token your MCP connector uses. It stays in your browser."
       />
     )
   if (error && !data)
