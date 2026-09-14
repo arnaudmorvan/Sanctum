@@ -1,0 +1,18 @@
+{
+  "slug": "program-sessions-applications",
+  "title": "Program sessions applications",
+  "author": "Nadèje",
+  "summary": "Staff back-office: the list of program session applications, the onboarding sessions of one session, and its applicants.",
+  "created_at": "2026-09-14",
+  "updated_at": "2026-09-14",
+  "published_at": "2026-09-14T15:02:30Z",
+  "files": [
+    "data/sessions.ts",
+    "figma-source.json",
+    "generation.json",
+    "pages/session-applicants.tsx",
+    "pages/session-detail.tsx",
+    "pages/sessions.tsx",
+    "views.tsx"
+  ]
+}
