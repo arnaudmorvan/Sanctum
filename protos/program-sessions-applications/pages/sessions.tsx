@@ -36,7 +36,7 @@ function Breakdown({ session }: { session: ProgramSession }) {
 }
 
 export function Sessions() {
-  const [tab, setTab] = useState("active")
+  const [tab, setTab] = useState<"active" | "archived">("active")
 
   const rows = useMemo(
     () => PROGRAM_SESSIONS.filter((session) => (tab === "archived" ? session.archived : !session.archived)),
@@ -131,7 +131,7 @@ export function Sessions() {
             { value: "archived", label: "Archived" },
           ]}
           value={tab}
-          onChange={(value) => setTab(String(value))}
+          onChange={(value) => setTab(value as "active" | "archived")}
         />
       </div>
       <DataTable
