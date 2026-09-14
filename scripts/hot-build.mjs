@@ -234,14 +234,40 @@ const updateIndex = (entry) => {
   fs.writeFileSync(file, `${JSON.stringify(next, null, 2)}\n`)
 }
 
-/** Two renames: the served directory is never empty, not even for a millisecond. */
+/**
+ * Two renames: the served directory is never empty, not even for a millisecond.
+ *
+ * ⚠️ Except that the FIRST of the two cannot always happen, and that was the longest-lived
+ * defect of this repo: eight failures across five reports, 2026-09-08 to 2026-09-14, every
+ * one of them `EXDEV: cross-device link not permitted` on two paths in the SAME directory —
+ * which reads as impossible until you remember the container. `dist/` is baked by the CI
+ * build, so `dist/p/<slug>` lives in the image's LOWER overlayfs layer, and the kernel
+ * refuses to rename a lower-layer DIRECTORY: there is no atomic copy-up for one. It is why a
+ * brand-new slug never hit it (nothing to rename) and why every deployed flow hit it on its
+ * first hot build after a deploy.
+ *
+ * So the rename is attempted, and EXDEV alone falls back to removing the directory. What is
+ * given up is the invariant above — for the milliseconds between the removal and the second
+ * rename, a viewer hitting that flow gets a 404 instead of the old build. That is the whole
+ * cost, and it is paid only on the copy-up path: once the flow has been hot-built at least
+ * once, its directory is in the upper layer and the rename works again.
+ */
 const swapIn = (served, tmp) => {
   const old = `${served}.old-${Date.now()}`
   fs.mkdirSync(path.dirname(served), { recursive: true })
-  if (fs.existsSync(served)) fs.renameSync(served, old)
+  if (fs.existsSync(served)) {
+    try {
+      fs.renameSync(served, old)
+    } catch (e) {
+      if (e.code !== "EXDEV") throw e
+      fs.rmSync(served, { recursive: true, force: true })
+    }
+  }
   fs.renameSync(tmp, served)
   fs.rmSync(old, { recursive: true, force: true })
 }
+
+export const __swapIn = swapIn
 
 // One build at a time. `src/proto/` is a single working directory: two concurrent copies
 // would interleave. The chain never rejects — a failed build resolves with ok:false.
