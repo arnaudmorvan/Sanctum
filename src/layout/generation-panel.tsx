@@ -101,7 +101,7 @@ const RunRow = ({ run }: { run: Run }) => (
       </span>
     ) : null}
     <span className="truncate text-[10px] text-gray-dark-600">
-      {[run.model || "model not declared", run.author].filter(Boolean).join(" · ")}
+      {[run.model || "model not declared", run.who || run.author].filter(Boolean).join(" · ")}
     </span>
   </li>
 )

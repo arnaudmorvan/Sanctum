@@ -35,6 +35,8 @@ type RawRun = {
   run?: number
   at?: string
   author?: string
+  /** The person the token names, read server-side (since 2026-09-14). */
+  who?: string
   client?: string
   model?: string
   measured?: boolean
@@ -73,6 +75,7 @@ export type Run = {
   n: number
   at: string
   author: string
+  who: string
   model: string
   measured: boolean
   wallS: number
@@ -110,6 +113,7 @@ export const runs = (): Run[] =>
     n: r.run ?? 0,
     at: r.at ?? "",
     author: r.author ?? "",
+    who: r.who ?? "",
     model: r.model ?? "",
     measured: r.measured !== false,
     wallS: r.wall_s ?? 0,

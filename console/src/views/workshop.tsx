@@ -272,11 +272,21 @@ export const WorkshopCard = ({ card }: { card: Building }) => (
   <Card variant="outline" padding="lg" className="ds-worksite">
     <Card.Header className="flex-row items-start justify-between gap-3">
       <div className="flex min-w-0 flex-col gap-1">
-        <Card.Title className="truncate">{card.title || card.slug || "New flow"}</Card.Title>
+        <Card.Title className="truncate">
+          {card.title || card.slug || (card.kind === "figma" ? "New mockup" : "New flow")}
+        </Card.Title>
         <div className="flex flex-wrap gap-1">
-          <Badge color={card.shipped ? "green" : "brand"} variant="light" size="sm">
-            {card.shipped ? "published · deploying" : "in the works"}
-          </Badge>
+          {/* A mockup is built in the Figma FILE, not on this site: the badge says where
+              the work lands, and the card never reads "deploying" for one. */}
+          {card.kind === "figma" ? (
+            <Badge color="brand" variant="light" size="sm">
+              Figma mockup · in the works
+            </Badge>
+          ) : (
+            <Badge color={card.shipped ? "green" : "brand"} variant="light" size="sm">
+              {card.shipped ? "published · deploying" : "in the works"}
+            </Badge>
+          )}
           {card.slug ? (
             <Badge color="gray" variant="outline" size="sm">
               <span className="font-mono">{card.slug}</span>

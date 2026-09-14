@@ -3,7 +3,14 @@ import { Table } from "@42/ui-react/table"
 import { Text } from "@42/ui-react/text"
 import { Title } from "@42/ui-react/title"
 import { type ReactNode, useState } from "react"
-import type { GenerationFlow, Generations, Metrics, Pair } from "../mcp"
+import type {
+  FigmaRun,
+  GenerationFlow,
+  GenerationPerson,
+  Generations,
+  Metrics,
+  Pair,
+} from "../mcp"
 import { State, Stat, useRoute } from "../state"
 import { Heatmap, Series } from "./series"
 
@@ -159,7 +166,7 @@ const FlowRows = ({ flow }: { flow: GenerationFlow }) => {
                   .map((r) => (
                     <div key={r.run} className="flex flex-col">
                       <span className="font-mono text-xs">
-                        #{r.run} · {day(r.at)} · {r.author || "—"}
+                        #{r.run} · {day(r.at)} · {r.who || r.author || "—"}
                       </span>
                       <span className="font-mono text-[11px] text-(--c-muted) tabular-nums">
                         {r.measured === false ? "not measured" : duration(r.model_s)}
@@ -175,6 +182,244 @@ const FlowRows = ({ flow }: { flow: GenerationFlow }) => {
         </Table.Row>
       ) : null}
     </>
+  )
+}
+
+/** WHO generated what — one row per person, flows and mockups together. The row is keyed
+ *  on the token's id server-side, so "Arnaud", "arnaud" and "Arnaud Morvan" are one
+ *  person; a record written before the token was read falls back on the typed author,
+ *  and one with neither is the last row, "unknown". The time and the tokens sum MEASURED
+ *  runs only; the counts count every run — a person whose window the server lost still
+ *  made those screens. */
+const PeopleTable = ({ people }: { people: GenerationPerson[] }) => (
+  <Block
+    title="By person"
+    help="Who generated what, across the flows and the Figma mockups. Time in the model and tokens sum the measured runs; screens are the ones CREATED (a new pages/ file), mockups the distinct frames reported."
+  >
+    <Table size="sm">
+      <Table.Content>
+        <Table.Head>
+          <Table.Row>
+            <Table.HeaderCell>Person</Table.HeaderCell>
+            <Table.HeaderCell className="text-right">Flows</Table.HeaderCell>
+            <Table.HeaderCell className="text-right">Screens</Table.HeaderCell>
+            <Table.HeaderCell className="text-right">Mockups</Table.HeaderCell>
+            <Table.HeaderCell className="text-right">Runs</Table.HeaderCell>
+            <Table.HeaderCell className="text-right">In the model</Table.HeaderCell>
+            <Table.HeaderCell className="text-right">Per screen</Table.HeaderCell>
+            <Table.HeaderCell className="text-right">Tokens</Table.HeaderCell>
+            <Table.HeaderCell>Last</Table.HeaderCell>
+          </Table.Row>
+        </Table.Head>
+        <Table.Body>
+          {people.map((p) => (
+            <Table.Row key={p.id}>
+              <Table.Cell>
+                {p.name}
+                <Text c="muted" size="xs">
+                  {[p.id !== "?" ? p.id : "", ...p.clients].filter(Boolean).join(" · ") || "—"}
+                </Text>
+              </Table.Cell>
+              <Table.Cell className="text-right font-mono tabular-nums">
+                {p.flows.length}
+              </Table.Cell>
+              <Table.Cell className="text-right font-mono tabular-nums">{p.screens}</Table.Cell>
+              <Table.Cell className="text-right font-mono tabular-nums">
+                {p.mockups.length}
+              </Table.Cell>
+              <Table.Cell className="text-right font-mono tabular-nums">
+                {p.flow_runs + p.figma_runs}
+                {p.measured_runs < p.flow_runs + p.figma_runs ? (
+                  <Text c="muted" size="xs">
+                    {p.measured_runs} measured
+                  </Text>
+                ) : null}
+              </Table.Cell>
+              <Table.Cell className="text-right font-mono tabular-nums">
+                {duration(p.model_s)}
+              </Table.Cell>
+              <Table.Cell className="text-right font-mono tabular-nums">
+                {p.screens ? duration(p.per_screen_s) : "—"}
+              </Table.Cell>
+              <Table.Cell className="text-right font-mono tabular-nums">
+                ~{compact(p.tokens_in + p.tokens_out)}
+              </Table.Cell>
+              <Table.Cell className="font-mono text-xs">{day(p.last)}</Table.Cell>
+            </Table.Row>
+          ))}
+        </Table.Body>
+      </Table.Content>
+    </Table>
+  </Block>
+)
+
+/** The name on a mockup's row: the person the token names, else what the agent typed. */
+const whoOf = (r: FigmaRun): string => r.who || r.designer || "—"
+
+/** One mockup, and what it cost. Expanded: the tools it called and where its context
+ *  went — the same two lists a flow's row opens on. */
+const FigmaRows = ({ run }: { run: FigmaRun }) => {
+  const [open, setOpen] = useState(false)
+  const gate = run.gate
+  return (
+    <>
+      <Table.Row>
+        <Table.Cell>
+          <button
+            type="button"
+            onClick={() => setOpen((v) => !v)}
+            className="text-start hover:underline"
+          >
+            {run.screen || run.title || "mockup"}
+          </button>
+          <Text c="muted" size="xs">
+            <span className="font-mono">{run.skill || "—"}</span> · {day(run.at)}
+          </Text>
+        </Table.Cell>
+        <Table.Cell>{whoOf(run)}</Table.Cell>
+        <Table.Cell className="text-right font-mono tabular-nums">
+          {run.measured === false ? "not measured" : duration(run.model_s)}
+        </Table.Cell>
+        <Table.Cell className="text-right font-mono tabular-nums">
+          {run.measured === false ? "—" : duration(run.build_s)}
+        </Table.Cell>
+        <Table.Cell className="text-right font-mono tabular-nums">{run.calls ?? 0}</Table.Cell>
+        <Table.Cell className="text-right font-mono tabular-nums">
+          ~{compact(Math.floor(((run.in_chars ?? 0) + (run.out_chars ?? 0)) / 4))}
+        </Table.Cell>
+        <Table.Cell className="text-right font-mono tabular-nums">
+          {gate && gate.issues !== null ? (
+            <Badge color={gate.issues === 0 ? "green" : "red"} variant="light" size="sm">
+              {gate.issues === 0 ? "0" : gate.issues}
+            </Badge>
+          ) : (
+            "—"
+          )}
+        </Table.Cell>
+        <Table.Cell className="font-mono text-xs">{run.model || "—"}</Table.Cell>
+      </Table.Row>
+      {open ? (
+        <Table.Row>
+          <Table.Cell colSpan={8}>
+            <div className="grid gap-6 py-2 lg:grid-cols-3">
+              <div className="flex flex-col gap-1.5">
+                <Text size="sm" c="secondary">
+                  The window — measured
+                </Text>
+                <span className="font-mono text-[11px] text-(--c-muted) tabular-nums">
+                  {duration(run.wall_s)} wall · {duration(run.model_s)} in the model ·{" "}
+                  {duration(run.server_s)} server
+                  {run.away_s ? ` · ${duration(run.away_s)} away` : ""}
+                </span>
+                <span className="font-mono text-[11px] text-(--c-muted) tabular-nums">
+                  longest silence {duration(run.build_s)}
+                  {run.build_before ? ` (ended by ${run.build_before})` : " (the trailing one)"}{" "}
+                  · {duration(run.write_s)} before the report
+                </span>
+                {gate ? (
+                  <span className="font-mono text-[11px] text-(--c-muted) tabular-nums">
+                    gate: {gate.issues ?? "?"} issue{gate.issues === 1 ? "" : "s"} ·{" "}
+                    {gate.ds_nodes ?? "?"} DS nodes · {gate.custom_nodes ?? "?"} custom
+                  </span>
+                ) : null}
+                {run.report ? (
+                  <span className="truncate font-mono text-[11px] text-(--c-muted)">
+                    {run.report}
+                  </span>
+                ) : null}
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Text size="sm" c="secondary">
+                  Where the context goes — tokens
+                </Text>
+                {Object.entries(run.context ?? {})
+                  .sort((a, b) => b[1] - a[1])
+                  .map(([tool, chars]) => (
+                    <div key={tool} className="flex items-baseline justify-between gap-2">
+                      <span className="truncate font-mono text-xs">{tool}</span>
+                      <span className="shrink-0 font-mono text-xs tabular-nums">
+                        ~{compact(Math.floor(chars / 4))}
+                      </span>
+                    </div>
+                  ))}
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Text size="sm" c="secondary">
+                  Calls, by tool
+                </Text>
+                {Object.entries(run.tools ?? {})
+                  .sort((a, b) => b[1] - a[1])
+                  .map(([tool, n]) => (
+                    <div key={tool} className="flex items-baseline justify-between gap-2">
+                      <span className="truncate font-mono text-xs">{tool}</span>
+                      <span className="shrink-0 font-mono text-xs tabular-nums">{n}</span>
+                    </div>
+                  ))}
+              </div>
+            </div>
+          </Table.Cell>
+        </Table.Row>
+      ) : null}
+    </>
+  )
+}
+
+/** The Figma side. A mockup's window is closed by the report every Figma skill makes
+ *  mandatory — the counterpart of a flow's publication — and `build_s` is the LONGEST
+ *  silence of that window: the turn spent in the Figma MCP, which the server only sees as
+ *  the gap it leaves. A mockup whose report never came is not here, and none is invented
+ *  for it. */
+const FigmaBlock = ({ figma }: { figma: NonNullable<Generations["figma"]> }) => {
+  const o = figma.overall
+  return (
+    <Block
+      title="Figma mockups"
+      help="What a mockup cost to produce in the Figma file. Measured on the calls themselves, from the skill load (or the keys pre-flight) to the report that closes it; 'in Figma' is the longest silence of that window — the turn spent instantiating, node by node. The gate column is the TOKENS GATE the report carried."
+    >
+      {figma.error ? (
+        <Text c="muted" size="sm">
+          The mockups' file could not be read ({figma.error}) — the flows above are unaffected.
+        </Text>
+      ) : null}
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <Stat label="Mockups" value={o.screens} />
+        <Stat label="Generations" value={o.runs} />
+        <Stat label="Average per mockup" value={duration(o.per_run_s)} />
+        <Stat label="In Figma" value={duration(o.build_s)} />
+        <Stat label="In the model" value={duration(o.model_s)} />
+        <Stat
+          label="Gate at zero"
+          value={o.gated ? `${o.gate_zero} / ${o.gated}` : "—"}
+        />
+        <Stat label="Round trips" value={o.calls} />
+        <Stat label="Tokens (est.)" value={`~${compact(o.tokens_in + o.tokens_out)}`} />
+      </div>
+      <Table size="sm">
+        <Table.Content>
+          <Table.Head>
+            <Table.Row>
+              <Table.HeaderCell>Mockup</Table.HeaderCell>
+              <Table.HeaderCell>Who</Table.HeaderCell>
+              <Table.HeaderCell className="text-right">In the model</Table.HeaderCell>
+              <Table.HeaderCell className="text-right">In Figma</Table.HeaderCell>
+              <Table.HeaderCell className="text-right">Calls</Table.HeaderCell>
+              <Table.HeaderCell className="text-right">Tokens</Table.HeaderCell>
+              <Table.HeaderCell className="text-right">Gate</Table.HeaderCell>
+              <Table.HeaderCell>Model</Table.HeaderCell>
+            </Table.Row>
+          </Table.Head>
+          <Table.Body>
+            {figma.runs.map((r) => (
+              <FigmaRows key={r.n} run={r} />
+            ))}
+          </Table.Body>
+        </Table.Content>
+      </Table>
+      <Text c="muted" size="sm">
+        Click a mockup for the window, where its context went and the calls by tool. A
+        model is named only where the agent declared it in the gate.
+      </Text>
+    </Block>
   )
 }
 
@@ -195,15 +440,19 @@ const FlowRows = ({ flow }: { flow: GenerationFlow }) => {
 const GenerationBlock = ({ apiKey }: { apiKey: string }) => {
   const { data } = useRoute<Generations>("/console/generations.json", apiKey)
   if (!data) return null
-  if (!data.flows.length) {
+  const figma = data.figma
+  const hasFigma = (figma?.runs.length ?? 0) > 0 || Boolean(figma?.error)
+  const people = data.people ?? []
+  if (!data.flows.length && !hasFigma) {
     return (
       <Block
         title="Generation cost"
-        help="What a flow costs to produce — the time a generation took, how much of it was spent inside the model, the round trips and the volume, per flow and per screen."
+        help="What a flow or a Figma mockup costs to produce — the time a generation took, how much of it was spent inside the model, the round trips and the volume, per flow, per screen, per mockup and per person."
       >
         <Text c="muted" size="sm">
-          Nothing recorded yet. The measurement is written by the server at publication, so
-          the next flow published (or republished) writes the first record — flows published
+          Nothing recorded yet. The measurement is written by the server when a generation
+          closes — a flow at its publication, a Figma mockup at the report its skill files
+          last — so the next one writes the first record. Flows published and mockups reported
           before it existed carry none, and none is invented for them. Each flow also shows
           its own detail, in the "Generation" tile of its review rail.
         </Text>
@@ -212,47 +461,53 @@ const GenerationBlock = ({ apiKey }: { apiKey: string }) => {
   }
   const o = data.overall
   return (
-    <Block
-      title="Generation cost"
-      help="What a flow cost to produce. Measured on the calls themselves — the wall clock of one generation, how much of it was spent inside the model, and how much of THAT was composing rather than reading and deciding. The per-screen figure is ATTRIBUTED: one publication carries several screens, so a run's time is shared out in proportion to what was written. Tokens are an estimate — characters through this server ÷ 4."
-    >
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <Stat label="Average per screen" value={duration(o.per_screen_s)} />
-        <Stat label="Average per flow" value={duration(o.per_flow_s)} />
-        <Stat label="Screens generated" value={o.screens} />
-        <Stat label="Generations" value={o.runs} />
-        <Stat label="Time in the model" value={duration(o.model_s)} />
-        <Stat label="Composing" value={duration(o.write_s)} />
-        <Stat label="Round trips" value={o.calls} />
-        <Stat label="Tokens in (est.)" value={`~${compact(o.tokens_in)}`} />
-        <Stat label="Tokens out (est.)" value={`~${compact(o.tokens_out)}`} />
-      </div>
-      <Table size="sm">
-        <Table.Content>
-          <Table.Head>
-            <Table.Row>
-              <Table.HeaderCell>Flow</Table.HeaderCell>
-              <Table.HeaderCell className="text-right">Screens</Table.HeaderCell>
-              <Table.HeaderCell className="text-right">Per screen</Table.HeaderCell>
-              <Table.HeaderCell className="text-right">In the model</Table.HeaderCell>
-              <Table.HeaderCell className="text-right">Runs</Table.HeaderCell>
-              <Table.HeaderCell className="text-right">Tokens</Table.HeaderCell>
-              <Table.HeaderCell>Model</Table.HeaderCell>
-            </Table.Row>
-          </Table.Head>
-          <Table.Body>
-            {data.flows.map((f) => (
-              <FlowRows key={f.slug} flow={f} />
-            ))}
-          </Table.Body>
-        </Table.Content>
-      </Table>
-      <Text c="muted" size="sm">
-        Click a flow for the per-screen share, where its context went, and the run by run
-        detail. A model is named only where the agent declared it — the server cannot see
-        which one wrote a screen.
-      </Text>
-    </Block>
+    <>
+      {people.length ? <PeopleTable people={people} /> : null}
+      {data.flows.length ? (
+        <Block
+          title="Flows"
+          help="What a flow cost to produce. Measured on the calls themselves — the wall clock of one generation, how much of it was spent inside the model, and how much of THAT was composing rather than reading and deciding. The per-screen figure is ATTRIBUTED: one publication carries several screens, so a run's time is shared out in proportion to what was written. Tokens are an estimate — characters through this server ÷ 4."
+        >
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <Stat label="Average per screen" value={duration(o.per_screen_s)} />
+            <Stat label="Average per flow" value={duration(o.per_flow_s)} />
+            <Stat label="Screens generated" value={o.screens} />
+            <Stat label="Generations" value={o.runs} />
+            <Stat label="Time in the model" value={duration(o.model_s)} />
+            <Stat label="Composing" value={duration(o.write_s)} />
+            <Stat label="Round trips" value={o.calls} />
+            <Stat label="Tokens in (est.)" value={`~${compact(o.tokens_in)}`} />
+            <Stat label="Tokens out (est.)" value={`~${compact(o.tokens_out)}`} />
+          </div>
+          <Table size="sm">
+            <Table.Content>
+              <Table.Head>
+                <Table.Row>
+                  <Table.HeaderCell>Flow</Table.HeaderCell>
+                  <Table.HeaderCell className="text-right">Screens</Table.HeaderCell>
+                  <Table.HeaderCell className="text-right">Per screen</Table.HeaderCell>
+                  <Table.HeaderCell className="text-right">In the model</Table.HeaderCell>
+                  <Table.HeaderCell className="text-right">Runs</Table.HeaderCell>
+                  <Table.HeaderCell className="text-right">Tokens</Table.HeaderCell>
+                  <Table.HeaderCell>Model</Table.HeaderCell>
+                </Table.Row>
+              </Table.Head>
+              <Table.Body>
+                {data.flows.map((f) => (
+                  <FlowRows key={f.slug} flow={f} />
+                ))}
+              </Table.Body>
+            </Table.Content>
+          </Table>
+          <Text c="muted" size="sm">
+            Click a flow for the per-screen share, where its context went, and the run by run
+            detail. A model is named only where the agent declared it — the server cannot see
+            which one wrote a screen.
+          </Text>
+        </Block>
+      ) : null}
+      {figma && hasFigma ? <FigmaBlock figma={figma} /> : null}
+    </>
   )
 }
 

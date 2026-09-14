@@ -323,7 +323,13 @@ export type GenerationFile = {
 export type GenerationRun = {
   run: number
   at: string
+  /** What the agent typed (`publish_proto(author=…)`). */
   author?: string
+  /** The PERSON the token names — the registry's name and id, read server-side. Empty on
+   *  a record written before 2026-09-14 or under a shared token: "not known", never
+   *  "same as author". */
+  who?: string
+  who_id?: string
   client?: string
   model?: string
   measured?: boolean
@@ -366,6 +372,92 @@ export type GenerationFlow = {
   runs_detail: GenerationRun[]
 }
 
+/** One FIGMA MOCKUP — the window `submit_report` closed (every Figma skill ends on the
+ *  report), written by the MCP into `metrics/generations.json`. Same measured block as a
+ *  flow's run, plus `build_s`: the LONGEST silence of the window, the turn spent in the
+ *  Figma MCP node by node, which the server only sees as the gap it leaves. `gate` is
+ *  the TOKENS GATE result the report carried — `null` when it carried none, which is
+ *  "not measured", never zero issues. */
+export type FigmaRun = {
+  n: number
+  kind: "figma"
+  at: string
+  who?: string
+  who_id?: string
+  /** What the agent typed (`submit_report(designer=…)`). */
+  designer?: string
+  client?: string
+  skill?: string
+  screen?: string
+  title?: string
+  report?: string
+  model?: string
+  measured?: boolean
+  wall_s?: number
+  model_s?: number
+  server_s?: number
+  away_s?: number
+  calls?: number
+  write_s?: number
+  build_s?: number
+  build_before?: string
+  tools?: Record<string, number>
+  context?: Record<string, number>
+  in_chars?: number
+  out_chars?: number
+  gate?: { issues: number | null; ds_nodes: number | null; custom_nodes: number | null } | null
+}
+
+export type FigmaOverall = {
+  runs: number
+  measured_runs: number
+  screens: number
+  people: number
+  model_s: number
+  build_s: number
+  write_s: number
+  wall_s: number
+  away_s: number
+  calls: number
+  per_run_s: number
+  tokens_in: number
+  tokens_out: number
+  gated: number
+  gate_zero: number
+  skills: Record<string, number>
+  models: string[]
+  context: Record<string, number>
+  first: string
+  last: string
+}
+
+/** WHO generated what — one row per person, across the flows AND the mockups. Keyed on
+ *  the token's id server-side (`generation.people`), so three spellings of one name are
+ *  one row; a record with no token and no author is the `?` row, last. The measured
+ *  sums count MEASURED runs only; the counts count all of them. */
+export type GenerationPerson = {
+  id: string
+  name: string
+  flows: string[]
+  flow_runs: number
+  /** Screens CREATED (a new `pages/` file), wherever they were created. */
+  screens: number
+  figma_runs: number
+  mockups: string[]
+  measured_runs: number
+  model_s: number
+  build_s: number
+  write_s: number
+  calls: number
+  tokens_in: number
+  tokens_out: number
+  per_screen_s: number
+  clients: string[]
+  models: string[]
+  first: string
+  last: string
+}
+
 export type Generations = {
   overall: {
     flows: number
@@ -383,6 +475,11 @@ export type Generations = {
   }
   flows: GenerationFlow[]
   chars_per_token: number
+  /** The Figma side (since 2026-09-14). `error` is set — and the runs empty — when the
+   *  central file could not be read: the flows' half must not go down with it. Absent
+   *  on a server older than this. */
+  figma?: { overall: FigmaOverall; runs: FigmaRun[]; error?: string }
+  people?: GenerationPerson[]
 }
 
 /** One call inside a session's timeline. `err` carries what the exception said, on the
@@ -553,6 +650,10 @@ export type Deletion = { ok: true; slug: string; commit: string; files: number }
  *  there must not need a deployment over here. */
 export type Building = {
   id: string
+  /** `flow` (published to the site) or `figma` (a mockup, built in the Figma file — no
+   *  deployment to wait for, so the card goes as soon as the report is filed). Absent
+   *  on a server older than 2026-09-14: a flow. */
+  kind?: "flow" | "figma" | string
   slug: string
   title: string
   author: string
