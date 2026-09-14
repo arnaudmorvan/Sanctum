@@ -67,7 +67,7 @@ export const Feedback = () => {
                   data={PERFORMANCE_OPTIONS}
                   value={performance}
                   onChange={setPerformance}
-                  renderItem={(item) => <SparkLabel label={item.label ?? String(item.value)} />}
+                  renderItem={(item) => <SparkLabel label={String(item.label ?? item.value)} />}
                 />
               </div>
 
@@ -80,7 +80,7 @@ export const Feedback = () => {
                   data={EXCHANGE_OPTIONS}
                   value={exchange}
                   onChange={setExchange}
-                  renderItem={(item) => <SparkLabel label={item.label ?? String(item.value)} />}
+                  renderItem={(item) => <SparkLabel label={String(item.label ?? item.value)} />}
                 />
               </div>
 
@@ -93,7 +93,7 @@ export const Feedback = () => {
                   data={ATTITUDE_OPTIONS}
                   value={attitude}
                   onChange={setAttitude}
-                  renderItem={(item) => <SparkLabel label={item.label ?? String(item.value)} />}
+                  renderItem={(item) => <SparkLabel label={String(item.label ?? item.value)} />}
                 />
               </div>
             </div>
