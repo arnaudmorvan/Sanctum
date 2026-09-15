@@ -331,6 +331,9 @@ export type GenerationRun = {
   who?: string
   who_id?: string
   client?: string
+  /** The skill the window opened on: `proto-build-flow` (from a prompt) or
+   *  `proto-from-figma` (from frames). Absent on records written before 2026-09-15. */
+  skill?: string
   model?: string
   measured?: boolean
   wall_s?: number
@@ -341,6 +344,8 @@ export type GenerationRun = {
   server_s?: number
   away_s?: number
   calls?: number
+  /** Calls that RAISED inside the window — a refused key, a rejected publication. */
+  errors?: number
   in_chars?: number
   out_chars?: number
   /** Tool → characters served. Sums to `in_chars`; past the top consumers the tail is
@@ -366,6 +371,10 @@ export type GenerationFlow = {
   per_screen_s: number
   models: string[]
   context: Record<string, number>
+  /** Failed calls across the flow's runs, and the skills its runs opened on
+   *  (since 2026-09-15; absent on an older server). */
+  errors?: number
+  skills?: Record<string, number>
   first: string
   last: string
   detail: GenerationFile[]
@@ -398,6 +407,7 @@ export type FigmaRun = {
   server_s?: number
   away_s?: number
   calls?: number
+  errors?: number
   write_s?: number
   build_s?: number
   build_before?: string
@@ -444,6 +454,10 @@ export type GenerationPerson = {
   screens: number
   figma_runs: number
   mockups: string[]
+  /** Reports filed — the quality curve's points (since 2026-09-15). */
+  reports: number
+  /** Failed calls across this person's generations. */
+  errors: number
   measured_runs: number
   model_s: number
   build_s: number
@@ -480,6 +494,72 @@ export type Generations = {
    *  on a server older than this. */
   figma?: { overall: FigmaOverall; runs: FigmaRun[]; error?: string }
   people?: GenerationPerson[]
+  /** The REPORTS — the quality curve's points, the third thing a person makes here. Not
+   *  a measured generation: counted, with who filed it, and whether the gate was at zero. */
+  reports?: { overall: ReportsOverall; rows: ReportRow[]; error?: string }
+  /** The three kinds side by side, then each split by skill — one row per type (skill
+   *  "") followed by its skill rows, in the fixed order figma · flow · report. A type
+   *  with nothing is still a row, at zero. Computed server-side (`generation.by_type`). */
+  types?: GenerationType[]
+  /** The generations that paid for at least one failed call, newest first. */
+  errors?: ErrorRun[]
+}
+
+export type ReportRow = {
+  kind: string
+  at: string
+  who?: string
+  who_id?: string
+  designer?: string
+  screen?: string
+  skill?: string
+  issues?: number | null
+  report?: string
+}
+
+export type ReportsOverall = {
+  runs: number
+  people: number
+  kinds: Record<string, number>
+  skills: Record<string, number>
+  gated: number
+  gate_zero: number
+  first: string
+  last: string
+}
+
+export type GenerationType = {
+  type: "figma" | "flow" | "report" | string
+  label: string
+  /** "" on the type's own row; the skill's name on its split rows. */
+  skill: string
+  runs: number
+  measured_runs: number
+  units: number
+  unit: "mockups" | "screens" | "reports" | string
+  model_s: number
+  per_unit_s: number
+  /** Which second number this type carries: `write_s` (composing) on a flow, `build_s`
+   *  (in Figma) on a mockup, "" on a report. */
+  focus: "write_s" | "build_s" | "" | string
+  focus_s: number
+  calls: number
+  errors: number
+  tokens_in: number
+  tokens_out: number
+  people: number
+  first: string
+  last: string
+}
+
+export type ErrorRun = {
+  type: "figma" | "flow" | string
+  name: string
+  who: string
+  at: string
+  errors: number
+  calls: number
+  skill?: string
 }
 
 /** One call inside a session's timeline. `err` carries what the exception said, on the

@@ -114,7 +114,7 @@ const SECTIONS: Section[] = [
     label: "Observability",
     icon: <Activity size={16} />,
     keyRequired: true,
-    sub: "Usage of the MCP server: calls, tools, clients, latency.",
+    sub: "What each kind of generation takes, who made what, what broke — and the MCP server under it.",
   },
   {
     v: "sessions",
