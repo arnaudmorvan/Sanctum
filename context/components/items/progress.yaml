@@ -1,0 +1,88 @@
+# items/progress.yaml — detail complet du composant 'progress'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: progress
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+progress:
+  figma_key: f02503a89212f0351f149763eeb021c03f47af11
+  figma_node_id: "1085:57382"
+  component_type: COMPONENT_SET
+  instanciable: false
+  default_variant_id: "22319:2"
+  key_variants:
+    progress-0-color-white: "22319:2"
+    progress-0-color-pink: "1086:160"
+    progress-10-color-pink: "21752:495"
+    progress-20-color-pink: "21752:508"
+    progress-30-color-pink: "21752:521"
+    progress-40-color-pink: "21752:534"
+    progress-50-color-pink: "21752:547"
+    progress-60-color-pink: "21752:560"
+    progress-70-color-pink: "21752:573"
+    progress-80-color-pink: "21752:586"
+    progress-90-color-pink: "21752:599"
+    progress-100-color-pink: "21752:612"
+    progress-100-success-color-pink: "21752:625"
+    progress-10-color-white: "22319:15"
+    progress-20-color-white: "22319:28"
+    progress-30-color-white: "22319:41"
+    progress-40-color-white: "22319:54"
+    progress-50-color-white: "22319:67"
+    progress-60-color-white: "22319:80"
+    progress-70-color-white: "22319:93"
+    progress-80-color-white: "22319:106"
+    progress-90-color-white: "22319:119"
+    progress-100-color-white: "22319:132"
+    progress-100-success-color-white: "22319:145"
+  page: "      ↳ Progress"
+  description: "Progress bar - a determinate value drawn on a horizontal track. 12 variants on one axis. AXES - Progress (0%, 10% ... 90%, 100%, 100% success): the runtime value frozen as 12 steps. In code this is a number, never an axis. The 100% success value also smuggles a status into the value axis. - showHeader: the title row above the bar. - title (TEXT): the header caption. - percentage (TEXT): the value caption. One property, reused by the top, right and bottom labels at once. - showRightLabel / showBottomLabel: where the value caption sits - inline after the bar, or under it. - showTopTooltip / showBottomTooltip: a floating bubble over or under the fill. COMPOSITION - Vertical auto-layout, 320 wide by default and RESIZABLE since 2026-08-31, height hug. Widen the instance and the track follows. - Track plus filled range; the fill is the only thing the Progress axis changes, and it is now PROPORTIONAL: the fill carries a SCALE constraint and the track a STRETCH one, so Progress=50% is half the bar at 320, at 800 and at 1200. Before 2026-08-31 the bar was frozen at 320 and the fill was drawn in absolute pixels. - No slot and no nested instance: every label is baked in. - Inline determinate progress only. For indeterminate activity use the loading indicator; the ring counterpart is CircularProgress. ACCESSIBILITY - role=progressbar with value / min / max is required; Ark wires it from the value prop. - 100% success must not be colour-only: keep a glyph or a text confirmation. - Any sweep animation must respect reduced-motion. CODE - @42/ui-react Progress - Progress -&gt; value (a number in min..max; null = indeterminate) plus defaultValue, min, max, onChange. 100% success has no preset: use color green and add your own glyph. - title / percentage have no props: the React bar renders no label. Compose them around the bar. - React-only: size xs..xl, variant filled | gradient, color via data-color, gradient config. KNOWN ISSUE - percentage CANNOT follow the Progress axis. It is a single set-level TEXT property with one default (0%) shared by all 12 variants - Figma has no way to make a text default vary per variant. Picking Progress=70% leaves the caption reading 0% until you type 70% yourself. Always retype it; treat a mismatched pair as a bug in the screen, not in the component. - The same percentage property feeds three separate labels, so the top, right and bottom captions can never disagree - which is right, but it also means you cannot show a value and a target at once. - No size and no color axis at all. - Description rewritten 2026-08-28: the previous one documented a label axis (false | right | bottom | top text % ...) and 84 key variants. That axis is gone; it is now the five show* booleans, and the set holds 12 variants."
+  size: {w: 320, h: HUG}
+  direction: VERTICAL
+  gap: 8
+  align: {counter: CENTER}
+  nested_instances:
+    - name: Tooltip top
+      depth: 3
+      visible: false
+      main_component: Tooltip
+      variant_axes:
+        positioning: [none, bottom, bottom-end, bottom-start, end, start, top, top-start, top-end]
+      bool_props:
+        {showLabel: true, showContentSlot: false, showSupportingText: false}
+    - name: Tooltip bottom
+      depth: 3
+      visible: false
+      main_component: Tooltip
+      variant_axes:
+        positioning: [none, bottom, bottom-end, bottom-start, end, start, top, top-start, top-end]
+      bool_props:
+        {showContentSlot: false, showLabel: true, showSupportingText: false}
+  text_nodes:
+    - {name: Title, role: title, sample: Title}
+    - {name: Top percentage, sample: "0%"}
+    - {name: Right label, role: label, sample: "0%"}
+    - {name: Bottom label, role: label, sample: "0%"}
+  how_to_use: "1. Instancier via key_variants (jamais le ComponentSet).\n2. Exemple : const variantNode = await figma.getNodeByIdAsync(key_variants[\"<variant-slug>\"]); const inst = variantNode.createInstance()\n3. setTxt(inst, \"Title\", \"Title\")\n4. Si besoin masquer les actions : inst.findOne(n => n.name === \"Tooltip top\")?.setProperties({\"showContentSlot\":false,\"showLabel\":false,\"showSupportingText\":false})"
+  variants:
+    color: [pink, white]
+    percentage: "<text>"
+    progress: ["0%", "10%", "100%", "100% success", "20%", "30%", "40%", "50%", "60%", "70%", "80%", "90%"]
+    showbottomlabel: [false, true]
+    showbottomtooltip: [false, true]
+    showheader: [false, true]
+    showrightlabel: [false, true]
+    showtoptooltip: [false, true]
+    title: "<text>"
+  defaults:
+    color: white
+    percentage: "0%"
+    progress: "0%"
+    showbottomlabel: false
+    showbottomtooltip: false
+    showheader: false
+    showrightlabel: false
+    showtoptooltip: false
+    title: Title
+  notes: ["Variant axis name \"Progress\" was normalised to \"progress\" (use lowercase slugs for consistency).", "Variant axis name \"Color\" was normalised to \"color\" (use lowercase slugs for consistency)."]
