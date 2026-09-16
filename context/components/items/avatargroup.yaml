@@ -1,0 +1,24 @@
+# items/avatargroup.yaml — detail complet du composant 'avatargroup'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: avatargroup
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+avatargroup:
+  figma_key: c921a3aec3bfed1a99e5aabd9fb3b9cd9e2d844d
+  figma_node_id: "22350:107927"
+  component_type: COMPONENT
+  instanciable: true
+  page: "      ↳ Avatars "
+  description: "AvatarGroup - an overlapping stack of avatars. AXES - No variant axis and no component property. Everything happens in the slot. SLOT - content: a horizontal auto-layout whose itemSpacing is NEGATIVE (-16). That is what makes the avatars overlap. Add or remove Avatar instances there and the width follows. Do not move the avatars by hand - x is ignored inside an auto-layout; change itemSpacing. COMPOSITION - Four Avatar instances at xl (64) overlapping by 16, so 208 x 64. Every avatar in one stack must share the same size. - There is no plus-N counter. If you need one, add a last Avatar with textInitials on and type the count into initials. ACCESSIBILITY - The stack shows faces and no names. The participants must be readable as text or from a tooltip, never inferred from the pile. CODE - @42/ui-react AvatarGroup, SHIPPED, exported from the avatar folder alongside Avatar. - It takes only spacing (xs to xl - overlap 8 / 10 / 12 / 14 / 16) and children. It does NOT resize or restyle its children: set size and color on each Avatar. - spacing=xl is the value that matches this component's -16. - The code adds a 2 px cutout border (white in light, gray-dark-900 in dark) on every child so the avatars read as cut out against the page. That border is NOT drawn here, so the coded result will look slightly different. KNOWN ISSUE - The instances carry no property: the photos, the count and the fallback showing on the third avatar are all deep overrides. - Rebuilt on the 64 rung 2026-09-10: it was four 56 px avatars overlapping by 20. Written 2026-09-10."
+  size: {w: 208, h: 64}
+  text:
+    sample: OR
+    fill: "@utility-gray-600"
+    size: 22
+    weight: SemiBold
+    lineHeight: 32
+  slots:
+    content: {slot_id: "22350:107891", node_type: SLOT, depth: 1}
+  how_to_use: 1. Instancier le composant via figma_node_id (createInstance()).
