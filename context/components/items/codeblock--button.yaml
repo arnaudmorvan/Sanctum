@@ -1,0 +1,33 @@
+# items/codeblock--button.yaml — detail complet du composant 'codeblock--button'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: codeblock--button
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+codeblock--button:
+  figma_key: 9d380e093d6d979c9c5c25df067225ce3bf2c04c
+  figma_node_id: "23230:37655"
+  component_type: COMPONENT_SET
+  instanciable: false
+  default_variant_id: "23230:37643"
+  key_variants:
+    state-default: "23230:37643"
+    state-hover: "23230:37646"
+    state-focus: "23230:37649"
+    state-disabled: "23230:37652"
+  page: "      ↳ CodeBlock"
+  description: "AXES - state (default, hover, focus, disabled): the four visual states. Runtime states, published so a mockup can show them. - Icon swap: an INSTANCE_SWAP property, default copy. Any UI system icon goes in. - 4 variants. COMPOSITION - 24 x 24 fixed, radius 4. No fill at rest, bg-hover on hover, Focus rings/focus-ring on focus, 50 percent opacity when disabled. - The icon is 14 x 14, colour bound to text-secondary. - DELIBERATELY smaller than the xs floor of ActionIcon, which is sized for general-purpose use, not a compact strip floating over code. Never instantiate actionicon in its place. ACCESSIBILITY - The icon carries the whole meaning, so the button needs its own accessible name, and that name changes with what it does: Copy / Copied, Show more / Show less. - The tooltip is the label, not a decoration. CODE - @42/ui-react CodeBlockButton, exported as CodeBlock.Button, in react/kit v0.8.0. - state has NO prop: hover, focus and disabled are CSS states (hover:bg-(--c-soft), focus-visible:ring-2 ring-brand-500, disabled:opacity-50). The axis exists so a mockup can show them. - Icon swap -> children. The component takes any node, not an icon name. - asChild is supported through HTMLArkProps; that is how the built-in buttons wrap themselves in a Tooltip."
+  size: {w: 24, h: 24}
+  radius: 4
+  direction: HORIZONTAL
+  align: {primary: CENTER, counter: CENTER}
+  slots:
+    Icon: {slot_id: "23230:37644", node_type: INSTANCE, depth: 1}
+  nested_instances:
+    - {name: Icon, depth: 1, main_component: copy}
+  how_to_use: "1. Instancier via key_variants (jamais le ComponentSet).\n2. Exemple : const variantNode = await figma.getNodeByIdAsync(key_variants[\"<variant-slug>\"]); const inst = variantNode.createInstance()"
+  variants:
+    icon-swap: "<instance>"
+    state: [default, disabled, focus, hover]
+  defaults: {icon-swap: "→14574:1542", state: default}
