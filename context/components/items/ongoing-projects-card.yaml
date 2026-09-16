@@ -1,0 +1,44 @@
+# items/ongoing-projects-card.yaml — detail complet du composant 'ongoing-projects-card'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: ongoing-projects-card
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+ongoing-projects-card:
+  figma_key: e26d667c13a0742bbf1e503c099574a860126339
+  figma_node_id: "17598:5477"
+  component_type: COMPONENT_SET
+  instanciable: false
+  default_variant_id: "17598:5478"
+  key_variants:
+    state-empty-device-desktop: "17598:5478"
+    state-empty-device-mobile: "17598:5485"
+    state-default-device-desktop: "17598:5492"
+    state-default-device-mobile: "17598:5498"
+  page: "      ↳ Card"
+  size: {w: FILL, h: HUG}
+  padding: {all: 24}
+  radius: 4
+  direction: HORIZONTAL
+  gap: 24
+  align: {counter: CENTER}
+  fills: "@bg-primary"
+  stroke: {color: "@border-secondary", width: 1, align: INSIDE}
+  text:
+    sample: You have no ongoing projects
+    fill: "@text-primary"
+    size: 20
+    weight: Bold
+    lineHeight: 30
+  text_nodes:
+    - {name: You have no ongoing projects, sample: You have no ongoing projects}
+    - name: "Don’t know where to start? Visit the"
+      sample: "Don’t know where to start? Visit the"
+    - {name: Holygraph, sample: Holygraph}
+  how_to_use: "1. Instancier via key_variants (jamais le ComponentSet).\n2. Exemple : const variantNode = await figma.getNodeByIdAsync(key_variants[\"<variant-slug>\"]); const inst = variantNode.createInstance()\n3. setTxt(inst, \"You have no ongoing projects\", \"You have no ongoing projects\")\n4. setTxt(inst, \"Don’t know where to start? Visit the\", \"Don’t know where to start? Visit the\")"
+  variants:
+    device: [desktop, mobile]
+    state: [default, empty]
+  defaults: {device: desktop, state: empty}
+  notes: ["Variant axis name \"State\" was normalised to \"state\" (use lowercase slugs for consistency).", "Variant axis name \"Device\" was normalised to \"device\" (use lowercase slugs for consistency)."]
