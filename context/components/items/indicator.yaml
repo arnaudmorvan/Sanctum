@@ -1,0 +1,129 @@
+# items/indicator.yaml — detail complet du composant 'indicator'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: indicator
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+indicator:
+  figma_key: 79c7246071d3847271081ca8a53b2f72f9b3f5c0
+  figma_node_id: "23261:51593"
+  component_type: COMPONENT_SET
+  instanciable: false
+  default_variant_id: "23261:51087"
+  key_variants:
+    type-dot-size-md-color-brand: "23261:51087"
+    type-dot-size-xs-color-brand: "23261:51073"
+    type-label-size-xs-color-brand: "23261:51076"
+    type-dot-size-sm-color-brand: "23261:51080"
+    type-label-size-sm-color-brand: "23261:51083"
+    type-label-size-md-color-brand: "23261:51090"
+    type-dot-size-lg-color-brand: "23261:51094"
+    type-label-size-lg-color-brand: "23261:51097"
+    type-dot-size-xl-color-brand: "23261:51101"
+    type-label-size-xl-color-brand: "23261:51104"
+    type-dot-size-xs-color-gray: "23261:51108"
+    type-label-size-xs-color-gray: "23261:51111"
+    type-dot-size-sm-color-gray: "23261:51115"
+    type-label-size-sm-color-gray: "23261:51118"
+    type-dot-size-md-color-gray: "23261:51122"
+    type-label-size-md-color-gray: "23261:51125"
+    type-dot-size-lg-color-gray: "23261:51129"
+    type-label-size-lg-color-gray: "23261:51132"
+    type-dot-size-xl-color-gray: "23261:51136"
+    type-label-size-xl-color-gray: "23261:51139"
+    type-dot-size-xs-color-red: "23261:51314"
+    type-label-size-xs-color-red: "23261:51317"
+    type-dot-size-sm-color-red: "23261:51321"
+    type-label-size-sm-color-red: "23261:51324"
+    type-dot-size-md-color-red: "23261:51328"
+    type-label-size-md-color-red: "23261:51331"
+    type-dot-size-lg-color-red: "23261:51335"
+    type-label-size-lg-color-red: "23261:51338"
+    type-dot-size-xl-color-red: "23261:51342"
+    type-label-size-xl-color-red: "23261:51345"
+    type-dot-size-xs-color-orange: "23261:51349"
+    type-label-size-xs-color-orange: "23261:51352"
+    type-dot-size-sm-color-orange: "23261:51356"
+    type-label-size-sm-color-orange: "23261:51359"
+    type-dot-size-md-color-orange: "23261:51363"
+    type-label-size-md-color-orange: "23261:51366"
+    type-dot-size-lg-color-orange: "23261:51370"
+    type-label-size-lg-color-orange: "23261:51373"
+    type-dot-size-xl-color-orange: "23261:51377"
+    type-label-size-xl-color-orange: "23261:51380"
+    type-dot-size-xs-color-yellow: "23261:51384"
+    type-label-size-xs-color-yellow: "23261:51387"
+    type-dot-size-sm-color-yellow: "23261:51391"
+    type-label-size-sm-color-yellow: "23261:51394"
+    type-dot-size-md-color-yellow: "23261:51398"
+    type-label-size-md-color-yellow: "23261:51401"
+    type-dot-size-lg-color-yellow: "23261:51405"
+    type-label-size-lg-color-yellow: "23261:51408"
+    type-dot-size-xl-color-yellow: "23261:51412"
+    type-label-size-xl-color-yellow: "23261:51415"
+    type-dot-size-xs-color-green: "23261:51419"
+    type-label-size-xs-color-green: "23261:51422"
+    type-dot-size-sm-color-green: "23261:51426"
+    type-label-size-sm-color-green: "23261:51429"
+    type-dot-size-md-color-green: "23261:51433"
+    type-label-size-md-color-green: "23261:51436"
+    type-dot-size-lg-color-green: "23261:51440"
+    type-label-size-lg-color-green: "23261:51443"
+    type-dot-size-xl-color-green: "23261:51447"
+    type-label-size-xl-color-green: "23261:51450"
+    type-dot-size-xs-color-blue: "23261:51454"
+    type-label-size-xs-color-blue: "23261:51457"
+    type-dot-size-sm-color-blue: "23261:51461"
+    type-label-size-sm-color-blue: "23261:51464"
+    type-dot-size-md-color-blue: "23261:51468"
+    type-label-size-md-color-blue: "23261:51471"
+    type-dot-size-lg-color-blue: "23261:51475"
+    type-label-size-lg-color-blue: "23261:51478"
+    type-dot-size-xl-color-blue: "23261:51482"
+    type-label-size-xl-color-blue: "23261:51485"
+    type-dot-size-xs-color-purple: "23261:51489"
+    type-label-size-xs-color-purple: "23261:51492"
+    type-dot-size-sm-color-purple: "23261:51496"
+    type-label-size-sm-color-purple: "23261:51499"
+    type-dot-size-md-color-purple: "23261:51503"
+    type-label-size-md-color-purple: "23261:51506"
+    type-dot-size-lg-color-purple: "23261:51510"
+    type-label-size-lg-color-purple: "23261:51513"
+    type-dot-size-xl-color-purple: "23261:51517"
+    type-label-size-xl-color-purple: "23261:51520"
+    type-dot-size-xs-color-pink: "23261:51524"
+    type-label-size-xs-color-pink: "23261:51527"
+    type-dot-size-sm-color-pink: "23261:51531"
+    type-label-size-sm-color-pink: "23261:51534"
+    type-dot-size-md-color-pink: "23261:51538"
+    type-label-size-md-color-pink: "23261:51541"
+    type-dot-size-lg-color-pink: "23261:51545"
+    type-label-size-lg-color-pink: "23261:51548"
+    type-dot-size-xl-color-pink: "23261:51552"
+    type-label-size-xl-color-pink: "23261:51555"
+  page: "      ↳ Indicator"
+  description: "AXES - type (dot, label): the shape axis. dot = bare circle, no text; label = counter pill whose width hugs its content (min-width = height). - size (xs, sm, md, lg, xl): dot diameter 6/8/10/12/14; label height 12/14/16/18/20, padding 2/4/4/6/6, counter 8/9/10/11/12 px. - color (brand, gray, red, orange, yellow, green, blue, purple, pink): palette axis, React hue names. - label (TEXT), withBorder (BOOLEAN), processing (BOOLEAN): composition, not shape. - 90 variants, type x size x color flattened into one set. No state axis: an indicator is not interactive. COMPOSITION - The component IS the pastille alone. It does not wrap its host: lay it over an Avatar / ActionIcon / icon by absolute position. On a circular host, pull it inward by roughly 15% of the diameter (-4/-5/-6/-7/-9 by size) so it sits ON the rim instead of floating past the bounding-box corner. - Surface bound to bg-*-solid (brand, red, orange, green, purple, pink) or utility-*-500 (gray, yellow, blue). Counter in text-primary-inverse. Radius radius-full on dot, radius-xl on label. - Ring = withBorder: a 2 px INSIDE stroke bound to bg-solid, the floor of the page, so the pastille reads as cut into whatever it overlays. On a coloured surface (a gradient card, a tinted panel) rebind it to that surface. - Pulse = processing: a 2 px ring at 50% in the palette colour. It is the static transcription of the React CSS animate-ping (a filled disc scaling 1 to 2, opacity 0.75 to 0) - Figma can only show one frame of it. - The counter is Kode Mono Bold: it is a quantity (foundations-typography). A short text that NAMES rather than counts (New, Beta) belongs to Badge, not here. ACCESSIBILITY - The pastille is decorative (aria-hidden in React): the status must be readable in the surrounding text, never in the hue alone. - Counters at 8 and 9 px (xs, sm) are under any legible threshold for a digit: use those two sizes as dots, not as counters. - The counter binds to text-primary-inverse, which FLIPS with the mode: dark #030d20 in Dark, white in Light - the same pairing Badge variant=filled ships. Measured, it only holds in Dark: every palette clears 5:1 there except purple (4.0:1). - In LIGHT mode the white counter fails AA on eight of the nine palettes (brand 3.4:1, gray 3.6, red 3.3, orange 3.2, yellow 2.1, green 2.8, blue 3.3, pink 3.4); only purple passes at 4.5:1. The counter is a duplicate of information available elsewhere, never the only carrier of it - and yellow in Light is unusable. Inherited drift, filed in ds-actions. CODE - React: Indicator (@42/ui-react). The Figma type axis is DERIVED, not a prop: label set renders the badge, label absent renders the dot. size, color, label, withBorder and processing map one to one. - React props with no Figma equivalent, all placement or logic: position (9 cells), offset, maxValue, showZero, disabled, inline, zIndex, and radius (Figma pins the xl default). - React palettes teal and cyan have NO token in this DS, neither semantic nor utility ramp. gray, yellow and blue fall back on utility-*-500 for want of a bg-*-solid. Filed in ds-actions. - The counter drops to 8 px where the smallest typography token is text-xs (12): only size=xl has its font size bound."
+  size: {w: 10, h: 10}
+  radius: 9999
+  direction: HORIZONTAL
+  align: {primary: CENTER, counter: CENTER}
+  fills: "@bg-blue-solid"
+  slots:
+    Pulse: {slot_id: "23261:51088", node_type: FRAME, depth: 1}
+    Ring: {slot_id: "23261:51089", node_type: FRAME, depth: 1}
+  how_to_use: "1. Instancier via key_variants (jamais le ComponentSet).\n2. Exemple : const variantNode = await figma.getNodeByIdAsync(key_variants[\"<variant-slug>\"]); const inst = variantNode.createInstance()"
+  variants:
+    color: [blue, brand, gray, green, orange, pink, purple, red, yellow]
+    label: "<text>"
+    processing: [false, true]
+    size: [lg, md, sm, xl, xs]
+    type: [dot, label]
+    withborder: [false, true]
+  defaults:
+    color: brand
+    label: "3"
+    processing: false
+    size: md
+    type: dot
+    withborder: false
