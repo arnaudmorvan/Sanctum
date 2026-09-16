@@ -1,0 +1,36 @@
+# items/chart--scatter.yaml — detail complet du composant 'chart--scatter'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: chart--scatter
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+chart--scatter:
+  figma_key: f9f2cb03f4eda87c10a961e4c076310556b90281
+  figma_node_id: "23103:3136"
+  component_type: COMPONENT_SET
+  instanciable: false
+  default_variant_id: "23103:2920"
+  key_variants:
+    mode-scatter-series-single: "23103:2920"
+    mode-scatter-series-multi: "23103:2956"
+    mode-bubble-series-single: "23103:3028"
+    mode-bubble-series-multi: "23103:3064"
+  page: "      ↳ Charts"
+  description: "Scatter plot - correlation between TWO continuous measures. Both axes carry values, neither carries categories. AXES - mode: scatter (uniform 8px points) or bubble (a third measure in the radius, points at 75 percent opacity so overlaps stay readable). - series: single or multi (three series plus the legend). - Beyond three series a cloud stops being readable: switch to small multiples. COMPOSITION Same shell as Chart / Line, with a numeric X axis instead of labels. One frame per series so a series can be hidden as a whole; points carry SCALE constraints and follow the plot on resize. Series 1 utility-brand-600, then 500, 400, 300, 200, then utility-gray-200 for series 6. One hue, six steps, in that order. Grid stays on border-primary and labels on text-tertiary: hues live in the marks, never in the chrome. Instantiate it INSIDE a card (cardscard), never bare on the canvas: a chart is card content, not a surface. Padding comes from the card padding prop (lg 24 / md 16 / sm 12) and is never doubled here. The chart takes the width of its container: paths carry SCALE constraints, grids and bars are auto-layout. ACCESSIBILITY Position is the encoding and it is the hardest to read of the family. Both axes need their unit, and bubble needs a stated scale: the radius must map to the area, not to the diameter, or the biggest value looks four times bigger than it is. CODE @42/ui-react, component Chart (import from index.ts/chart), a wrapper over TanStack Charts. The chart TYPE is not a prop: it comes from the definition and the marks passed to the chart. So the variant axes below do NOT map one to one onto React props, they map onto separate definitions. Colour maps exactly: color takes one Color for a one-series chart (sets data-color and the ts-chart-1 slot), colors takes an ordered Color array for a multi-series chart (sets ts-chart-1 to ts-chart-N, see CHART_PALETTE and chartColors). TanStack cycles six categorical slots by default, which is why the Figma ramp stops at six. renderSvg and renderer are mutually exclusive. DEFAUT OUVERT 2026-09-14 - the six Figma steps are assumed to be the counterpart of CHART_PALETTE but the values were never compared. Until someone diffs them, treat the ramp as a Figma-side convention, not as proven parity. Second open point: a one-series chart pins utility-brand-600 here, while the React color prop and the Figma collection 7. Accent both express an accent that can be switched. Two mechanisms for one job."
+  size: {w: 360, h: 200}
+  direction: VERTICAL
+  gap: 12
+  text:
+    sample: "100"
+    fill: "@text-tertiary"
+    size: 12
+    weight: Medium
+    lineHeight: 18
+  text_nodes:
+    - {name: Tick, sample: 100}
+  how_to_use: "1. Instancier via key_variants (jamais le ComponentSet).\n2. Exemple : const variantNode = await figma.getNodeByIdAsync(key_variants[\"<variant-slug>\"]); const inst = variantNode.createInstance()\n3. setTxt(inst, \"Tick\", \"100\")"
+  variants:
+    mode: [bubble, scatter]
+    series: [multi, single]
+  defaults: {mode: scatter, series: single}
