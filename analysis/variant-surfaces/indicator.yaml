@@ -1,0 +1,552 @@
+# analysis/variant-surfaces/indicator.yaml — la SURFACE peinte par chaque variante.
+# Hors de context/ deliberement : lu par la console, jamais par un agent.
+# Les surfaces identiques sont stockees une fois et pointees.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: indicator
+  generated_at: "2026-09-16"
+  variants: 90
+  surfaces: 90
+surfaces:
+  s1:
+    fill: "@bg-blue-solid"
+    radius: 9999
+    height: 10
+  s2:
+    fill: "@bg-blue-solid"
+    radius: 9999
+    height: 6
+  s3:
+    fill: "@bg-blue-solid"
+    radius: 12
+    padding: {v: 0, h: 2}
+    height: 12
+    text: {fill: "@text-primary-inverse", size: 8, weight: Bold, lineHeight: "100%"}
+  s4:
+    fill: "@bg-blue-solid"
+    radius: 9999
+    height: 8
+  s5:
+    fill: "@bg-blue-solid"
+    radius: 12
+    padding: {v: 0, h: 4}
+    height: 14
+    text: {fill: "@text-primary-inverse", size: 9, weight: Bold, lineHeight: "100%"}
+  s6:
+    fill: "@bg-blue-solid"
+    radius: 12
+    padding: {v: 0, h: 4}
+    height: 16
+    text: {fill: "@text-primary-inverse", size: 10, weight: Bold, lineHeight: "100%"}
+  s7:
+    fill: "@bg-blue-solid"
+    radius: 9999
+    height: 12
+  s8:
+    fill: "@bg-blue-solid"
+    radius: 12
+    padding: {v: 0, h: 6}
+    height: 18
+    text: {fill: "@text-primary-inverse", size: 11, weight: Bold, lineHeight: "100%"}
+  s9:
+    fill: "@bg-blue-solid"
+    radius: 9999
+    height: 14
+  s10:
+    fill: "@bg-blue-solid"
+    radius: 12
+    padding: {v: 0, h: 6}
+    height: 20
+    text: {fill: "@text-primary-inverse", size: 12, weight: Bold, lineHeight: "100%"}
+  s11:
+    fill: "@utility-gray-500"
+    radius: 9999
+    height: 6
+  s12:
+    fill: "@utility-gray-500"
+    radius: 12
+    padding: {v: 0, h: 2}
+    height: 12
+    text: {fill: "@text-primary-inverse", size: 8, weight: Bold, lineHeight: "100%"}
+  s13:
+    fill: "@utility-gray-500"
+    radius: 9999
+    height: 8
+  s14:
+    fill: "@utility-gray-500"
+    radius: 12
+    padding: {v: 0, h: 4}
+    height: 14
+    text: {fill: "@text-primary-inverse", size: 9, weight: Bold, lineHeight: "100%"}
+  s15:
+    fill: "@utility-gray-500"
+    radius: 9999
+    height: 10
+  s16:
+    fill: "@utility-gray-500"
+    radius: 12
+    padding: {v: 0, h: 4}
+    height: 16
+    text: {fill: "@text-primary-inverse", size: 10, weight: Bold, lineHeight: "100%"}
+  s17:
+    fill: "@utility-gray-500"
+    radius: 9999
+    height: 12
+  s18:
+    fill: "@utility-gray-500"
+    radius: 12
+    padding: {v: 0, h: 6}
+    height: 18
+    text: {fill: "@text-primary-inverse", size: 11, weight: Bold, lineHeight: "100%"}
+  s19:
+    fill: "@utility-gray-500"
+    radius: 9999
+    height: 14
+  s20:
+    fill: "@utility-gray-500"
+    radius: 12
+    padding: {v: 0, h: 6}
+    height: 20
+    text: {fill: "@text-primary-inverse", size: 12, weight: Bold, lineHeight: "100%"}
+  s21:
+    fill: "@bg-error-solid"
+    radius: 9999
+    height: 6
+  s22:
+    fill: "@bg-error-solid"
+    radius: 12
+    padding: {v: 0, h: 2}
+    height: 12
+    text: {fill: "@text-primary-inverse", size: 8, weight: Bold, lineHeight: "100%"}
+  s23:
+    fill: "@bg-error-solid"
+    radius: 9999
+    height: 8
+  s24:
+    fill: "@bg-error-solid"
+    radius: 12
+    padding: {v: 0, h: 4}
+    height: 14
+    text: {fill: "@text-primary-inverse", size: 9, weight: Bold, lineHeight: "100%"}
+  s25:
+    fill: "@bg-error-solid"
+    radius: 9999
+    height: 10
+  s26:
+    fill: "@bg-error-solid"
+    radius: 12
+    padding: {v: 0, h: 4}
+    height: 16
+    text: {fill: "@text-primary-inverse", size: 10, weight: Bold, lineHeight: "100%"}
+  s27:
+    fill: "@bg-error-solid"
+    radius: 9999
+    height: 12
+  s28:
+    fill: "@bg-error-solid"
+    radius: 12
+    padding: {v: 0, h: 6}
+    height: 18
+    text: {fill: "@text-primary-inverse", size: 11, weight: Bold, lineHeight: "100%"}
+  s29:
+    fill: "@bg-error-solid"
+    radius: 9999
+    height: 14
+  s30:
+    fill: "@bg-error-solid"
+    radius: 12
+    padding: {v: 0, h: 6}
+    height: 20
+    text: {fill: "@text-primary-inverse", size: 12, weight: Bold, lineHeight: "100%"}
+  s31:
+    fill: "@bg-warning-solid"
+    radius: 9999
+    height: 6
+  s32:
+    fill: "@bg-warning-solid"
+    radius: 12
+    padding: {v: 0, h: 2}
+    height: 12
+    text: {fill: "@text-primary-inverse", size: 8, weight: Bold, lineHeight: "100%"}
+  s33:
+    fill: "@bg-warning-solid"
+    radius: 9999
+    height: 8
+  s34:
+    fill: "@bg-warning-solid"
+    radius: 12
+    padding: {v: 0, h: 4}
+    height: 14
+    text: {fill: "@text-primary-inverse", size: 9, weight: Bold, lineHeight: "100%"}
+  s35:
+    fill: "@bg-warning-solid"
+    radius: 9999
+    height: 10
+  s36:
+    fill: "@bg-warning-solid"
+    radius: 12
+    padding: {v: 0, h: 4}
+    height: 16
+    text: {fill: "@text-primary-inverse", size: 10, weight: Bold, lineHeight: "100%"}
+  s37:
+    fill: "@bg-warning-solid"
+    radius: 9999
+    height: 12
+  s38:
+    fill: "@bg-warning-solid"
+    radius: 12
+    padding: {v: 0, h: 6}
+    height: 18
+    text: {fill: "@text-primary-inverse", size: 11, weight: Bold, lineHeight: "100%"}
+  s39:
+    fill: "@bg-warning-solid"
+    radius: 9999
+    height: 14
+  s40:
+    fill: "@bg-warning-solid"
+    radius: 12
+    padding: {v: 0, h: 6}
+    height: 20
+    text: {fill: "@text-primary-inverse", size: 12, weight: Bold, lineHeight: "100%"}
+  s41:
+    fill: "@utility-yellow-500"
+    radius: 9999
+    height: 6
+  s42:
+    fill: "@utility-yellow-500"
+    radius: 12
+    padding: {v: 0, h: 2}
+    height: 12
+    text: {fill: "@text-primary-inverse", size: 8, weight: Bold, lineHeight: "100%"}
+  s43:
+    fill: "@utility-yellow-500"
+    radius: 9999
+    height: 8
+  s44:
+    fill: "@utility-yellow-500"
+    radius: 12
+    padding: {v: 0, h: 4}
+    height: 14
+    text: {fill: "@text-primary-inverse", size: 9, weight: Bold, lineHeight: "100%"}
+  s45:
+    fill: "@utility-yellow-500"
+    radius: 9999
+    height: 10
+  s46:
+    fill: "@utility-yellow-500"
+    radius: 12
+    padding: {v: 0, h: 4}
+    height: 16
+    text: {fill: "@text-primary-inverse", size: 10, weight: Bold, lineHeight: "100%"}
+  s47:
+    fill: "@utility-yellow-500"
+    radius: 9999
+    height: 12
+  s48:
+    fill: "@utility-yellow-500"
+    radius: 12
+    padding: {v: 0, h: 6}
+    height: 18
+    text: {fill: "@text-primary-inverse", size: 11, weight: Bold, lineHeight: "100%"}
+  s49:
+    fill: "@utility-yellow-500"
+    radius: 9999
+    height: 14
+  s50:
+    fill: "@utility-yellow-500"
+    radius: 12
+    padding: {v: 0, h: 6}
+    height: 20
+    text: {fill: "@text-primary-inverse", size: 12, weight: Bold, lineHeight: "100%"}
+  s51:
+    fill: "@bg-success-solid"
+    radius: 9999
+    height: 6
+  s52:
+    fill: "@bg-success-solid"
+    radius: 12
+    padding: {v: 0, h: 2}
+    height: 12
+    text: {fill: "@text-primary-inverse", size: 8, weight: Bold, lineHeight: "100%"}
+  s53:
+    fill: "@bg-success-solid"
+    radius: 9999
+    height: 8
+  s54:
+    fill: "@bg-success-solid"
+    radius: 12
+    padding: {v: 0, h: 4}
+    height: 14
+    text: {fill: "@text-primary-inverse", size: 9, weight: Bold, lineHeight: "100%"}
+  s55:
+    fill: "@bg-success-solid"
+    radius: 9999
+    height: 10
+  s56:
+    fill: "@bg-success-solid"
+    radius: 12
+    padding: {v: 0, h: 4}
+    height: 16
+    text: {fill: "@text-primary-inverse", size: 10, weight: Bold, lineHeight: "100%"}
+  s57:
+    fill: "@bg-success-solid"
+    radius: 9999
+    height: 12
+  s58:
+    fill: "@bg-success-solid"
+    radius: 12
+    padding: {v: 0, h: 6}
+    height: 18
+    text: {fill: "@text-primary-inverse", size: 11, weight: Bold, lineHeight: "100%"}
+  s59:
+    fill: "@bg-success-solid"
+    radius: 9999
+    height: 14
+  s60:
+    fill: "@bg-success-solid"
+    radius: 12
+    padding: {v: 0, h: 6}
+    height: 20
+    text: {fill: "@text-primary-inverse", size: 12, weight: Bold, lineHeight: "100%"}
+  s61:
+    fill: "@utility-blue-500"
+    radius: 9999
+    height: 6
+  s62:
+    fill: "@utility-blue-500"
+    radius: 12
+    padding: {v: 0, h: 2}
+    height: 12
+    text: {fill: "@text-primary-inverse", size: 8, weight: Bold, lineHeight: "100%"}
+  s63:
+    fill: "@utility-blue-500"
+    radius: 9999
+    height: 8
+  s64:
+    fill: "@utility-blue-500"
+    radius: 12
+    padding: {v: 0, h: 4}
+    height: 14
+    text: {fill: "@text-primary-inverse", size: 9, weight: Bold, lineHeight: "100%"}
+  s65:
+    fill: "@utility-blue-500"
+    radius: 9999
+    height: 10
+  s66:
+    fill: "@utility-blue-500"
+    radius: 12
+    padding: {v: 0, h: 4}
+    height: 16
+    text: {fill: "@text-primary-inverse", size: 10, weight: Bold, lineHeight: "100%"}
+  s67:
+    fill: "@utility-blue-500"
+    radius: 9999
+    height: 12
+  s68:
+    fill: "@utility-blue-500"
+    radius: 12
+    padding: {v: 0, h: 6}
+    height: 18
+    text: {fill: "@text-primary-inverse", size: 11, weight: Bold, lineHeight: "100%"}
+  s69:
+    fill: "@utility-blue-500"
+    radius: 9999
+    height: 14
+  s70:
+    fill: "@utility-blue-500"
+    radius: 12
+    padding: {v: 0, h: 6}
+    height: 20
+    text: {fill: "@text-primary-inverse", size: 12, weight: Bold, lineHeight: "100%"}
+  s71:
+    fill: "@bg-purple-solid"
+    radius: 9999
+    height: 6
+  s72:
+    fill: "@bg-purple-solid"
+    radius: 12
+    padding: {v: 0, h: 2}
+    height: 12
+    text: {fill: "@text-primary-inverse", size: 8, weight: Bold, lineHeight: "100%"}
+  s73:
+    fill: "@bg-purple-solid"
+    radius: 9999
+    height: 8
+  s74:
+    fill: "@bg-purple-solid"
+    radius: 12
+    padding: {v: 0, h: 4}
+    height: 14
+    text: {fill: "@text-primary-inverse", size: 9, weight: Bold, lineHeight: "100%"}
+  s75:
+    fill: "@bg-purple-solid"
+    radius: 9999
+    height: 10
+  s76:
+    fill: "@bg-purple-solid"
+    radius: 12
+    padding: {v: 0, h: 4}
+    height: 16
+    text: {fill: "@text-primary-inverse", size: 10, weight: Bold, lineHeight: "100%"}
+  s77:
+    fill: "@bg-purple-solid"
+    radius: 9999
+    height: 12
+  s78:
+    fill: "@bg-purple-solid"
+    radius: 12
+    padding: {v: 0, h: 6}
+    height: 18
+    text: {fill: "@text-primary-inverse", size: 11, weight: Bold, lineHeight: "100%"}
+  s79:
+    fill: "@bg-purple-solid"
+    radius: 9999
+    height: 14
+  s80:
+    fill: "@bg-purple-solid"
+    radius: 12
+    padding: {v: 0, h: 6}
+    height: 20
+    text: {fill: "@text-primary-inverse", size: 12, weight: Bold, lineHeight: "100%"}
+  s81:
+    fill: "@bg-pink-solid"
+    radius: 9999
+    height: 6
+  s82:
+    fill: "@bg-pink-solid"
+    radius: 12
+    padding: {v: 0, h: 2}
+    height: 12
+    text: {fill: "@text-primary-inverse", size: 8, weight: Bold, lineHeight: "100%"}
+  s83:
+    fill: "@bg-pink-solid"
+    radius: 9999
+    height: 8
+  s84:
+    fill: "@bg-pink-solid"
+    radius: 12
+    padding: {v: 0, h: 4}
+    height: 14
+    text: {fill: "@text-primary-inverse", size: 9, weight: Bold, lineHeight: "100%"}
+  s85:
+    fill: "@bg-pink-solid"
+    radius: 9999
+    height: 10
+  s86:
+    fill: "@bg-pink-solid"
+    radius: 12
+    padding: {v: 0, h: 4}
+    height: 16
+    text: {fill: "@text-primary-inverse", size: 10, weight: Bold, lineHeight: "100%"}
+  s87:
+    fill: "@bg-pink-solid"
+    radius: 9999
+    height: 12
+  s88:
+    fill: "@bg-pink-solid"
+    radius: 12
+    padding: {v: 0, h: 6}
+    height: 18
+    text: {fill: "@text-primary-inverse", size: 11, weight: Bold, lineHeight: "100%"}
+  s89:
+    fill: "@bg-pink-solid"
+    radius: 9999
+    height: 14
+  s90:
+    fill: "@bg-pink-solid"
+    radius: 12
+    padding: {v: 0, h: 6}
+    height: 20
+    text: {fill: "@text-primary-inverse", size: 12, weight: Bold, lineHeight: "100%"}
+variants:
+  type-dot-size-lg-color-blue: s67
+  type-dot-size-lg-color-brand: s7
+  type-dot-size-lg-color-gray: s17
+  type-dot-size-lg-color-green: s57
+  type-dot-size-lg-color-orange: s37
+  type-dot-size-lg-color-pink: s87
+  type-dot-size-lg-color-purple: s77
+  type-dot-size-lg-color-red: s27
+  type-dot-size-lg-color-yellow: s47
+  type-dot-size-md-color-blue: s65
+  type-dot-size-md-color-brand: s1
+  type-dot-size-md-color-gray: s15
+  type-dot-size-md-color-green: s55
+  type-dot-size-md-color-orange: s35
+  type-dot-size-md-color-pink: s85
+  type-dot-size-md-color-purple: s75
+  type-dot-size-md-color-red: s25
+  type-dot-size-md-color-yellow: s45
+  type-dot-size-sm-color-blue: s63
+  type-dot-size-sm-color-brand: s4
+  type-dot-size-sm-color-gray: s13
+  type-dot-size-sm-color-green: s53
+  type-dot-size-sm-color-orange: s33
+  type-dot-size-sm-color-pink: s83
+  type-dot-size-sm-color-purple: s73
+  type-dot-size-sm-color-red: s23
+  type-dot-size-sm-color-yellow: s43
+  type-dot-size-xl-color-blue: s69
+  type-dot-size-xl-color-brand: s9
+  type-dot-size-xl-color-gray: s19
+  type-dot-size-xl-color-green: s59
+  type-dot-size-xl-color-orange: s39
+  type-dot-size-xl-color-pink: s89
+  type-dot-size-xl-color-purple: s79
+  type-dot-size-xl-color-red: s29
+  type-dot-size-xl-color-yellow: s49
+  type-dot-size-xs-color-blue: s61
+  type-dot-size-xs-color-brand: s2
+  type-dot-size-xs-color-gray: s11
+  type-dot-size-xs-color-green: s51
+  type-dot-size-xs-color-orange: s31
+  type-dot-size-xs-color-pink: s81
+  type-dot-size-xs-color-purple: s71
+  type-dot-size-xs-color-red: s21
+  type-dot-size-xs-color-yellow: s41
+  type-label-size-lg-color-blue: s68
+  type-label-size-lg-color-brand: s8
+  type-label-size-lg-color-gray: s18
+  type-label-size-lg-color-green: s58
+  type-label-size-lg-color-orange: s38
+  type-label-size-lg-color-pink: s88
+  type-label-size-lg-color-purple: s78
+  type-label-size-lg-color-red: s28
+  type-label-size-lg-color-yellow: s48
+  type-label-size-md-color-blue: s66
+  type-label-size-md-color-brand: s6
+  type-label-size-md-color-gray: s16
+  type-label-size-md-color-green: s56
+  type-label-size-md-color-orange: s36
+  type-label-size-md-color-pink: s86
+  type-label-size-md-color-purple: s76
+  type-label-size-md-color-red: s26
+  type-label-size-md-color-yellow: s46
+  type-label-size-sm-color-blue: s64
+  type-label-size-sm-color-brand: s5
+  type-label-size-sm-color-gray: s14
+  type-label-size-sm-color-green: s54
+  type-label-size-sm-color-orange: s34
+  type-label-size-sm-color-pink: s84
+  type-label-size-sm-color-purple: s74
+  type-label-size-sm-color-red: s24
+  type-label-size-sm-color-yellow: s44
+  type-label-size-xl-color-blue: s70
+  type-label-size-xl-color-brand: s10
+  type-label-size-xl-color-gray: s20
+  type-label-size-xl-color-green: s60
+  type-label-size-xl-color-orange: s40
+  type-label-size-xl-color-pink: s90
+  type-label-size-xl-color-purple: s80
+  type-label-size-xl-color-red: s30
+  type-label-size-xl-color-yellow: s50
+  type-label-size-xs-color-blue: s62
+  type-label-size-xs-color-brand: s3
+  type-label-size-xs-color-gray: s12
+  type-label-size-xs-color-green: s52
+  type-label-size-xs-color-orange: s32
+  type-label-size-xs-color-pink: s82
+  type-label-size-xs-color-purple: s72
+  type-label-size-xs-color-red: s22
+  type-label-size-xs-color-yellow: s42
