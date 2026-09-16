@@ -1,0 +1,24 @@
+# analysis/variant-surfaces/datepicker.yaml — la SURFACE peinte par chaque variante.
+# Hors de context/ deliberement : lu par la console, jamais par un agent.
+# Les surfaces identiques sont stockees une fois et pointees.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: datepicker
+  generated_at: "2026-09-16"
+  variants: 4
+  surfaces: 3
+surfaces:
+  s1:
+    gap: 16
+    text: {fill: "@text-tertiary", size: 14, weight: Regular, lineHeight: 20}
+  s2:
+    gap: 16
+    text: {fill: "@text-primary", size: 14, weight: Regular, lineHeight: 20}
+  s3:
+    text: {fill: "@white", size: 12, weight: Bold, lineHeight: 20}
+variants:
+  variant-button-value-null: s3
+  variant-button-value-selected: s3
+  variant-input-value-null: s1
+  variant-input-value-selected: s2
