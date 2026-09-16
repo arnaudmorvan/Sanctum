@@ -1,0 +1,68 @@
+# items/buttongroup.yaml — detail complet du composant 'buttongroup'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: buttongroup
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+buttongroup:
+  figma_key: 6580c8a6033858b35a3feb8061b895adf9d40226
+  figma_node_id: "21100:989"
+  component_type: COMPONENT_SET
+  instanciable: false
+  default_variant_id: "21087:68836"
+  key_variants:
+    color-gray-variant-outline-orientation-horizontal: "21087:68836"
+    color-gray-variant-filled-orientation-horizontal: "21100:905"
+    color-gray-variant-light-orientation-horizontal: "21100:933"
+    color-gray-variant-subtle-orientation-horizontal: "21100:961"
+    color-brand-variant-outline-orientation-horizontal: "21111:72942"
+    color-brand-variant-filled-orientation-horizontal: "21111:72988"
+    color-brand-variant-light-orientation-horizontal: "21111:73034"
+    color-brand-variant-subtle-orientation-horizontal: "21111:73080"
+    color-red-variant-outline-orientation-horizontal: "21111:73126"
+    color-red-variant-filled-orientation-horizontal: "21111:73172"
+    color-red-variant-light-orientation-horizontal: "21111:73218"
+    color-red-variant-subtle-orientation-horizontal: "21111:73264"
+    color-green-variant-outline-orientation-horizontal: "21111:73310"
+    color-green-variant-filled-orientation-horizontal: "21111:73356"
+    color-green-variant-light-orientation-horizontal: "21111:73402"
+    color-green-variant-subtle-orientation-horizontal: "21111:73448"
+    color-gray-variant-outline-orientation-vertical: "21123:571"
+    color-gray-variant-filled-orientation-vertical: "21123:599"
+    color-gray-variant-light-orientation-vertical: "21123:627"
+    color-gray-variant-subtle-orientation-vertical: "21123:655"
+    color-brand-variant-outline-orientation-vertical: "21123:681"
+    color-brand-variant-filled-orientation-vertical: "21123:709"
+    color-brand-variant-light-orientation-vertical: "21123:737"
+    color-brand-variant-subtle-orientation-vertical: "21123:765"
+    color-red-variant-outline-orientation-vertical: "21123:793"
+    color-red-variant-filled-orientation-vertical: "21123:829"
+    color-red-variant-light-orientation-vertical: "21123:857"
+    color-red-variant-subtle-orientation-vertical: "21123:885"
+    color-green-variant-outline-orientation-vertical: "21123:913"
+    color-green-variant-filled-orientation-vertical: "21123:941"
+    color-green-variant-light-orientation-vertical: "21123:969"
+    color-green-variant-subtle-orientation-vertical: "21123:997"
+  page: "      ↳ ButtonGroup"
+  description: "Joins adjacent Buttons into one segmented block: inner corners flattened, adjacent borders collapsed into a single hairline. Use for view switchers (Day/Week/Month), toolbars, split actions (a primary action plus a menu trigger). Do not use for single-choice selection with a selected state → SegmentGroup. Or to set a primary action against a secondary one (Cancel/Confirm) → two spaced Buttons. Every item is a Button instance: label, icons, size, state and disabled are set on the nested instance. An icon-only item is a Button with showLabel turned off. Dividers are _ButtonGroupSeparator instances — add or remove them by hand when the item count changes. variants and color apply to the whole group. Keep the same size across items, otherwise the edges stop lining up. In code (@42/ui-react): ButtonGroup only carries orientation. variants and color go on each child Button. An icon-only item maps to the ActionIcon component."
+  size: {w: HUG, h: HUG}
+  radius: 4
+  direction: HORIZONTAL
+  stroke: {color: "@border-tertiary", width: 1, align: INSIDE}
+  text:
+    sample: Button CTA
+    fill: "@white"
+    size: 14
+    weight: Bold
+    lineHeight: 20
+  slots:
+    Items: {slot_id: "21087:68837", node_type: SLOT, depth: 1}
+  text_nodes:
+    - {name: Text, sample: Button CTA}
+  how_to_use: "1. Instancier via key_variants (jamais le ComponentSet).\n2. Exemple : const variantNode = await figma.getNodeByIdAsync(key_variants[\"<variant-slug>\"]); const inst = variantNode.createInstance()\n3. setTxt(inst, \"Text\", \"Button CTA\")"
+  variants:
+    color: [brand, gray, green, red]
+    orientation: [horizontal, vertical]
+    variant: [filled, light, outline, subtle]
+  defaults: {color: gray, orientation: horizontal, variant: outline}
