@@ -1,0 +1,55 @@
+# items/segmentgroup.yaml — detail complet du composant 'segmentgroup'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: segmentgroup
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+segmentgroup:
+  figma_key: 48a541a32f8a532982d39539f40632c506dab321
+  figma_node_id: "21367:261"
+  component_type: COMPONENT_SET
+  instanciable: false
+  default_variant_id: "21367:207"
+  key_variants:
+    orientation-horizontal-size-md: "21367:207"
+    orientation-horizontal-size-sm: "21367:157"
+    orientation-vertical-size-sm: "21367:220"
+    orientation-vertical-size-md: "21367:257"
+  page: "      ↳ SegmentGroup "
+  description: "SegmentedControl — a row or a column of mutually exclusive segments, one of which is always current. Use it when 2 to 5 options must all stay visible at once: view toggles, filters, billing cadence, alignment. Past 5 options, or once the labels run long, reach for Select. The set carries no state axis. Everything that happens per segment — current, hover, focus, badge — lives on the nested _SegmentTab instances inside the items slot, and is reached by selecting one of them. AXES orientation horizontal = segments in a row, the tray hugging them vertical = segments stacked, the tray hugging the widest size sm = 36px segment, label 14/20 semibold md = 40px segment (tray 44px), label 16/24 semibold Segment padding stays spacing-md vertical and spacing-lg horizontal on both, and the tray keeps its spacing-xxs inset and spacing-xs gap. Only the segment height and the type scale move. items — the segments Minimum 2, preferred value _SegmentTab. Its axes: Current False = resting, True = the current segment Size sm / md — mirror the set size by hand state Default / Hover / Focus showBadge a Badge after the label showLabel / showDescription / showError (booleans, not axes) label and description are on by default, error is off. Each pairs with a text property: label, description, error. COMPOSITION The order is fixed: label, description, the tray, then the error. The description sits above the control, not under it. Add and remove segments inside the items slot. Do not detach the component to do it. Two segments minimum, five is the ceiling before a Select reads better. Exactly one segment carries Current=True. Nothing in the set enforces it — a second one simply draws a second pill. Keep the nested Size equal to the set size. They are two independent axes, so a size=md tray holding sm segments is possible and wrong. In vertical the segments hug their own label, so the column comes out ragged and the current pill never spans the tray. Set each segment to fill the tray width by hand. Hover and Focus are drawn on the segment, never on the tray. Put a single segment in Hover or in Focus at a time, and never both at once on the same one. There is no color axis. The current segment is bg-inverse with a text-primary-inverse label, full stop. A SegmentedControl tinted by any other palette cannot be drawn here. Reach for RadioGroup when each option needs its own description, or when there are more than five of them. TOKENS tray bg-primary at 4% over a 0.5px Gray 700 hairline, spacing-xxs inset, radius-sm, spacing-xs gap between segments rows spacing-xs between label, description, tray and error segment spacing-md vertical and spacing-lg horizontal padding, spacing-md gap, radius-xs resting bg-solid, label text-primary current bg-inverse, label text-primary-inverse hover bg-secondary resting, bg-inverse-hover current focus the focus-ring effect style, fill unchanged label text-sm medium, text-primary description text-xs regular, text-secondary error text-xs regular, text-error-primary ACCESSIBILITY This is a radiogroup, not a toolbar. The whole group is one tab stop, then the arrow keys move between segments and select as they go. Do not spec each segment as its own tab stop. showLabel=False leaves the group with no accessible name. A bare tray has to be named another way — never ship it naked. The focus ring belongs to the segment and is the focus-ring effect style. Never remove it, and never redraw it as a border: the resting and the focused segment share the same bg-solid fill, so the ring is the only thing separating them. Never let the fill alone carry the selection. The current label also flips to text-primary-inverse — keep both. Segments are 36px tall at sm and 40px at md, so both clear the 24px minimum target. A vertical group at sm still needs enough width to stay comfortable on touch. Selection applies on the spot. Do not put a SegmentedControl behind a Save button."
+  size: {w: HUG, h: HUG}
+  direction: VERTICAL
+  gap: 4
+  text:
+    sample: Label
+    fill: "@text-primary"
+    size: 14
+    weight: Medium
+    lineHeight: 20
+  slots:
+    items: {slot_id: "21370:332", node_type: SLOT, depth: 2}
+  text_nodes:
+    - {name: label, role: label, sample: Label}
+    - {name: description, role: description, sample: Description}
+    - {name: Text, sample: Profile}
+    - {name: error, sample: Error message}
+  how_to_use: "1. Instancier via key_variants (jamais le ComponentSet).\n2. Exemple : const variantNode = await figma.getNodeByIdAsync(key_variants[\"<variant-slug>\"]); const inst = variantNode.createInstance()\n3. setTxt(inst, \"description\", \"Description\")"
+  variants:
+    description: "<text>"
+    error: "<text>"
+    label: "<text>"
+    orientation: [horizontal, vertical]
+    showdescription: [false, true]
+    showerror: [false, true]
+    showlabel: [false, true]
+    size: [md, sm]
+  defaults:
+    description: Description
+    error: Error message
+    label: Label
+    orientation: horizontal
+    showdescription: true
+    showerror: false
+    showlabel: true
+    size: md
