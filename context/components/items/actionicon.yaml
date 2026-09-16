@@ -1,0 +1,28 @@
+# items/actionicon.yaml — detail complet du composant 'actionicon'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: actionicon
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+actionicon:
+  figma_key: 9e158c7aebad53b990a7bd25bf7b8039820c8744
+  figma_node_id: "23149:52"
+  component_type: COMPONENT
+  instanciable: true
+  page: "      ↳ Buttons"
+  description: "ActionIcon - square, icon-only trigger. Composed as ONE exposed Button instance with showLabel off and a single slot on, so color / size / variant / state and the icon swap are driven on the nested Button: there is no second variant matrix to keep in sync. AXES - None of its own. Select the nested Button instance in the right panel and drive color, size, variant, state, startSlot there. - Button padding is symmetric in Figma (8 on xs, 10 on sm/md), so hiding the label yields a true square: 36, 40, 44 px. COMPOSITION - One EXPOSED instance of Button: showLabel off, showStartSlot on, showEndSlot off. - Swap the icon through the Button's own startSlot (INSTANCE_SWAP). Never detach. - Same pattern as PasswordInput over Input and PageHeader over SectionTitle. ACCESSIBILITY - No text node, so aria-label is mandatory in code. The icon is decoration. - state=Focused specs the ring; in code it comes from focus-visible (ring 2, brand-500, offset 2), never from a class you set. CODE - @42/ui-react ActionIcon - a SIBLING component of Button with its own cva, not a Button prop. 19 files of the kit depend on it (Modal close, Drawer, DataTable pagination and toolbar, Calendar, Breadcrumb, AppShell, Tooltip, Indicator, Schedule, CodeBlock, ButtonGroup, Copy). - Nesting Button here is a Figma-side shortcut, not the code's structure. Map Code Connect to ActionIcon, not to Button. KNOWN ISSUE - React ActionIcon ships 5 sizes - 28 / 32 / 36 / 40 / 48 px (xs..xl). This composition inherits Button's 3 sizes at 36 / 40 / 44 px: the whole ramp is +8 px off the code, and lg / xl cannot be specced here at all. ThemeIcon, by contrast, already matches the code exactly (28..48). - React icon sizes for ActionIcon are 20 / 22 / 24 / 28 / 32. Button in Figma already draws 20 / 20 / 24, which are ActionIcon's values, not Button's own (12 / 14 / 16 in code). - React ActionIcon has its own radius axis (xs..xl, full). No equivalent here: Button is locked at radius 4. - React default is variant=default, which has no Figma value; variants=link has no React equivalent. - PROVISIONAL. Target is a dedicated ComponentSet forked from ThemeIcon (correct ramp, 5 sizes, radius md/full), not from Button. Created 2026-09-14."
+  size: {w: HUG, h: HUG}
+  direction: HORIZONTAL
+  nested_instances:
+    - name: "Buttons/Button "
+      depth: 1
+      main_component: Buttons/Button
+      variant_axes:
+        color: [gray, brand, red, green, orange]
+        size: [xs, sm, md]
+        variant: [filled, light, outline, subtle, link]
+        state: [default, disabled, focus, hover]
+      bool_props:
+        {showStartSlot: true, showEndSlot: false, showLabel: false}
+  how_to_use: "1. Instancier le composant via figma_node_id (createInstance()).\n2. Si besoin masquer les actions : inst.findOne(n => n.name === \"Buttons/Button \")?.setProperties({\"showEndSlot\":false,\"showLabel\":false,\"showStartSlot\":false})"
