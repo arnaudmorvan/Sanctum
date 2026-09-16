@@ -1,0 +1,54 @@
+# items/pagination.yaml — detail complet du composant 'pagination'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: pagination
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+pagination:
+  figma_key: 998f96155b8a56fa84699b9f39e9e056196a9502
+  figma_node_id: "1115:68622"
+  component_type: COMPONENT_SET
+  instanciable: false
+  default_variant_id: "226:519"
+  key_variants: {type-page-default-shape-square-breakpoint-desktop: "226:519"}
+  page: "      ↳ Tables"
+  description: "AXES - breakpoint (desktop | mobile): responsive concern, not a variant. One component reflowing at a media query. - shape (square): single value, dead axis. - type (page default): single value, dead axis. 3 declared axes for only 2 key variants. - Runtime lives on the children: _Pagination number base state (default | hover/active | focused) and Buttons/Button [V2] state are data-*, never cva variants. COMPOSITION - Horizontal auto-layout, fixed width 1216, hug height, padding 8, gap 12, both axes centered. Text 14 / Bold / 20. - Prev/next are Buttons/Button [V2]; the numbers are _Pagination number base with a Number text node. Slots arrow-left and arrow-right at depth 3 are icon-swappable. - The Button child enumerates hierarchy / white / destructive / success as axes; React splits that into variant (shape) plus the color prop (data-color). - Use under a list, table or grid at full content width. Not for carousels, that is pagination-dot-group-v2. ACCESSIBILITY - nav with aria-label Pagination; the selected page carries aria-current=page. The hover/active value is pointer feedback only. - Previous and Next need text names even when icon-only, and must be disabled at the ends rather than hidden. - Keyboard order: Previous, pages in order, Next. Any truncation ellipsis is decorative. CODE - No counterpart in @42/ui-react as of 2026-08-24. - Listed as an implementation gap in audit/parity-figma-vs-react.md section 6a. KNOWN ISSUE - The fixed 1216 width freezes a desktop container; the real component must be fluid."
+  size: {w: 1216, h: HUG}
+  padding: {all: 20}
+  direction: HORIZONTAL
+  gap: 12
+  align: {primary: CENTER, counter: CENTER}
+  text:
+    sample: "20"
+    fill: "@text-primary"
+    size: 14
+    weight: Regular
+    lineHeight: 20
+  slots:
+    arrow-left: {slot_id: "I21703:55934;14581:1513", node_type: INSTANCE, depth: 3}
+    arrow-right: {slot_id: "I1114:68220;14581:1516", node_type: INSTANCE, depth: 3}
+  nested_instances:
+    - name: Select
+      depth: 2
+      main_component: Select
+      bool_props:
+        {isOpen: false}
+    - name: "Buttons/Button "
+      depth: 2
+      main_component: Buttons/Button
+      variant_axes:
+        color: [gray, brand, red, green, orange]
+        size: [xs, sm, md]
+        variant: [filled, light, outline, subtle, link]
+        state: [default, disabled, focus, hover]
+      bool_props:
+        {showLabel: false, showEndSlot: false, showStartSlot: true}
+    - {name: Input, depth: 2, main_component: Input}
+  how_to_use: "1. Instancier via key_variants (jamais le ComponentSet).\n2. Exemple : const variantNode = await figma.getNodeByIdAsync(key_variants[\"<variant-slug>\"]); const inst = variantNode.createInstance()\n3. Si besoin masquer les actions : inst.findOne(n => n.name === \"Select\")?.setProperties({\"isOpen\":false})"
+  variants:
+    breakpoint: [desktop]
+    shape: [square]
+    type: [page default]
+  defaults: {breakpoint: desktop, shape: square, type: page default}
+  notes: ["Variant axis name \"Type\" was normalised to \"type\" (use lowercase slugs for consistency).", "Variant axis name \"Shape\" was normalised to \"shape\" (use lowercase slugs for consistency).", "Variant axis name \"Breakpoint\" was normalised to \"breakpoint\" (use lowercase slugs for consistency)."]
