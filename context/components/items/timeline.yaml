@@ -1,0 +1,28 @@
+# items/timeline.yaml — detail complet du composant 'timeline'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: timeline
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+timeline:
+  figma_key: 261434c07cc5ec0fed417231ab5d76227a871364
+  figma_node_id: "21729:812"
+  component_type: COMPONENT
+  instanciable: true
+  page: "      ↳ Timeline"
+  description: "AXES - No axis, no colour, no state on the container: everything is delegated to _Timeline / _Item and its atoms. COMPOSITION - Vertical auto-layout, gap 0, fixed width, hug height. - One slot, items, to be filled only with _Timeline / _Item instances. - Any number of steps. Set showConnector = false on the last item. - Replaces Timeline [V2], deprecated. ACCESSIBILITY - Reading order is the order of the items in the items slot. - A step state must stay readable in the text, not only in the colour of the bullet. CODE - React: Timeline wrapping Timeline.Item children, colour through the color prop. - Not implemented in @42/ui-react as of 2026-08-28: 52 components, no Timeline. components.md only lists Steps (wraps Ark Steps), unchecked. KNOWN ISSUE - The slot was named Items until 2026-08-28; it is now items, to match RadioGroup and ChoiceCardGroup."
+  size: {w: 560, h: HUG}
+  direction: VERTICAL
+  text:
+    sample: Jul. 5
+    fill: "@text-disabled"
+    size: 16
+    weight: Bold
+    lineHeight: 22
+  slots:
+    items: {slot_id: "21729:813", node_type: SLOT, depth: 1}
+  text_nodes:
+    - {name: Title, role: title, sample: "Titre de l'étape"}
+    - {name: Description, role: description, sample: "Texte de support de l'étape."}
+  how_to_use: "1. Instancier le composant via figma_node_id (createInstance()).\n2. setTxt(inst, \"Title\", \"Titre de l'étape\")\n3. setTxt(inst, \"Description\", \"Texte de support de l'étape.\")"
