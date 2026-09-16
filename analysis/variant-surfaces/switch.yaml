@@ -1,0 +1,33 @@
+# analysis/variant-surfaces/switch.yaml — la SURFACE peinte par chaque variante.
+# Hors de context/ deliberement : lu par la console, jamais par un agent.
+# Les surfaces identiques sont stockees une fois et pointees.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: switch
+  generated_at: "2026-09-16"
+  variants: 12
+  surfaces: 3
+surfaces:
+  s1:
+    gap: 12
+    text: {fill: "@text-primary", size: 16, weight: Medium, lineHeight: 24}
+  s2:
+    gap: 8
+    text: {fill: "@text-primary", size: 14, weight: Medium, lineHeight: 20}
+  s3:
+    gap: 8
+    text: {fill: "@text-primary", size: 12, weight: Medium, lineHeight: 18}
+variants:
+  size-md-checked-false-disabled-false: s1
+  size-md-checked-false-disabled-true: s1
+  size-md-checked-true-disabled-false: s1
+  size-md-checked-true-disabled-true: s1
+  size-sm-checked-false-disabled-false: s2
+  size-sm-checked-false-disabled-true: s2
+  size-sm-checked-true-disabled-false: s2
+  size-sm-checked-true-disabled-true: s2
+  size-xs-checked-false-disabled-false: s3
+  size-xs-checked-false-disabled-true: s3
+  size-xs-checked-true-disabled-false: s3
+  size-xs-checked-true-disabled-true: s3
