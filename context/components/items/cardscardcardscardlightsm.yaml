@@ -1,0 +1,19 @@
+# items/cardscardcardscardlightsm.yaml — detail complet du composant 'cardscardcardscardlightsm'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: cardscardcardscardlightsm
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+cardscardcardscardlightsm:
+  figma_key: 84f032358ecd353ee2f207610a2d80a9c036c702
+  figma_node_id: "21941:33683"
+  component_type: COMPONENT
+  instanciable: true
+  page: "      ↳ Card"
+  size: {w: 320, h: HUG}
+  radius: 4
+  direction: VERTICAL
+  fills: "@bg-blue-secondary"
+  stroke: {color: "@border-blue-secondary", width: 1, align: INSIDE}
+  how_to_use: 1. Instancier le composant via figma_node_id (createInstance()).
