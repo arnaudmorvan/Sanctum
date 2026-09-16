@@ -1,0 +1,48 @@
+# items/timeinput.yaml — detail complet du composant 'timeinput'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: timeinput
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+timeinput:
+  figma_key: c3700f6b58d8da8673cde32e33d00336ab3aa75c
+  figma_node_id: "21549:66851"
+  component_type: COMPONENT_SET
+  instanciable: false
+  default_variant_id: "21549:5323"
+  key_variants: {size-sm: "21549:5323", size-md: "21549:66781"}
+  page: "      ↳ TimeInput"
+  description: "TimeInput — hour and minute entry with an AM/PM toggle. Not an Input with a clock icon: three real controls side by side. AXES size: field height and density. sm = 36 px. md = 44 px. Default here is sm, the React default is md. Match the form around it, not the clock. showLabel: the small Hour / Minute captions above each field. This is NOT the label of the control — read CODE before you touch it, the word means two different things on the two sides. showPeriod: shows the AM / PM toggle. Off reads as 24-hour. In code this is not a switch, it follows the locale. COMPOSITION Three exposed instances, all reachable from the instance panel — never enter the component to change them: Hour field -> NumberInput Minute field-> NumberInput Period -> SegmentedControl, two tabs Set size, status and state on the NumberInput's own _BaseField instance. Keep both fields on the same size and the same status: half a field in error is a bug, not a state. The period toggle is a SegmentedControl, not a row of buttons. Exactly one tab carries Current=True — that is the whole point of the control. Two current tabs, or none, is a bug. Values are two digits, no unit suffix: 09 and 30. Never 10h in a minute field. The toggle sits after the fields, baseline-aligned with them, never above. There is no range axis. A start / end pair is TWO TimeInputs, each with its own label — one control split down the middle gives the user nothing to tell the halves apart. Seconds exist in code and are not mocked up here. Spec them in words when a screen needs them. Label, description and status message are not built next to the control: swap the whole thing into the Field contentSlot. ACCESSIBILITY Each field is a real spinbutton with its own accessible name — Hour, Minute, Second. Those names exist whether or not the caption is visible, so showLabel is a visual choice, never an accessibility one. The period toggle is a radio group of two: Left and Right move between AM and PM, Tab enters and leaves it as one stop. The control as a whole is named by the Field label. Without it a screen reader announces three orphan spinbuttons. Arrow keys step the value, the hour wraps around. CODE — @42/ui-react TimeInput size→size (React runs xs to xl, Figma stops at sm / md). showPeriod=false → format={24}. It is NOT a boolean prop: 12h vs 24h is resolved from the locale (Intl hourCycle), and the period segment only renders in a 12h cycle. Override with format (12 | 24) or hourCycle. showLabel has NO React equivalent. The Hour / Minute captions are hard-coded in TimeRow and always render. Careful, the collision is real: the React `label` prop is the Field label of the whole control (Meeting time), not these captions. Do not read showLabel as label. value is { hour, minute, second? } | null. hour is ALWAYS stored in 24h whatever the display. Composed in code from NumberInput x2 + SegmentGroup — Ark ships no time-picker machine. Same row DatePicker will embed. Naming gap: this file calls the control SegmentedControl, the kit exports it as SegmentGroup. Same object. Current=True on a tab → the selected value of the SegmentGroup. React-only, do not mock these up here: withSeconds, minuteStep, locale, hourCycle, variant, color, disabled, readOnly, invalid, required, name, ref, onBlur, classNames. KNOWN GAPS IN THIS SET The Hour / Minute captions are raw text layers, not text properties — they cannot be overridden from the panel and are English only. Same in code, where they are hard-coded. No withSeconds mock-up, and no Field around the control."
+  size: {w: 289, h: HUG}
+  direction: HORIZONTAL
+  gap: 8
+  align: {counter: MAX}
+  text:
+    sample: Hour
+    fill: "@white"
+    size: 14
+    weight: Regular
+    lineHeight: 20
+  slots:
+    chevrons-up-down: {slot_id: "I21547:29407;21457:1557;21440:1020", node_type: INSTANCE, depth: 6}
+    items: {slot_id: "I21549:5348;21370:325", node_type: SLOT, depth: 3}
+  nested_instances:
+    - {name: NumberInput, depth: 2, main_component: NumberInput}
+    - name: Period
+      depth: 1
+      main_component: SegmentGroup
+      variant_axes:
+        orientation: [horizontal, vertical]
+        size: [sm, md]
+      bool_props:
+        {showDescription: false, showError: false, showLabel: false}
+  text_nodes:
+    - {name: Label, role: label, sample: Hour}
+    - {name: Text, sample: AM}
+  how_to_use: "1. Instancier via key_variants (jamais le ComponentSet).\n2. Exemple : const variantNode = await figma.getNodeByIdAsync(key_variants[\"<variant-slug>\"]); const inst = variantNode.createInstance()\n3. setTxt(inst, \"Label\", \"Hour\")\n4. setTxt(inst, \"Text\", \"AM\")\n5. Si besoin masquer les actions : inst.findOne(n => n.name === \"Period\")?.setProperties({\"showDescription\":false,\"showError\":false,\"showLabel\":false})"
+  variants:
+    showlabel: [false, true]
+    showperiod: [false, true]
+    size: [md, sm]
+  defaults: {showlabel: true, showperiod: true, size: sm}
