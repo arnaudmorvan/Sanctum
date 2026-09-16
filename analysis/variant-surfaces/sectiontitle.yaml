@@ -1,0 +1,36 @@
+# analysis/variant-surfaces/sectiontitle.yaml — la SURFACE peinte par chaque variante.
+# Hors de context/ deliberement : lu par la console, jamais par un agent.
+# Les surfaces identiques sont stockees une fois et pointees.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: sectiontitle
+  generated_at: "2026-09-16"
+  variants: 6
+  surfaces: 6
+surfaces:
+  s1:
+    gap: 4
+    text: {fill: "@white", size: 14, weight: Bold, lineHeight: 20}
+  s2:
+    gap: 6
+    text: {fill: "@white", size: 16, weight: Bold, lineHeight: 24}
+  s3:
+    gap: 6
+    text: {fill: "@white", size: 18, weight: Bold, lineHeight: 28}
+  s4:
+    gap: 8
+    text: {fill: "@white", size: 20, weight: Bold, lineHeight: 30}
+  s5:
+    gap: 8
+    text: {fill: "@white", size: 24, weight: Bold, lineHeight: 32}
+  s6:
+    gap: 8
+    text: {fill: "@white", size: 30, weight: Bold, lineHeight: 38}
+variants:
+  size-2xl: s6
+  size-lg: s4
+  size-md: s3
+  size-sm: s2
+  size-xl: s5
+  size-xs: s1
