@@ -1,0 +1,65 @@
+# items/schedule.yaml — detail complet du composant 'schedule'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: schedule
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+schedule:
+  figma_key: 542286a55f479c759ecbde5cc43ecf3a767bd2cf
+  figma_node_id: "23243:54766"
+  component_type: COMPONENT_SET
+  instanciable: false
+  default_variant_id: "23243:54767"
+  key_variants: {type-month: "23243:54767", type-week: "23243:54820"}
+  page: "      ↳ Schedule"
+  description: "Schedule is the full-page calendar surface: a header of controls above a grid of dated events. 2 variants on one axis. AXES - type: month, week. Default month. It swaps the whole Main area; the header is identical in both. month : a 7-column month grid, one cell per day, events stacked inside the cell as compact chips with an overflow row. week : a time grid with an hour rail on the inline-start edge, events placed and sized by their start time and duration, plus a current-time marker. - No size, no color, no state axis. The surface is 1280 wide and 912 high in both variants, header 96 and Main 816. COMPOSITION - Vertical auto-layout, gap 0, two children: _Schedule header (instance) and Main (frame). - _Schedule header holds three groups: Navigation (chevron-left / TODAY / chevron-right, built from _ButtonGroupItem and _ButtonGroupSeparator), a View switcher (_SegmentTab, Month and Week), and an Add event Button with a plus icon. The View switcher is decorative here: switching it does NOT change the type axis. Set type on the instance and set the switcher to match, or the header and the grid will disagree. - month composes _Calendar column header for the weekday row, _Schedule date icon for the day numbers, and Badge instances for the events. A cell that overflows ends on a '2 more...' row - that row is baked text, retype the count. - week places events by absolute position inside the time grid. Moving an event means moving the node; nothing recomputes from a time value. - Every event label and time is baked text. There is no data slot and no per-event component property. USE IT FOR - A calendar page: agenda, planning, room or session booking. One instance per screen. - Do not use it for a date picker (DatePicker) or an inline month grid (Calendar). Those are input controls; this is a page surface. ACCESSIBILITY - Events are the interactive content, not the cells. Each event needs its own accessible name carrying the title AND its time - the visual pairing of the two is not conveyed by position alone. - The current-time marker in week is decorative; the time it represents has to be announced somewhere else. - The month and week grids are tabular content: keep a real grid semantic in code so a screen reader can move by row and column. CODE - @42/ui-react Schedule. The React component exposes only `editable` - the month/week split drawn here has NO prop counterpart as of 2026-09-15, and that divergence is a decision on hold, not an oversight. - The header controls map to existing kit components: ButtonGroup for the navigation, SegmentGroup for the view switcher, Button for Add event. KNOWN ISSUE - The View switcher does not drive the type axis (see COMPOSITION). - Width is frozen at 1280. A narrower container crops rather than reflows. - The '2 more...' overflow row and every event label/time are static text, so a variant swap never updates them. - This description was written 2026-09-15 to close the `undocumented:schedule` parity finding; before that the set carried no description at all and was invisible to anything reading the catalogue."
+  size: {w: 1280, h: 912}
+  radius: 12
+  direction: VERTICAL
+  fills: "@bg-primary"
+  stroke: {color: "@border-secondary", width: 1, align: INSIDE}
+  shadow: ["@shadow-xs"]
+  text:
+    sample: JAN
+    fill: "@text-disabled"
+    size: 12
+    weight: SemiBold
+    lineHeight: 18
+  slots:
+    Badge: {slot_id: "I23243:54768;23261:51569", node_type: INSTANCE, depth: 6}
+    Actions: {slot_id: "I23243:54768;23243:54375", node_type: FRAME, depth: 3}
+  nested_instances:
+    - name: _Schedule header
+      depth: 1
+      main_component: _Schedule header
+      bool_props:
+        {Badge: true, View dropdown: true, Supporting text: true}
+    - name: _Calendar column header
+      depth: 4
+      main_component: _Schedule column header
+      variant_axes:
+        type: [default, selected, today]
+      bool_props:
+        {Date: false}
+    - name: _Calendar cell/Month view
+      depth: 4
+      main_component: _Schedule cell/month
+      variant_axes:
+        state: [default, hover, disabled]
+      bool_props:
+        {Event 2: true, Event 3: true, Event 1: true, More events indicator: true}
+    - name: _Schedule cell/month
+      depth: 4
+      main_component: _Schedule cell/month
+      variant_axes:
+        state: [default, hover, disabled]
+      bool_props:
+        {Event 2: true, Event 3: true, Event 1: true, More events indicator: true}
+  text_nodes:
+    - {name: Supporting text, role: hint, sample: "Jan 1, 2025 – Jan 31, 2025"}
+    - {name: Text, sample: Mon}
+  how_to_use: "1. Instancier via key_variants (jamais le ComponentSet).\n2. Exemple : const variantNode = await figma.getNodeByIdAsync(key_variants[\"<variant-slug>\"]); const inst = variantNode.createInstance()\n3. setTxt(inst, \"Supporting text\", \"Jan 1, 2025 – Jan 31, 2025\")\n4. setTxt(inst, \"Text\", \"Mon\")\n5. Si besoin masquer les actions : inst.findOne(n => n.name === \"_Schedule header\")?.setProperties({\"Badge\":false,\"Supporting text\":false,\"View dropdown\":false})"
+  variants:
+    type: [month, week]
+  defaults: {type: month}
