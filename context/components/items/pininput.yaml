@@ -1,0 +1,45 @@
+# items/pininput.yaml — detail complet du composant 'pininput'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: pininput
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+pininput:
+  figma_key: b21f1f1c06011aba88630055b1fa2fa7429b39eb
+  figma_node_id: "1106:66757"
+  component_type: COMPONENT_SET
+  instanciable: false
+  default_variant_id: "1106:66810"
+  key_variants:
+    size-md-digits-4: "1106:66810"
+    size-md-digits-6: "1106:67355"
+    size-sm-digits-4: "1106:66907"
+    size-sm-digits-6: "1106:67435"
+  page: "      ↳ PinInput"
+  description: "AXES - 4 axes, 6 key variants: size (sm | md | lg) x digits (4 | 6). Deliberately small set. - label and hint-text are Field axes, not axes of the code input itself. - No state axis at set level: the per-cell states (placeholder | focused | filled | disabled) sit on the nested _Mega input field base and are runtime. COMPOSITION - Vertical auto-layout, hug x hug, gap 6: Label / row of cells / Hint text. - One _Mega input field base instance per cell (state x size). Text nodes: Label, Text (the digit), Hint text. - Use for one-time codes and confirmation tokens only; a plain code field is input-field-v2. ACCESSIBILITY - The row of cells must read as one labelled field, not as N unlabelled inputs. - Pasting a full code must fill every cell; per-cell typing as the only path is a trap. - An invalid code must be stated in text, not signalled only by red cells. CODE - React: PinInput (Ark UI PinInput), wrapped in FieldShell. - Field extraction: label and hint-text have no prop on the control shell; PinInput re-exposes label, description, error and required and hands them to Field. - digits -> length. size -> size: React xs/sm/md/lg/xl vs Figma sm/md/lg, mismatch. - React adds otp, mask, type (numeric | alphanumeric | alphabetic), placeholder, onComplete, name, invalid, disabled, readOnly, color, id, ref, onBlur; none exist as Figma axes. - Cell state is Ark runtime data-*, never a cva variant."
+  size: {w: HUG, h: HUG}
+  direction: VERTICAL
+  gap: 6
+  text:
+    sample: "0"
+    fill: "@text-tertiary"
+    size: 48
+    weight: Medium
+    lineHeight: 60
+  nested_instances:
+    - name: _Mega input field base
+      depth: 3
+      main_component: _Mega input field base
+      variant_axes:
+        state: [placeholder, focused, filled, disabled]
+        size: [md, sm, lg]
+  text_nodes:
+    - {name: Text, sample: 0}
+  how_to_use: "1. Instancier via key_variants (jamais le ComponentSet).\n2. Exemple : const variantNode = await figma.getNodeByIdAsync(key_variants[\"<variant-slug>\"]); const inst = variantNode.createInstance()\n3. setTxt(inst, \"Text\", \"0\")"
+  variants:
+    digits: [4, 6]
+    hint-text: [false, true]
+    label: [false, true]
+    size: [md, sm]
+  defaults: {digits: 4, hint-text: true, label: true, size: md}
