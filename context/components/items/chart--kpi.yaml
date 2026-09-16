@@ -1,0 +1,50 @@
+# items/chart--kpi.yaml — detail complet du composant 'chart--kpi'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: chart--kpi
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+chart--kpi:
+  figma_key: 03656e0d67cb9988168f6a3983313d4548bcd7fc
+  figma_node_id: "23043:179"
+  component_type: COMPONENT_SET
+  instanciable: false
+  default_variant_id: "23043:141"
+  key_variants: {trend-up: "23043:141", trend-down: "23043:154", trend-flat: "23043:167"}
+  page: "      ↳ Charts"
+  description: "KPI tile - one measure, its variation, and its recent shape. AXES - trend: up, down or flat. It drives the Badge colour and the shape of the nested sparkline at once. COMPOSITION Vertical auto-layout: label (Lato Text sm Medium), then a row with the value (Kode Mono Display xs Bold) and a Chart / Sparkline instance, then a row with a real DS badge and the comparison caption. The badge is an instance of badge (color green / red / neutral, size sm, variant subtle), never a redrawn badge. Instantiate it INSIDE a card (cardscard), never bare on the canvas: a chart is card content, not a surface. Padding comes from the card padding prop (lg 24 / md 16 / sm 12) and is never doubled here. The chart takes the width of its container: paths carry SCALE constraints, grids and bars are auto-layout. ACCESSIBILITY The variation is written in the badge label with its sign, so the green and the red are a reinforcement and never the only signal. That is the documented semantic exception to the rule that a status badge is grey by default. CODE @42/ui-react, component Chart (import from index.ts/chart), a wrapper over TanStack Charts. The chart TYPE is not a prop: it comes from the definition and the marks passed to the chart. So the variant axes below do NOT map one to one onto React props, they map onto separate definitions. Colour maps exactly: color takes one Color for a one-series chart (sets data-color and the ts-chart-1 slot), colors takes an ordered Color array for a multi-series chart (sets ts-chart-1 to ts-chart-N, see CHART_PALETTE and chartColors). TanStack cycles six categorical slots by default, which is why the Figma ramp stops at six. renderSvg and renderer are mutually exclusive. The tile itself is not a Chart: it composes Text, Title, Badge and a Chart. The React counterpart is a card composition, not a component. DEFAUT OUVERT 2026-09-14 - the six Figma steps are assumed to be the counterpart of CHART_PALETTE but the values were never compared. Until someone diffs them, treat the ramp as a Figma-side convention, not as proven parity. Second open point: a one-series chart pins utility-brand-600 here, while the React color prop and the Figma collection 7. Accent both express an accent that can be switched. Two mechanisms for one job."
+  size: {w: 240, h: HUG}
+  direction: VERTICAL
+  gap: 8
+  text:
+    sample: Heures de code
+    fill: "@text-secondary"
+    size: 14
+    weight: Medium
+    lineHeight: 20
+  nested_instances:
+    - name: Chart / Sparkline
+      depth: 2
+      main_component: Chart / Sparkline
+      variant_axes:
+        type: [line, area, bar]
+        trend: [up, down, flat]
+    - name: Delta badge
+      depth: 2
+      main_component: Badge
+      variant_axes:
+        color: [brand, neutral, green, orange, pink, purple, red]
+        size: [md, sm, lg]
+        variant: [light, outline, filled, subtle, gradient]
+      bool_props:
+        {Close: true, ShowTrailing: false, ShowText: true, ShowLeading: false}
+  text_nodes:
+    - {name: Label, role: label, sample: Heures de code}
+    - {name: Value, sample: 1 248}
+    - {name: Text, sample: "+12,4 %"}
+    - {name: Comparison, sample: vs 30 derniers jours}
+  how_to_use: "1. Instancier via key_variants (jamais le ComponentSet).\n2. Exemple : const variantNode = await figma.getNodeByIdAsync(key_variants[\"<variant-slug>\"]); const inst = variantNode.createInstance()\n3. setTxt(inst, \"Label\", \"Heures de code\")\n4. setTxt(inst, \"Value\", \"1 248\")\n5. Si besoin masquer les actions : inst.findOne(n => n.name === \"Delta badge\")?.setProperties({\"Close\":false,\"ShowLeading\":false,\"ShowText\":false,\"ShowTrailing\":false})"
+  variants:
+    trend: [down, flat, up]
+  defaults: {trend: up}
