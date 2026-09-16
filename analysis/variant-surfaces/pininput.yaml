@@ -1,0 +1,19 @@
+# analysis/variant-surfaces/pininput.yaml — la SURFACE peinte par chaque variante.
+# Hors de context/ deliberement : lu par la console, jamais par un agent.
+# Les surfaces identiques sont stockees une fois et pointees.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: pininput
+  generated_at: "2026-09-16"
+  variants: 4
+  surfaces: 1
+surfaces:
+  s1:
+    gap: 6
+    text: {fill: "@text-tertiary", size: 48, weight: Medium, lineHeight: 60}
+variants:
+  size-md-digits-4: s1
+  size-md-digits-6: s1
+  size-sm-digits-4: s1
+  size-sm-digits-6: s1
