@@ -1,0 +1,39 @@
+# items/tablecell.yaml — detail complet du composant 'tablecell'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: tablecell
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+tablecell:
+  figma_key: c5e416c415624a469198595c30751919e6817531
+  figma_node_id: "21703:59973"
+  component_type: COMPONENT_SET
+  instanciable: false
+  default_variant_id: "21604:23330"
+  key_variants: {state-default: "21604:23330", state-hover: "21703:59974"}
+  page: "      ↳ Tables"
+  description: "TableCell — one table cell. A locked slot, nothing else. AXES state: runtime only. Use default when composing a screen. default = resting cell. hover = row-hover feedback. Exists for spec and review. In code the tint is applied to the row, not to the cell. No size, no align, no variant axis: density and alignment belong to the table, not to the cell. SLOT — content (locked, 1 child) The cell exposes one slot and no other property: whatever sits in the slot IS the cell. Default content is a plain text layer named \"Text (default - hide before inserting a component)\". Edit its string for a text cell. WARNING: inserting a component does NOT replace it - the two stack and overlap. Set that layer's visible to false in the same pass, before or after the insert, whenever the cell is not a text cell. The slot is set to preferred values only, so the swap picker offers these 20 and nothing else: Data Badge, Avatar [V2], Avatar group [V2], Avatar label group [V2], Progress bar [V2], Tooltip Actions Buttons/Button, ButtonGroup, Action menu [V2], Checkbox, _Toggle base42 Editable Input, NumberInput, Textarea, Select, MultiSelect, Autocomplete, TagsInput, DateInput, Slider STRICT RULE — humans and AI agents alike: never detach the cell, never paste a component that is not in that list, never rebuild cell content out of raw layers or an icon frame. If what you need is missing, the fix is to extend the preferred values of this slot, not to bypass it. COMPOSITION TableCell + TableHeaderCell are enough to build ANY table. Build by COLUMN, not by row: one auto-layout frame per column, TableHeaderCell on top, then one TableCell per row, then the columns side by side. Column width is set on the column frame; the cell hugs. Keep the same content height along a row — row height is the tallest cell of that row. Padding is fixed (16 / 24) and belongs to the component: do not override it, do not add margins around the slot content. Full table = TableHeader (title, search, actions) + the columns + Pagination. Table [V2] on this page is the old monolithic component — prefer this slot-based assembly. ACCESSIBILITY A column of frames is a visual convention only: nothing here carries table semantics. The real table / tr / td structure is produced in code — a screen built from these cells is a picture of a table, not a table. Selection column: the header checkbox is select-all, the cell checkbox is select-row; both need an accessible name in code. Alignment is a column decision, header included: numbers right, text left. CODE — @42/ui-react Table Compound, server component, no state: Table &gt; Table.Toolbar / .Title, Table.Content, Table.Head, Table.Body, Table.Foot, Table.Row, Table.HeaderCell, Table.Cell. TableCell → Table.Cell (td). Slot content → children. state=hover has no prop: the hover tint is a CSS rule on tbody tr, not a cell state. Code composes by ROW (Table.Row wrapping its cells), Figma by COLUMN. Same table, transposed authoring — expected, not a drift. React-only, do not mock these up here: size (xs→xl, drives cell padding and text scale), striped, stickyHeader / stickyFooter, the Table.Foot totals row, and the whole DataTable layer (TanStack: sorting, filtering, resizing, row selection, pagination). Table has no variant × color axis."
+  size: {w: HUG, h: 60}
+  padding: {v: 16, h: 24}
+  direction: HORIZONTAL
+  gap: 8
+  align: {counter: CENTER}
+  fills: "@alpha-black-5"
+  stroke: {color: "@border-secondary", width: 1, align: INSIDE}
+  text:
+    sample: Olivia Rhye
+    fill: "@text-primary"
+    size: 14
+    weight: Medium
+    lineHeight: 20
+  slots:
+    content: {slot_id: "21604:23340", node_type: SLOT, depth: 1}
+  text_nodes:
+    - name: Text (default — hide before inserting a component)
+      optional: true
+      sample: Olivia Rhye
+  how_to_use: "1. Instancier via key_variants (jamais le ComponentSet).\n2. Exemple : const variantNode = await figma.getNodeByIdAsync(key_variants[\"<variant-slug>\"]); const inst = variantNode.createInstance()\n3. setTxt(inst, \"Text (default — hide before inserting a component)\", \"Olivia Rhye\")"
+  variants:
+    state: [default, hover]
+  defaults: {state: default}
