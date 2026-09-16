@@ -1,0 +1,4760 @@
+# ds-variables.yaml — Handles des Variables Figma (kind: variables)
+# Généré par le plugin figma-to-yaml — 2026-09-16
+# Chargé À LA DEMANDE par create-maquette (binding) — PAS dans le socle always-loaded.
+# Aligné clé-à-clé sur les sections valeur de ds-fondations.yaml.
+
+meta:
+  kind: variables
+  ds_name: 42 UI Kit V3
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  last_scanned: 2026-09-16
+variable_collections:
+  _Primitives:
+    id: "VariableCollectionId:5248:377685"
+    defaultMode: "5248:3"
+    modes: {Style: "5248:3"}
+  1. Color modes:
+    id: "VariableCollectionId:5256:372339"
+    defaultMode: "5353:0"
+    modes: {Dark mode: "5353:0", Light mode: "5256:0"}
+  5. Containers:
+    id: "VariableCollectionId:6283:327807"
+    defaultMode: "6283:0"
+    modes: {Value: "6283:0"}
+  4. Widths:
+    id: "VariableCollectionId:6298:45304"
+    defaultMode: "6298:1"
+    modes: {Mode 1: "6298:1"}
+  3. Spacing:
+    id: "VariableCollectionId:6298:45383"
+    defaultMode: "6298:2"
+    modes: {Mode 1: "6298:2"}
+  2. Radius:
+    id: "VariableCollectionId:6298:46388"
+    defaultMode: "6298:3"
+    modes: {Mode 1: "6298:3"}
+  6. Typography:
+    id: "VariableCollectionId:7403:16248"
+    defaultMode: "7403:0"
+    modes: {Value: "7403:0"}
+  7. Accent:
+    id: "VariableCollectionId:22324:2"
+    defaultMode: "22324:0"
+    modes: {brand: "22324:0", gray: "22324:1", pink: "22324:2"}
+variables:
+  colors:
+    system:
+      text-primary:
+        id: "VariableID:5263:372565"
+        key: 1efd5de6a494985659acc9d84865582663465db6
+        name: Colors/Text/text-primary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ffffff", Light mode: "#030d20"}
+      text-tertiary:
+        id: "VariableID:5263:372566"
+        key: 68c50024d992a96717555b369ecfd3e3ae654adf
+        name: Colors/Text/text-tertiary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ffffff59", Light mode: "#0a1e4166"}
+      text-error-primary:
+        id: "VariableID:5263:373125"
+        key: 34a6d564adc67d6092dc1720839d283b6e1514c5
+        name: Colors/Text/text-error-primary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ff4e41", Light mode: "#7a271a"}
+      border-error-secondary:
+        id: "VariableID:5263:373126"
+        key: bddbfb2340a4b44fb89f5e025d3a78357c61c586
+        name: Colors/Border/border-error-secondary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#f044384d", Light mode: "#f044384d"}
+      bg-primary:
+        id: "VariableID:5269:371407"
+        key: bd547221499a091ec87d5a4545b2e1cd08c49635
+        name: Colors/Background/bg-primary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ffffff0a", Light mode: "#ffffff29"}
+      bg-tertiary:
+        id: "VariableID:5269:371408"
+        key: 5b209916e77ec42d7025fb52248e0acb243f84bf
+        name: Colors/Background/bg-tertiary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ffffff80", Light mode: "#ffffffcc"}
+      fg-secondary:
+        id: "VariableID:5269:371411"
+        key: dda6ab2333ed29ccf66d8885b16ca4d3a5c0dca0
+        name: Colors/Foreground/fg-secondary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ffffff80", Light mode: "#0a1e41b2"}
+      bg-error-secondary:
+        id: "VariableID:5270:371424"
+        key: 791e53d2f256cd37bdee340881526f7506dfb8af
+        name: Colors/Background/bg-error-secondary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#f044384d", Light mode: "#f044384d"}
+      bg-warning-primary:
+        id: "VariableID:5270:371425"
+        key: fd7fc8ad737e76531d1edb8c429e6a5f1853e5e3
+        name: Colors/Background/bg-warning-primary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ef68201a", Light mode: "#ef68201a"}
+      bg-warning-secondary:
+        id: "VariableID:5270:371426"
+        key: 38d55b3b8fd65a9ef578a02d0c1b38a109e00d7b
+        name: Colors/Background/bg-warning-secondary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ef68204d", Light mode: "#ef68204d"}
+      bg-success-primary:
+        id: "VariableID:5270:371427"
+        key: 67dc1b8f1130a1e73e402bc9cd5e5c5dd289cf3f
+        name: Colors/Background/bg-success-primary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#17b26a1a", Light mode: "#17b26a1a"}
+      bg-success-secondary:
+        id: "VariableID:5270:371428"
+        key: 0f2047fa2a195507d554dc6c56434b36967a016a
+        name: Colors/Background/bg-success-secondary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#17b26a4d", Light mode: "#17b26a4d"}
+      fg-warning-primary:
+        id: "VariableID:5270:371432"
+        key: 8f01031cc0cf156bdb1535f550fbadf663b2566a
+        name: Colors/Foreground/fg-warning-primary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ef6820", Light mode: "#772917"}
+      fg-success-primary:
+        id: "VariableID:5270:371434"
+        key: 76c8b13f8c3a634f966f664fa41797f2e48f676d
+        name: Colors/Foreground/fg-success-primary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#17b26a", Light mode: "#074d31"}
+      text-warning-primary:
+        id: "VariableID:5270:371444"
+        key: 617d8fb359e054e91b32f6f4f1cf526bcce0e1dc
+        name: Colors/Text/text-warning-primary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ef6820", Light mode: "#772917"}
+      text-success-primary:
+        id: "VariableID:5270:371446"
+        key: 54b57fbe7e0280fa485a6a807412865636fae7b9
+        name: Colors/Text/text-success-primary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#17b26a", Light mode: "#074d31"}
+      fg-white:
+        id: "VariableID:5270:371448"
+        key: 31160c276a0e8d70aa8022025893e5f9aee3d804
+        name: Colors/Foreground/fg-white
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ffffff", Light mode: "#ffffff"}
+      text-white:
+        id: "VariableID:5270:371453"
+        key: b2e032e208bef636fccb260f39cf0c57ba0f7ddf
+        name: Colors/Text/text-white
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ffffff", Light mode: "#ffffff"}
+      bg-error-solid:
+        id: "VariableID:5270:371460"
+        key: ebea7d6e181b78bc3e4cddef1155040f2127c5aa
+        name: Colors/Background/bg-error-solid
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ff4e41", Light mode: "#ff4e41"}
+      bg-warning-solid:
+        id: "VariableID:5270:371462"
+        key: 08bac3d9bf17958e2e6bd960260ff0b79cb6cf8e
+        name: Colors/Background/bg-warning-solid
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ef6820", Light mode: "#ef6820"}
+      bg-success-solid:
+        id: "VariableID:5270:371464"
+        key: 2c599734e489e185f99e693b0acaafe54cc84c80
+        name: Colors/Background/bg-success-solid
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#17b26a", Light mode: "#17b26a"}
+      fg-success-secondary:
+        id: "VariableID:5270:371539"
+        key: 4030675a51a7e7a67177b63ad9c03c599a26206c
+        name: Colors/Foreground/fg-success-secondary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#75e0a7", Light mode: "#053321"}
+      text-secondary:
+        id: "VariableID:5340:371764"
+        key: e0463950ef98982b0e6fc16d889d32dbb9042b33
+        name: Colors/Text/text-secondary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ffffff8f", Light mode: "#0a1e41b2"}
+      fg-primary:
+        id: "VariableID:5353:380348"
+        key: 95493e5661908da672bdd69901acb6f9318fc7c1
+        name: Colors/Foreground/fg-primary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ffffff", Light mode: "#030d20"}
+      fg-disabled:
+        id: "VariableID:5353:380350"
+        key: a3fb99436e2e4dc783da0a84a768bbe2a571cefe
+        name: Colors/Foreground/fg-disabled
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ffffff29", Light mode: "#0a1e4133"}
+      text-disabled:
+        id: "VariableID:5353:380352"
+        key: eab7757bd653998fc0aa18f940537f7bd3b381a6
+        name: Colors/Text/text-disabled
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ffffff29", Light mode: "#0a1e4133"}
+      border-blue-primary:
+        id: "VariableID:5353:381354"
+        key: b9e5e03e8a254ba888867c78479b2eb5f2aeb3f1
+        name: Colors/Border/border-blue-primary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#6388e31a", Light mode: "#6388e31a"}
+      border-error-primary:
+        id: "VariableID:5353:385108"
+        key: f483d90d23678ffbc6cdadbf1f36a284b85f3ec0
+        name: Colors/Border/border-error-primary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#f044381a", Light mode: "#f044381a"}
+      bg-error-primary:
+        id: "VariableID:5353:386814"
+        key: e867edb069757dd592cdca46e4df3a4b615644a8
+        name: Colors/Background/bg-error-primary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#f044381a", Light mode: "#f044381a"}
+      fg-error-primary:
+        id: "VariableID:5367:383135"
+        key: 3b6ae68789b4b685beab57d32fa33bdeaefed9cc
+        name: Colors/Foreground/fg-error-primary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ff4e41", Light mode: "#7a271a"}
+      bg-secondary:
+        id: "VariableID:5367:383138"
+        key: 5b88b64e822893890bb3f5c50070ac664d6b9c87
+        name: Colors/Background/bg-secondary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ffffff29", Light mode: "#ffffff80"}
+      utility-blue-600:
+        id: "VariableID:5374:385385"
+        key: 90c421b942ffeb478691b2e85563ffa07e667496
+        name: Colors/Utility/Blue/utility-blue-600
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#53b1fd", Light mode: "#1570ef"}
+      utility-brand-600:
+        id: "VariableID:5399:389132"
+        key: 57951bb007a0ffe27aef12483481c19743c5bfe4
+        name: Colors/Utility/Brand/utility-brand-600
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#92b0fa", Light mode: "#4d6fc3"}
+      utility-gray-700:
+        id: "VariableID:5399:389133"
+        key: d7658ee814ac7e427d7af9ea02660033af3643a1
+        name: Colors/Utility/Gray/utility-gray-700
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#cecfd2", Light mode: "#414651"}
+      utility-error-600:
+        id: "VariableID:5399:389134"
+        key: a45f4b32647227934bdf08986e7aa3b795cf49f7
+        name: Colors/Utility/Error/utility-error-600
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#f97066", Light mode: "#d92d20"}
+      utility-warning-600:
+        id: "VariableID:5399:389135"
+        key: 9c26a9c829a93f7cbf9e9e1d4b6084443542ebf7
+        name: Colors/Utility/Warning/utility-warning-600
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#f38744", Light mode: "#e04f16"}
+      utility-success-600:
+        id: "VariableID:5399:389136"
+        key: 8f551cf3ceed60a525e4323d332a81258db72e43
+        name: Colors/Utility/Success/utility-success-600
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#47cd89", Light mode: "#079455"}
+      utility-orange-600:
+        id: "VariableID:5399:389137"
+        key: 632c8702ff45476ae7c2ff9825a67ab13c18d239
+        name: Colors/Utility/Orange/utility-orange-600
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#f38744", Light mode: "#e04f16"}
+      utility-blue-dark-600:
+        id: "VariableID:5399:389138"
+        key: 6b4160cd0fa77419be486c457912009c481b97c0
+        name: Colors/Utility/Blue dark/utility-blue-dark-600
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#528bff", Light mode: "#155eef"}
+      utility-indigo-600:
+        id: "VariableID:5399:389139"
+        key: 5543f2b29f747712b1a014dc0e072640d237a19c
+        name: Colors/Utility/Indigo/utility-indigo-600
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#8098f9", Light mode: "#444ce7"}
+      utility-fuchsia-600:
+        id: "VariableID:5399:389140"
+        key: f9fb40706b1700ed82e82930e4c6401add897909
+        name: Colors/Utility/Fuchsia/utility-fuchsia-600
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#e478fa", Light mode: "#ba24d5"}
+      utility-pink-600:
+        id: "VariableID:5399:389141"
+        key: 11810251ce85fb9bd0c83c5a74f4e11683818610
+        name: Colors/Utility/Pink/utility-pink-600
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#f670c7", Light mode: "#dd2590"}
+      utility-purple-600:
+        id: "VariableID:5399:389142"
+        key: ddd55e4cae5e9dc73a190dfcb09c621f1bb0635b
+        name: Colors/Utility/Purple/utility-purple-600
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#9b8afb", Light mode: "#6938ef"}
+      utility-orange-dark-600:
+        id: "VariableID:5399:389143"
+        key: a4bc4f2fb93a1f369a2e0dded85289ee131fa06b
+        name: Colors/Utility/Orange dark/utility-orange-dark-600
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#ff692e", Light mode: "#e62e05"}
+      utility-blue-light-600:
+        id: "VariableID:5400:398182"
+        key: d019d3996676ad5b1c87d5ec4339ac54b0038007
+        name: Colors/Utility/Blue light/utility-blue-light-600
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#36bffa", Light mode: "#0086c9"}
+      utility-gray-600:
+        id: "VariableID:5400:398183"
+        key: 89da81286b5e9d85f18c0df314e7d63b8f473032
+        name: Colors/Utility/Gray/utility-gray-600
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#94979c", Light mode: "#535862"}
+      utility-brand-700:
+        id: "VariableID:5400:398186"
+        key: e10069c178709f161a22dbdff4bb54e79f0ad0ec
+        name: Colors/Utility/Brand/utility-brand-700
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#b8cdff", Light mode: "#365399"}
+      utility-error-700:
+        id: "VariableID:5400:398187"
+        key: b2cb5d91ea44a6862d06e21dcfc61ae6a9c84460
+        name: Colors/Utility/Error/utility-error-700
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#fda29b", Light mode: "#b42318"}
+      utility-warning-700:
+        id: "VariableID:5400:398188"
+        key: f0ff439644dd79a9bc49bfaf0a8d31ae2a5d6424
+        name: Colors/Utility/Warning/utility-warning-700
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#f7b27a", Light mode: "#b93815"}
+      utility-success-700:
+        id: "VariableID:5400:398189"
+        key: 812969cb8c06b441ef1f2dbbf70bc2ba0f028695
+        name: Colors/Utility/Success/utility-success-700
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#75e0a7", Light mode: "#067647"}
+      utility-blue-dark-700:
+        id: "VariableID:5400:398190"
+        key: 469628e5159696dc65fad338d1a558d9d346df16
+        name: Colors/Utility/Blue dark/utility-blue-dark-700
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#84adff", Light mode: "#004eeb"}
+      utility-indigo-700:
+        id: "VariableID:5400:398191"
+        key: 03a1db2db591ea901ffada058c79a0702b922411
+        name: Colors/Utility/Indigo/utility-indigo-700
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#a4bcfd", Light mode: "#3538cd"}
+      utility-purple-700:
+        id: "VariableID:5400:398192"
+        key: d952f0af29ea45c5576c7b13d3d8ba1120687568
+        name: Colors/Utility/Purple/utility-purple-700
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#bdb4fe", Light mode: "#5925dc"}
+      utility-fuchsia-700:
+        id: "VariableID:5400:398193"
+        key: 8750d3334997badc43da4c8ecc7c64a130270385
+        name: Colors/Utility/Fuchsia/utility-fuchsia-700
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#eeaafd", Light mode: "#9f1ab1"}
+      utility-pink-700:
+        id: "VariableID:5400:398194"
+        key: 1133defde1b010c31d0a18b7ad0f3072af90d3f5
+        name: Colors/Utility/Pink/utility-pink-700
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#faa7e0", Light mode: "#c11574"}
+      utility-orange-dark-700:
+        id: "VariableID:5400:398195"
+        key: 8d85f5eb46c1783890606e52a98498bea3a79357
+        name: Colors/Utility/Orange dark/utility-orange-dark-700
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#ff9c66", Light mode: "#bc1b06"}
+      utility-orange-700:
+        id: "VariableID:5400:398196"
+        key: fa739892956f6eff2ace0e4a459bd152087aed38
+        name: Colors/Utility/Orange/utility-orange-700
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#f7b27a", Light mode: "#b93815"}
+      utility-blue-700:
+        id: "VariableID:5400:398197"
+        key: 7f0f043c938ac9db30e071ac605448e6e80318d7
+        name: Colors/Utility/Blue/utility-blue-700
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#84caff", Light mode: "#175cd3"}
+      utility-blue-light-700:
+        id: "VariableID:5400:398198"
+        key: 8f05cec989a2140f97811643c8c6e45cec51ad26
+        name: Colors/Utility/Blue light/utility-blue-light-700
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#7cd4fd", Light mode: "#026aa2"}
+      utility-gray-blue-600:
+        id: "VariableID:5400:398199"
+        key: f0261f1b12eab84f95dbd98f6260954e8e9e472b
+        name: Colors/Utility/Gray blue/utility-gray-blue-600
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#717bbc", Light mode: "#3e4784"}
+      utility-gray-blue-700:
+        id: "VariableID:5400:398200"
+        key: a1654dbdf5ad27d2f4f049c8942a925a80e0e17b
+        name: Colors/Utility/Gray blue/utility-gray-blue-700
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#b3b8db", Light mode: "#363f72"}
+      utility-gray-500:
+        id: "VariableID:5400:398203"
+        key: 2ae55b090adeece2b68ecc7bd8d26d5268e3d884
+        name: Colors/Utility/Gray/utility-gray-500
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#85888e", Light mode: "#717680"}
+      utility-brand-500:
+        id: "VariableID:5400:398205"
+        key: 9e061d10d32d2f84455134733fdb27bbfdd93c65
+        name: Colors/Utility/Brand/utility-brand-500
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#6388e3", Light mode: "#6388e3"}
+      utility-error-500:
+        id: "VariableID:5400:398207"
+        key: 897d19b717c3add3e6fa2d66032aab9df0076b81
+        name: Colors/Utility/Error/utility-error-500
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#ff4e41", Light mode: "#ff4e41"}
+      utility-warning-500:
+        id: "VariableID:5400:398209"
+        key: 24db05f8e6ae03ad958246e12cab8286717880e8
+        name: Colors/Utility/Warning/utility-warning-500
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#ef6820", Light mode: "#ef6820"}
+      utility-success-500:
+        id: "VariableID:5400:398211"
+        key: 9825ac89b1ae15f131159ac212ac6743104b7565
+        name: Colors/Utility/Success/utility-success-500
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#17b26a", Light mode: "#17b26a"}
+      utility-gray-blue-500:
+        id: "VariableID:5400:398213"
+        key: c1531d3c6f84f2362aaa063229abc0ddb0a93e64
+        name: Colors/Utility/Gray blue/utility-gray-blue-500
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#4e5ba6", Light mode: "#4e5ba6"}
+      utility-blue-light-500:
+        id: "VariableID:5400:398215"
+        key: e83b44aeff5d90e5162ce33129e349efde09b073
+        name: Colors/Utility/Blue light/utility-blue-light-500
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#0ba5ec", Light mode: "#0ba5ec"}
+      utility-blue-500:
+        id: "VariableID:5400:398217"
+        key: 5dc97740af53779c186db2513c958534719cacb8
+        name: Colors/Utility/Blue/utility-blue-500
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#2e90fa", Light mode: "#2e90fa"}
+      utility-blue-dark-500:
+        id: "VariableID:5400:398219"
+        key: 7ecbe272a9a2db39ca96c952cbddae63612922aa
+        name: Colors/Utility/Blue dark/utility-blue-dark-500
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#2970ff", Light mode: "#2970ff"}
+      utility-indigo-500:
+        id: "VariableID:5400:398221"
+        key: 03588469aaa6e247b66aefe3f824ca751122d288
+        name: Colors/Utility/Indigo/utility-indigo-500
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#6172f3", Light mode: "#6172f3"}
+      utility-purple-500:
+        id: "VariableID:5400:398223"
+        key: ea14d724c0b52d20621b057f06821091a372a5a1
+        name: Colors/Utility/Purple/utility-purple-500
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#7a5af8", Light mode: "#7a5af8"}
+      utility-fuchsia-500:
+        id: "VariableID:5400:398225"
+        key: 5522ecc8c993396e8ed2f1233b6ba6d80ebdc5d4
+        name: Colors/Utility/Fuchsia/utility-fuchsia-500
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#d444f1", Light mode: "#d444f1"}
+      utility-pink-500:
+        id: "VariableID:5400:398227"
+        key: 5e2407c4a4f61d75404526f1a3a20df5393e224b
+        name: Colors/Utility/Pink/utility-pink-500
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#ee46bc", Light mode: "#ee46bc"}
+      utility-orange-dark-500:
+        id: "VariableID:5400:398229"
+        key: 562553470ea0883341ee70f592d926466e2618c2
+        name: Colors/Utility/Orange dark/utility-orange-dark-500
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#ff4405", Light mode: "#ff4405"}
+      utility-orange-500:
+        id: "VariableID:5400:398231"
+        key: 48ea25bd313dd36fb225468c0554224574dd516c
+        name: Colors/Utility/Orange/utility-orange-500
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#ef6820", Light mode: "#ef6820"}
+      utility-gray-200:
+        id: "VariableID:5400:398233"
+        key: 6becb9caee121d416638e4adfc2642f746951de7
+        name: Colors/Utility/Gray/utility-gray-200
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#373a41", Light mode: "#e9eaeb"}
+      utility-brand-200:
+        id: "VariableID:5400:398234"
+        key: af2b72b65b8084f385b8a738e5234ca409ebbd2c
+        name: Colors/Utility/Brand/utility-brand-200
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#233970", Light mode: "#d0deff"}
+      utility-error-200:
+        id: "VariableID:5400:398235"
+        key: 8830c62d643d67200fd2b95a3ac3714a91ce083a
+        name: Colors/Utility/Error/utility-error-200
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#912018", Light mode: "#fecdca"}
+      utility-warning-200:
+        id: "VariableID:5400:398236"
+        key: 51c466cfd21818cbf0e2854a05e3a2b91b0f1ac8
+        name: Colors/Utility/Warning/utility-warning-200
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#932f19", Light mode: "#f9dbaf"}
+      utility-success-200:
+        id: "VariableID:5400:398237"
+        key: dec7c9955b7dcfd664f202f239734aa569f5c7d0
+        name: Colors/Utility/Success/utility-success-200
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#085d3a", Light mode: "#abefc6"}
+      utility-gray-blue-200:
+        id: "VariableID:5400:398238"
+        key: d11410eb2ba6a7716475cfea6316a229488b786b
+        name: Colors/Utility/Gray blue/utility-gray-blue-200
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#293056", Light mode: "#d5d9eb"}
+      utility-blue-light-200:
+        id: "VariableID:5400:398239"
+        key: 8b160f0254fc1874ed5dfd4219f602888a8d7db4
+        name: Colors/Utility/Blue light/utility-blue-light-200
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#065986", Light mode: "#b9e6fe"}
+      utility-blue-200:
+        id: "VariableID:5400:398240"
+        key: bfa5eb37e2367705fe6bbcdfcc3bea11a1e5d135
+        name: Colors/Utility/Blue/utility-blue-200
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#1849a9", Light mode: "#b2ddff"}
+      utility-blue-dark-200:
+        id: "VariableID:5400:398241"
+        key: 505a2aba4e6b286e328521e063977adda29f0438
+        name: Colors/Utility/Blue dark/utility-blue-dark-200
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#0040c1", Light mode: "#b2ccff"}
+      utility-indigo-200:
+        id: "VariableID:5400:398242"
+        key: bc0cfabf1117a606f9311c82a1e7becf5d3bad34
+        name: Colors/Utility/Indigo/utility-indigo-200
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#2d31a6", Light mode: "#c7d7fe"}
+      utility-purple-200:
+        id: "VariableID:5400:398243"
+        key: 48ad1fdf88204e9e977e6622d64bb2a7e99f624c
+        name: Colors/Utility/Purple/utility-purple-200
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#4a1fb8", Light mode: "#d9d6fe"}
+      utility-fuchsia-200:
+        id: "VariableID:5400:398244"
+        key: 7f16b2cf21fc9b589047f0654327438f7d09289d
+        name: Colors/Utility/Fuchsia/utility-fuchsia-200
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#821890", Light mode: "#f6d0fe"}
+      utility-pink-200:
+        id: "VariableID:5400:398245"
+        key: 1b1038581e81475bd365787804d7f6c08a0c3076
+        name: Colors/Utility/Pink/utility-pink-200
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#9e165f", Light mode: "#fcceee"}
+      utility-orange-dark-200:
+        id: "VariableID:5400:398246"
+        key: 42a769785e75a64bf41ea4983be3ee29fb165f9e
+        name: Colors/Utility/Orange dark/utility-orange-dark-200
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#97180c", Light mode: "#ffd6ae"}
+      utility-orange-200:
+        id: "VariableID:5400:398247"
+        key: ec1ae15a7d1a082d00354213e8fc7f3d73e0bf78
+        name: Colors/Utility/Orange/utility-orange-200
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#932f19", Light mode: "#f9dbaf"}
+      utility-gray-50:
+        id: "VariableID:5400:398248"
+        key: 3fdc3a7250404dd45173fb144725e1a29cb3709c
+        name: Colors/Utility/Gray/utility-gray-50
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#13161b", Light mode: "#fafafa"}
+      utility-brand-50:
+        id: "VariableID:5400:398249"
+        key: 61cf51abc976f8ce01b94e5161b32e3bd8fc3d03
+        name: Colors/Utility/Brand/utility-brand-50
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#030d20", Light mode: "#edf2ff"}
+      utility-error-50:
+        id: "VariableID:5400:398250"
+        key: 68263260dae187efe091be1bd20dd4627f235cb0
+        name: Colors/Utility/Error/utility-error-50
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#55160c", Light mode: "#fef3f2"}
+      utility-warning-50:
+        id: "VariableID:5400:398251"
+        key: 2a02ceb8a9c0992463f5b32c8dcde3fe11587caf
+        name: Colors/Utility/Warning/utility-warning-50
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#511c10", Light mode: "#fef6ee"}
+      utility-success-50:
+        id: "VariableID:5400:398252"
+        key: 59c1fed8dc0f37dea74379075d23bf8157842384
+        name: Colors/Utility/Success/utility-success-50
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#053321", Light mode: "#ecfdf3"}
+      utility-gray-blue-50:
+        id: "VariableID:5400:398253"
+        key: 6b4536f4edfec4873f9469e88cc6b54d89623794
+        name: Colors/Utility/Gray blue/utility-gray-blue-50
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#0d0f1c", Light mode: "#f8f9fc"}
+      utility-blue-light-50:
+        id: "VariableID:5400:398254"
+        key: 743cebaeac73c65269cba8c612268a4755a8cd49
+        name: Colors/Utility/Blue light/utility-blue-light-50
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#062c41", Light mode: "#f0f9ff"}
+      utility-blue-50:
+        id: "VariableID:5400:398255"
+        key: 97efbb248eb71a165eb2844e4bc6075cb61ccbe6
+        name: Colors/Utility/Blue/utility-blue-50
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#102a56", Light mode: "#eff8ff"}
+      utility-blue-dark-50:
+        id: "VariableID:5400:398256"
+        key: f826c207f65c4f42c5f8b0868135a3d74523567b
+        name: Colors/Utility/Blue dark/utility-blue-dark-50
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#002266", Light mode: "#eff4ff"}
+      utility-indigo-50:
+        id: "VariableID:5400:398257"
+        key: 130357acaa5b4c49db813c1656077f6c14a91b1a
+        name: Colors/Utility/Indigo/utility-indigo-50
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#1f235b", Light mode: "#eef4ff"}
+      utility-purple-50:
+        id: "VariableID:5400:398258"
+        key: 6eb084b4b724ea1b6f719cd866c038c9edfb1084
+        name: Colors/Utility/Purple/utility-purple-50
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#27115f", Light mode: "#f4f3ff"}
+      utility-fuchsia-50:
+        id: "VariableID:5400:398259"
+        key: c5d06f4c70610a11f1037579a2212e5c0ed8919d
+        name: Colors/Utility/Fuchsia/utility-fuchsia-50
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#47104c", Light mode: "#fdf4ff"}
+      utility-pink-50:
+        id: "VariableID:5400:398260"
+        key: 098d9efdaa07dd836911323333c9eae51b3760f1
+        name: Colors/Utility/Pink/utility-pink-50
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#4e0d30", Light mode: "#fdf2fa"}
+      utility-orange-dark-50:
+        id: "VariableID:5400:398261"
+        key: 1e9a546cfd04f08c17fd6184a73e43bba1d9d0c8
+        name: Colors/Utility/Orange dark/utility-orange-dark-50
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#57130a", Light mode: "#fff4ed"}
+      utility-orange-50:
+        id: "VariableID:5400:398262"
+        key: 48962a30733d50bfddabaf2335a7798f114953aa
+        name: Colors/Utility/Orange/utility-orange-50
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#511c10", Light mode: "#fef6ee"}
+      utility-gray-100:
+        id: "VariableID:5409:398263"
+        key: f55dc54cd5043256f7c8b5560e08021ef5fdb1ff
+        name: Colors/Utility/Gray/utility-gray-100
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#22262f", Light mode: "#f5f5f5"}
+      utility-brand-100:
+        id: "VariableID:5409:398264"
+        key: b028107f27cb09f038930527140ca35c524c3643
+        name: Colors/Utility/Brand/utility-brand-100
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#0a1e41", Light mode: "#e6edff"}
+      utility-error-100:
+        id: "VariableID:5409:398265"
+        key: 8e08345f8385f536301dd3aa71a12fbfb5bf834f
+        name: Colors/Utility/Error/utility-error-100
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#7a271a", Light mode: "#fee4e2"}
+      utility-warning-100:
+        id: "VariableID:5409:398266"
+        key: 107a339a9d32d878bc80db337f30fa2de9dde572
+        name: Colors/Utility/Warning/utility-warning-100
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#772917", Light mode: "#fdead7"}
+      utility-success-100:
+        id: "VariableID:5409:398267"
+        key: 0d7686bd82e4a76628dbad3552cdcb50e6873b2f
+        name: Colors/Utility/Success/utility-success-100
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#074d31", Light mode: "#dcfae6"}
+      utility-gray-blue-100:
+        id: "VariableID:5409:398268"
+        key: 5b220671c82594505fdb112fd31541599076e58a
+        name: Colors/Utility/Gray blue/utility-gray-blue-100
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#101323", Light mode: "#eaecf5"}
+      utility-blue-light-100:
+        id: "VariableID:5409:398269"
+        key: 413780f8249bd5d4e13b639c5fb17164a814e28d
+        name: Colors/Utility/Blue light/utility-blue-light-100
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#0b4a6f", Light mode: "#e0f2fe"}
+      utility-blue-100:
+        id: "VariableID:5409:398270"
+        key: 075c5bf1a5e2de1ae4b2b0f5f665e09dcc74dc21
+        name: Colors/Utility/Blue/utility-blue-100
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#194185", Light mode: "#d1e9ff"}
+      utility-blue-dark-100:
+        id: "VariableID:5409:398271"
+        key: c5c5abefd2c127624db22fd7ba9b2f41563988d7
+        name: Colors/Utility/Blue dark/utility-blue-dark-100
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#00359e", Light mode: "#d1e0ff"}
+      utility-indigo-100:
+        id: "VariableID:5409:398272"
+        key: 50b98712a3187178d25bcdd4be0e7194ae0ee6a3
+        name: Colors/Utility/Indigo/utility-indigo-100
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#2d3282", Light mode: "#e0eaff"}
+      utility-purple-100:
+        id: "VariableID:5409:398273"
+        key: 69698fe24160e080940731e4718236762a8a0dbe
+        name: Colors/Utility/Purple/utility-purple-100
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#3e1c96", Light mode: "#ebe9fe"}
+      utility-fuchsia-100:
+        id: "VariableID:5409:398274"
+        key: f66f64007f4003ec6f73b6a3b370357bb4d8d222
+        name: Colors/Utility/Fuchsia/utility-fuchsia-100
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#6f1877", Light mode: "#fbe8ff"}
+      utility-pink-100:
+        id: "VariableID:5409:398275"
+        key: e3a318565d4f0bc9f1456a68e28f3f1a8b1d3097
+        name: Colors/Utility/Pink/utility-pink-100
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#851651", Light mode: "#fce7f6"}
+      utility-orange-dark-100:
+        id: "VariableID:5409:398276"
+        key: 3855276a30c98d3d41011a3ae05fa2e75be28916
+        name: Colors/Utility/Orange dark/utility-orange-dark-100
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#771a0d", Light mode: "#ffe6d5"}
+      utility-orange-100:
+        id: "VariableID:5409:398277"
+        key: 051747963f533edd47fdf2772d24a110cc3548ab
+        name: Colors/Utility/Orange/utility-orange-100
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#772917", Light mode: "#fdead7"}
+      utility-gray-400:
+        id: "VariableID:5409:398424"
+        key: 9146d94f634e82b6627822274f9c87a98cf4dd54
+        name: Colors/Utility/Gray/utility-gray-400
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#61656c", Light mode: "#a4a7ae"}
+      utility-brand-400:
+        id: "VariableID:5409:398426"
+        key: 56ed479cd6e3ac5fe29f0c00b88cae9516c797d9
+        name: Colors/Utility/Brand/utility-brand-400
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#4d6fc3", Light mode: "#92b0fa"}
+      utility-error-400:
+        id: "VariableID:5409:398427"
+        key: a30e8913a71c286c163e875e4cb9ebcf3fa01d4c
+        name: Colors/Utility/Error/utility-error-400
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#d92d20", Light mode: "#f97066"}
+      utility-warning-400:
+        id: "VariableID:5409:398430"
+        key: 96f25d2e900e9ac50c6f358a127b5a795e8310d1
+        name: Colors/Utility/Warning/utility-warning-400
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#e04f16", Light mode: "#f38744"}
+      utility-success-400:
+        id: "VariableID:5409:398431"
+        key: 469dd3cb1a8c5e2e01cfbd39af2b514b24306eff
+        name: Colors/Utility/Success/utility-success-400
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#079455", Light mode: "#47cd89"}
+      utility-gray-blue-400:
+        id: "VariableID:5409:398432"
+        key: 976e1f8add25d516d4cf59b5049cb6baafd23626
+        name: Colors/Utility/Gray blue/utility-gray-blue-400
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#3e4784", Light mode: "#717bbc"}
+      utility-blue-light-400:
+        id: "VariableID:5409:398433"
+        key: e5dd84f5d8fd706d1b66f7cf192ead6fe77a783f
+        name: Colors/Utility/Blue light/utility-blue-light-400
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#0086c9", Light mode: "#36bffa"}
+      utility-blue-400:
+        id: "VariableID:5409:398434"
+        key: c8347735e3d3fe6ebd7b33403ad2b915499cf946
+        name: Colors/Utility/Blue/utility-blue-400
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#1570ef", Light mode: "#53b1fd"}
+      utility-blue-dark-400:
+        id: "VariableID:5409:398435"
+        key: 8c6593bbb137921bfdebc52b1890636aa0a9f94b
+        name: Colors/Utility/Blue dark/utility-blue-dark-400
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#155eef", Light mode: "#528bff"}
+      utility-indigo-400:
+        id: "VariableID:5409:398436"
+        key: 4bfbc8f222cc85210301f0c5e760483fcb97a573
+        name: Colors/Utility/Indigo/utility-indigo-400
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#444ce7", Light mode: "#8098f9"}
+      utility-purple-400:
+        id: "VariableID:5409:398437"
+        key: c0a4cfbd13f572bdb69c867eb80acefc800c723f
+        name: Colors/Utility/Purple/utility-purple-400
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#6938ef", Light mode: "#9b8afb"}
+      utility-fuchsia-400:
+        id: "VariableID:5409:398438"
+        key: 71cbbeba47fcc95f300a08132e48428d6459e678
+        name: Colors/Utility/Fuchsia/utility-fuchsia-400
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#ba24d5", Light mode: "#e478fa"}
+      utility-pink-400:
+        id: "VariableID:5409:398439"
+        key: 62ccd227c4c252e10e76532624e7456242ecd8c7
+        name: Colors/Utility/Pink/utility-pink-400
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#dd2590", Light mode: "#f670c7"}
+      utility-orange-dark-400:
+        id: "VariableID:5409:398440"
+        key: f396b5634c543e74f77f4ed770de395afb06a970
+        name: Colors/Utility/Orange dark/utility-orange-dark-400
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#e62e05", Light mode: "#ff692e"}
+      utility-orange-400:
+        id: "VariableID:5409:398441"
+        key: 0b113f8ea7fc840aa8a01b22c0ae08cc0d7834cc
+        name: Colors/Utility/Orange/utility-orange-400
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#e04f16", Light mode: "#f38744"}
+      fg-warning-secondary:
+        id: "VariableID:5419:395625"
+        key: 7a1f406fce8f9cb0911c405b72c0e1dbc5c0bf0e
+        name: Colors/Foreground/fg-warning-secondary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#f38744", Light mode: "#511c10"}
+      fg-error-secondary:
+        id: "VariableID:5419:395626"
+        key: d4b603c3c6fe1ccd7d2f5d4f648870a34a370964
+        name: Colors/Foreground/fg-error-secondary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#fda29b", Light mode: "#55160c"}
+      fg-tertiary:
+        id: "VariableID:5503:400808"
+        key: 18e8b05831de1652755b3727b8f7104e39209cad
+        name: Colors/Foreground/fg-tertiary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ffffff59", Light mode: "#0a1e4166"}
+      utility-brand-50_alt:
+        id: "VariableID:6049:416908"
+        key: 58c7aa1faf9c8228fcd47a70fbf6a19fc3f9aaec
+        name: Colors/Utility/Brand/utility-brand-50_alt
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#000000", Light mode: "#edf2ff"}
+      utility-brand-100_alt:
+        id: "VariableID:6049:416909"
+        key: 70a82d3b6cf33101191582eac76ce0d60ac681ae
+        name: Colors/Utility/Brand/utility-brand-100_alt
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#000000", Light mode: "#e6edff"}
+      utility-brand-200_alt:
+        id: "VariableID:6049:416910"
+        key: 48eeaeb49ff65dcbfa4a74539eadb1828bde340c
+        name: Colors/Utility/Brand/utility-brand-200_alt
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#000000", Light mode: "#d0deff"}
+      utility-brand-400_alt:
+        id: "VariableID:6049:416911"
+        key: 4efbee43aebc02922d41ea7532912003f5e73c99
+        name: Colors/Utility/Brand/utility-brand-400_alt
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#000000", Light mode: "#92b0fa"}
+      utility-brand-500_alt:
+        id: "VariableID:6049:416912"
+        key: a5bda11243dbf87dfcb23070a3d4caa3b8dbe281
+        name: Colors/Utility/Brand/utility-brand-500_alt
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#000000", Light mode: "#6388e3"}
+      utility-brand-600_alt:
+        id: "VariableID:6049:416913"
+        key: b662aea3f77059c85ebc779a8ea5d092ee235c2a
+        name: Colors/Utility/Brand/utility-brand-600_alt
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#000000", Light mode: "#4d6fc3"}
+      utility-brand-700_alt:
+        id: "VariableID:6049:416914"
+        key: 92686d08541847972739e39c1d7c1591b07ec5bc
+        name: Colors/Utility/Brand/utility-brand-700_alt
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#000000", Light mode: "#365399"}
+      utility-brand-300:
+        id: "VariableID:6053:436906"
+        key: fef8eef52caaf08a77b0ebffe47f88d4635f1d81
+        name: Colors/Utility/Brand/utility-brand-300
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#365399", Light mode: "#b8cdff"}
+      utility-gray-300:
+        id: "VariableID:6060:442843"
+        key: 473f7e7b9f4dd0ffecf66a30c138ac0a09ae3ed0
+        name: Colors/Utility/Gray/utility-gray-300
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#373a41", Light mode: "#d5d7da"}
+      alpha-white-100:
+        id: "VariableID:6080:479733"
+        key: 751c8a68827df740c385518aef93425dc88d5e7e
+        name: Colors/Alpha/alpha-white-100
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#0c0e12", Light mode: "#ffffff"}
+      utility-brand-900:
+        id: "VariableID:6123:195662"
+        key: 038586f9f88331ad71d5b11f6f9a000c4f1e499b
+        name: Colors/Utility/Brand/utility-brand-900
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#e6edff", Light mode: "#0a1e41"}
+      utility-gray-900:
+        id: "VariableID:6123:195663"
+        key: 4a77d910a6262d20933b0b2e516892b859312845
+        name: Colors/Utility/Gray/utility-gray-900
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#f0f0f1", Light mode: "#181d27"}
+      utility-brand-800:
+        id: "VariableID:6124:61597"
+        key: 1a8206fb353fb62a4f49ec21dd41d2c3315db31c
+        name: Colors/Utility/Brand/utility-brand-800
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#d0deff", Light mode: "#233970"}
+      utility-gray-800:
+        id: "VariableID:6124:61598"
+        key: e14ea58571eaf0f583e713c56a285fbfb9d51242
+        name: Colors/Utility/Gray/utility-gray-800
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#ececed", Light mode: "#252b37"}
+      utility-brand-300_alt:
+        id: "VariableID:6487:349940"
+        key: 97a9d88473a70f928bbe228d320721778ddf18bc
+        name: Colors/Utility/Brand/utility-brand-300_alt
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#000000", Light mode: "#b8cdff"}
+      utility-brand-800_alt:
+        id: "VariableID:6487:349941"
+        key: 8f82d94934c3dbc286ad9d5cb5ad18fa58da6fe8
+        name: Colors/Utility/Brand/utility-brand-800_alt
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#000000", Light mode: "#233970"}
+      utility-brand-900_alt:
+        id: "VariableID:6487:349942"
+        key: 2ebfeb71f668158a51ac40f179992e2589ec98dd
+        name: Colors/Utility/Brand/utility-brand-900_alt
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#000000", Light mode: "#0a1e41"}
+      utility-error-300:
+        id: "VariableID:6487:354313"
+        key: c9bd6f1464e48c4d995d82e442069cc4b37f28b7
+        name: Colors/Utility/Error/utility-error-300
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#b42318", Light mode: "#fda29b"}
+      utility-warning-300:
+        id: "VariableID:6487:354314"
+        key: 69c71caf2e44dfdfadee24d66c2f9cae174aaeaa
+        name: Colors/Utility/Warning/utility-warning-300
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#b93815", Light mode: "#f7b27a"}
+      utility-success-300:
+        id: "VariableID:6487:354315"
+        key: 4a88626d4f20a6a15daba3bf08810d0ac8c47f70
+        name: Colors/Utility/Success/utility-success-300
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#067647", Light mode: "#75e0a7"}
+      utility-gray-blue-300:
+        id: "VariableID:6487:354316"
+        key: c7adcec62dae8016257451181c9e915df5224228
+        name: Colors/Utility/Gray blue/utility-gray-blue-300
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#363f72", Light mode: "#b3b8db"}
+      utility-blue-light-300:
+        id: "VariableID:6487:354317"
+        key: 93fe0b486a77b3006c95d8e8f778de908fa13228
+        name: Colors/Utility/Blue light/utility-blue-light-300
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#026aa2", Light mode: "#7cd4fd"}
+      utility-blue-300:
+        id: "VariableID:6487:354318"
+        key: 79f6cdd50399e3a2b22afab813db5cfbb8eaab23
+        name: Colors/Utility/Blue/utility-blue-300
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#175cd3", Light mode: "#84caff"}
+      utility-blue-dark-300:
+        id: "VariableID:6487:354319"
+        key: 96c06ca5eb58c5eb8d12d41ffe59e177e15b81e2
+        name: Colors/Utility/Blue dark/utility-blue-dark-300
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#004eeb", Light mode: "#84adff"}
+      utility-indigo-300:
+        id: "VariableID:6487:354320"
+        key: 1f54abc43121da8a0ab99852c6a889f506e1064e
+        name: Colors/Utility/Indigo/utility-indigo-300
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#3538cd", Light mode: "#a4bcfd"}
+      utility-purple-300:
+        id: "VariableID:6487:354321"
+        key: 42be665b03ef9648b275f77db6f5e0964e0873e2
+        name: Colors/Utility/Purple/utility-purple-300
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#5925dc", Light mode: "#bdb4fe"}
+      utility-fuchsia-300:
+        id: "VariableID:6487:354322"
+        key: a12f97a529475e9987e5d09a18785b3a399eea20
+        name: Colors/Utility/Fuchsia/utility-fuchsia-300
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#9f1ab1", Light mode: "#eeaafd"}
+      utility-pink-300:
+        id: "VariableID:6487:354323"
+        key: 8d9f5fcb123ae71d34f8dae65f1b651788ea77e1
+        name: Colors/Utility/Pink/utility-pink-300
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#c11574", Light mode: "#faa7e0"}
+      utility-orange-dark-300:
+        id: "VariableID:6487:354324"
+        key: 55161f782329d91267f615a4688788b49d49d5c3
+        name: Colors/Utility/Orange dark/utility-orange-dark-300
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#bc1b06", Light mode: "#ff9c66"}
+      utility-orange-300:
+        id: "VariableID:6487:354325"
+        key: c746d075b593f95f7f7333131e17d670ffa069d6
+        name: Colors/Utility/Orange/utility-orange-300
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#b93815", Light mode: "#f7b27a"}
+      shadow-xs:
+        id: "VariableID:7271:17030"
+        key: a3c4f9f242a083eb9053866928ee71712c658689
+        name: Colors/Effects/Shadows/shadow-xs
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ffffff00", Light mode: "#0a0d120d"}
+      shadow-sm_02:
+        id: "VariableID:7276:18827"
+        key: 31d9eb2ec809d0deb9c447a9a395aa0f2260bbdc
+        name: Colors/Effects/Shadows/shadow-sm_02
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ffffff00", Light mode: "#0a0d121a"}
+      shadow-lg_01:
+        id: "VariableID:7276:18828"
+        key: 7801ab4fb7f209d493f0b7065219ea5075d8995d
+        name: Colors/Effects/Shadows/shadow-lg_01
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ffffff00", Light mode: "#0a0d1214"}
+      shadow-lg_02:
+        id: "VariableID:7276:18830"
+        key: f80af55279dad1501972d58ae50a3e9f452267ec
+        name: Colors/Effects/Shadows/shadow-lg_02
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ffffff00", Light mode: "#0a0d1208"}
+      shadow-sm_01:
+        id: "VariableID:7276:18831"
+        key: aa0c1d98ee839fa4eda4e9315726e9ad0793fbc7
+        name: Colors/Effects/Shadows/shadow-sm_01
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ffffff00", Light mode: "#0a0d121a"}
+      shadow-3xl_01:
+        id: "VariableID:7276:18832"
+        key: e4becf2e4393d93f854a45509835158e3ed9c329
+        name: Colors/Effects/Shadows/shadow-3xl_01
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ffffff00", Light mode: "#0a0d1224"}
+      shadow-2xl_01:
+        id: "VariableID:7276:18833"
+        key: 04532981b0e09b167f69341a7bda81040a190ba9
+        name: Colors/Effects/Shadows/shadow-2xl_01
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ffffff00", Light mode: "#0a0d122e"}
+      shadow-md_01:
+        id: "VariableID:7371:212903"
+        key: c591313d9455e6d715df7e21904dcca562c49b3b
+        name: Colors/Effects/Shadows/shadow-md_01
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ffffff00", Light mode: "#0a0d121a"}
+      shadow-md_02:
+        id: "VariableID:7371:212904"
+        key: 0eed3148208bbd48ed099a844a6061699439b7f9
+        name: Colors/Effects/Shadows/shadow-md_02
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ffffff00", Light mode: "#0a0d120f"}
+      shadow-xl_01:
+        id: "VariableID:7371:212905"
+        key: dc2b4718a03b681069103bfae3134d576a1cbc7c
+        name: Colors/Effects/Shadows/shadow-xl_01
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ffffff00", Light mode: "#0a0d1214"}
+      shadow-xl_02:
+        id: "VariableID:7371:212906"
+        key: e936c4d85f9947f39c283c5c4bf3c619360f9a85
+        name: Colors/Effects/Shadows/shadow-xl_02
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ffffff00", Light mode: "#0a0d1208"}
+      focus-ring:
+        id: "VariableID:7371:212918"
+        key: ac3528bc93bbcb859bf7450f0c2af1aeb88097da
+        name: Colors/Effects/Focus rings/focus-ring
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#6388e3", Light mode: "#6388e3"}
+      focus-ring-error:
+        id: "VariableID:7371:212919"
+        key: a2a8b287524c74fc314827380927832e8010c8e0
+        name: Colors/Effects/Focus rings/focus-ring-error
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#ff4e41", Light mode: "#ff4e41"}
+      border-blue-secondary:
+        id: "VariableID:7397:524104"
+        key: 5419512a3f85e043d20d7568404826ec86ebc57a
+        name: Colors/Border/border-blue-secondary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#6388e34d", Light mode: "#6388e34d"}
+      shadow-lg_03:
+        id: "VariableID:7981:234615"
+        key: 8c984204bceee6d0d342e57f069db8eb71018c94
+        name: Colors/Effects/Shadows/shadow-lg_03
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ffffff00", Light mode: "#0a0d120a"}
+      shadow-xl_03:
+        id: "VariableID:7981:234616"
+        key: e5730ad334b469573c7994bf3463429ac9f189ef
+        name: Colors/Effects/Shadows/shadow-xl_03
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ffffff00", Light mode: "#0a0d120a"}
+      shadow-2xl_02:
+        id: "VariableID:7981:234617"
+        key: bde255f0f03e42da0ca1458b8ce7add7fc40a409
+        name: Colors/Effects/Shadows/shadow-2xl_02
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ffffff00", Light mode: "#0a0d120a"}
+      shadow-3xl_02:
+        id: "VariableID:7981:234618"
+        key: 363baf879d0d7b4909b78dc67a8aa554097cd10f
+        name: Colors/Effects/Shadows/shadow-3xl_02
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ffffff00", Light mode: "#0a0d120a"}
+      utility-green-50:
+        id: "VariableID:7999:23182"
+        key: c3987f61dbf30533e842fa25df5ecdec4122fc43
+        name: Colors/Utility/Green/utility-green-50
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#052e1c", Light mode: "#edfcf2"}
+      utility-green-100:
+        id: "VariableID:7999:23183"
+        key: 955043b563ce02a3249d0b835d337985698e6f6c
+        name: Colors/Utility/Green/utility-green-100
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#084c2e", Light mode: "#d3f8df"}
+      utility-green-200:
+        id: "VariableID:7999:23184"
+        key: 22baf710a111600f72d862f4db9239b1ece80ba0
+        name: Colors/Utility/Green/utility-green-200
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#095c37", Light mode: "#aaf0c4"}
+      utility-green-300:
+        id: "VariableID:7999:23185"
+        key: 8e58cb84b69afe52b221aaaf6f552a18186433b8
+        name: Colors/Utility/Green/utility-green-300
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#087443", Light mode: "#73e2a3"}
+      utility-green-400:
+        id: "VariableID:7999:23186"
+        key: ff3003acaf35f2678359a91b6f3044c3dfb0b10b
+        name: Colors/Utility/Green/utility-green-400
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#099250", Light mode: "#3ccb7f"}
+      utility-green-500:
+        id: "VariableID:7999:23187"
+        key: e12715c407517f4ea084dc6b523b2c70310021d3
+        name: Colors/Utility/Green/utility-green-500
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#16b364", Light mode: "#16b364"}
+      utility-green-600:
+        id: "VariableID:7999:23188"
+        key: 29f8464ca08d55c547458ba0e4668b5d2c92673a
+        name: Colors/Utility/Green/utility-green-600
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#3ccb7f", Light mode: "#099250"}
+      utility-green-700:
+        id: "VariableID:7999:23189"
+        key: b0c6dc5403f495cb47cc7fedc89a14072c881437
+        name: Colors/Utility/Green/utility-green-700
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#73e2a3", Light mode: "#087443"}
+      utility-yellow-50:
+        id: "VariableID:7999:23190"
+        key: 3b6fdd7a148c328662bcb4057ae39f8bb5c57f36
+        name: Colors/Utility/Yellow/utility-yellow-50
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#542c0d", Light mode: "#fefbe8"}
+      utility-yellow-100:
+        id: "VariableID:7999:23191"
+        key: b513184099cee35923538d90c0d7ad63c8ffb549
+        name: Colors/Utility/Yellow/utility-yellow-100
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#713b12", Light mode: "#fef7c3"}
+      utility-yellow-200:
+        id: "VariableID:7999:23192"
+        key: 806d09b37da765d8994e13cf33ee763a46093e63
+        name: Colors/Utility/Yellow/utility-yellow-200
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#854a0e", Light mode: "#feee95"}
+      utility-yellow-300:
+        id: "VariableID:7999:23193"
+        key: 37479b60cc8b86eff7b33ae92fb6c74d6ccf2ce8
+        name: Colors/Utility/Yellow/utility-yellow-300
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#a15c07", Light mode: "#fde272"}
+      utility-yellow-400:
+        id: "VariableID:7999:23194"
+        key: f8a81147a64c32656040d69bfbaec347d06ecc2c
+        name: Colors/Utility/Yellow/utility-yellow-400
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#ca8504", Light mode: "#fac515"}
+      utility-yellow-500:
+        id: "VariableID:7999:23195"
+        key: 58eb3ea8874d2bf28bcba4e7a04c9e31cb2d5e90
+        name: Colors/Utility/Yellow/utility-yellow-500
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#eaaa08", Light mode: "#eaaa08"}
+      utility-yellow-600:
+        id: "VariableID:7999:23196"
+        key: 35dd2c21f98d017151ccd4ba31c638b9baebb78f
+        name: Colors/Utility/Yellow/utility-yellow-600
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#fac515", Light mode: "#ca8504"}
+      utility-yellow-700:
+        id: "VariableID:7999:23197"
+        key: 9e5c98474fce12aa25ccaa67733a3be789dd221c
+        name: Colors/Utility/Yellow/utility-yellow-700
+        collection: 1. Color modes
+        type: COLOR
+        hidden: true
+        values_by_mode: {Dark mode: "#fde272", Light mode: "#a15c07"}
+      text-error-primary-hover:
+        id: "VariableID:8753:389622"
+        key: f891f51c5158d4bdf3972a26b9137764c8fc897f
+        name: Colors/Text/text-error-primary-hover
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#b42318", Light mode: "#55160c"}
+      bg-error-solid-hover:
+        id: "VariableID:14566:24227"
+        key: 2171eeeecb0dcfc8f37fd45e31cabedeb67783eb
+        name: Colors/Background/bg-error-solid-hover
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#d92d20", Light mode: "#d92d20"}
+      bg-success-solid-hover:
+        id: "VariableID:14695:138111"
+        key: 9383d863486465b4eb7943acf9931043972776b7
+        name: Colors/Background/bg-success-solid-hover
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#079455", Light mode: "#079455"}
+      border-success-primary:
+        id: "VariableID:14712:2979"
+        key: c19495df0812f781a24d38d40a5257a43c5a37d5
+        name: Colors/Border/border-success-primary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#17b26a1a", Light mode: "#17b26a1a"}
+      bg-error-secondary-hover:
+        id: "VariableID:14786:119383"
+        key: d1fa4ed617cf13f12761aafe9c24c80e202ce856
+        name: Colors/Background/bg-error-secondary-hover
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#f044384d", Light mode: "#fecdca"}
+      bg-error-disabled:
+        id: "VariableID:14786:119384"
+        key: 643ddc2867eae9ce07b49917e116392d4af5054c
+        name: Colors/Background/bg-error-disabled
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#f044381a", Light mode: "#f044381a"}
+      border-error-disabled:
+        id: "VariableID:14786:119385"
+        key: c9edfc2ac275a09d6e234e5c5f54c140ca371b0e
+        name: Colors/Border/border-error-disabled
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#f0443833", Light mode: "#f0443833"}
+      text-error-disabled:
+        id: "VariableID:14786:119386"
+        key: 603f236309942b0ec836d12bc0cb0468f2c6043e
+        name: Colors/Text/text-error-disabled
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#f044384d", Light mode: "#f0443899"}
+      fg-error-disabled:
+        id: "VariableID:14786:119387"
+        key: ee581b87a04d9658a0913d50f3f3b85f91760cee
+        name: Colors/Foreground/fg-error-disabled
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#f044384d", Light mode: "#f044384d"}
+      fg-error-primary-hover:
+        id: "VariableID:14791:119395"
+        key: 7825b1962aea3bb0bfde198338a4e8c4967df12b
+        name: Colors/Foreground/fg-error-primary-hover
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#b42318", Light mode: "#55160c"}
+      bg-success-disabled:
+        id: "VariableID:14793:120494"
+        key: d4905efe021296daea2ccdbaa70d52a48c770798
+        name: Colors/Background/bg-success-disabled
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#17b26a1a", Light mode: "#17b26a1a"}
+      border-success-disabled:
+        id: "VariableID:14793:120495"
+        key: 08b4010a589b6b0fae4de89750c16dbbc21261e6
+        name: Colors/Border/border-success-disabled
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#17b26a33", Light mode: "#17b26a33"}
+      text-success-disabled:
+        id: "VariableID:14793:120496"
+        key: 6e759f72d50da94d1e9bf315c50a653a7cba3a08
+        name: Colors/Text/text-success-disabled
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#17b26a4d", Light mode: "#17b26a99"}
+      fg-success-disabled:
+        id: "VariableID:14793:120497"
+        key: cbf6d8a7f44d09e35d6b420a710b6729552e06c1
+        name: Colors/Foreground/fg-success-disabled
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#17b26a4d", Light mode: "#17b26a4d"}
+      border-success-secondary:
+        id: "VariableID:14793:120576"
+        key: 767470b3829a980b44b724669900703ad90b020b
+        name: Colors/Border/border-success-secondary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#17b26a4d", Light mode: "#17b26a4d"}
+      fg-success-primary-hover:
+        id: "VariableID:14793:120685"
+        key: 9ad8585a6375b03505bf77f3a5cdd88700386891
+        name: Colors/Foreground/fg-success-primary-hover
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#067647", Light mode: "#053321"}
+      text-success-primary-hover:
+        id: "VariableID:14797:120686"
+        key: f56fd24618db3a8299cb8b5743442884f16aa157
+        name: Colors/Text/text-success-primary-hover
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#067647", Light mode: "#053321"}
+      text-warning-primary-hover:
+        id: "VariableID:14798:2903"
+        key: cf054ad35935ee1f7467b2fff2c02d27d4d7b95b
+        name: Colors/Text/text-warning-primary-hover
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#b93815", Light mode: "#511c10"}
+      text-warning-disabled:
+        id: "VariableID:14798:2904"
+        key: 07f375899054ba198f0f8002fa33b8be228266be
+        name: Colors/Text/text-warning-disabled
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ef68204d", Light mode: "#ef682099"}
+      fg-purple-primary:
+        id: "VariableID:14871:9755"
+        key: 6e021e83fc5a537259e92710ae33e5b4e5a55b28
+        name: Colors/Foreground/fg-purple-primary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#7a5af8", Light mode: "#3e1c96"}
+      bg-purple-primary:
+        id: "VariableID:14871:9757"
+        key: da3179614567bb22d31de60aea4ea955eee83ebd
+        name: Colors/Background/bg-purple-primary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#7a5af81a", Light mode: "#7a5af81a"}
+      text-pink-primary:
+        id: "VariableID:14871:9816"
+        key: 9229e4e706c76b1080b2d641be249c84766f7978
+        name: Colors/Text/text-pink-primary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ee46bc", Light mode: "#851651"}
+      text-purple-primary:
+        id: "VariableID:14871:9817"
+        key: 79588a37c891f204dd2680ee4469009d08eebeb7
+        name: Colors/Text/text-purple-primary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#7a5af8", Light mode: "#3e1c96"}
+      fg-pink-primary:
+        id: "VariableID:14871:9818"
+        key: c6b6b6489a591415140c5606404d6b8c5c9b985b
+        name: Colors/Foreground/fg-pink-primary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ee46bc", Light mode: "#851651"}
+      bg-pink-primary:
+        id: "VariableID:14871:9820"
+        key: 713c00eec8700a34ca5affbe6cf68cabe89c2440
+        name: Colors/Background/bg-pink-primary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ee46bc1a", Light mode: "#ee46bc1a"}
+      border-warning-primary:
+        id: "VariableID:14896:88796"
+        key: ede130f7836343df551f761db9d31e894132f4ff
+        name: Colors/Border/border-warning-primary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ef68201a", Light mode: "#ef68201a"}
+      border-warning-secondary:
+        id: "VariableID:14896:88797"
+        key: 1364817d3374bf839967cc1bb40175ee720a9442
+        name: Colors/Border/border-warning-secondary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ef68204d", Light mode: "#ef68204d"}
+      border-warning-tertiary:
+        id: "VariableID:14896:88798"
+        key: 332482d8f7372f766cc8e7c4be09c30a1cb85d93
+        name: Colors/Border/border-warning-tertiary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ef682080", Light mode: "#ef682080"}
+      border-full:
+        id: "VariableID:14925:137563"
+        key: fc61df00815aa6829f139010d604927ba91b2e64
+        name: Colors/Border/border-full
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ffffff", Light mode: "#030d20"}
+      text-purple-primary-hover:
+        id: "VariableID:14987:152449"
+        key: d2ecdac38f703394d3e021637efea338d18c59af
+        name: Colors/Text/text-purple-primary-hover
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#5925dc", Light mode: "#27115f"}
+      text-purple-disabled:
+        id: "VariableID:14987:152450"
+        key: 9291ec60fd586ad1b7ba09de8b78ee7eb14ce8ca
+        name: Colors/Text/text-purple-disabled
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#7a5af84d", Light mode: "#7a5af899"}
+      text-pink-disabled:
+        id: "VariableID:14987:152451"
+        key: 85179012a695ff06697ee05e94079e69402e971b
+        name: Colors/Text/text-pink-disabled
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ee46bc4d", Light mode: "#ee46bc99"}
+      fg-warning-primary-hover:
+        id: "VariableID:14987:152453"
+        key: 6c9fd1a662ee37b86f98531c46aeb904f5f0840e
+        name: Colors/Foreground/fg-warning-primary-hover
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#b93815", Light mode: "#511c10"}
+      fg-warning-disabled:
+        id: "VariableID:14991:152455"
+        key: c8f45fef87fc263b68d1b266e2ef015deb211723
+        name: Colors/Foreground/fg-warning-disabled
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ef68204d", Light mode: "#ef68204d"}
+      fg-purple-primary-hover:
+        id: "VariableID:14993:152456"
+        key: 35afc6f82cb6e3f30ea4d77fe2b2af324028f666
+        name: Colors/Foreground/fg-purple-primary-hover
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#5925dc", Light mode: "#27115f"}
+      fg-purple-secondary:
+        id: "VariableID:14993:152457"
+        key: 05065b9561a7f1240b0b3ad48ddd97b01416c4ae
+        name: Colors/Foreground/fg-purple-secondary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#bdb4fe", Light mode: "#27115f"}
+      fg-purple-disabled:
+        id: "VariableID:14993:152483"
+        key: 9630f980d62a7c45376b47884642d71e85bbcf23
+        name: Colors/Foreground/fg-purple-disabled
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#7a5af84d", Light mode: "#7a5af84d"}
+      fg-pink-secondary:
+        id: "VariableID:14993:152484"
+        key: abb61dd4b471097b8ba9da44816ed0b42a930089
+        name: Colors/Foreground/fg-pink-secondary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#faa7e0", Light mode: "#4e0d30"}
+      fg-pink-primary-hover:
+        id: "VariableID:14993:152485"
+        key: fdefad9765b0690a00e9ddf05f9281f4a09c9670
+        name: Colors/Foreground/fg-pink-primary-hover
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#c11574", Light mode: "#4e0d30"}
+      fg-pink-disabled:
+        id: "VariableID:14993:152486"
+        key: 79b8806655dfdc564d1bb31a9d692d5017f132ee
+        name: Colors/Foreground/fg-pink-disabled
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ee46bc4d", Light mode: "#ee46bc4d"}
+      bg-warning-solid_hover:
+        id: "VariableID:14993:152488"
+        key: 9ff7adbbf38fe5258385a27bd39e597a49831bcd
+        name: Colors/Background/bg-warning-solid_hover
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#b93815", Light mode: "#b93815"}
+      bg-warning-disabled:
+        id: "VariableID:14993:152489"
+        key: 7be10a2a4f2ec1f37d20a25b07c3c0ea312a3ff0
+        name: Colors/Background/bg-warning-disabled
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ef68201a", Light mode: "#ef68201a"}
+      bg-purple-secondary:
+        id: "VariableID:15003:152490"
+        key: d66ce65ccd5c28d5e8b0be4e95698d0bb546b389
+        name: Colors/Background/bg-purple-secondary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#7a5af84d", Light mode: "#7a5af84d"}
+      bg-purple-solid:
+        id: "VariableID:15003:152492"
+        key: f23bfe37e34f9442856c2a514b334aadba46bdae
+        name: Colors/Background/bg-purple-solid
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#7a5af8", Light mode: "#7a5af8"}
+      bg-purple-solid-hover:
+        id: "VariableID:15003:152493"
+        key: 30c39bf0823e33abed4e19b51caa393cd99d9a83
+        name: Colors/Background/bg-purple-solid-hover
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#5925dc", Light mode: "#5925dc"}
+      bg-purple-disabled:
+        id: "VariableID:15003:152494"
+        key: f94219e1bba18f6623a64fea2f72c6be25a69438
+        name: Colors/Background/bg-purple-disabled
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#7a5af81a", Light mode: "#7a5af81a"}
+      bg-pink-disabled:
+        id: "VariableID:15003:152495"
+        key: c708f718c21a6dfee036e8ecb5149924bd42eb6b
+        name: Colors/Background/bg-pink-disabled
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ee46bc1a", Light mode: "#ee46bc1a"}
+      bg-pink-secondary:
+        id: "VariableID:15004:152496"
+        key: 9a359e69b11042ba5d27e59a5a6fdafc56f09be8
+        name: Colors/Background/bg-pink-secondary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ee46bc4d", Light mode: "#ee46bc4d"}
+      bg-pink-solid:
+        id: "VariableID:15004:152498"
+        key: db13ad728d8c039fb40551600e6d40ded588bf12
+        name: Colors/Background/bg-pink-solid
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ee46bc", Light mode: "#ee46bc"}
+      bg-pink-solid-hover:
+        id: "VariableID:15004:152499"
+        key: 9586fb00761da0f1ed283603e6f4af2daea51498
+        name: Colors/Background/bg-pink-solid-hover
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#c11574", Light mode: "#c11574"}
+      bg-blue-primary:
+        id: "VariableID:15004:152500"
+        key: c7ee8d667eb6c04ffffd4514922f0d29858f97f1
+        name: Colors/Background/bg-blue-primary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#6388e31a", Light mode: "#6388e31a"}
+      bg-blue-secondary:
+        id: "VariableID:15004:152501"
+        key: bdb212dc23c8255ec84d735ea314cc53ddb19ede
+        name: Colors/Background/bg-blue-secondary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#6388e34d", Light mode: "#6388e34d"}
+      bg-blue-solid:
+        id: "VariableID:15004:152503"
+        key: c41f74a25dd47fbef15daf1b47f235683055688b
+        name: Colors/Background/bg-blue-solid
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#6388e3", Light mode: "#6388e3"}
+      bg-blue-disabled:
+        id: "VariableID:15004:152505"
+        key: ad029d9cc24b0763f50fe47259f2d40a1b3f39da
+        name: Colors/Background/bg-blue-disabled
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#6388e31a", Light mode: "#6388e31a"}
+      fg-blue-primary:
+        id: "VariableID:15004:152506"
+        key: f256cca228fbcc90b26ed4e057a9e5c9dfea651a
+        name: Colors/Foreground/fg-blue-primary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#6388e3", Light mode: "#0a1e41"}
+      fg-blue-primary-hover:
+        id: "VariableID:15004:152507"
+        key: d73bb6588c6692dd9f5bf885871f2ea15ac3537e
+        name: Colors/Foreground/fg-blue-primary-hover
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#365399", Light mode: "#030d20"}
+      fg-blue-secondary:
+        id: "VariableID:15004:152508"
+        key: d9e5f87f53775a1e26965148890ff39eb8952c31
+        name: Colors/Foreground/fg-blue-secondary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#b8cdff", Light mode: "#030d20"}
+      fg-blue-disabled:
+        id: "VariableID:15004:152510"
+        key: a484b5d15b2ba557f2de715494915f364f79f148
+        name: Colors/Foreground/fg-blue-disabled
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#6388e34d", Light mode: "#6388e34d"}
+      border-error-tertiary:
+        id: "VariableID:15004:152511"
+        key: 78edb30a6b8128e584fc44f88ed95cbd9da3020b
+        name: Colors/Border/border-error-tertiary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#f0443880", Light mode: "#f0443880"}
+      border-warning-disabled:
+        id: "VariableID:15004:152512"
+        key: d5b1ea52f70f2bf47ba55558ff084568c86898c3
+        name: Colors/Border/border-warning-disabled
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ef682033", Light mode: "#ef682033"}
+      border-success-tertiary:
+        id: "VariableID:15004:152513"
+        key: 45d253d0f9ea0e1e06e44ef39e928b3e31e0e39e
+        name: Colors/Border/border-success-tertiary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#17b26a80", Light mode: "#17b26a80"}
+      border-blue-tertiary:
+        id: "VariableID:15004:152514"
+        key: 90274a4cb37ebfaa86c6e02233541218041d4c0e
+        name: Colors/Border/border-blue-tertiary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#6388e380", Light mode: "#6388e380"}
+      border-blue-disabled:
+        id: "VariableID:15004:152515"
+        key: b66f97178af56d401c57b173460bfc02461934ab
+        name: Colors/Border/border-blue-disabled
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#6388e333", Light mode: "#6388e333"}
+      text-blue-primary:
+        id: "VariableID:15004:152516"
+        key: dbe5a3947f1cea98495225b1dee2a66328ee6979
+        name: Colors/Text/text-blue-primary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#6388e3", Light mode: "#0a1e41"}
+      text-blue-primary-hover:
+        id: "VariableID:15004:152517"
+        key: a5e4f75de8e3ef00278bb3bf737739705c52fbbd
+        name: Colors/Text/text-blue-primary-hover
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#365399", Light mode: "#030d20"}
+      text-blue-disabled:
+        id: "VariableID:15004:152518"
+        key: beabd0e6a0072c8a4eb64bde1a960684b2308248
+        name: Colors/Text/text-blue-disabled
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#6388e34d", Light mode: "#6388e399"}
+      text-blue-secondary:
+        id: "VariableID:15030:134324"
+        key: 851a30abe1d50b28bc0ed0039800ad69c598701e
+        name: Colors/Text/text-blue-secondary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#b8cdff", Light mode: "#030d20"}
+      border-purple-primary:
+        id: "VariableID:15049:3880"
+        key: cdea5f6413a192c4108e59a9ed76e55156f8c4ff
+        name: Colors/Border/border-purple-primary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#7a5af81a", Light mode: "#7a5af81a"}
+      border-purple-secondary:
+        id: "VariableID:15049:3881"
+        key: 87e68d1a501cb72a9918a41222502f30a87b5b02
+        name: Colors/Border/border-purple-secondary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#7a5af84d", Light mode: "#7a5af84d"}
+      border-purple-tertiary:
+        id: "VariableID:15049:3882"
+        key: 974f8878dac9dcdd92a5fbdb78f2ec94a296bbe5
+        name: Colors/Border/border-purple-tertiary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#7a5af880", Light mode: "#7a5af880"}
+      border-purple-disabled:
+        id: "VariableID:15049:3883"
+        key: e6754f847e115554cf683713b7d2a89e0e93c29f
+        name: Colors/Border/border-purple-disabled
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#7a5af833", Light mode: "#7a5af833"}
+      border-pink-primary:
+        id: "VariableID:15049:3884"
+        key: a597b3c027ae727317940c046802a626b22eab87
+        name: Colors/Border/border-pink-primary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ee46bc1a", Light mode: "#ee46bc1a"}
+      border-pink-secondary:
+        id: "VariableID:15049:3885"
+        key: 3f3b622b1663cdbac397d32c5ca260effb4a387a
+        name: Colors/Border/border-pink-secondary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ee46bc4d", Light mode: "#ee46bc4d"}
+      border-pink-tertiary:
+        id: "VariableID:15049:3886"
+        key: 977f556460233259f04ce283f686a5299903fa23
+        name: Colors/Border/border-pink-tertiary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ee46bc80", Light mode: "#ee46bc80"}
+      border-pink-disabled:
+        id: "VariableID:15049:3887"
+        key: 1a51849eacffb9d9e925a4409b3617ff01b3b8be
+        name: Colors/Border/border-pink-disabled
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ee46bc33", Light mode: "#ee46bc33"}
+      fg-primary-inverse:
+        id: "VariableID:15226:21841"
+        key: 1246b53d96708d78c0ee506706e7182f9a91901a
+        name: Colors/Foreground/fg-primary-inverse
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#030d20", Light mode: "#ffffff"}
+      text-primary-inverse:
+        id: "VariableID:15399:9164"
+        key: 8e91d63dbe1416674c358e0e4f76787040e8753b
+        name: Colors/Text/text-primary-inverse
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#030d20", Light mode: "#ffffff"}
+      bg-disabled:
+        id: "VariableID:15417:23622"
+        key: e6dc1cdcb214ad459f4c4d114c7f0295342ced88
+        name: Colors/Background/bg-disabled
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ffffff14", Light mode: "#6388e31a"}
+      bg-inverse:
+        id: "VariableID:15423:29758"
+        key: 3f9f02d06a58ec03783c93db1eb2b4a7208e03f1
+        name: Colors/Background/bg-inverse
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ffffff", Light mode: "#030d20"}
+      bg-inverse-hover:
+        id: "VariableID:15428:29759"
+        key: 07929364f6617fdd43a527c6e941bc7e78238d41
+        name: Colors/Background/bg-inverse-hover
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#d5d7da", Light mode: "#233970"}
+      text-dark:
+        id: "VariableID:15429:32288"
+        key: 75216fff01a78b8884500ed4b3f4e6ecea110228
+        name: Colors/Text/text-dark
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#030d20", Light mode: "#030d20"}
+      fg-dark:
+        id: "VariableID:15429:32289"
+        key: 273a59d502d49444931de49bb3920b55184c5aa5
+        name: Colors/Foreground/fg-dark
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#030d20", Light mode: "#030d20"}
+      text-error-secondary:
+        id: "VariableID:15429:32290"
+        key: c4328f8e3ceac22e0611dd6974ef06c664058107
+        name: Colors/Text/text-error-secondary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#fda29b", Light mode: "#55160c"}
+      bg-error-tertiary:
+        id: "VariableID:15437:2642"
+        key: e239b5902b888b1c2770b5637061608520ed33a6
+        name: Colors/Background/bg-error-tertiary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#f0443880", Light mode: "#f0443880"}
+      bg-success-tertiary:
+        id: "VariableID:15437:2643"
+        key: e1e0949ee8c69e922aad0f9af8506d3a9de3fe5d
+        name: Colors/Background/bg-success-tertiary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#17b26a80", Light mode: "#17b26a80"}
+      text-success-secondary:
+        id: "VariableID:15437:2644"
+        key: 81bb2d61ac0fa16c13d3ea086040aaf3dace9955
+        name: Colors/Text/text-success-secondary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#75e0a7", Light mode: "#053321"}
+      bg-blue-tertiary:
+        id: "VariableID:15483:2090"
+        key: e7fcd65f2645262520b3a1846f1028e100bd5c4d
+        name: Colors/Background/bg-blue-tertiary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#6388e380", Light mode: "#6388e380"}
+      bg-pink-tertiary:
+        id: "VariableID:15483:21523"
+        key: a3015542ccd9ce2238a373ab9f8da9c234a2d26c
+        name: Colors/Background/bg-pink-tertiary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ee46bc80", Light mode: "#ee46bc80"}
+      border-pink-solid:
+        id: "VariableID:15483:21525"
+        key: b6d434408163237c51ee6b65221b6df8c84177ca
+        name: Colors/Border/border-pink-solid
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ee46bc", Light mode: "#ee46bc"}
+      text-secondary-inverse:
+        id: "VariableID:15489:21673"
+        key: 332bbe8e880aeb575bec33c78314f6357dd00369
+        name: Colors/Text/text-secondary-inverse
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#0a1e41b2", Light mode: "#ffffff"}
+      text-pink-secondary:
+        id: "VariableID:15489:21696"
+        key: b4f32a29eaad0306a9f68c7ed82479d85820c2ee
+        name: Colors/Text/text-pink-secondary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#faa7e0", Light mode: "#4e0d30"}
+      text-pink-primary-hover:
+        id: "VariableID:15489:22296"
+        key: a099779afabc79d8d6fef1fc52221afe8ba5b951
+        name: Colors/Text/text-pink-primary-hover
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#c11574", Light mode: "#4e0d30"}
+      bg-purple-tertiary:
+        id: "VariableID:15490:4699"
+        key: 58db05829a693cf5c200927da7540ab6ea398558
+        name: Colors/Background/bg-purple-tertiary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#7a5af880", Light mode: "#7a5af880"}
+      border-purple-solid:
+        id: "VariableID:15490:4701"
+        key: 552cee926583211386ea9e210d42e5d543959bbe
+        name: Colors/Border/border-purple-solid
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#7a5af8", Light mode: "#7a5af8"}
+      text-purple-secondary:
+        id: "VariableID:15490:4702"
+        key: d534a6fd3ba3b7d4351112ef6c58c456d454b6ef
+        name: Colors/Text/text-purple-secondary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#bdb4fe", Light mode: "#27115f"}
+      bg-warning-tertiary:
+        id: "VariableID:15490:14189"
+        key: 37058985f9d3e89b568205524d9eb2cec94581c5
+        name: Colors/Background/bg-warning-tertiary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ef682080", Light mode: "#ef682080"}
+      border-warning-solid:
+        id: "VariableID:15490:14191"
+        key: e3d515179dacd998bf81bba6fab8c7a3c67a1205
+        name: Colors/Border/border-warning-solid
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ef6820", Light mode: "#ef6820"}
+      text-warning-secondary:
+        id: "VariableID:15490:14192"
+        key: a31b64cd2d37c534f04940643ba61f007575e562
+        name: Colors/Text/text-warning-secondary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#f7b27a", Light mode: "#511c10"}
+      border-primary:
+        id: "VariableID:15490:14631"
+        key: 027e2054a0ffb5de43e9c5003a356be610cb1b0b
+        name: Colors/Border/border-primary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ffffff14", Light mode: "#0a1e411a"}
+      border-secondary:
+        id: "VariableID:15490:14632"
+        key: 99b4558bbf10ecd5be8d53d951038f10681e6436
+        name: Colors/Border/border-secondary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ffffff29", Light mode: "#0a1e4133"}
+      border-tertiary:
+        id: "VariableID:15490:14633"
+        key: ce6a7092d747863b9cf36ee9c32d9d2967b2717c
+        name: Colors/Border/border-tertiary
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ffffff59", Light mode: "#0a1e414d"}
+      border-disabled:
+        id: "VariableID:15490:14635"
+        key: d73cc3ab65a44b8a7ddf73346fbe65f27deea974
+        name: Colors/Border/border-disabled
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ffffff29", Light mode: "#0a1e4133"}
+      border-success-solid:
+        id: "VariableID:15496:17732"
+        key: 9ffb0311355236f0b81b1aafb9992b9bbed867e7
+        name: Colors/Border/border-success-solid
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#17b26a", Light mode: "#17b26a"}
+      border-error-solid:
+        id: "VariableID:15505:24184"
+        key: f2824107e8e8073a35a1b5cf0dc5a2e29ec80c9d
+        name: Colors/Border/border-error-solid
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ff4e41", Light mode: "#ff4e41"}
+      border-blue-solid:
+        id: "VariableID:15505:36806"
+        key: 1d133bd9d0f3e5ea1f1c6695a047da2380f91f8a
+        name: Colors/Border/border-blue-solid
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#6388e3", Light mode: "#6388e3"}
+      bg-white:
+        id: "VariableID:15505:37700"
+        key: 36e75563698fc5bb11a9ea97f3bc47dacb02cc44
+        name: Colors/Background/bg-white
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ffffff", Light mode: "#ffffff"}
+      fg-secondary-inverse:
+        id: "VariableID:15508:37977"
+        key: 0a9585018e8b2d73e6418c480f8a5dcdfe166a05
+        name: Colors/Foreground/fg-secondary-inverse
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#0a1e41b2", Light mode: "#ffffff"}
+      fg-tertiary-inverse:
+        id: "VariableID:15510:37978"
+        key: 7450b3d007ace88085bcea57761436ebfa5843d3
+        name: Colors/Foreground/fg-tertiary-inverse
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#0a1e4180", Light mode: "#ffffff"}
+      text-tertiary-inverse:
+        id: "VariableID:15510:37979"
+        key: 36561ee95d24076048ed9d9db6a0c717332d8162
+        name: Colors/Text/text-tertiary-inverse
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#0a1e4180", Light mode: "#ffffff"}
+      fg-disabled-inverse:
+        id: "VariableID:15510:37980"
+        key: 71c8951b1d40a94d1acfb59dacf53a44bd3e8198
+        name: Colors/Foreground/fg-disabled-inverse
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#0a1e4133", Light mode: "#ffffff"}
+      text-disabled-inverse:
+        id: "VariableID:15510:37981"
+        key: 3213f3d3d0039686a6a7e34a061d09be3c1271c5
+        name: Colors/Text/text-disabled-inverse
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#0a1e4133", Light mode: "#ffffff"}
+      bg-gradient-radial-int:
+        id: "VariableID:15801:42977"
+        key: bfd57d6b1331e2289a28ca87e7cbf81eb4715617
+        name: Colors/Background/bg-gradient-radial-int
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#0a1e41", Light mode: "#f4f3ff"}
+      bg-gradient-radial-ext:
+        id: "VariableID:15801:42978"
+        key: 4ddb19b9aefedc5402408260e7e00266a11864b6
+        name: Colors/Background/bg-gradient-radial-ext
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#030d20", Light mode: "#ebe9fe"}
+      bg-solid:
+        id: "VariableID:15801:83401"
+        key: af18ac25491eb3b5eb06f52a2c3adbb43573264a
+        name: Colors/Background/bg-solid
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#030d20", Light mode: "#edf2ff"}
+      bg-inverse-lighter:
+        id: "VariableID:16498:87798"
+        key: 50e0558b9289cd0ffd3bbe99fe176168838a27fa
+        name: Colors/Background/bg-inverse-lighter
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ffffff29", Light mode: "#0a1e4133"}
+      bg-inverse-light:
+        id: "VariableID:19090:40223"
+        key: 98f8c3f583cb0fc3bf1aab682c4bdcca006edc1e
+        name: Colors/Background/bg-inverse-light
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ffffff80", Light mode: "#0a1e4199"}
+      bg-blue-solid-hover:
+        id: "VariableID:21164:2382"
+        key: 7e70ebbc416fef2a90d3e2adf38369d64736ad54
+        name: Colors/Background/bg-blue-solid-hover
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#4d6fc3", Light mode: "#4d6fc3"}
+      bg-blue-secondary-hover:
+        id: "VariableID:21164:2383"
+        key: 59ef9d2d6ba8b0ddbbb2bd876c11521f9b866286
+        name: Colors/Background/bg-blue-secondary-hover
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#6388e34d", Light mode: "#d0deff"}
+      accent-solid:
+        id: "VariableID:22324:3"
+        key: 9bf1870108aaac84c162cbb9e9b10c0c157737e9
+        name: accent-solid
+        collection: 7. Accent
+        type: COLOR
+        hidden: null
+        values_by_mode: {brand: "#000000", gray: "#000000", pink: "#000000"}
+    reference:
+      white:
+        id: "VariableID:5248:377686"
+        key: 666e7da5f16bf36b1223b34f23ba6a08f060bd98
+        name: Colors/Base/white
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      black:
+        id: "VariableID:5248:377687"
+        key: 857aaff7dc003c1aecd1591d7d9225d1aa415765
+        name: Colors/Base/black
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      gray-light-mode-25:
+        id: "VariableID:5248:377690"
+        key: a2221b093990a489a8484a368a00423500d1765c
+        name: Colors/Gray (light mode)/25
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      gray-light-mode-50:
+        id: "VariableID:5248:377696"
+        key: 9d0bd80dd001b82dcfc6d227cd556475d3a21ff1
+        name: Colors/Gray (light mode)/50
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      gray-light-mode-100:
+        id: "VariableID:5248:377698"
+        key: addd9e0bb9723ed78ae8f0cb069fea8906d0ff44
+        name: Colors/Gray (light mode)/100
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      gray-light-mode-200:
+        id: "VariableID:5248:377699"
+        key: 5765e9667dac5598365632efe7816d035a405a93
+        name: Colors/Gray (light mode)/200
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      gray-light-mode-300:
+        id: "VariableID:5248:377700"
+        key: 699998a3038507c2c8c176e951ca7df509abb25f
+        name: Colors/Gray (light mode)/300
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      gray-light-mode-400:
+        id: "VariableID:5248:377701"
+        key: e65d5b9f479fe2001a54da2e4476e2942ab7cac5
+        name: Colors/Gray (light mode)/400
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      gray-light-mode-500:
+        id: "VariableID:5248:377702"
+        key: 59630c07193edc5c2e517d290af4f7e1fcf6f220
+        name: Colors/Gray (light mode)/500
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      gray-light-mode-600:
+        id: "VariableID:5248:377703"
+        key: 3ac8b550fcc0e492c95f8778189a6eeb0c54c285
+        name: Colors/Gray (light mode)/600
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      gray-light-mode-700:
+        id: "VariableID:5248:377704"
+        key: 8538acdbdfa60f09e6d85230bdf265c557414d92
+        name: Colors/Gray (light mode)/700
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      gray-light-mode-800:
+        id: "VariableID:5248:377705"
+        key: 811cfcc77150035744fbf86c8f01bdeb848d3d52
+        name: Colors/Gray (light mode)/800
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      gray-light-mode-900:
+        id: "VariableID:5248:377706"
+        key: dd9e32ba66ea8b74a605efd8f7c5799984f8d79b
+        name: Colors/Gray (light mode)/900
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      gray-light-mode-950:
+        id: "VariableID:5248:377707"
+        key: fbb29234c06f51ab97c2e326d48ba02af74a7e4e
+        name: Colors/Gray (light mode)/950
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      brand-25:
+        id: "VariableID:5248:377708"
+        key: 750c2722363c550b051724a465ef71ad54b82bec
+        name: Colors/Brand/25
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      brand-50:
+        id: "VariableID:5248:377709"
+        key: 15026fc0b160e0d95fafa24ede4785cdab778ade
+        name: Colors/Brand/50
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      brand-100:
+        id: "VariableID:5248:377710"
+        key: 6e687cd499f7931d07f5ab7d552d0ece0b7ae573
+        name: Colors/Brand/100
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      brand-200:
+        id: "VariableID:5248:377711"
+        key: 002b48273a8bcf219aacfa0bab90100211133e10
+        name: Colors/Brand/200
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      brand-300:
+        id: "VariableID:5248:377712"
+        key: b32efbe4059ae4b915c43bac4fc325aaafc402f8
+        name: Colors/Brand/300
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      brand-400:
+        id: "VariableID:5248:377713"
+        key: f2872f5b74f15ef5130c06206a3e597ff8670982
+        name: Colors/Brand/400
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      brand-500:
+        id: "VariableID:5248:377714"
+        key: 1c33e88d179f3fb15c98b583c09f4f7e27c7a3fa
+        name: Colors/Brand/500
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      brand-600:
+        id: "VariableID:5248:377715"
+        key: bd601b0a37892bd45a2f33e93f16255c9200a9d8
+        name: Colors/Brand/600
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      brand-700:
+        id: "VariableID:5248:377716"
+        key: eaff1e6db03387cf5e7ecd4c7715fa5f730414be
+        name: Colors/Brand/700
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      brand-800:
+        id: "VariableID:5248:377717"
+        key: 095a4f03747b1de017b66a9fc769e0d5eebb89f3
+        name: Colors/Brand/800
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      brand-900:
+        id: "VariableID:5248:377718"
+        key: 7d26076053f31fa7e5de045f12825cf38e4906b3
+        name: Colors/Brand/900
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      brand-950:
+        id: "VariableID:5248:377719"
+        key: 02df813631245e58d568eae0852d7f545b55dd39
+        name: Colors/Brand/950
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      error-25:
+        id: "VariableID:5248:377720"
+        key: b9ea3766aa5b52c9ef7d49f17684669a47d85fbd
+        name: Colors/Error/25
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      error-50:
+        id: "VariableID:5248:377721"
+        key: 75470b059c30a3497a7c96b1042d7a22d284f623
+        name: Colors/Error/50
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      error-100:
+        id: "VariableID:5248:377722"
+        key: 9aa25bb9c85bd89ee19857b3364fc50ca1e762e4
+        name: Colors/Error/100
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      error-200:
+        id: "VariableID:5248:377723"
+        key: b05b1c6d5541b21d4cd3f1d6b7beb4459d71ff83
+        name: Colors/Error/200
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      error-300:
+        id: "VariableID:5248:377724"
+        key: c33e6694655fc2d330776ab72bc8d4b0a5cbe7e2
+        name: Colors/Error/300
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      error-400:
+        id: "VariableID:5248:377725"
+        key: 6f1c91718ad0fe23bb8ed127c0867aa7aaa74c88
+        name: Colors/Error/400
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      error-500:
+        id: "VariableID:5248:377726"
+        key: 61268d3a24ea40474824e3e1f1554a9495ee568b
+        name: Colors/Error/500
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      error-600:
+        id: "VariableID:5248:377727"
+        key: ee512118a801b6a85f6b1b921951e0fa661cb1a8
+        name: Colors/Error/600
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      error-700:
+        id: "VariableID:5248:377728"
+        key: 654e46ce91a2f4a1a715ac141f9704dddcbab0ed
+        name: Colors/Error/700
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      error-800:
+        id: "VariableID:5248:377729"
+        key: 6c1dc1b67934224e391e61b5d2020203639b4c55
+        name: Colors/Error/800
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      error-900:
+        id: "VariableID:5248:377730"
+        key: 7925ea0b20090c6964ac67fb5ba051d109cada97
+        name: Colors/Error/900
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      error-950:
+        id: "VariableID:5248:377731"
+        key: 8d07ed31ca28ebc681b95dd21f9ae79e1b5d7970
+        name: Colors/Error/950
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      warning-25:
+        id: "VariableID:5248:377732"
+        key: db7a8c8188e818775333017eea4f4966b64202c6
+        name: Colors/Warning/25
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      warning-50:
+        id: "VariableID:5248:377733"
+        key: 43a43a66507d59af04c3f7ffafb0afac8cc8417d
+        name: Colors/Warning/50
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      warning-100:
+        id: "VariableID:5248:377734"
+        key: fd73ccb2aab35036899614344dafc094ee058689
+        name: Colors/Warning/100
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      warning-200:
+        id: "VariableID:5248:377735"
+        key: 889c679299799519096d3e00042fa3453642d8cb
+        name: Colors/Warning/200
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      warning-300:
+        id: "VariableID:5248:377736"
+        key: e5bb8513a2008921131bcc631f06a73314a86d04
+        name: Colors/Warning/300
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      warning-400:
+        id: "VariableID:5248:377737"
+        key: b5044e850c371e6374b31fc9eb80f49019c84888
+        name: Colors/Warning/400
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      warning-500:
+        id: "VariableID:5248:377738"
+        key: e1435dc9c1ed7386076b8d386abd3d933b82ab89
+        name: Colors/Warning/500
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      warning-600:
+        id: "VariableID:5248:377739"
+        key: 1099cd9ca6424b0218b55761dff3085801464341
+        name: Colors/Warning/600
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      warning-700:
+        id: "VariableID:5248:377740"
+        key: 6a26d70a90a784e7cd5ef41d3320d2763568c094
+        name: Colors/Warning/700
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      warning-800:
+        id: "VariableID:5248:377741"
+        key: dd34bcea77bf6201bb3183dc94d5a2fcdc030277
+        name: Colors/Warning/800
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      warning-900:
+        id: "VariableID:5248:377742"
+        key: 8a2fe09fc8c9e5cad8f9943726e0b4993e35248c
+        name: Colors/Warning/900
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      warning-950:
+        id: "VariableID:5248:377743"
+        key: 8ca017d72768bae24e3854fa8af965c3cae07849
+        name: Colors/Warning/950
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      success-25:
+        id: "VariableID:5248:377745"
+        key: d87f04136b11230bc74acc3bb573d5f604d3b47b
+        name: Colors/Success/25
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      success-50:
+        id: "VariableID:5248:377747"
+        key: 539c07b9f228810d1a39a91398a56293c5b67d09
+        name: Colors/Success/50
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      success-100:
+        id: "VariableID:5248:377748"
+        key: 14d462eb8006bb84ef50b594fa0b27e808a81fd2
+        name: Colors/Success/100
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      success-200:
+        id: "VariableID:5248:377749"
+        key: 3754f2cfabb7b623523ba42197acf1a2855160dd
+        name: Colors/Success/200
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      success-300:
+        id: "VariableID:5248:377750"
+        key: c9ddb526189f2f0d448a236ca52573815132428b
+        name: Colors/Success/300
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      success-400:
+        id: "VariableID:5248:377751"
+        key: e03a478bf77da068d7f01e38794a350ba32419d3
+        name: Colors/Success/400
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      success-500:
+        id: "VariableID:5248:377752"
+        key: bfaf6fd8ef2457229fa779e18fb89a7e4e43638e
+        name: Colors/Success/500
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      success-600:
+        id: "VariableID:5248:377753"
+        key: 3accc9643f1b474f871fade66773e2e41aa49340
+        name: Colors/Success/600
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      success-700:
+        id: "VariableID:5248:377754"
+        key: c52058aafa182e08464e02e826385070e254ea3b
+        name: Colors/Success/700
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      success-800:
+        id: "VariableID:5248:377755"
+        key: 952c90f4bb50c3f5af61a621fe45077f1f499279
+        name: Colors/Success/800
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      success-900:
+        id: "VariableID:5248:377756"
+        key: 0f97ef78875c1d977aedcf2a6a4dcf27597d9ba0
+        name: Colors/Success/900
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      success-950:
+        id: "VariableID:5248:377757"
+        key: 52777f3ca672e08b7287c5a61b259bc0330c1b94
+        name: Colors/Success/950
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      purple-25:
+        id: "VariableID:5248:377960"
+        key: 7680f9dc25415848522beca2fbdb0cf931ac780d
+        name: Colors/Purple/25
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      purple-50:
+        id: "VariableID:5248:377961"
+        key: 444aab44d49c3e1b0dff345b1a4dad373bf3b9db
+        name: Colors/Purple/50
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      purple-100:
+        id: "VariableID:5248:377962"
+        key: 894f22bb1e5d9788540feb35a33187a030658445
+        name: Colors/Purple/100
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      purple-200:
+        id: "VariableID:5248:377963"
+        key: 049b0311edd132089eabd34c78794751362fdec7
+        name: Colors/Purple/200
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      purple-300:
+        id: "VariableID:5248:377964"
+        key: 41721c2df771f371e8db4b92d0b18fe0c4e81257
+        name: Colors/Purple/300
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      purple-400:
+        id: "VariableID:5248:377965"
+        key: 320376acc645c6a93890d23035ca2d206779fa07
+        name: Colors/Purple/400
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      purple-500:
+        id: "VariableID:5248:377966"
+        key: 65e9a3e00614293a6d617e5632045cc8682e9c9f
+        name: Colors/Purple/500
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      purple-600:
+        id: "VariableID:5248:377967"
+        key: c7e0492fb028c23783f2da2013893f61ca99e6df
+        name: Colors/Purple/600
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      purple-700:
+        id: "VariableID:5248:377968"
+        key: f96a63fb8e411654ad8c629143cc32609dcbda82
+        name: Colors/Purple/700
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      purple-800:
+        id: "VariableID:5248:377969"
+        key: 130164d336bffe6449de1902c208fe85f27b7c47
+        name: Colors/Purple/800
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      purple-900:
+        id: "VariableID:5248:377970"
+        key: 1593532558ba3074919cb7b7face4a069845944e
+        name: Colors/Purple/900
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      purple-950:
+        id: "VariableID:5248:377971"
+        key: db9a297305077e1da6d730c67edd0f9440932def
+        name: Colors/Purple/950
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      pink-25:
+        id: "VariableID:5248:377984"
+        key: 4212854cb04fb5d37509f8cddf23db63809515e2
+        name: Colors/Pink/25
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      pink-50:
+        id: "VariableID:5248:377985"
+        key: f1013a7098f98f0a69b03e4e7d558103e597e6dc
+        name: Colors/Pink/50
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      pink-100:
+        id: "VariableID:5248:377986"
+        key: 50c337694d4cc60088a88291bedabe40798e7529
+        name: Colors/Pink/100
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      pink-200:
+        id: "VariableID:5248:377987"
+        key: a5280c56ff134c3cae8541861960ae4baffbe881
+        name: Colors/Pink/200
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      pink-300:
+        id: "VariableID:5248:377988"
+        key: 75c2a8d0f54644d57432cb67d2c19f0cffcacf6a
+        name: Colors/Pink/300
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      pink-400:
+        id: "VariableID:5248:377989"
+        key: 9e2857965c9bc04aed8432101313b8bca4304f71
+        name: Colors/Pink/400
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      pink-500:
+        id: "VariableID:5248:377990"
+        key: 615240178e692e9721321f78532dddafd5a6471a
+        name: Colors/Pink/500
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      pink-600:
+        id: "VariableID:5248:377991"
+        key: 2be04babe2c379a10a11163c90926bbb240e3b4a
+        name: Colors/Pink/600
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      pink-700:
+        id: "VariableID:5248:377992"
+        key: da566250e81ff71e91bedbe275913863b0cf95b5
+        name: Colors/Pink/700
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      pink-800:
+        id: "VariableID:5248:377993"
+        key: 293989ad3ea6cb6d75e1f24a85c537a891161a64
+        name: Colors/Pink/800
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      pink-900:
+        id: "VariableID:5248:377994"
+        key: 8314bcabf2705d1a121dcd025a67fdeadb10cfbb
+        name: Colors/Pink/900
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      pink-950:
+        id: "VariableID:5248:377995"
+        key: ae53190a6a52795948d31ba2ecf68b10ddbcd0ef
+        name: Colors/Pink/950
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      transparent:
+        id: "VariableID:5353:380363"
+        key: 28698908db0899a9eb73d0ccb09be794487c52af
+        name: Colors/Base/transparent
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      alpha-white-90:
+        id: "VariableID:5574:413581"
+        key: bc88db58a0486b6baf51312f80ad65c21919ad2c
+        name: Colors/Alpha/alpha-white-90
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#0c0e12e5", Light mode: "#ffffffe5"}
+      alpha-white-80:
+        id: "VariableID:5574:413584"
+        key: 71d5338530eea9503e4bc467cb665996a5098b87
+        name: Colors/Alpha/alpha-white-80
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#0c0e12cc", Light mode: "#ffffffcc"}
+      alpha-white-70:
+        id: "VariableID:5574:413585"
+        key: ed1d29df5fdc980012e5dce43d672c74441e0c9b
+        name: Colors/Alpha/alpha-white-70
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#0c0e12b2", Light mode: "#ffffffb2"}
+      alpha-white-60:
+        id: "VariableID:5574:413586"
+        key: e3d6c7a0ab61570e63081de06aa152d5c945aac7
+        name: Colors/Alpha/alpha-white-60
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#0c0e1299", Light mode: "#ffffff99"}
+      alpha-white-50:
+        id: "VariableID:5574:413587"
+        key: 456136bd1cd354e22ea2ef62eee63e4bcbee0823
+        name: Colors/Alpha/alpha-white-50
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#0c0e1280", Light mode: "#ffffff80"}
+      alpha-white-40:
+        id: "VariableID:5574:413588"
+        key: 1aed50512952407c14d239045b04c3c6a99d89b0
+        name: Colors/Alpha/alpha-white-40
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#0c0e1266", Light mode: "#ffffff66"}
+      alpha-white-30:
+        id: "VariableID:5574:413589"
+        key: f89f117bc19228ed69f3e7502fe1355b648ff9a3
+        name: Colors/Alpha/alpha-white-30
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#0c0e124d", Light mode: "#ffffff4d"}
+      alpha-white-20:
+        id: "VariableID:5574:413590"
+        key: 71157e277fe25f78dcb12a3d04d62a70f8312725
+        name: Colors/Alpha/alpha-white-20
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#0c0e1233", Light mode: "#ffffff33"}
+      alpha-white-5:
+        id: "VariableID:5574:413591"
+        key: 0a2b7fafd9c0a012d87031ed4c203bdb068383e4
+        name: Colors/Alpha/alpha-white-5
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#0c0e120d", Light mode: "#ffffff0d"}
+      alpha-black-5:
+        id: "VariableID:5574:413592"
+        key: b3bee2cc4a6db8c3e1dccdab499ab28ea005cc0b
+        name: Colors/Alpha/alpha-black-5
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ffffff0d", Light mode: "#0000000d"}
+      alpha-black-20:
+        id: "VariableID:5574:413593"
+        key: 18c292715c76e3f17268396d12f2c82db7a5d69f
+        name: Colors/Alpha/alpha-black-20
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ffffff33", Light mode: "#00000033"}
+      alpha-black-30:
+        id: "VariableID:5574:413594"
+        key: ae3dc482a01d15664512f545e1632d8a333f5743
+        name: Colors/Alpha/alpha-black-30
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ffffff4d", Light mode: "#0000004d"}
+      alpha-black-40:
+        id: "VariableID:5574:413595"
+        key: e887949ec1a8cf0128ceba9218bacbede7d1e226
+        name: Colors/Alpha/alpha-black-40
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ffffff66", Light mode: "#00000066"}
+      alpha-black-50:
+        id: "VariableID:5574:413596"
+        key: ef82060c646ce43e493c5b292ac74cc5e9cfab34
+        name: Colors/Alpha/alpha-black-50
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ffffff80", Light mode: "#00000080"}
+      alpha-black-60:
+        id: "VariableID:5574:413597"
+        key: 472dd362b1db13acaa28c61394a5f70ad1e78b3f
+        name: Colors/Alpha/alpha-black-60
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ffffff99", Light mode: "#00000099"}
+      alpha-black-70:
+        id: "VariableID:5574:413598"
+        key: 6d5895cfd790b311fc9938eeea84b29ff0460321
+        name: Colors/Alpha/alpha-black-70
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ffffffb2", Light mode: "#000000b2"}
+      alpha-black-80:
+        id: "VariableID:5574:413599"
+        key: 5729a2288102697760188b487bbce41568743de6
+        name: Colors/Alpha/alpha-black-80
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ffffffcc", Light mode: "#000000cc"}
+      alpha-black-90:
+        id: "VariableID:5574:413600"
+        key: ae16555d72251250b01cae8a689ae94ddfd7e693
+        name: Colors/Alpha/alpha-black-90
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ffffffe5", Light mode: "#000000e5"}
+      alpha-black-100:
+        id: "VariableID:6080:479732"
+        key: 03295d5d21e524dbd27fbfedf90b70adab9c1000
+        name: Colors/Alpha/alpha-black-100
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ffffff", Light mode: "#000000"}
+      white-alpha-25:
+        id: "VariableID:6633:117833"
+        key: 7b5993ab31d776b8de2a1864e4cb84cfab69bfd7
+        name: Colors/White Alpha/25
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      white-alpha-50:
+        id: "VariableID:6633:120616"
+        key: f7a7b188bd16166e94352c43c5cfbac98d725699
+        name: Colors/White Alpha/50
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      white-alpha-100:
+        id: "VariableID:6633:127771"
+        key: dbfef1dc818214af33a6499af2a749e000e8ac65
+        name: Colors/White Alpha/100
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      white-alpha-200:
+        id: "VariableID:6633:131290"
+        key: 8f86cc9b10b48ccff15acc02298c5bc933456087
+        name: Colors/White Alpha/200
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      white-alpha-300:
+        id: "VariableID:6633:132623"
+        key: df3e2264241ff907244adf97ebc05406212c9d75
+        name: Colors/White Alpha/300
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      white-alpha-400:
+        id: "VariableID:6633:133915"
+        key: d7572ce48f484769225b6c89b3b1dafcd1e30249
+        name: Colors/White Alpha/400
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      white-alpha-500:
+        id: "VariableID:6633:135318"
+        key: 088971791b20a2a9d9847bf772707d21caea2997
+        name: Colors/White Alpha/500
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      white-alpha-600:
+        id: "VariableID:6633:137853"
+        key: 43ad5ec7dda6b99d2289f3de7fd091b2835ef65b
+        name: Colors/White Alpha/600
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      white-alpha-700:
+        id: "VariableID:6633:139373"
+        key: 9f75770ecc14b4d668f828ac0dad8d948ce046c4
+        name: Colors/White Alpha/700
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      white-alpha-800:
+        id: "VariableID:6633:142566"
+        key: 9b23e79251a554d76edd620dc6270f9fef19cdbb
+        name: Colors/White Alpha/800
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      white-alpha-900:
+        id: "VariableID:6633:144412"
+        key: c2de25c85b8abdac4ee9ca93dd90c95c4917258f
+        name: Colors/White Alpha/900
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      white-alpha-950:
+        id: "VariableID:6633:145422"
+        key: 24bc2d5cb8e590f5a3a3a5fe7397a893477b3388
+        name: Colors/White Alpha/950
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      gray-dark-mode-25:
+        id: "VariableID:6670:87753"
+        key: 1ee4fffa3ee0799abb8a2521207a28f22c2fd16f
+        name: Colors/Gray (dark mode)/25
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      gray-dark-mode-50:
+        id: "VariableID:6671:87754"
+        key: 9984db2a1c713a41615e4b0d38d75f1b5e5a99a7
+        name: Colors/Gray (dark mode)/50
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      gray-dark-mode-100:
+        id: "VariableID:6671:87755"
+        key: bc5bf983b2759f7fd0e6cc7871dd9cf3ec2c1695
+        name: Colors/Gray (dark mode)/100
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      gray-dark-mode-200:
+        id: "VariableID:6671:87756"
+        key: 086caae95ecb7dac02f672368738a82fc5a197aa
+        name: Colors/Gray (dark mode)/200
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      gray-dark-mode-300:
+        id: "VariableID:6671:87757"
+        key: 792e40968e029d7b91bc1c1be2e92bcfa0eb324d
+        name: Colors/Gray (dark mode)/300
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      gray-dark-mode-400:
+        id: "VariableID:6671:87758"
+        key: 5c354ca4712f2042a1584191ed980d20be5ea0e9
+        name: Colors/Gray (dark mode)/400
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      gray-dark-mode-500:
+        id: "VariableID:6671:87759"
+        key: c6d1e946edc1666aa5f47855c35ba7bb5d089ad7
+        name: Colors/Gray (dark mode)/500
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      gray-dark-mode-600:
+        id: "VariableID:6671:87760"
+        key: 230e1b94c2b42f30f35168e680defc20b460bce0
+        name: Colors/Gray (dark mode)/600
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      gray-dark-mode-700:
+        id: "VariableID:6671:87761"
+        key: 79ad05c0ef66a1b370df5b692d0478beebac002a
+        name: Colors/Gray (dark mode)/700
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      gray-dark-mode-800:
+        id: "VariableID:6671:87762"
+        key: 51b3c9f9720966866cccecde18397acccacf2c45
+        name: Colors/Gray (dark mode)/800
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      gray-dark-mode-900:
+        id: "VariableID:6671:87763"
+        key: ddd903d5907e99bdabbff2b0bb252592a49c7e7a
+        name: Colors/Gray (dark mode)/900
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      gray-dark-mode-950:
+        id: "VariableID:6671:87764"
+        key: 67f0ded60c163df141f1b595ec69a2ad8ca42550
+        name: Colors/Gray (dark mode)/950
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      shadow-skeumorphic-inner:
+        id: "VariableID:7393:383290"
+        key: 9c1e7358be18fa363025b4de8054a259f0dcf481
+        name: Colors/Effects/Shadows/shadow-skeumorphic-inner
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#0c0e120d", Light mode: "#0a0d120d"}
+      shadow-skeumorphic-inner-border:
+        id: "VariableID:7396:291712"
+        key: bf274eabff9d98305ad9ca14f866994a10e20bbc
+        name: Colors/Effects/Shadows/shadow-skeumorphic-inner-border
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#0c0e122e", Light mode: "#0a0d122e"}
+      warning-500-alpha60:
+        id: "VariableID:14591:105048"
+        key: 09a1b9615c5bc696fc5109f66bf641b1be1e3950
+        name: Colors/Warning/500-alpha60
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      warning-500-alpha30:
+        id: "VariableID:14591:105049"
+        key: 572bc387759dcf53c570b948dc00b34bc61a1563
+        name: Colors/Warning/500-alpha30
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      warning-500-alpha20:
+        id: "VariableID:14591:105050"
+        key: 7e53e3ca17ad3ef1053e8186af9f2f9fe360ce8c
+        name: Colors/Warning/500-alpha20
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      warning-500-alpha10:
+        id: "VariableID:14591:105051"
+        key: a2c80c7b9aa71681aa38a586118f96fe2d735078
+        name: Colors/Warning/500-alpha10
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      success-500-alpha60:
+        id: "VariableID:14591:105087"
+        key: 287f05ded0951e97cc39f436ed9e3fa867b544e9
+        name: Colors/Success/500-alpha60
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      success-500-alpha30:
+        id: "VariableID:14591:105088"
+        key: 72dab1bbcb8e6e7c9eb3d58a9b051280f4489cb8
+        name: Colors/Success/500-alpha30
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      success-500-alpha20:
+        id: "VariableID:14591:105089"
+        key: 641ca255be908513008783b3851bb63e3557838a
+        name: Colors/Success/500-alpha20
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      success-500-alpha10:
+        id: "VariableID:14591:105090"
+        key: ac43f543af729c05302d7875ac5e98f002b6ca9c
+        name: Colors/Success/500-alpha10
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      error-500-alpha60:
+        id: "VariableID:14591:105091"
+        key: cc1c13b65edff65f840486f7bb18f7081e3bfa4d
+        name: Colors/Error/500-alpha60
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      error-500-alpha30:
+        id: "VariableID:14591:105092"
+        key: c3b617ec9d784edcd61dfde15c6cb997e6e23c1c
+        name: Colors/Error/500-alpha30
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      error-500-alpha20:
+        id: "VariableID:14591:105093"
+        key: 255f95b652ee08bc37954a29a85b8d05d04abfe0
+        name: Colors/Error/500-alpha20
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      error-500-alpha10:
+        id: "VariableID:14591:105094"
+        key: 77317356cba05fcaca6042eedaff169c675f808b
+        name: Colors/Error/500-alpha10
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      purple-500-alpha60:
+        id: "VariableID:14678:132452"
+        key: af5bb92236c6db0825f9da55671b31a2411f8ff1
+        name: Colors/Purple/500-alpha60
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      purple-500-alpha30:
+        id: "VariableID:14678:132453"
+        key: 67dbed4feccd6af35a044b8c869748a161a43a66
+        name: Colors/Purple/500-alpha30
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      purple-500-alpha20:
+        id: "VariableID:14678:132454"
+        key: d32e707a4a8b399454cb07f7fcdf4f10639e396e
+        name: Colors/Purple/500-alpha20
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      purple-500-alpha10:
+        id: "VariableID:14678:132455"
+        key: 5c4eab89b6d5709dd6066e56a886b16a05de5d74
+        name: Colors/Purple/500-alpha10
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      error-500-alpha40:
+        id: "VariableID:14712:18402"
+        key: 01a345f151aca1ece882e037f40650991b83a586
+        name: Colors/Error/500-alpha40
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      error-500-alpha50:
+        id: "VariableID:14712:18403"
+        key: 89f603f895081f330466b0f624b3ebb9a6de659f
+        name: Colors/Error/500-alpha50
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      warning-500-alpha40:
+        id: "VariableID:14712:18404"
+        key: 64c858b31d8ab92a0f5d7cf9c693abea57785e44
+        name: Colors/Warning/500-alpha40
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      warning-500-alpha50:
+        id: "VariableID:14712:18405"
+        key: 63b34df76c3f26c926c0df0d5eeb42a0ed95f358
+        name: Colors/Warning/500-alpha50
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      success-500-alpha50:
+        id: "VariableID:14712:18420"
+        key: 5e7f6b8241b9bcc8d8c79b3a62991ee0dd5e5284
+        name: Colors/Success/500-alpha50
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      success-500-alpha40:
+        id: "VariableID:14712:18421"
+        key: 408d2c708ab9baac8ca6fe55167a983137eef068
+        name: Colors/Success/500-alpha40
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      purple-500-alpha40:
+        id: "VariableID:14712:18436"
+        key: 45af72d63ea46f1b963b841ade0ccf1a04e58708
+        name: Colors/Purple/500-alpha40
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      purple-500-alpha50:
+        id: "VariableID:14712:18437"
+        key: 2ea24f9f32040afc8f29bb3bb80b86366723fc48
+        name: Colors/Purple/500-alpha50
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      pink-500-alpha60:
+        id: "VariableID:14871:9821"
+        key: ef414ade2f26f65876312b0a6ade3f81d6993792
+        name: Colors/Pink/500-alpha60
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      pink-500-alpha50:
+        id: "VariableID:14871:9822"
+        key: 19a4a3f58d41066888e727081a85b0be7eaa440f
+        name: Colors/Pink/500-alpha50
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      pink-500-alpha40:
+        id: "VariableID:14871:9823"
+        key: d1484e5dd6b44441ccbb4c8f17c912ca39aca999
+        name: Colors/Pink/500-alpha40
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      pink-500-alpha30:
+        id: "VariableID:14871:9824"
+        key: b5b48360839c6022ce7caf414e2dc9d4af8a79d3
+        name: Colors/Pink/500-alpha30
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      pink-500-alpha20:
+        id: "VariableID:14871:9825"
+        key: 6a32ca1880a5a300a19a33a597d872f8b90765c5
+        name: Colors/Pink/500-alpha20
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      pink-500-alpha10:
+        id: "VariableID:14871:9826"
+        key: 7806d6beba6ce242dc47da750828be36019d4a22
+        name: Colors/Pink/500-alpha10
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      900-alpha60:
+        id: "VariableID:14896:85919"
+        key: c654ac4d46dc802bcfb3486db1685dd96680dcd9
+        name: Colors/Brand/900-alpha60
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      900-alpha50:
+        id: "VariableID:14896:85920"
+        key: 71d2aed26c0618a30d2c3c119535efb57e83e5b5
+        name: Colors/Brand/900-alpha50
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      900-alpha40:
+        id: "VariableID:14896:85921"
+        key: 988f57c2a855f2f266c224d01e96b3c019edbd2f
+        name: Colors/Brand/900-alpha40
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      900-alpha30:
+        id: "VariableID:14896:85922"
+        key: 4345c58cd3c63280000079d6140440fa0165280a
+        name: Colors/Brand/900-alpha30
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      900-alpha20:
+        id: "VariableID:14896:85923"
+        key: 2b24b0d3dc6a2d35621412150d1ac16faec7a1e0
+        name: Colors/Brand/900-alpha20
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      900-alpha10:
+        id: "VariableID:14896:85924"
+        key: 461fd6aef5addfad78b2d16907e9005aefdd1986
+        name: Colors/Brand/900-alpha10
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      brand-500-alpha60:
+        id: "VariableID:15030:134318"
+        key: 4c5073951bb95573d160f4e847e6fecb9cc4e887
+        name: Colors/Brand/500-alpha60
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      brand-500-alpha50:
+        id: "VariableID:15030:134319"
+        key: f862302e6b252218f8da731b51555188797354bb
+        name: Colors/Brand/500-alpha50
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      brand-500-alpha40:
+        id: "VariableID:15030:134320"
+        key: 83198fc8fe901318b9cc7b6d02fee13897136c13
+        name: Colors/Brand/500-alpha40
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      brand-500-alpha30:
+        id: "VariableID:15030:134321"
+        key: 5d49634f1ad33490dc4253874d23a96b83b55880
+        name: Colors/Brand/500-alpha30
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      brand-500-alpha20:
+        id: "VariableID:15030:134322"
+        key: 1b528c59d42788855b3230f9506d602e62e464b4
+        name: Colors/Brand/500-alpha20
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      brand-500-alpha10:
+        id: "VariableID:15030:134323"
+        key: a9dacd3b67b1f72e03f76934b431a9969db4609a
+        name: Colors/Brand/500-alpha10
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      dark-alpha-25:
+        id: "VariableID:15051:84142"
+        key: 899a184c76cdb02da8078041cca2fca1334dd6c8
+        name: Colors/Dark Alpha/25
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      dark-alpha-50:
+        id: "VariableID:15051:84143"
+        key: 1abbd344967633794e99570901cecc4ce4649a12
+        name: Colors/Dark Alpha/50
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      dark-alpha-100:
+        id: "VariableID:15051:84144"
+        key: 9456496b906c667c7d8e4499b3450a4aad4cff51
+        name: Colors/Dark Alpha/100
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      dark-alpha-200:
+        id: "VariableID:15051:84145"
+        key: 92e87d08f66827cd6b4d531ee2785dd0796f7ef3
+        name: Colors/Dark Alpha/200
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      dark-alpha-300:
+        id: "VariableID:15051:84146"
+        key: 66e6ba5be20a2ee7735ac5b1b901c071eebb0784
+        name: Colors/Dark Alpha/300
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      dark-alpha-400:
+        id: "VariableID:15051:84147"
+        key: e15984b11c94599007c533baac8732679708a7ab
+        name: Colors/Dark Alpha/400
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      dark-alpha-500:
+        id: "VariableID:15051:84148"
+        key: b56a263ae88ad43742383599bf3f16d726a6da72
+        name: Colors/Dark Alpha/500
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      dark-alpha-600:
+        id: "VariableID:15051:84149"
+        key: 4d70988de3185f324474cd1f21502a66a6756dd0
+        name: Colors/Dark Alpha/600
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      dark-alpha-700:
+        id: "VariableID:15051:84150"
+        key: 411be18683e4575b358a8dddddb84b0cfd4deb03
+        name: Colors/Dark Alpha/700
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      dark-alpha-800:
+        id: "VariableID:15051:84151"
+        key: 576553def9252b3dd3f0b6214394be9f8c339611
+        name: Colors/Dark Alpha/800
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      dark-alpha-900:
+        id: "VariableID:15051:84152"
+        key: ef85cbbc357df3469cefbb9f79e0e20473ca860f
+        name: Colors/Dark Alpha/900
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      dark-alpha-950:
+        id: "VariableID:15051:84153"
+        key: 07febeeae26e96863050467e925ebb93f2d0588b
+        name: Colors/Dark Alpha/950
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      900-alpha70:
+        id: "VariableID:15219:7399"
+        key: 0cd6d4fbaa9e9f199ff88eb33ba12cf3c97766f6
+        name: Colors/Brand/900-alpha70
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      500-alpha70:
+        id: "VariableID:15219:7400"
+        key: d703edf0844dba35fb4631e7faefc8b2ec33432a
+        name: Colors/Brand/500-alpha70
+        collection: _Primitives
+        type: COLOR
+        hidden: true
+      bg-hover:
+        id: "VariableID:22242:2"
+        key: 6d32f7fb8ffd26aa34bba180465eed0ce6565541
+        name: Colors/Background/bg-hover
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ffffff14", Light mode: "#0a1e410f"}
+      bg-active:
+        id: "VariableID:22242:3"
+        key: ca264d3d3d08d45ebb98d251b142e530dc181cc2
+        name: Colors/Background/bg-active
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ffffff29", Light mode: "#0a1e411a"}
+      alpha-white-10:
+        id: "VariableID:22285:98386"
+        key: 33975d833b3507294bda35a1674778d3f8e57d62
+        name: Colors/Alpha/alpha-white-10
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#0c0e121a", Light mode: "#ffffff1a"}
+      alpha-black-10:
+        id: "VariableID:22285:98388"
+        key: c00449b13b36f7100de764bf32911ea6ba91ac47
+        name: Colors/Alpha/alpha-black-10
+        collection: 1. Color modes
+        type: COLOR
+        hidden: null
+        values_by_mode: {Dark mode: "#ffffff1a", Light mode: "#0000001a"}
+  spacing:
+    0 (0px):
+      id: "VariableID:5253:372198"
+      key: 38744a47618e518923ac0bc2c47b0d83fb8bfd38
+      name: Spacing/0 (0px)
+      collection: _Primitives
+      type: FLOAT
+      hidden: true
+    0.5 (2px):
+      id: "VariableID:5253:372200"
+      key: eaf3c8afea89d5cda398464ab601e9aca0cb7cb1
+      name: Spacing/0․5 (2px)
+      collection: _Primitives
+      type: FLOAT
+      hidden: true
+    1 (4px):
+      id: "VariableID:5253:372201"
+      key: fac7929e91695322317c45c52440337252b7b4c1
+      name: Spacing/1 (4px)
+      collection: _Primitives
+      type: FLOAT
+      hidden: true
+    2 (8px):
+      id: "VariableID:5253:372202"
+      key: 063f5e703b8efe0ed70684c1c297507ee1baf530
+      name: Spacing/2 (8px)
+      collection: _Primitives
+      type: FLOAT
+      hidden: true
+    3 (12px):
+      id: "VariableID:5253:372203"
+      key: dd2c2e8c1989afd58b2a9cf73c138c1bf26cb487
+      name: Spacing/3 (12px)
+      collection: _Primitives
+      type: FLOAT
+      hidden: true
+    4 (16px):
+      id: "VariableID:5253:372204"
+      key: 345ca835487e855db9d9c7867ccea021fb80392f
+      name: Spacing/4 (16px)
+      collection: _Primitives
+      type: FLOAT
+      hidden: true
+    5 (20px):
+      id: "VariableID:5253:372205"
+      key: 69776bba172a7e9531a8200e9f31393843005a1b
+      name: Spacing/5 (20px)
+      collection: _Primitives
+      type: FLOAT
+      hidden: true
+    6 (24px):
+      id: "VariableID:5253:372206"
+      key: 792927bcc0aa6f0ef7d28874f7f22159642aebc5
+      name: Spacing/6 (24px)
+      collection: _Primitives
+      type: FLOAT
+      hidden: true
+    8 (32px):
+      id: "VariableID:5253:372207"
+      key: 110c8e15f2f659206a129e3506b00dc1155d31e0
+      name: Spacing/8 (32px)
+      collection: _Primitives
+      type: FLOAT
+      hidden: true
+    10 (40px):
+      id: "VariableID:5253:372208"
+      key: a1b815e6a0d5d8ddd6134350fe1bcda8ec6f3fa5
+      name: Spacing/10 (40px)
+      collection: _Primitives
+      type: FLOAT
+      hidden: true
+    12 (48px):
+      id: "VariableID:5253:372209"
+      key: 849b6fe480265879e540e6ce69ad423511616a97
+      name: Spacing/12 (48px)
+      collection: _Primitives
+      type: FLOAT
+      hidden: true
+    16 (64px):
+      id: "VariableID:5253:372210"
+      key: d3f0298ef870d636b3f3c055544a49d53ad2638a
+      name: Spacing/16 (64px)
+      collection: _Primitives
+      type: FLOAT
+      hidden: true
+    20 (80px):
+      id: "VariableID:5253:372211"
+      key: 876d39f23c67422903f429d9edac24d229b0c5aa
+      name: Spacing/20 (80px)
+      collection: _Primitives
+      type: FLOAT
+      hidden: true
+    24 (96px):
+      id: "VariableID:5253:372212"
+      key: c8ed90e49a45109def08c646b67f70956b878667
+      name: Spacing/24 (96px)
+      collection: _Primitives
+      type: FLOAT
+      hidden: true
+    32 (128px):
+      id: "VariableID:5253:372213"
+      key: b726290fbecf860be98fcc011cd6231dcf218d23
+      name: Spacing/32 (128px)
+      collection: _Primitives
+      type: FLOAT
+      hidden: true
+    40 (160px):
+      id: "VariableID:5253:372214"
+      key: 5f49ea5a6aa668aef2742ba75e3ee4e6ae13f9df
+      name: Spacing/40 (160px)
+      collection: _Primitives
+      type: FLOAT
+      hidden: true
+    48 (192px):
+      id: "VariableID:5253:372215"
+      key: f847bc8541ef7a434c288e285fc41ad0241b93e6
+      name: Spacing/48 (192px)
+      collection: _Primitives
+      type: FLOAT
+      hidden: true
+    56 (224px):
+      id: "VariableID:5253:372216"
+      key: d59215eb4a68cad98f8091b2d60faf2339d13dcf
+      name: Spacing/56 (224px)
+      collection: _Primitives
+      type: FLOAT
+      hidden: true
+    64 (256px):
+      id: "VariableID:5253:372217"
+      key: 14280cf9a531288fc9d8725ac3d8d88eeceea696
+      name: Spacing/64 (256px)
+      collection: _Primitives
+      type: FLOAT
+      hidden: true
+    96 (384px):
+      id: "VariableID:5253:372218"
+      key: 9be34deb81b89a5845b132f05a9557f3579f58ea
+      name: Spacing/96 (384px)
+      collection: _Primitives
+      type: FLOAT
+      hidden: true
+    80 (320px):
+      id: "VariableID:5257:372475"
+      key: b6b6f64ffd0fbe7d5c16ca0d4bfd7b48a0b0e355
+      name: Spacing/80 (320px)
+      collection: _Primitives
+      type: FLOAT
+      hidden: true
+    120 (480px):
+      id: "VariableID:5257:372476"
+      key: f73b706b313c0c5638b16d527d3c199bd7776ad1
+      name: Spacing/120 (480px)
+      collection: _Primitives
+      type: FLOAT
+      hidden: true
+    160 (640px):
+      id: "VariableID:5257:372477"
+      key: 69150f9d0f332f7bd147332b826b1419edb71f25
+      name: Spacing/160 (640px)
+      collection: _Primitives
+      type: FLOAT
+      hidden: true
+    192 (768px):
+      id: "VariableID:5257:372478"
+      key: 37a207ab9ce5813fbbe969969c05e419431e1f43
+      name: Spacing/192 (768px)
+      collection: _Primitives
+      type: FLOAT
+      hidden: true
+    256 (1,024px):
+      id: "VariableID:5257:372479"
+      key: 86695486f09262b16445650e5aa2dcd08d3acb06
+      name: "Spacing/256 (1,024px)"
+      collection: _Primitives
+      type: FLOAT
+      hidden: true
+    320 (1,280px):
+      id: "VariableID:5257:372480"
+      key: 8738789d2912878c7ad539ffbdc8c228017a9ad0
+      name: "Spacing/320 (1,280px)"
+      collection: _Primitives
+      type: FLOAT
+      hidden: true
+    360 (1,440px):
+      id: "VariableID:5257:372481"
+      key: 30e608350cb04bb6bb064994bc42e91af94623bb
+      name: "Spacing/360 (1,440px)"
+      collection: _Primitives
+      type: FLOAT
+      hidden: true
+    400 (1,600px):
+      id: "VariableID:5257:372482"
+      key: dba1c5d52b6c5d0baac9e87e9053ce70ccc61308
+      name: "Spacing/400 (1,600px)"
+      collection: _Primitives
+      type: FLOAT
+      hidden: true
+    480 (1,920px):
+      id: "VariableID:5257:372483"
+      key: 509b4ca9c6143923cd1358332dd57c21d312a017
+      name: "Spacing/480 (1,920px)"
+      collection: _Primitives
+      type: FLOAT
+      hidden: true
+    1.5 (6px):
+      id: "VariableID:5263:372520"
+      key: de483767e5090781f630e224877ba06198904a35
+      name: Spacing/1․5 (6px)
+      collection: _Primitives
+      type: FLOAT
+      hidden: true
+    container-padding-desktop:
+      id: "VariableID:6283:332005"
+      key: 55e616b4a5132a3e7ba31517085f51bdc271f158
+      name: container-padding-desktop
+      collection: 5. Containers
+      type: FLOAT
+      hidden: null
+    container-padding-mobile:
+      id: "VariableID:6283:332605"
+      key: a4c42d9d91e1f8cd00656ee73d751ac8db0609c6
+      name: container-padding-mobile
+      collection: 5. Containers
+      type: FLOAT
+      hidden: null
+    spacing-none:
+      id: "VariableID:6298:45384"
+      key: 82cb1d093bc069082c7bf8f02bd6172fc2ab1fed
+      name: spacing-none
+      collection: 3. Spacing
+      type: FLOAT
+      hidden: null
+    spacing-xxs:
+      id: "VariableID:6298:45385"
+      key: 41b10fa3ae99497c0be862364fda5677d4949282
+      name: spacing-xxs
+      collection: 3. Spacing
+      type: FLOAT
+      hidden: null
+    spacing-xs:
+      id: "VariableID:6298:45386"
+      key: 00bceffc8d0b0f93a2d2a2ddb55a1fe874cdf61a
+      name: spacing-xs
+      collection: 3. Spacing
+      type: FLOAT
+      hidden: null
+    spacing-md:
+      id: "VariableID:6298:45387"
+      key: 727df6d1c71f0e035309ef11d1c0dec9b5d3c624
+      name: spacing-md
+      collection: 3. Spacing
+      type: FLOAT
+      hidden: null
+    spacing-lg:
+      id: "VariableID:6298:45389"
+      key: 6873dd3a2eb20e2ac8a6b714301f2eb31a659076
+      name: spacing-lg
+      collection: 3. Spacing
+      type: FLOAT
+      hidden: null
+    spacing-xl:
+      id: "VariableID:6298:45390"
+      key: 9d9df423c40af44fe4ceb50c0b313972929523f2
+      name: spacing-xl
+      collection: 3. Spacing
+      type: FLOAT
+      hidden: null
+    spacing-2xl:
+      id: "VariableID:6298:45391"
+      key: 5958ece2364482121f59e79361b46ff7668ee468
+      name: spacing-2xl
+      collection: 3. Spacing
+      type: FLOAT
+      hidden: null
+    spacing-3xl:
+      id: "VariableID:6298:45392"
+      key: 06ceae614516ffd83bc53731360f567a24f25c39
+      name: spacing-3xl
+      collection: 3. Spacing
+      type: FLOAT
+      hidden: null
+    spacing-4xl:
+      id: "VariableID:6298:45393"
+      key: 2f4226477be7f748573d5ba0a28c7616ccfae307
+      name: spacing-4xl
+      collection: 3. Spacing
+      type: FLOAT
+      hidden: null
+    spacing-6xl:
+      id: "VariableID:6298:45394"
+      key: 869a4daccc962facc3d0855a8132619c76a419e2
+      name: spacing-6xl
+      collection: 3. Spacing
+      type: FLOAT
+      hidden: null
+    spacing-7xl:
+      id: "VariableID:6298:45395"
+      key: d7e366efa6b6912dcb3b06cbab983ac9c3d0f850
+      name: spacing-7xl
+      collection: 3. Spacing
+      type: FLOAT
+      hidden: null
+    spacing-8xl:
+      id: "VariableID:6298:45396"
+      key: 436404383effeeb27d2cf3718929cfcd02c8e3f0
+      name: spacing-8xl
+      collection: 3. Spacing
+      type: FLOAT
+      hidden: null
+    spacing-9xl:
+      id: "VariableID:6298:45397"
+      key: bc133e42b8d76a32a6296d77a7932234778387c4
+      name: spacing-9xl
+      collection: 3. Spacing
+      type: FLOAT
+      hidden: null
+    spacing-10xl:
+      id: "VariableID:6298:45398"
+      key: 31a954d77dfe176f299f13ca788e826a5cbc5368
+      name: spacing-10xl
+      collection: 3. Spacing
+      type: FLOAT
+      hidden: null
+    spacing-11xl:
+      id: "VariableID:6298:45399"
+      key: 39790017fb6a397a1f9461157490015e28879d7a
+      name: spacing-11xl
+      collection: 3. Spacing
+      type: FLOAT
+      hidden: null
+    140 (560px):
+      id: "VariableID:6363:125204"
+      key: 55b70f6e2e6cafe7d9e3506f5ad9056d6d12c9d2
+      name: Spacing/140 (560px)
+      collection: _Primitives
+      type: FLOAT
+      hidden: true
+    180 (720px):
+      id: "VariableID:6379:57497"
+      key: 02d46f3eb923d1015d180d4a39f48cc483f276de
+      name: Spacing/180 (720px)
+      collection: _Primitives
+      type: FLOAT
+      hidden: true
+    spacing-sm:
+      id: "VariableID:6425:327765"
+      key: 12af51f1e159191052d90d61f8447dc33245a6be
+      name: spacing-sm
+      collection: 3. Spacing
+      type: FLOAT
+      hidden: null
+    spacing-5xl:
+      id: "VariableID:6433:93631"
+      key: 9fbf1c061f01bd97f56c5ecaf9ffb0e035264624
+      name: spacing-5xl
+      collection: 3. Spacing
+      type: FLOAT
+      hidden: null
+  radius:
+    radius-none:
+      id: "VariableID:6298:46475"
+      key: 13d92d20cd33831147d57a903ffca49676495ea7
+      name: radius-none
+      collection: 2. Radius
+      type: FLOAT
+      hidden: null
+    radius-xxs:
+      id: "VariableID:6298:46476"
+      key: c717eea985edaa2e08e638379b64a0c220853db7
+      name: radius-xxs
+      collection: 2. Radius
+      type: FLOAT
+      hidden: null
+    radius-xs:
+      id: "VariableID:6298:46477"
+      key: 6d0a8324548b0d1f4dc2f49fd4f8a336e5a2f4cd
+      name: radius-xs
+      collection: 2. Radius
+      type: FLOAT
+      hidden: null
+    radius-sm:
+      id: "VariableID:6298:46478"
+      key: 34562e98d6bcbb034057758350f78106ea290a80
+      name: radius-sm
+      collection: 2. Radius
+      type: FLOAT
+      hidden: null
+    radius-md:
+      id: "VariableID:6298:46479"
+      key: 0664df561d04ed53ff9be63869544a46e87e573d
+      name: radius-md
+      collection: 2. Radius
+      type: FLOAT
+      hidden: null
+    radius-xl:
+      id: "VariableID:6298:46480"
+      key: ded29bd5407687d25f43bd4dfaf5ac78aaf79096
+      name: radius-xl
+      collection: 2. Radius
+      type: FLOAT
+      hidden: null
+    radius-2xl:
+      id: "VariableID:6298:46481"
+      key: 885745bdccd70e1e6438569fb0cf3a60e1e0194a
+      name: radius-2xl
+      collection: 2. Radius
+      type: FLOAT
+      hidden: null
+    radius-4xl:
+      id: "VariableID:6298:46482"
+      key: a462178eedb5dece8a98cfc15cff4ef3ef9cbfa6
+      name: radius-4xl
+      collection: 2. Radius
+      type: FLOAT
+      hidden: null
+    radius-full:
+      id: "VariableID:6298:46485"
+      key: 134fc57456220375e62e88a5391c6e9b88f80340
+      name: radius-full
+      collection: 2. Radius
+      type: FLOAT
+      hidden: null
+    radius-lg:
+      id: "VariableID:6300:24234"
+      key: 1b06722760e278032ebf4ea017bc21528cf2ff73
+      name: radius-lg
+      collection: 2. Radius
+      type: FLOAT
+      hidden: null
+    radius-3xl:
+      id: "VariableID:6306:268582"
+      key: e38249b8e6162edd9faaa04962e01b31d5fff59e
+      name: radius-3xl
+      collection: 2. Radius
+      type: FLOAT
+      hidden: null
+  typography:
+    font-family-display:
+      id: "VariableID:7403:16250"
+      key: db05dac7c659892d43441f0ebb516e1561cdc69b
+      name: Font family/font-family-display
+      collection: 6. Typography
+      type: STRING
+      hidden: null
+    font-family-body:
+      id: "VariableID:7403:16251"
+      key: a5bb76714c37d457f825370cdb6f4e2be3cd83ca
+      name: Font family/font-family-body
+      collection: 6. Typography
+      type: STRING
+      hidden: null
+    font-size-text-xs:
+      id: "VariableID:7407:110363"
+      key: 97871cbd3b4e58a8088cc7bd21cc9dfcf95c99cd
+      name: Font size/text-xs
+      collection: 6. Typography
+      type: FLOAT
+      hidden: null
+    font-size-text-sm:
+      id: "VariableID:7407:110364"
+      key: 99b71de972e2d29bf6199dc33463cdf322748e65
+      name: Font size/text-sm
+      collection: 6. Typography
+      type: FLOAT
+      hidden: null
+    font-size-text-md:
+      id: "VariableID:7407:110365"
+      key: 8c51ed9046b877bb329abdb78c4ddc649cce98a0
+      name: Font size/text-md
+      collection: 6. Typography
+      type: FLOAT
+      hidden: null
+    font-size-text-lg:
+      id: "VariableID:7407:110366"
+      key: 5ccc912a7480abf852039ae14841d2c1427b53ff
+      name: Font size/text-lg
+      collection: 6. Typography
+      type: FLOAT
+      hidden: null
+    font-size-text-xl:
+      id: "VariableID:7407:110367"
+      key: d9ca843fb2b478624f97a4d0cd297ab29f58206c
+      name: Font size/text-xl
+      collection: 6. Typography
+      type: FLOAT
+      hidden: null
+    display-xs:
+      id: "VariableID:7407:110368"
+      key: 21a7a3f545c522e8636fb3f979cd39ed1277b7c5
+      name: Font size/display-xs
+      collection: 6. Typography
+      type: FLOAT
+      hidden: null
+    display-sm:
+      id: "VariableID:7407:110369"
+      key: 870eb6269b284a28a30616266b91f52f78c9f0fa
+      name: Font size/display-sm
+      collection: 6. Typography
+      type: FLOAT
+      hidden: null
+    display-md:
+      id: "VariableID:7407:110370"
+      key: 37e0b67b8984f60e9fdec440091ace6f8c7cd3ea
+      name: Font size/display-md
+      collection: 6. Typography
+      type: FLOAT
+      hidden: null
+    display-lg:
+      id: "VariableID:7407:110371"
+      key: 43eadad655e171a9ab45728079f99983b294cdc9
+      name: Font size/display-lg
+      collection: 6. Typography
+      type: FLOAT
+      hidden: null
+    display-xl:
+      id: "VariableID:7407:110372"
+      key: 822b151b41a7793eb8a351585fc82a63fd3d9d90
+      name: Font size/display-xl
+      collection: 6. Typography
+      type: FLOAT
+      hidden: null
+    display-2xl:
+      id: "VariableID:7407:110373"
+      key: 8d4e18c674678905f86e1720644d49b2a6430612
+      name: Font size/display-2xl
+      collection: 6. Typography
+      type: FLOAT
+      hidden: null
+    line-height-text-xs:
+      id: "VariableID:7407:110580"
+      key: c1844339fd02ab2fb71ca0217dd365facc3d830f
+      name: Line height/text-xs
+      collection: 6. Typography
+      type: FLOAT
+      hidden: null
+    line-height-text-sm:
+      id: "VariableID:7407:110581"
+      key: 5cfbe7a6851a3998c2452302a5d910fa55728df7
+      name: Line height/text-sm
+      collection: 6. Typography
+      type: FLOAT
+      hidden: null
+    line-height-text-md:
+      id: "VariableID:7407:110582"
+      key: 8b1c4b42d5e8fc7c85f87fecb53b4f747f7edbf5
+      name: Line height/text-md
+      collection: 6. Typography
+      type: FLOAT
+      hidden: null
+    line-height-text-lg:
+      id: "VariableID:7407:110583"
+      key: 82fa896fb255d3943327e313887a4e0770d09ee3
+      name: Line height/text-lg
+      collection: 6. Typography
+      type: FLOAT
+      hidden: null
+    line-height-text-xl:
+      id: "VariableID:7407:110584"
+      key: 603cdf74a4bb368110e661e33ff508722b2e50d5
+      name: Line height/text-xl
+      collection: 6. Typography
+      type: FLOAT
+      hidden: null
+    font-family-display-2:
+      id: "VariableID:14572:17627"
+      key: ba3365d726cdd9c78cee0578f23bf292fc2da8df
+      name: Font family/font-family-display-2
+      collection: 6. Typography
+      type: STRING
+      hidden: null
+    font-family-body-2:
+      id: "VariableID:14572:17814"
+      key: 59977486332b093b8baa07b00ed33aa3922732ff
+      name: Font family/font-family-body-2
+      collection: 6. Typography
+      type: STRING
+      hidden: null
+  shadows: {}
+  other:
+    container-max-width-desktop:
+      id: "VariableID:6283:328783"
+      key: 13793579878c0cb467d150181e92446ae32679b1
+      name: container-max-width-desktop
+      collection: 5. Containers
+      type: FLOAT
+      hidden: null
+    width-xxs:
+      id: "VariableID:6298:45305"
+      key: 7ada6e68fd368bc270496edb4f25635635807098
+      name: width-xxs
+      collection: 4. Widths
+      type: FLOAT
+      hidden: null
+    width-sm:
+      id: "VariableID:6298:45308"
+      key: 3237304cf0ad82c085c4c0e91dfe62dc9517cbc3
+      name: width-sm
+      collection: 4. Widths
+      type: FLOAT
+      hidden: null
+    width-lg:
+      id: "VariableID:6298:45309"
+      key: cca2d5bc5a8ada35b5327b65cb3e155c1fb119c5
+      name: width-lg
+      collection: 4. Widths
+      type: FLOAT
+      hidden: null
+    width-xl:
+      id: "VariableID:6298:45310"
+      key: 8a38ab250cf005da893cac4a0b291d7f5217f887
+      name: width-xl
+      collection: 4. Widths
+      type: FLOAT
+      hidden: null
+    width-2xl:
+      id: "VariableID:6298:45311"
+      key: 9cc003281d16d283e375e544ef64bbc5860ab81d
+      name: width-2xl
+      collection: 4. Widths
+      type: FLOAT
+      hidden: null
+    width-3xl:
+      id: "VariableID:6298:45312"
+      key: d4a0f6a95fcfaa2ec7bee056d2eb06dfee25fa5c
+      name: width-3xl
+      collection: 4. Widths
+      type: FLOAT
+      hidden: null
+    width-4xl:
+      id: "VariableID:6298:45313"
+      key: defe2918506d5fd5c915f867f0cc171cbc025673
+      name: width-4xl
+      collection: 4. Widths
+      type: FLOAT
+      hidden: null
+    width-5xl:
+      id: "VariableID:6298:45314"
+      key: efea4657a56ca10f3177104a6e99d8e8df4a1389
+      name: width-5xl
+      collection: 4. Widths
+      type: FLOAT
+      hidden: null
+    width-6xl:
+      id: "VariableID:6298:45315"
+      key: 9cb48b0461beebd505ad6aff29554346975e5cf2
+      name: width-6xl
+      collection: 4. Widths
+      type: FLOAT
+      hidden: null
+    width-md:
+      id: "VariableID:6363:125205"
+      key: 9882590171f6cd34c1de761cd0f6bc4acc58739a
+      name: width-md
+      collection: 4. Widths
+      type: FLOAT
+      hidden: null
+    paragraph-max-width:
+      id: "VariableID:6379:57496"
+      key: ac02adcb2aa358a708426c36d7959c5227d95b45
+      name: paragraph-max-width
+      collection: 4. Widths
+      type: FLOAT
+      hidden: null
+    width-xs:
+      id: "VariableID:6425:334080"
+      key: 266b1c0e28bb64714b176126113e3dc1162f45a2
+      name: width-xs
+      collection: 4. Widths
+      type: FLOAT
+      hidden: null
+    regular:
+      id: "VariableID:7405:102283"
+      key: bc2aa7cdb725db4d543a84821fb2715487de21c5
+      name: Font weight/regular
+      collection: 6. Typography
+      type: STRING
+      hidden: null
+    regular-italic:
+      id: "VariableID:7405:102284"
+      key: 86dbf97a6535f3b4509387c05e8e64a41189ec6d
+      name: Font weight/regular-italic
+      collection: 6. Typography
+      type: STRING
+      hidden: null
+    medium:
+      id: "VariableID:7405:102285"
+      key: ab4e68cc1400839af7e59e75cbdbb3b608ba4d66
+      name: Font weight/medium
+      collection: 6. Typography
+      type: STRING
+      hidden: null
+    medium-italic:
+      id: "VariableID:7405:102286"
+      key: 2e4f35a0bef05b02e65f0433f144b3afc33d655e
+      name: Font weight/medium-italic
+      collection: 6. Typography
+      type: STRING
+      hidden: null
+    semibold:
+      id: "VariableID:7405:102287"
+      key: 44b42556fad279da297a83936e059d2d7c2e0550
+      name: Font weight/semibold
+      collection: 6. Typography
+      type: STRING
+      hidden: null
+    semibold-italic:
+      id: "VariableID:7405:102288"
+      key: cd2dd266daf452fd90368f60a02bce5236b7d2c6
+      name: Font weight/semibold-italic
+      collection: 6. Typography
+      type: STRING
+      hidden: null
+    bold:
+      id: "VariableID:7405:102290"
+      key: 2f69f0e8332bf8918f59023b67f22c9c3f380e47
+      name: Font weight/bold
+      collection: 6. Typography
+      type: STRING
+      hidden: null
+    bold-italic:
+      id: "VariableID:7405:102291"
+      key: 1b30bd6717935d4865693768b408654024dd2269
+      name: Font weight/bold-italic
+      collection: 6. Typography
+      type: STRING
+      hidden: null
+    display-xs:
+      id: "VariableID:7407:110585"
+      key: a475c217de15aca0e37bad7e00be13c68e27f4ff
+      name: Line height/display-xs
+      collection: 6. Typography
+      type: FLOAT
+      hidden: null
+    display-sm:
+      id: "VariableID:7407:110586"
+      key: 8c8e0b23258482a01854e91699528ce833d2f551
+      name: Line height/display-sm
+      collection: 6. Typography
+      type: FLOAT
+      hidden: null
+    display-md:
+      id: "VariableID:7407:110587"
+      key: af3ef6d21285ee0a634b5e7bd50ce866db79f100
+      name: Line height/display-md
+      collection: 6. Typography
+      type: FLOAT
+      hidden: null
+    display-lg:
+      id: "VariableID:7407:110588"
+      key: 0863d32fd4164807f211acefa301e41762d6a15f
+      name: Line height/display-lg
+      collection: 6. Typography
+      type: FLOAT
+      hidden: null
+    display-xl:
+      id: "VariableID:7407:110589"
+      key: fd53d07be4edf9b38822b98f528f9bfd59e7d42a
+      name: Line height/display-xl
+      collection: 6. Typography
+      type: FLOAT
+      hidden: null
+    display-2xl:
+      id: "VariableID:7407:110590"
+      key: 22edd713df76f888a5432d793ea6e8402cdb54a8
+      name: Line height/display-2xl
+      collection: 6. Typography
+      type: FLOAT
+      hidden: null
