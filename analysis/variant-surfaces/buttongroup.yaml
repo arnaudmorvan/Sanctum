@@ -1,0 +1,86 @@
+# analysis/variant-surfaces/buttongroup.yaml — la SURFACE peinte par chaque variante.
+# Hors de context/ deliberement : lu par la console, jamais par un agent.
+# Les surfaces identiques sont stockees une fois et pointees.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: buttongroup
+  generated_at: "2026-09-16"
+  variants: 32
+  surfaces: 12
+surfaces:
+  s1:
+    stroke: {color: "@border-tertiary", width: 1, align: INSIDE}
+    radius: 4
+    text: {fill: "@white", size: 14, weight: Bold, lineHeight: 20}
+  s2:
+    radius: 4
+    text: {fill: "@text-primary-inverse", size: 14, weight: Bold, lineHeight: 20}
+  s3:
+    radius: 4
+    text: {fill: "@text-primary", size: 14, weight: Bold, lineHeight: 20}
+  s4:
+    stroke: {color: "@border-blue-primary", width: 1, align: INSIDE}
+    radius: 4
+    text: {fill: "@text-blue-primary", size: 14, weight: Bold, lineHeight: 20}
+  s5:
+    radius: 4
+    text: {fill: "@text-dark", size: 14, weight: Bold, lineHeight: 20}
+  s6:
+    stroke: {color: "@border-blue-primary", width: 1, align: INSIDE}
+    radius: 4
+    text: {fill: "@text-blue-secondary", size: 14, weight: Bold, lineHeight: 20}
+  s7:
+    radius: 4
+    text: {fill: "@text-blue-primary", size: 14, weight: Bold, lineHeight: 20}
+  s8:
+    stroke: {color: "@border-error-primary", width: 1, align: INSIDE}
+    radius: 4
+    text: {fill: "@text-error-primary", size: 14, weight: Bold, lineHeight: 20}
+  s9:
+    stroke: {color: "@border-error-primary", width: 1, align: INSIDE}
+    radius: 4
+    text: {fill: "@text-error-secondary", size: 14, weight: Bold, lineHeight: 20}
+  s10:
+    radius: 4
+    text: {fill: "@text-error-primary", size: 14, weight: Bold, lineHeight: 20}
+  s11:
+    stroke: {color: "@border-success-primary", width: 1, align: INSIDE}
+    radius: 4
+    text: {fill: "@text-success-primary", size: 14, weight: Bold, lineHeight: 20}
+  s12:
+    radius: 4
+    text: {fill: "@text-success-primary", size: 14, weight: Bold, lineHeight: 20}
+variants:
+  color-brand-variant-filled-orientation-horizontal: s5
+  color-brand-variant-filled-orientation-vertical: s5
+  color-brand-variant-light-orientation-horizontal: s6
+  color-brand-variant-light-orientation-vertical: s6
+  color-brand-variant-outline-orientation-horizontal: s4
+  color-brand-variant-outline-orientation-vertical: s4
+  color-brand-variant-subtle-orientation-horizontal: s7
+  color-brand-variant-subtle-orientation-vertical: s7
+  color-gray-variant-filled-orientation-horizontal: s2
+  color-gray-variant-filled-orientation-vertical: s2
+  color-gray-variant-light-orientation-horizontal: s1
+  color-gray-variant-light-orientation-vertical: s1
+  color-gray-variant-outline-orientation-horizontal: s1
+  color-gray-variant-outline-orientation-vertical: s1
+  color-gray-variant-subtle-orientation-horizontal: s3
+  color-gray-variant-subtle-orientation-vertical: s3
+  color-green-variant-filled-orientation-horizontal: s5
+  color-green-variant-filled-orientation-vertical: s5
+  color-green-variant-light-orientation-horizontal: s11
+  color-green-variant-light-orientation-vertical: s11
+  color-green-variant-outline-orientation-horizontal: s11
+  color-green-variant-outline-orientation-vertical: s11
+  color-green-variant-subtle-orientation-horizontal: s12
+  color-green-variant-subtle-orientation-vertical: s12
+  color-red-variant-filled-orientation-horizontal: s5
+  color-red-variant-filled-orientation-vertical: s5
+  color-red-variant-light-orientation-horizontal: s9
+  color-red-variant-light-orientation-vertical: s9
+  color-red-variant-outline-orientation-horizontal: s8
+  color-red-variant-outline-orientation-vertical: s8
+  color-red-variant-subtle-orientation-horizontal: s10
+  color-red-variant-subtle-orientation-vertical: s10
