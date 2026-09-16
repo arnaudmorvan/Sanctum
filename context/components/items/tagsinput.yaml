@@ -1,0 +1,42 @@
+# items/tagsinput.yaml — detail complet du composant 'tagsinput'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: tagsinput
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+tagsinput:
+  figma_key: 149afa696f509aa5ba160582b4eb9647a2008e8f
+  figma_node_id: "21542:65346"
+  component_type: COMPONENT
+  instanciable: true
+  page: "      ↳  TagsInput"
+  description: "TagsInput — free-form tags. The user types a value and presses Enter to mint it. There is no option list. Which one do you want? fixed list of options, the user picks -> MultiSelect free values, the user types them -> TagsInput neither fits, behaviour written by hand -> PillsInput Against PillsInput: TagsInput is a control and owns its value; PillsInput is only the box around one you write. AXES None of its own. Everything comes from the nested _BaseField instance, exposed in the panel: size, variant, state, status. Read _BaseField for what each one means. COMPOSITION badgeSlot carries the tags, showBadges is on. Convention: tags first, the typing field last, on the same line. Mock the tags with real values from the domain, never Tag 1 / Tag 2 — the whole point of the component is that the user invented them. Two rows minimum, same reason as PillsInput: the wrap is the component. The chips are Badge instances here and Pill-styled in code — same object, two names. Not mocked up here, spec in words when a screen needs it: the +N overflow counter (maxLines), the clear-all button (clearable), the in-place edit of a tag, the count cap (maxTags). Label, description and status message go in the Field contentSlot, not next to the box. ACCESSIBILITY Enter or the delimiter adds a tag. Backspace on the empty field removes the last one. Left / Right move between tags, Enter on a tag edits it in place, Esc cancels the edit. Every tag delete is a labelled button. The field announces additions, removals and edits. The accessible name comes from the Field label — the placeholder is not one. A hidden input backs form submission; it needs a name. CODE — @42/ui-react TagsInput Built on the Ark UI TagsInput machine. value is a string[]; onChange fires with the whole list on every add, remove or edit. Nothing to wire by hand. text→placeholder. Badge (Figma) → Pill-styled tag chip. startSlot→startSlot, endIcon→endSlot (rendered before the clear button). status=error→error / invalid. label / description / error are built in through Field — unlike PillsInput, which has none of them. Straight to the Ark machine, no Figma equivalent — do not mock these up: maxTags, allowDuplicates, splitChars (the delimiter, \",\" by default), addOnPaste, clearable, maxLines, readOnly, name. React-only otherwise: variant=filled, size xs / lg / xl, color, classNames."
+  size: {w: 320, h: HUG}
+  direction: VERTICAL
+  text:
+    sample: Phoenix Baker
+    fill: "@text-blue-secondary"
+    size: 12
+    weight: Medium
+    lineHeight: 18
+  slots:
+    badgeSlot: {slot_id: "I21542:65347;21473:917", node_type: SLOT, depth: 4}
+  nested_instances:
+    - name: _BaseField
+      depth: 1
+      main_component: _BaseField
+      variant_axes:
+        size: [sm, md]
+        variant: [unstyled, default]
+        state: [focused, disabled, hovered, placeholder]
+        status: [error, default]
+      bool_props:
+        showValue: false
+        showBadges: true
+        showPlaceholder: false
+        showStartSlot: false
+        showEndIcon: false
+  text_nodes:
+    - {name: Text, sample: Add a skill...}
+  how_to_use: "1. Instancier le composant via figma_node_id (createInstance()).\n2. setTxt(inst, \"Text\", \"Add a skill...\")\n3. Si besoin masquer les actions : inst.findOne(n => n.name === \"_BaseField\")?.setProperties({\"showBadges\":false,\"showEndIcon\":false,\"showPlaceholder\":false,\"showStartSlot\":false,\"showValue\":false})"
