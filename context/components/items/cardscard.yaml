@@ -1,0 +1,58 @@
+# items/cardscard.yaml — detail complet du composant 'cardscard'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: cardscard
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+cardscard:
+  figma_key: 2f582f7df0b7316463c38ddf7757ab8015112fb8
+  figma_node_id: "21615:2531"
+  component_type: COMPONENT_SET
+  instanciable: false
+  default_variant_id: "21615:2507"
+  key_variants:
+    variant-default-padding-md: "21615:2507"
+    variant-filled-padding-md: "21615:2511"
+    variant-outline-padding-md: "21615:2519"
+    variant-gradient-padding-md: "21615:2527"
+    variant-default-padding-xs: "21941:33639"
+    variant-default-padding-sm: "21941:33643"
+    variant-default-padding-lg: "21941:33647"
+    variant-default-padding-xl: "21941:33651"
+    variant-filled-padding-xs: "21941:33659"
+    variant-filled-padding-sm: "21941:33663"
+    variant-filled-padding-lg: "21941:33667"
+    variant-filled-padding-xl: "21941:33671"
+    variant-outline-padding-xs: "21941:33699"
+    variant-outline-padding-sm: "21941:33703"
+    variant-outline-padding-lg: "21941:33707"
+    variant-outline-padding-xl: "21941:33711"
+    variant-gradient-padding-xs: "21941:33719"
+    variant-gradient-padding-sm: "21941:33723"
+    variant-gradient-padding-lg: "21941:33727"
+    variant-gradient-padding-xl: "21941:33731"
+  page: "      ↳ Card"
+  description: "Card - a surface that groups a header, a body and a footer. 30 variants: variant x padding. AXES - variant (default, filled, light, outline, gradient): the chrome. - padding (md, none, xs, sm, lg, xl): the inset on all four sides. md leads the list because it is the default, not because the scale starts there. - Header, Content, Footer are SLOTs, each with its own show boolean. Drop anything in them. COMPOSITION - Vertical auto-layout, gap 12, width 320 by default, height hugs its content. - The padding is on the root only. A region that needs its own inset sets it inside its slot content. ACCESSIBILITY - A Card is not a button. If the whole surface is clickable, the target must be a real control inside it, not the div. - gradient and light differ by contrast, not only by hue: check the text against the surface in both themes. CODE - @42/ui-react Card - variant -&gt; variant, padding -&gt; padding. The two scales are identical, value for value: none = p-0, xs = p-2 (8), sm = p-3 (12), md = p-4 (16), lg = p-6 (24), xl = p-8 (32). - Defaults match on both sides: variant=default, padding=md. - Header / Content / Footer -&gt; the compound children Card.Header, Card.Content, Card.Footer (plus Card.Title and Card.Description inside the header). - The show booleans have no prop: omit the child and it is not rendered. - React also takes color, and a gradient prop object. Here gradient is a variant, and its colours come from the variables - not something to expose as a separate axis. KNOWN ISSUE - Fixed 2026-08-31: cloning a variant that holds SLOT nodes silently degrades them into plain FRAMEs. The 25 variants with padding other than md, created on 2026-08-28 by cloning, had lost all three slots AND the three show booleans bound to them. Only the five padding=md variants still worked, so changing padding on an instance froze the card. All 30 variants now carry real SLOT nodes rebound to their properties. Rule: never clone a variant that contains slots without rebinding them afterwards."
+  size: {w: 320, h: HUG}
+  radius: 4
+  direction: VERTICAL
+  fills: "@bg-primary"
+  stroke: {color: "@border-primary", width: 1, align: INSIDE}
+  slots:
+    Header: {slot_id: "21615:2508", node_type: SLOT, depth: 1}
+    Content: {slot_id: "21615:2509", node_type: SLOT, depth: 1}
+    Footer: {slot_id: "21615:2510", node_type: SLOT, depth: 1}
+  how_to_use: "1. Instancier via key_variants (jamais le ComponentSet).\n2. Exemple : const variantNode = await figma.getNodeByIdAsync(key_variants[\"<variant-slug>\"]); const inst = variantNode.createInstance()"
+  variants:
+    padding: [lg, md, sm, xl, xs]
+    showcontent: [false, true]
+    showfooter: [false, true]
+    showheader: [false, true]
+    variant: [default, filled, gradient, outline]
+  defaults:
+    padding: md
+    showcontent: true
+    showfooter: true
+    showheader: true
+    variant: default
