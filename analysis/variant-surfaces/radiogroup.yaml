@@ -1,0 +1,22 @@
+# analysis/variant-surfaces/radiogroup.yaml — la SURFACE peinte par chaque variante.
+# Hors de context/ deliberement : lu par la console, jamais par un agent.
+# Les surfaces identiques sont stockees une fois et pointees.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: radiogroup
+  generated_at: "2026-09-16"
+  variants: 4
+  surfaces: 2
+surfaces:
+  s1:
+    gap: 8
+    text: {fill: "@text-primary", size: 14, weight: Regular, lineHeight: 20}
+  s2:
+    gap: 12
+    text: {fill: "@text-primary", size: 16, weight: Regular, lineHeight: 24}
+variants:
+  orientation-horizontal-size-md: s2
+  orientation-horizontal-size-sm: s1
+  orientation-vertical-size-md: s2
+  orientation-vertical-size-sm: s1
