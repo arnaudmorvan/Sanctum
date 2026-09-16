@@ -1,0 +1,77 @@
+# items/tableheadercell.yaml — detail complet du composant 'tableheadercell'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: tableheadercell
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+tableheadercell:
+  figma_key: b0e0d1627154505547be0f83a6af12e1c3c5dd08
+  figma_node_id: "21688:48866"
+  component_type: COMPONENT_SET
+  instanciable: false
+  default_variant_id: "21678:3859"
+  key_variants:
+    text-true-checkbox-false: "21678:3859"
+    text-false-checkbox-true: "21688:48867"
+    text-false-checkbox-false: "21688:48890"
+  page: "      ↳ Tables"
+  description: "TableHeaderCell — the top cell of a column: label, sort cue, filter entry point, or the select-all checkbox. AXES Text: True | False. True shows the label and its icon row. Checkbox: True | False. Selection column only. Only 3 of the 4 combinations exist. Text=True + Checkbox=True is MISSING: a selection column cannot carry a label today. Text=False + Checkbox=False is the empty header of an actions column. Icon booleans, all false by default, shown next to the label: Chevrons = sortable column, currently unsorted. Arrow up = active sort, ascending. Arrow down = active sort, descending. Filter = column filter entry point. Calendar = the column holds dates. Help icon = Tooltip explaining the column. Turn ON ONE sort icon at a time: Chevrons OR Arrow up OR Arrow down, never two. COMPOSITION One TableHeaderCell per column, first child of the column frame, on top of the TableCell stack. Its horizontal padding (24) matches TableCell — keep it or the column stops aligning. The label is a plain text layer, not a TEXT property: edit it in place. Height is fixed (44) and does not follow cell density. A column is sortable or it is not: if it is, always show an icon (Chevrons at rest), otherwise the header reads as static. Selection column: Checkbox=True here, a Checkbox in every TableCell of the same column, first column of the table. ACCESSIBILITY The sort icon is the only visible cue that a column is interactive: keep it visible, never hover-only. Help icon is a Tooltip trigger — it needs a real tooltip and a focusable trigger in code, not a decorative icon. Select-all checkbox: labelled in code, and indeterminate on a partial selection (that state is not mocked here). CODE — @42/ui-react Table.HeaderCell (th, scope=\"col\") Table.HeaderCell renders the label only. Sort, filter and resize UI live one layer up, in DataTable (DataTableHeaderCell + the TanStack column API). The icon booleans map to column state, not to props: sorting → column.getIsSorted() picks the icon, Filter → meta.filter, Calendar / Help icon → your own header renderer. aria-sort is set in code on the th. No Figma equivalent, do not mock these up here: column resizing, the filter popover, aria-sort, and any sorted / hovered header state."
+  size: {w: 96, h: 44}
+  padding: {v: 12, h: 24}
+  direction: HORIZONTAL
+  gap: 8
+  align: {primary: SPACE_BETWEEN, counter: CENTER}
+  fills: "@alpha-black-5"
+  stroke: {color: "@border-secondary", width: 1, align: INSIDE}
+  text:
+    sample: Header
+    fill: "@text-primary"
+    size: 12
+    weight: Medium
+    lineHeight: 18
+  slots:
+    arrow-up?: {slot_id: "21687:3866", node_type: INSTANCE, depth: 2}
+    chevrons-up-down?: {slot_id: "21687:3862", node_type: INSTANCE, depth: 2}
+    arrow-down?: {slot_id: "21675:48781", node_type: INSTANCE, depth: 2}
+  nested_instances:
+    - {name: list-filter, depth: 2, visible: false, main_component: list-filter}
+    - {name: arrow-up, depth: 2, visible: false, main_component: arrow-up}
+    - name: chevrons-up-down
+      depth: 2
+      visible: false
+      main_component: chevrons-up-down
+    - {name: calendar, depth: 2, visible: false, main_component: calendar}
+    - name: Help icon
+      depth: 2
+      visible: false
+      main_component: "Help icon [V2]"
+      variant_axes:
+        open: ["false", "true"]
+        supporting text: ["false", "true"]
+        tooltip: [top no arrow, top arrow, left, top left, bottom, right, top right]
+      bool_props:
+        {Cursor: true}
+    - {name: arrow-down, depth: 2, visible: false, main_component: arrow-down}
+  text_nodes:
+    - {name: Header Text, sample: Header}
+  how_to_use: "1. Instancier via key_variants (jamais le ComponentSet).\n2. Exemple : const variantNode = await figma.getNodeByIdAsync(key_variants[\"<variant-slug>\"]); const inst = variantNode.createInstance()\n3. setTxt(inst, \"Header Text\", \"Header\")\n4. Si besoin masquer les actions : inst.findOne(n => n.name === \"Help icon\")?.setProperties({\"Cursor\":false})"
+  variants:
+    arrow-down: [false, true]
+    arrow-up: [false, true]
+    calendar: [false, true]
+    checkbox: ["false", "true"]
+    chevrons: [false, true]
+    filter: [false, true]
+    help-icon: [false, true]
+    text: ["false", "true"]
+  defaults:
+    arrow-down: false
+    arrow-up: false
+    calendar: false
+    checkbox: "false"
+    chevrons: false
+    filter: false
+    help-icon: false
+    text: "true"
+  notes: ["Variant axis name \"Text\" was normalised to \"text\" (use lowercase slugs for consistency).", "Variant axis name \"Checkbox\" was normalised to \"checkbox\" (use lowercase slugs for consistency)."]
