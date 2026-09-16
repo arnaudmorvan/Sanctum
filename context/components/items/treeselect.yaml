@@ -20,6 +20,8 @@ treeselect:
     size: 14
     weight: Regular
     lineHeight: 20
+  slots:
+    menuItems: {slot_id: "I21534:50;21508:174", node_type: SLOT, depth: 2}
   nested_instances:
     - name: _BaseField
       depth: 1
