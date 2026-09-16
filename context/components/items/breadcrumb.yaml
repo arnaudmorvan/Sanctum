@@ -1,0 +1,30 @@
+# items/breadcrumb.yaml — detail complet du composant 'breadcrumb'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: breadcrumb
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+breadcrumb:
+  figma_key: 147cd16805075e58c88586950b68f2aad6390d57
+  figma_node_id: "22021:61"
+  component_type: COMPONENT
+  instanciable: true
+  page: "      ↳ Breadcrumbs "
+  description: "Breadcrumb - the trail that tells the user where they are in the hierarchy. One component, zero variants: a fixed Back affordance plus a Trail slot filled with _Breadcrumb item instances. AXES - None. This is a single COMPONENT, not a component set. Everything that varies lives one level down, inside the slot. - Trail (SLOT), preferred value _Breadcrumb item. Default content: a 16 px house icon plus two items (State=Default, then State=Active). Overriding the slot replaces all of it, home icon included. - _Breadcrumb item carries the real axes: State (Default, Hover, Active, Focus) and one text prop, Breadcrumb Label. State is runtime, not an authoring choice - it exists so a spec can show a hovered or current item. COMPOSITION - Root: horizontal auto-layout, hug on both axes, gap 4, items centred. Two children: Back, then Trail. - Back: 26x26 frame, padding spacing-xs, radius sm, ground bg-secondary at 16 percent alpha, holding a 16 px chevron-left in fg-primary. It is a plain frame - not an ActionIcon, not a Button instance - and no boolean hides it. A breadcrumb without a back affordance means detaching the instance. - Trail: horizontal auto-layout, gap 4, centred. - _Breadcrumb item: hug, gap 4, and it carries its OWN leading separator - a \"/\" text placed before the label. The trail therefore reads house / A / B, and a trail that opens on a text item opens on a stray \"/\". - Label: Kode Mono Regular 14/18, text style Desktop/Menu/sm, text-primary. State=Active recolours it to text-tertiary. State=Hover wraps the label in a vertical Label wrapper and adds a LINE at border-full, 0.7 weight, fill width - an underline drawn as a node rather than a text decoration. ACCESSIBILITY - The trail is navigation: nav landmark with a label, ordered list, and the current item marked aria-current=\"page\". State=Active does not carry that - it is a colour and nothing else. - Active resolves to text-tertiary, the lightest value in the trail. The current page ends up less legible than the links that point away from it. Verify text-tertiary contrast in both modes before shipping it as the current-page marker, and consider inverting the emphasis. - The \"/\" separators are decorative and must be hidden from assistive tech (aria-hidden, or a CSS pseudo-element). They are real text nodes here, so a screen reader would announce every one. - The house icon and the chevron carry their meaning through shape alone. Home and Back both need an accessible name in code. - Back measures 26x26. That clears the 24x24 minimum of WCAG 2.5.8 and misses the 44x44 of 2.5.5 - enlarge the hit area in code. CODE - @42/ui-react Breadcrumbs, NOT SHIPPED as of 2026-08-31 - Roadmap entry: Phase 9, Navigation - Breadcrumbs (components.md). One of the few Phase 9 entries with no \"wraps Ark\" note: Ark publishes no breadcrumb machine, so this is markup plus tokens. - Naming: the Figma component is Breadcrumb (singular), the roadmap says Breadcrumbs (plural). Settle on the plural for the container and keep the singular for the item. - Expect Breadcrumbs plus Breadcrumbs.Item rather than a slot. _Breadcrumb item becomes the child, and the separator moves up to the container (a separator prop, or a CSS ::before) instead of living inside each item. - State does not become a prop. Default, Hover and Focus are CSS states; Active becomes aria-current=\"page\", or a current boolean on the item. - Back has no obvious counterpart. Either it sits outside Breadcrumbs (an ActionIcon the page places beside it), or it becomes a withBack boolean. Decide before speccing screens with it. - No size axis and no truncation model here. Long trails in code will need a collapse (ellipsis item, maxItems) that Figma does not yet describe. KNOWN ISSUE - State=Focus is dead: its Focus Indicator rectangle is hidden. The focus variant renders exactly like Default. Make it visible, or drop the variant. - That focus ring is bound to Color/Main/Primary from the Styles collection instead of a focus token in 1. Color modes - the same defect already logged on Button. - Hover changes the item structure, not just its paint. Default, Active and Focus put the label directly in the item; Hover nests it in a Label wrapper. Any script or Code Connect mapping that walks the item by index breaks on Hover. - The \"/\" separator has no text style, while the label has Desktop/Menu/sm. It is a detached local Kode Mono 14/18. - The Back ground is bg-secondary multiplied by a hardcoded 16 percent paint alpha. The hue follows the mode, the transparency does not, and no token in the file describes that value. - No home affordance of its own: the house icon is slot default content, so it disappears as soon as an author fills Trail. - The V2 set (breadcrumb-v2, 5 type variants, node 14973:148139) is gone from this page, but the mcp-42 context still lists it. Re-sync the YAML. - Written 2026-08-31."
+  size: {w: HUG, h: HUG}
+  direction: HORIZONTAL
+  gap: 4
+  align: {counter: CENTER}
+  text:
+    sample: /
+    fill: "@text-tertiary"
+    size: 14
+    weight: Regular
+    lineHeight: 18
+  slots:
+    Trail: {slot_id: "22021:64", node_type: SLOT, depth: 1}
+  text_nodes:
+    - {name: /, sample: /}
+    - {name: Label, role: label, sample: LABEL}
+  how_to_use: "1. Instancier le composant via figma_node_id (createInstance()).\n2. setTxt(inst, \"/\", \"/\")\n3. setTxt(inst, \"Label\", \"LABEL\")"
