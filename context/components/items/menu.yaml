@@ -1,0 +1,50 @@
+# items/menu.yaml — detail complet du composant 'menu'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: menu
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+menu:
+  figma_key: 10411b82ecc48759b4ad4d20f8df5067e7a8bfeb
+  figma_node_id: "21825:124647"
+  component_type: COMPONENT
+  instanciable: true
+  page: "      ↳ Menu"
+  description: "AXES - isOpen (boolean, default false): the only property. Bound to the visible flag of the _MenuOpen panel. Single COMPONENT, no variant set, 1 published variant. - No placement axis. The four physical sides live on the sibling Popover (21826:125390); Menu stays placement-less on purpose, the two are a deliberate partial duplicate. - No axis for row state (highlighted, checked, disabled): runtime, owned by Ark data-* attributes inside _MenuOpen, never frozen as a variant. - No axis for the trigger. The trigger is a Button instance, so its own axes (color, size, variants, state) govern it. COMPOSITION - Vertical auto-layout, hug x hug, gap 0, padding 0, clipsContent off. Two children: the trigger and the panel. - Trigger: Buttons/Button instance, color=gray, size=xs, variants=filled, label \"Actions\", showEndSlot on with chevron-down. Any Button can play the trigger in code. - Panel: _MenuOpen instance, state=Menu, 320 x 396, showTitle on. Its menuItems SLOT is the row list. - Rows, dividers, groups and submenus are not modelled here: the panel is one frozen list. To spec a different row set, instance _MenuOpen (16195:72770) directly. - Not the form pickers popover: Select and Autocomplete render their own list (_MenuOpen state=Select and friends). Not a free-form panel either: that is Popover. ACCESSIBILITY - The chevron is decorative; the action name must live in the button label, and a destructive row must say so in its own label, never in the red tint alone. - The panel must be tied to the trigger that opened it (aria-haspopup, aria-expanded, aria-controls); visual adjacency is not a relationship. - Roving focus, type-ahead, Escape to close and announcement of the active row are required on the list; the hover tint is not enough. CODE - React: Menu from @42/ui-react. Two forms from one import: data-driven, Menu items={...} with the trigger as children; or the parts Menu.Root / Trigger / ContextTrigger / Content / Item / Label / ItemGroup / ItemGroupLabel / Divider / CheckboxItem / RadioGroup / RadioItem / Sub / SubTrigger / SubContent. - isOpen maps to no prop. Open state is Ark runtime: open / defaultOpen on Menu.Root, onOpenChange to observe. The Figma boolean is a spec device only. - Menu.Root: position (any Ark placement plus the logical RTL-aware start / end, default bottom), offset (gutter in px), withinPortal (default true), container, onOpenChange, closeOnSelect, loopFocus. - Menu.Item: value (auto-generated when omitted), startSection, endSection, color (palette slot, e.g. red for a destructive row), disabled, onClick (fires on click and on keyboard activation). - Code-only, no Figma counterpart: submenus (Sub / SubTrigger / SubContent), checkbox and radio rows, ARIA-grouped sections with labels, dividers, per-row color, right-click ContextTrigger, the decorative \"// \" heading prefix. KNOWN ISSUE - Neither the trigger nor the panel is an exposed instance, so an instance of Menu can only toggle isOpen: the label and the row list are both unreachable. Popover exposes both, align on it. - The panel is laid out in flow (layoutPositioning AUTO), so isOpen=true grows the component from 93 x 36 to 320 x 432 and pushes the surrounding layout. It must be ABSOLUTE with an 8 px gutter, as on Popover. - Panel width is fixed at 320 while the React surface is w-max min-w-40, sized to content with a 40 px floor. - menu.mdx and the JSDoc on Menu.Root announce position default \"bottom-start\"; the code default is \"bottom\"."
+  size: {w: HUG, h: HUG}
+  direction: VERTICAL
+  text:
+    sample: Actions
+    fill: "@text-primary-inverse"
+    size: 12
+    weight: Bold
+    lineHeight: 20
+  slots:
+    chevron-down: {slot_id: "I21813:124636;14581:1913", node_type: INSTANCE, depth: 2}
+    menuItems: {slot_id: "I21826:125234;21826:125187", node_type: SLOT, depth: 2}
+  nested_instances:
+    - name: "Buttons/Button "
+      depth: 1
+      main_component: Buttons/Button
+      variant_axes:
+        color: [gray, brand, red, green, orange]
+        size: [xs, sm, md]
+        variant: [filled, light, outline, subtle, link]
+        state: [default, disabled, focus, hover]
+      bool_props:
+        {showLabel: true, showEndSlot: true, showStartSlot: false}
+    - name: _MenuOpen
+      depth: 1
+      visible: false
+      main_component: _MenuOpen
+      variant_axes:
+        state: [select, treeselect, treemultiselect, multicombobox, menu]
+      bool_props:
+        {showTitle: true}
+  text_nodes:
+    - {name: Text, sample: Actions}
+  how_to_use: "1. Instancier le composant via figma_node_id (createInstance()).\n2. setTxt(inst, \"Text\", \"Actions\")\n3. Si besoin masquer les actions : inst.findOne(n => n.name === \"Buttons/Button \")?.setProperties({\"showEndSlot\":false,\"showLabel\":false,\"showStartSlot\":false})"
+  variants:
+    isopen: [false, true]
+  defaults: {isopen: false}
