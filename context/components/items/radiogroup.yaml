@@ -1,0 +1,48 @@
+# items/radiogroup.yaml — detail complet du composant 'radiogroup'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: radiogroup
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+radiogroup:
+  figma_key: cacce5c8b28d3b4a0ac94ea078724990d6794f57
+  figma_node_id: "21300:70105"
+  component_type: COMPONENT_SET
+  instanciable: false
+  default_variant_id: "21300:70059"
+  key_variants:
+    orientation-vertical-size-sm: "21300:70059"
+    orientation-horizontal-size-sm: "21300:70082"
+    orientation-vertical-size-md: "21398:19"
+    orientation-horizontal-size-md: "21398:27"
+  page: "      ↳ RadioGroup"
+  description: "RadioGroup — single-choice set of options. Exactly one answer. AXES orientation: stacking direction of the options. vertical = one option per line. Default. Always safe. horizontal = one row. Short labels only, 2 to 4 options. label / description: text properties of the group header. label is the accessible name of the group. Never empty. description is the hint, toggled by Show description. items: slot, preferred values only. The swap panel offers _RadioButton and nothing else. Minimum 2 children. COMPOSITION Exactly one option carries Checked=True. Two checked options in one group is a bug, not a state — use Checkbox for multi-select. Zero checked is legitimate: no default answer. 2 to 5 options is the useful range. Above 6, use Select. _RadioButton is private (underscore): it exists to fill this slot, never placed on its own in a screen. Its axes are Checked, Size, showLabel, State, plus a showDescription boolean for a per-option supporting line. Keep Size identical across every option of a group. Add and remove options inside the slot. Never detach the group to change their number. State Hover, Focused, Disabled are runtime. Compose screens with Default only. ACCESSIBILITY The group is a radiogroup: label names it, description hints it. A group without a label is not shippable. Arrow keys move between options and select as they move. Tab enters and leaves the group as one stop — only the selected option, or the first one if none, is tabbable. The hit area of an option covers control plus label, not the 16 px circle alone. Disabling the whole group and disabling one option are two different intents. Do not fake the first with the second. CODE — @42/ui-react RadioGroup orientation→orientation, label→label, description→description, Show description=false→omit description. items slot→items: RadioGroupItem[], each an object { value, label, disabled? } or a bare string. _RadioButton has no React counterpart: RadioGroup renders every option itself from items. Intended parity, not a gap. Checked=True→value or defaultValue on the group. Size→size, but Figma stops at md while React runs xs to xl. State: Disabled→disabled on the group or on one item; Hover and Focused→runtime data-* (Ark UI). React-only, no Figma equivalent — do not mock these up: error, required, invalid, readOnly, name, variant (default, filled), color, onChange, onBlur, ref, classNames. Figma-only, no React equivalent: the per-option showDescription. RadioGroupItem carries no description field."
+  size: {w: HUG, h: HUG}
+  direction: VERTICAL
+  gap: 8
+  text:
+    sample: Group label
+    fill: "@text-primary"
+    size: 14
+    weight: Regular
+    lineHeight: 20
+  slots:
+    items: {slot_id: "21304:191", node_type: SLOT, depth: 1}
+  text_nodes:
+    - {name: Label, role: label, sample: Group label}
+    - {name: Description, role: description, sample: Description of the radio group.}
+    - {name: Text, sample: Option 1}
+  how_to_use: "1. Instancier via key_variants (jamais le ComponentSet).\n2. Exemple : const variantNode = await figma.getNodeByIdAsync(key_variants[\"<variant-slug>\"]); const inst = variantNode.createInstance()\n3. setTxt(inst, \"Description\", \"Description of the radio group.\")"
+  variants:
+    description: "<text>"
+    label: "<text>"
+    orientation: [horizontal, vertical]
+    showdescription: [false, true]
+    size: [md, sm]
+  defaults:
+    description: Description of the radio group.
+    label: Group label
+    orientation: vertical
+    showdescription: true
+    size: sm
