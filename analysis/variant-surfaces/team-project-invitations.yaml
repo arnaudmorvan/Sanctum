@@ -1,0 +1,20 @@
+# analysis/variant-surfaces/team-project-invitations.yaml — la SURFACE peinte par chaque variante.
+# Hors de context/ deliberement : lu par la console, jamais par un agent.
+# Les surfaces identiques sont stockees une fois et pointees.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: team-project-invitations
+  generated_at: "2026-09-16"
+  variants: 2
+  surfaces: 2
+surfaces:
+  s1:
+    gap: 16
+    text: {fill: "@white", size: 24, weight: Bold, lineHeight: 32}
+  s2:
+    gap: 16
+    text: {fill: "@white", size: 18, weight: Bold, lineHeight: 24}
+variants:
+  device-desktop: s1
+  device-mobile: s2
