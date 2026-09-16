@@ -1,0 +1,78 @@
+# items/checkbox.yaml — detail complet du composant 'checkbox'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: checkbox
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+checkbox:
+  figma_key: 6bc4ba10dcb6def889a4ccf0ee34149b8dd7943d
+  figma_node_id: "21310:557"
+  component_type: COMPONENT_SET
+  instanciable: false
+  default_variant_id: "21310:453"
+  key_variants:
+    checked-false-indeterminate-false-size-sm-state-default: "21310:453"
+    checked-false-indeterminate-false-size-sm-state-hover: "21310:429"
+    checked-false-indeterminate-false-size-sm-state-focus: "21310:381"
+    checked-false-indeterminate-false-size-sm-state-disabled: "21310:405"
+    checked-true-indeterminate-false-size-sm-state-default: "21310:357"
+    checked-true-indeterminate-false-size-sm-state-hover: "21310:333"
+    checked-true-indeterminate-false-size-sm-state-focus: "21310:285"
+    checked-true-indeterminate-false-size-sm-state-disabled: "21310:309"
+    checked-false-indeterminate-false-size-md-state-default: "21310:465"
+    checked-false-indeterminate-false-size-md-state-hover: "21310:441"
+    checked-false-indeterminate-false-size-md-state-focus: "21310:393"
+    checked-false-indeterminate-false-size-md-state-disabled: "21310:417"
+    checked-true-indeterminate-false-size-md-state-default: "21310:369"
+    checked-true-indeterminate-false-size-md-state-hover: "21310:345"
+    checked-true-indeterminate-false-size-md-state-focus: "21310:297"
+    checked-true-indeterminate-false-size-md-state-disabled: "21310:321"
+    checked-true-indeterminate-true-size-sm-state-default: "21929:28"
+    checked-true-indeterminate-true-size-sm-state-hover: "21929:38"
+    checked-true-indeterminate-true-size-sm-state-focus: "21929:48"
+    checked-true-indeterminate-true-size-sm-state-disabled: "21929:58"
+    checked-true-indeterminate-true-size-md-state-default: "21929:68"
+    checked-true-indeterminate-true-size-md-state-hover: "21929:80"
+    checked-true-indeterminate-true-size-md-state-focus: "21929:92"
+    checked-true-indeterminate-true-size-md-state-disabled: "21929:104"
+  page: "      ↳ Checkbox"
+  description: "Checkbox — a single boolean (or tri-state) selection control with an inline label. It reuses the family's shared control surface, so a checkbox sits flush beside an Input, and it carries its own label and supporting text. AXES checked False = empty box, the resting state True = check mark on a filled box indeterminate False = the checked state above applies as-is True = partial (minus) mark; parent-driven, e.g. a \"select all\" header whose children are only partly checked Size sm = 16px box, 14/20 text, 8px gap md = 20px box, 16/24 text, 12px gap showLabel True = box + label (+ supporting text) False = bare box, for table headers and dense grids state Default / Hover / Focused / Disabled showDescription (boolean, not an axis) Reveals the supporting text under the label. Available on every variant, independent of the axes above. COMPOSITION Override \"Text\" and \"Supporting text\" in place. Do not detach the component to restyle them. The box is top-aligned with a 2px optical offset, so it stays on the label's first line once the supporting text is on. indeterminate never sets itself. It summarises children, and is owned by whatever renders the group. Reach for RadioGroup when the options are mutually exclusive, and for Switch when the toggle takes effect immediately. Checkbox is for multi-select, and for consent applied on submit. indeterminate is only built with showLabel=False. A labelled \"select all\" row has no variant today — extend the set rather than detaching an instance. ACCESSIBILITY Space toggles. The label is clickable and toggles the box. Focus is a 2px ring on the focus-ring token with a 2px offset, drawn outside the box. Never remove it, and never rely on Hover alone. indeterminate maps to aria-checked=\"mixed\", not to a third value. Announce it as \"partially checked\". showLabel=False has no accessible name of its own. Every bare box needs an aria-label in code, or a visually hidden label. The box is 16-20px; the interactive target must reach 24px minimum. The label row supplies it when showLabel=True — a bare box does not, so pad it in code. CODE — @42/ui-react <Checkbox> checked=True / False -> checked / defaultChecked indeterminate=True -> checked=\"indeterminate\" showLabel=True -> label showDescription -> description state=Disabled -> disabled state=Hover / Focused -> CSS states, not props Size=sm -> size=\"sm\" Size=md -> size=\"md\" (drawn wrong, see below) Size is off by one step. React ships xs/sm/md/lg/xl — 14/16/18/20/24 px boxes. Figma's sm matches React's sm exactly. Figma's md is drawn at React's lg metrics (20px box, 16px label), so React's real md — what a bare <Checkbox /> renders — has no Figma variant at all. No Figma equivalent. Do not mock these up here: variant = \"default\" | \"filled\" — the checked fill, monochrome or palette-tinted. Figma only draws \"default\". color — tints the filled variant. There is no color axis here. invalid / error — red border plus a message below the control. required — the semantic flag and the red asterisk on the label. readOnly — keeps full contrast but rejects changes. name / value — native form submission through a hidden input. onCheckedChange / onBlur / ref — runtime only."
+  size: {w: HUG, h: HUG}
+  direction: HORIZONTAL
+  gap: 8
+  text:
+    sample: Remember me
+    fill: "@text-primary"
+    size: 14
+    weight: Medium
+    lineHeight: 20
+  nested_instances:
+    - name: _Checkbox
+      depth: 2
+      main_component: _Checkbox
+      variant_axes:
+        checked: ["false", "true"]
+        indeterminate: ["false", "true"]
+        size: [sm, md]
+        state: [default, disabled, focused, hover]
+  text_nodes:
+    - {name: Text, sample: Remember me}
+    - name: Supporting text
+      role: hint
+      sample: Save my login details for next time.
+  how_to_use: "1. Instancier via key_variants (jamais le ComponentSet).\n2. Exemple : const variantNode = await figma.getNodeByIdAsync(key_variants[\"<variant-slug>\"]); const inst = variantNode.createInstance()\n3. setTxt(inst, \"Text\", \"Remember me\")\n4. setTxt(inst, \"Supporting text\", \"Save my login details for next time.\")"
+  variants:
+    checked: ["false", "true"]
+    indeterminate: ["false", "true"]
+    showdescription: [false, true]
+    showlabel: [false, true]
+    size: [md, sm]
+    state: [default, disabled, focus, hover]
+  defaults:
+    checked: "false"
+    indeterminate: "false"
+    showdescription: false
+    showlabel: true
+    size: sm
+    state: default
