@@ -1,0 +1,71 @@
+# items/slider.yaml — detail complet du composant 'slider'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: slider
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+slider:
+  figma_key: 23b207f2ec3331f9bbb77466f58baecef36b3b99
+  figma_node_id: "21149:820"
+  component_type: COMPONENT_SET
+  instanciable: false
+  default_variant_id: "21149:350"
+  key_variants:
+    range-single-value-50-size-md: "21149:350"
+    range-range-value-25-75-size-md: "21149:363"
+    range-single-value-25-size-md: "21175:69483"
+    range-range-value-0-25-size-md: "21175:69507"
+    range-single-value-75-size-md: "21175:69540"
+    range-range-value-0-75-size-md: "21175:69564"
+    range-single-value-100-size-md: "21175:69597"
+    range-range-value-0-100-size-md: "21175:69621"
+    range-single-value-50-size-sm: "21936:35278"
+    range-range-value-25-75-size-sm: "21936:35306"
+    range-single-value-25-size-sm: "21936:35341"
+    range-range-value-0-25-size-sm: "21936:35367"
+    range-single-value-75-size-sm: "21936:35402"
+    range-range-value-0-75-size-sm: "21936:35428"
+    range-single-value-100-size-sm: "21936:35463"
+    range-range-value-0-100-size-sm: "21936:35489"
+  page: "      ↳ Slider"
+  description: "Slider - a value picked by dragging along a track. 8 variants: range x value. AXES - range (single, range): one thumb or two. The real shape axis. - value (50%, 25%, 75%, 100% for single; 25-75%, 0-75%, 0-100%, 0-25% for range): the thumb position, frozen as an axis for spec only. Not every position exists - pick the closest and say the real number in words. - showMarksLabel: the row of numbers under the track. Turning it off removes the row and the component reflows from 86 to 62 high. - showMarksDots: the tick dots on the track itself. Purely visual, no reflow. - The nested _Control handle is exposed: its State (Default, Focused, hover) and its showLabel - the value bubble above the thumb - are set on the handle, not here. COMPOSITION - Vertical auto-layout, 38 top padding reserved for the value bubble, then TrackRow (24 high) and MarksRow (18 high), gap 6. - Inside TrackRow everything is free-positioned on purpose: Range overlays Track, the dots sit on the track, and the thumbs are centred on their value - a thumb at 0 percent sticks out 12 px to the left. TrackRow does not clip. - Width is fixed at 320 and does not follow its container. Figma cannot express a thumb at a percentage of a fluid width, so a wider slider has to be resized by hand. ACCESSIBILITY - The value bubble is the only on-screen readout. With showLabel off, the current value must be written next to the slider or the control is unreadable without dragging. - Focus lives on the thumb (_Control handle State=Focused), never on the track. CODE - @42/ui-react Slider - range -> a value array of two numbers instead of one; there is no range prop. - value -> value / defaultValue. min defaults to 0, max to 100, step is free. - showMarksLabel + showMarksDots -> the single marks prop, an array of {value, label}. A mark with no label draws the dot only; that is the closest thing to showMarksDots alone. - _Control handle showLabel -> showLabel, which takes hover (the default), always, never or a boolean; label formats the bubble. - _Control handle State -> runtime data-* (data-dragging, focus-visible), never a class you set. KNOWN ISSUE - size (xs, sm, md, lg, xl - React defaults to md) has no Figma axis. Everything here is md. - color (the 11-colour palette) has no Figma axis. Everything here is brand. - disabled and invalid exist in React and have no Figma variant. A disabled or errored slider cannot be specced in this file. - The value axis lists 8 positions out of a continuous range; it is a sample, not the API. - Rebuilt 2026-08-28: the component had no auto-layout and both booleans were bound to nothing - toggling them did nothing at all. Structure and bindings fixed, geometry unchanged (320x86)."
+  size: {w: 320, h: HUG}
+  padding: {t: 38, r: 0, b: 0, l: 0}
+  direction: VERTICAL
+  gap: 6
+  text:
+    sample: "50%"
+    fill: "@text-primary-inverse"
+    size: 14
+    weight: SemiBold
+    lineHeight: 20
+  slots:
+    Handle: {slot_id: "I21169:2192;3287:443175", node_type: FRAME, depth: 3}
+    Arrow: {slot_id: "I21169:2192;21169:1930;1052:585", node_type: FRAME, depth: 4}
+  nested_instances:
+    - name: _Control handle
+      depth: 2
+      main_component: _Control handle
+      variant_axes:
+        state: [default, focused, hover]
+        size: [md, sm]
+      bool_props:
+        {showLabel: true}
+  text_nodes:
+    - {name: Label, role: label, sample: "50%"}
+    - {name: Mark label, role: label, sample: 0}
+  how_to_use: "1. Instancier via key_variants (jamais le ComponentSet).\n2. Exemple : const variantNode = await figma.getNodeByIdAsync(key_variants[\"<variant-slug>\"]); const inst = variantNode.createInstance()\n3. setTxt(inst, \"Label\", \"50%\")\n4. setTxt(inst, \"Mark label\", \"0\")\n5. Si besoin masquer les actions : inst.findOne(n => n.name === \"_Control handle\")?.setProperties({\"showLabel\":false})"
+  variants:
+    range: [range, single]
+    showmarksdots: [false, true]
+    showmarkslabel: [false, true]
+    size: [md, sm]
+    value: ["0-100%", "0-25%", "0-75%", "100%", "25%", "25-75%", "50%", "75%"]
+  defaults:
+    range: single
+    showmarksdots: true
+    showmarkslabel: true
+    size: md
+    value: "50%"
+  notes: ["Variant axis \"value\": values \"100%\" and \"0-100%\" look like a typo (distance 2).", "Variant axis \"value\": values \"25-75%\" and \"0-75%\" look like a typo (distance 2).", "Variant axis \"value\": values \"0-75%\" and \"0-25%\" look like a typo (distance 1)."]
