@@ -1,0 +1,56 @@
+# items/navlink.yaml — detail complet du composant 'navlink'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: navlink
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+navlink:
+  figma_key: 640d054594e50ecc6a03d70cb79194a696aceaae
+  figma_node_id: "14925:140932"
+  component_type: COMPONENT_SET
+  instanciable: false
+  default_variant_id: "14604:131352"
+  key_variants: {property-1-default: "14604:131352"}
+  page: "      ↳ NavLink"
+  description: "AXES - format (Desktop): a single value axis, so the ComponentSet publishes no choice at all. The mobile /tablet close and mobile /tablet open values documented until 2026-08-24 are gone from the file. Responsive layout and drawer behaviour are now undocumented. - No axis carries runtime state. Everything runtime lives in the children: _Nav item base Current and State, _itemOpenNavBar state. All of it is data-* in React, never a cva variant. COMPOSITION - Vertical auto-layout, FIXED 340 x 900, padding 24 top and bottom, gap 24, 1px OUTSIDE stroke on Colors/Border/border-secondary, clipsContent false, and no fill of its own. - Top to bottom: LogoContainer with a Logomark instance, a UserMenu frame holding _Avatar menu base and a Divider vector - both hidden by default and both switchable from an instance since 2026-08-31 (showUserMenu, showDivider) - then the main Container (FILL x FILL, grow 1) carrying the item SLOT plus a bottom Container with one icon-only Button (color gray, size xs, variants outline, showLabel false). - SLOT Container#21849:65 is the only editable region: side padding 24, FILL width, HUG height. It currently holds five _Nav item base instances, the last of them the Current=True State=Open group with its own nested slot of seven _itemOpenNavBar rows. - Application chrome, one per page, paired with Header navigation [V2]. Not a tab strip, that is vertical-tabs-v2. ACCESSIBILITY - One nav landmark with aria-label Sidebar. Items are a list; an expandable group is a button with aria-expanded and aria-controls wrapping a nested list, not a link. - The active item carries aria-current=page, which is what Current=True marks. State=Open is the disclosure state only; the two must never be derived from each other. - The collapse Button at the bottom is icon-only with showLabel false: it needs an accessible name and it must expose the collapsed state. - Item labels sit at 56 percent paint opacity on the dark surface. That is the lowest contrast pair in the family, verify 4.5:1 before shipping. CODE - No counterpart in @42/ui-react as of 2026-08-27. components.md lists NavLink in Phase 9 Navigation and AppShell (header / nav / aside scaffold) in Phase 11, both unstarted. - To build the screen today, compose from Collapse for the expandable group, Drawer with placement start for the mobile panel, and Button for the collapse toggle. - Listed as an implementation gap in audit/parity-figma-vs-react.md section 6a, where it is still recorded with 3 format values. KNOWN ISSUE - Fill verified 2026-08-31: the dark surface is painted on the Desktop component and bound to a colour variable; the ComponentSet wrapper carries no fill. A previous revision of this description claimed the opposite - it was wrong. - Height is FIXED 900. A sidebar has to fill the viewport, and nothing in the component says so. - Nothing is exposed: logo, avatar footer and collapse Button are all isExposedInstance false, so an instance can only fill the item SLOT. - Fixed 2026-08-31: the footer block and the divider were hidden layers with no boolean, so no override could bring them back. They are now BOOLEAN properties showUserMenu and showDivider, both defaulting to false. Their real layer names are UserMenu (FRAME) and Divider (VECTOR) - an earlier revision of this description called them Container and Line, which was wrong. - No collapsed variant: the format axis has a single Desktop value, so a narrow rail cannot be drawn at all. - SLOT Container#21849:65 has no preferredValues and accepts any layer. Lock it on _Nav item base, the way RadioGroup locks its items slot. - The fifth item instance is named _Nav item base 43, an auto-numbered duplicate name."
+  size: {w: 240, h: 900}
+  padding: {v: 24, h: 20}
+  direction: VERTICAL
+  gap: 16
+  align: {counter: CENTER}
+  stroke: {color: "@white", width: 1, align: INSIDE}
+  text:
+    sample: Home
+    fill: "@text-primary"
+    size: 14
+    weight: SemiBold
+    lineHeight: 20
+  slots:
+    navItems: {slot_id: "14599:130930", node_type: SLOT, depth: 2}
+  nested_instances:
+    - {name: Logomark, depth: 2, main_component: Logomark}
+    - name: _Avatar menu base
+      depth: 2
+      main_component: _Avatar menu base
+      variant_axes:
+        state: [default, hover, focus, open]
+      bool_props:
+        {Location: true, ➡️ Icon trailing: true, Avatar: true}
+    - name: "Buttons/Button "
+      depth: 3
+      main_component: Buttons/Button
+      variant_axes:
+        color: [gray, brand, red, green, orange]
+        size: [xs, sm, md]
+        variant: [filled, light, outline, subtle, link]
+        state: [default, disabled, focus, hover]
+      bool_props:
+        {showLabel: false, showEndSlot: true, showStartSlot: false}
+  how_to_use: "1. Instancier via key_variants (jamais le ComponentSet).\n2. Exemple : const variantNode = await figma.getNodeByIdAsync(key_variants[\"<variant-slug>\"]); const inst = variantNode.createInstance()\n3. Si besoin masquer les actions : inst.findOne(n => n.name === \"_Avatar menu base\")?.setProperties({\"Avatar\":false,\"Location\":false,\"➡️ Icon trailing\":false})"
+  variants:
+    property-1: [default]
+    showdivider: [false, true]
+    showusermenu: [false, true]
+  defaults: {property-1: default, showdivider: false, showusermenu: false}
+  notes: ["Variant axis name \"Property 1\" was normalised to \"property-1\" (use lowercase slugs for consistency)."]
