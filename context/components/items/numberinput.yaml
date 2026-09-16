@@ -1,0 +1,40 @@
+# items/numberinput.yaml — detail complet du composant 'numberinput'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: numberinput
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+numberinput:
+  figma_key: d43e4fcde167a906c28df46c11e5d03f7753f9ea
+  figma_node_id: "21457:1556"
+  component_type: COMPONENT
+  instanciable: true
+  page: "      ↳ NumberInput"
+  description: "NumberInput — numeric field with increment / decrement steppers: the _BaseField shell with a number in it. Use it on its own, or swap it into the Field slot when it needs a label. AXES None of its own. size, variant, state, status, the text and the slots all live on the nested _BaseField instance, which is exposed: pick it in the instance panel instead of looking for an axis here. NumberInput does not duplicate the shell's 64 variants — it inherits them. Known gap: the steppers are drawn as one static chevrons-up-down glyph in the end icon. In code they are two stacked buttons rendered OUTSIDE that slot. Read CODE before speccing them. COMPOSITION A NumberInput can stand alone: with no label it is a bare control and needs nothing around it. As soon as it needs a label, a description or a status message, do not build that text beside it — swap it into the Field contentSlot. Field owns the whole text scaffold. Keep both statuses equal: an error Field holds a nested _BaseField in status=error. In code this is automatic. The value is the shell's text property — edit the property, not the layer. The start slot is yours: a unit, a currency symbol, an icon. The end icon is not — it stands in for the steppers. Units, currency and percent are formatting, not decoration. They come from the code's formatOptions; only type them into the value when you are showing one example. Use this control only when stepping by a known increment makes sense — a quantity, a duration, a bounded score. A free-form number (phone, ID, year of birth) is an Input. ACCESSIBILITY On its own a NumberInput has no accessible name. It gets one from the Field label (or from aria-label in code). A placeholder is not a label: it vanishes on first keystroke. The steppers are two real buttons in code, labelled Increment and Decrement. Each disables itself on reaching max or min, and each owns a full half-height hit area — not just the glyph. The end icon slot is aria-hidden, so what is mocked here is not what ships. Never make the steppers the only route to a value: the field stays typable and the arrow keys step it from the keyboard. Bounds and step belong in the Field description, readable before the user types — not discovered by hitting a wall. CODE — @42/ui-react NumberInput The nested _BaseField carries the shell props: size→size, variant→variant, status=error→invalid (or the Field error prop), state Disabled→disabled, Hovered / Focused→runtime data-* (Ark UI). showStartSlot + startSlot → startSlot. The steppers are Ark's IncrementTrigger / DecrementTrigger in a stacked Control column, rendered as direct children of the shell — never endIcon, whose wrapper is aria-hidden and kills pointer events. The shell drops its inline-end padding for them. value is number | null; null is the empty field. Defaults differ: the code defaults to size=md, the nested instance here sits on sm, like the rest of the Figma form family. status=success and status=warning have no React equivalent. React-only, do not mock these up here: hideControls (drops the steppers), clearable (a × button once there is a value), min / max / step, formatOptions (Intl — currency, percent), allowMouseWheel, clampValueOnBlur, wrap, variant=filled, size xs / lg / xl, color (focus-ring palette), readOnly, classNames, testId."
+  size: {w: 320, h: HUG}
+  direction: HORIZONTAL
+  text:
+    sample: Placeholder
+    fill: "@text-tertiary"
+    size: 14
+    weight: Regular
+    lineHeight: 20
+  nested_instances:
+    - name: _BaseField
+      depth: 1
+      main_component: _BaseField
+      variant_axes:
+        size: [sm, md]
+        variant: [unstyled, default]
+        state: [focused, disabled, hovered, placeholder]
+        status: [error, default]
+      bool_props:
+        showValue: false
+        showBadges: false
+        showEndIcon: true
+        showPlaceholder: true
+        showStartSlot: false
+  text_nodes:
+    - {name: Placeholder, sample: Placeholder}
+  how_to_use: "1. Instancier le composant via figma_node_id (createInstance()).\n2. setTxt(inst, \"Placeholder\", \"Placeholder\")\n3. Si besoin masquer les actions : inst.findOne(n => n.name === \"_BaseField\")?.setProperties({\"showBadges\":false,\"showEndIcon\":false,\"showPlaceholder\":false,\"showStartSlot\":false,\"showValue\":false})"
