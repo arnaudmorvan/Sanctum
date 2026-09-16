@@ -1,0 +1,51 @@
+# items/alert.yaml — detail complet du composant 'alert'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: alert
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+alert:
+  figma_key: 1cf59245e2603e884e37fcbb84f619eb3a77ecd6
+  figma_node_id: "21813:114074"
+  component_type: COMPONENT_SET
+  instanciable: false
+  default_variant_id: "21813:114075"
+  key_variants:
+    variant-light-type-info: "21813:114075"
+    variant-outline-type-info: "21813:114077"
+    variant-light-type-warning: "21813:114079"
+    variant-outline-type-warning: "21813:114081"
+    variant-light-type-error: "21813:114083"
+    variant-outline-type-error: "21813:114085"
+    variant-light-type-success: "21813:114087"
+    variant-outline-type-success: "21813:114089"
+  page: "      ↳ Alerts"
+  description: "Inline status card - wide, static, always mounted. Sits in the page content (a doc callout, a form-level warning) instead of floating above it. AXES - type (8 variants): info, warning, error, success, plus type5..type8. Only the first four are named; the other four are the same four statuses on the outline surface. The axis carries the status AND the surface at once - see KNOWN ISSUE. - No other axis. Everything else is a preset frozen inside the wrapped _baseAlert instance. COMPOSITION - Each variant is a vertical wrapper holding one _baseAlert instance, preset to closable off, showAction off, showDescription on, showIcon on. Height 74, width 530. - Use for page-level content. For a floating toast use Notification; for the region that stacks them see Notifier. ACCESSIBILITY - The leading glyph is decorative: state the status in the title text. - Alert does not announce itself and does not manage focus. Wrap a dynamically mounted one in a live region or pass role=alert - the React root forwards arbitrary props for exactly that. CODE - Alert, imported from @42/ui-react/alert. Docs: https://42kit.dev/docs/alert - type -> type (info | success | warning | error). The named half of the axis -> variant=\"light\", the type5..type8 half -> variant=\"outline\". - closable -> withCloseButton. Off here matches the React default (withCloseButton={false}), which is the opposite of Notification. - title -> title, description -> description, showAction -> action, showIcon false -> icon={null}. The full surface axis in code is variant (light | filled | outline | subtle | default) x color; only two surfaces are mocked here. - The React card is w-full; the 530 width here is a canvas default, so set the instance to Fill in a real layout. - With no title the code promotes the description into the header row. Not expressible as an axis here. KNOWN ISSUE - type5..type8 are Figma auto-generated names left over from duplicating variants. They are not statuses: they are the outline surface of the four real ones (type8 = info, type7 = warning, type6 = error, type5 = success). - The set should be split into two axes, type (info | warning | success | error) x variant (light | outline), exactly like _baseAlert. - The nested _baseAlert is not an exposed instance, so an instance of this set can only change its variant - title, description, closable, showAction and showIcon are unreachable. Turn on Expose nested instance on the _baseAlert child of each variant to get them back. - The boolean is named closable here and withCloseButton in the shipped API. Rename it to withCloseButton so the axis and the prop match."
+  size: {w: FILL, h: HUG}
+  direction: VERTICAL
+  text:
+    sample: Breaking change in v3
+    fill: "@text-primary"
+    size: 14
+    weight: Bold
+    lineHeight: 20
+  slots:
+    Icon: {slot_id: "I21813:114076;21796:263", node_type: FRAME, depth: 3}
+  nested_instances:
+    - name: _baseAlert
+      depth: 1
+      main_component: _baseAlert
+      variant_axes:
+        variant: [light, outline]
+        type: [info, warning, success, error]
+      bool_props:
+        {showDescription: true, closable: false, showAction: false, showIcon: true}
+  text_nodes:
+    - {name: Title, role: title, sample: Breaking change in v3}
+    - {name: Text, sample: The theme API changed. Update your to...}
+  how_to_use: "1. Instancier via key_variants (jamais le ComponentSet).\n2. Exemple : const variantNode = await figma.getNodeByIdAsync(key_variants[\"<variant-slug>\"]); const inst = variantNode.createInstance()\n3. setTxt(inst, \"Title\", \"Breaking change in v3\")\n4. Si besoin masquer les actions : inst.findOne(n => n.name === \"_baseAlert\")?.setProperties({\"closable\":false,\"showAction\":false,\"showDescription\":false,\"showIcon\":false})"
+  variants:
+    type: [error, info, success, warning]
+    variant: [light, outline]
+  defaults: {type: info, variant: light}
