@@ -1,0 +1,61 @@
+# items/popover.yaml — detail complet du composant 'popover'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: popover
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+popover:
+  figma_key: ac10cce48c0c0a4f5c57f22ffaf2604aa28408b0
+  figma_node_id: "21826:125390"
+  component_type: COMPONENT_SET
+  instanciable: false
+  default_variant_id: "21826:125389"
+  key_variants:
+    position-bottom: "21826:125389"
+    position-top: "21826:125391"
+    position-left: "21826:125420"
+    position-right: "21826:125427"
+  page: "      ↳ Popover"
+  description: "AXES - position (bottom | top | left | right): 4 variants, one per physical side. It sets where the panel sits relative to the trigger, centered on the cross axis with an 8 px gutter, like Floating UI plain placements. Default bottom, same as Ark. - isOpen (boolean, default true): shows or hides the panel. This is runtime state, not a design axis - React owns it via open / defaultOpen / onOpenChange. It exists here only so a screen can show the trigger closed. - No size, color or variant axis: the panel has one look. The triggers own axes live on the exposed Button instance. - The Ark -start / -end placements (bottom-start, top-end, ...) are not represented. Add variants only when a screen needs them. COMPOSITION - Vertical auto-layout hugging the trigger. Two children: the Button trigger (exposed instance) and the panel, an _MenuOpen instance on state=Menu (exposed instance). - The panel is in ABSOLUTE positioning so it overflows the frame without changing the triggers box, and clipsContent is off on every variant. Turning clipping back on hides the panel. - Panel content goes through the exposed _MenuOpen instance: menuItems slot for the rows, showTitle for the header row. - Trigger: swap the exposed Button (label, variants, color, size, slots) or replace it with another trigger. Popover does not constrain it. - Use it for a floating panel anchored to a trigger. A list of actions that closes on click is Menu. A blocking dialog is Modal. ACCESSIBILITY - The trigger must announce that it opens a panel and whether it is open (aria-haspopup / aria-expanded). Ark wires this in code; Figma cannot show it. - Focus moves into the panel on open and returns to the trigger on close. Esc and click outside must close it. - position is a hint, not a guarantee: the panel flips and shifts to stay in the viewport. Never let the side carry meaning. - The rows inside the panel are the interactive targets. Selection must be exposed semantically, the check glyph and the hover tint are decorative. CODE - React: Popover in @42/ui-react (packages/react/src/components/popover/popover.tsx). Parts: Popover.Root / Trigger / Content / Header / Body / Footer. - position maps 1:1 to Popover.Root position. isOpen maps to open / defaultOpen, never to a class. - Trigger is Popover.Trigger asChild wrapping any element - the Figma Button is one case, not a constraint. - Not represented in Figma: width (target, the default, matches the trigger width; auto sizes to content), gutter, offset, withinPortal, container, autoFocus, disabled. KNOWN ISSUE - Panel visual: Figma reuses _MenuOpen state=Menu, while the React panel is free-form with a fixed Header, a scrolling Body and a fixed Footer. Header and Footer are therefore absent from Figma. Build a dedicated panel when a screen needs them. - Width: every variant shows a 320 px panel, but width defaults to target in code, so the rendered panel matches the trigger width unless width=auto is set. - Docs divergence as of 2026-08-26: popover.mdx documents offset as a number for the trigger gap. In the code that prop is gutter (number); offset is an object {mainAxis, crossAxis}. The mdx TypeTable is wrong. - isOpen follows the sibling Menu component; the file convention for display booleans is show*."
+  size: {w: HUG, h: HUG}
+  direction: VERTICAL
+  gap: 6
+  text:
+    sample: Open popover
+    fill: "@text-primary-inverse"
+    size: 12
+    weight: Bold
+    lineHeight: 20
+  slots:
+    Header: {slot_id: "I22352:109279;22119:5", node_type: SLOT, depth: 2}
+    Content: {slot_id: "I22352:109279;22119:6", node_type: SLOT, depth: 2}
+    Footer: {slot_id: "I22352:109279;22119:7", node_type: SLOT, depth: 2}
+  nested_instances:
+    - name: "Buttons/Button "
+      depth: 1
+      main_component: Buttons/Button
+      variant_axes:
+        color: [gray, brand, red, green, orange]
+        size: [xs, sm, md]
+        variant: [filled, light, outline, subtle, link]
+        state: [default, disabled, focus, hover]
+      bool_props:
+        {showLabel: true, showEndSlot: false, showStartSlot: false}
+    - name: Cards/Card
+      depth: 1
+      main_component: Cards/Card
+      variant_axes:
+        variant: [default, filled, outline, gradient]
+        padding: [md, xs, sm, lg, xl]
+      bool_props:
+        {showHeader: true, showFooter: true, showContent: true}
+  text_nodes:
+    - {name: Text, sample: Open popover}
+    - {name: anakin.skywalker, sample: anakin.skywalker}
+    - {name: E5R6P12, sample: c1r10s1.arrakeen.42.school}
+  how_to_use: "1. Instancier via key_variants (jamais le ComponentSet).\n2. Exemple : const variantNode = await figma.getNodeByIdAsync(key_variants[\"<variant-slug>\"]); const inst = variantNode.createInstance()\n3. setTxt(inst, \"Text\", \"Open popover\")\n4. setTxt(inst, \"anakin.skywalker\", \"anakin.skywalker\")\n5. Si besoin masquer les actions : inst.findOne(n => n.name === \"Buttons/Button \")?.setProperties({\"showEndSlot\":false,\"showLabel\":false,\"showStartSlot\":false})"
+  variants:
+    isopen: [false, true]
+    position: [bottom, left, right, top]
+  defaults: {isopen: true, position: bottom}
