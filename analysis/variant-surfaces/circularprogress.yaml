@@ -1,0 +1,66 @@
+# analysis/variant-surfaces/circularprogress.yaml — la SURFACE peinte par chaque variante.
+# Hors de context/ deliberement : lu par la console, jamais par un agent.
+# Les surfaces identiques sont stockees une fois et pointees.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: circularprogress
+  generated_at: "2026-09-16"
+  variants: 42
+  surfaces: 6
+surfaces:
+  s1:
+    text: {fill: "@text-primary", size: 12, weight: Medium, lineHeight: 18}
+  s2:
+    text: {fill: "@text-primary", size: 14, weight: Medium, lineHeight: 20}
+  s3:
+    text: {fill: "@text-primary", size: 24, weight: Medium, lineHeight: 32}
+  s4:
+    text: {fill: "@text-primary", size: 30, weight: Medium, lineHeight: 38}
+  s5:
+    text: {fill: "@text-primary", size: 36, weight: Medium, lineHeight: 44}
+  s6:
+    text: {fill: "@text-primary", size: 48, weight: Medium, lineHeight: 60}
+variants:
+  variant-filled-size-2xl-thickness-regular: s3
+  variant-filled-size-2xl-thickness-thick: s3
+  variant-filled-size-2xl-thickness-thin: s3
+  variant-filled-size-3xl-thickness-regular: s4
+  variant-filled-size-3xl-thickness-thick: s4
+  variant-filled-size-3xl-thickness-thin: s4
+  variant-filled-size-4xl-thickness-regular: s5
+  variant-filled-size-4xl-thickness-thick: s5
+  variant-filled-size-4xl-thickness-thin: s5
+  variant-filled-size-5xl-thickness-regular: s6
+  variant-filled-size-5xl-thickness-thick: s6
+  variant-filled-size-5xl-thickness-thin: s6
+  variant-filled-size-lg-thickness-regular: s2
+  variant-filled-size-lg-thickness-thick: s2
+  variant-filled-size-lg-thickness-thin: s2
+  variant-filled-size-md-thickness-regular: s1
+  variant-filled-size-md-thickness-thick: s1
+  variant-filled-size-md-thickness-thin: s1
+  variant-filled-size-xl-thickness-regular: s2
+  variant-filled-size-xl-thickness-thick: s2
+  variant-filled-size-xl-thickness-thin: s2
+  variant-gradient-size-2xl-thickness-regular: s3
+  variant-gradient-size-2xl-thickness-thick: s3
+  variant-gradient-size-2xl-thickness-thin: s3
+  variant-gradient-size-3xl-thickness-regular: s4
+  variant-gradient-size-3xl-thickness-thick: s4
+  variant-gradient-size-3xl-thickness-thin: s4
+  variant-gradient-size-4xl-thickness-regular: s5
+  variant-gradient-size-4xl-thickness-thick: s5
+  variant-gradient-size-4xl-thickness-thin: s5
+  variant-gradient-size-5xl-thickness-regular: s6
+  variant-gradient-size-5xl-thickness-thick: s6
+  variant-gradient-size-5xl-thickness-thin: s6
+  variant-gradient-size-lg-thickness-regular: s2
+  variant-gradient-size-lg-thickness-thick: s2
+  variant-gradient-size-lg-thickness-thin: s2
+  variant-gradient-size-md-thickness-regular: s1
+  variant-gradient-size-md-thickness-thick: s1
+  variant-gradient-size-md-thickness-thin: s1
+  variant-gradient-size-xl-thickness-regular: s2
+  variant-gradient-size-xl-thickness-thick: s2
+  variant-gradient-size-xl-thickness-thin: s2
