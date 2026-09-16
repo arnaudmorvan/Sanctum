@@ -1,0 +1,52 @@
+# items/choicecardgroup.yaml — detail complet du composant 'choicecardgroup'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: choicecardgroup
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+choicecardgroup:
+  figma_key: a61c3831d2c53a976c65b5894ae46a6bbf04d853
+  figma_node_id: "21334:41139"
+  component_type: COMPONENT_SET
+  instanciable: false
+  default_variant_id: "21381:307"
+  key_variants:
+    orientation-horizontal-size-md: "21381:307"
+    orientation-horizontal-size-sm: "21334:41148"
+    orientation-vertical-size-md: "21381:299"
+    orientation-vertical-size-sm: "21334:41140"
+  page: "      ↳ ChoiceCardGroup"
+  description: "ChoiceCardGroup — a set of selectable cards, one option per card, with a group label and description. AXES orientation: stacking direction of the cards. vertical = one card per line. Default. horizontal = one row. 2 to 3 cards, short titles. label / description: text properties of the group header. label is the accessible name. Never leave it empty. description is the hint, toggled by showDescription. items: slot, preferred values only. The swap panel offers _ChoiceCard and nothing else. Min 2 children. COMPOSITION Every card in the slot carries the same type and the same size. type=radio: exactly one card selected=true, or none when there is no default answer. Two selected radio cards is a bug, not a state. type=checkbox: any number of cards selected, zero included. 2 to 5 cards is the useful range. Above 6 the card format stops paying for itself — use RadioGroup or Select. Reach for a ChoiceCardGroup over a RadioGroup when the options need a supporting line, an icon or an avatar to be told apart. For a bare list of short labels, RadioGroup is cheaper. Cards are added and removed inside the slot. Do not detach the group to change their number. Hover, focused and disabled live on the cards and are runtime. Compose screens with default only. ACCESSIBILITY The group is a radiogroup (type=radio) or a group of checkboxes (type=checkbox): label names it, description hints it. A group without a label is not shippable. radio: arrow keys move between cards and select as they move; Tab enters and leaves the group as one stop. checkbox: each card is its own tab stop, space toggles. The hit area of an option is the whole card, not the 16px indicator. Disabling the whole group and disabling one card are two different intents. Do not fake the first with the second. CODE — @42/ui-react ChoiceCardGroup orientation→orientation, label→label, description→description, showDescription=false→omit description. items slot→items: ChoiceCardItem[], each a bare string or an object { value, label, description?, icon?, disabled? }. type on the cards→multiple on the group: radio→multiple omitted, checkbox→multiple. The value is a string | null in single mode and a string[] in multi; onChange hands you the next value, not a DOM event. size on the cards→size on the group. React-only, no Figma equivalent — do not mock these up: error, required, invalid, readOnly, name, variant (default, filled), color, renderItem, onChange, onBlur, ref, classNames, and the sizes xs / lg / xl."
+  size: {w: FILL, h: HUG}
+  direction: VERTICAL
+  gap: 8
+  text:
+    sample: Group label
+    fill: "@text-primary"
+    size: 16
+    weight: SemiBold
+    lineHeight: 24
+  slots:
+    items: {slot_id: "21919:360", node_type: SLOT, depth: 1}
+  text_nodes:
+    - {name: Label, role: label, sample: Group label}
+    - name: Description
+      role: description
+      sample: Description of the choice card group.
+    - name: Supporting text
+      role: hint
+      sample: Excogitatum est super his ut homines ...
+  how_to_use: "1. Instancier via key_variants (jamais le ComponentSet).\n2. Exemple : const variantNode = await figma.getNodeByIdAsync(key_variants[\"<variant-slug>\"]); const inst = variantNode.createInstance()\n3. setTxt(inst, \"Description\", \"Description of the choice card group.\")"
+  variants:
+    description: "<text>"
+    label: "<text>"
+    orientation: [horizontal, vertical]
+    showdescription: [false, true]
+    size: [md, sm]
+  defaults:
+    description: Description of the choice card group.
+    label: Group label
+    orientation: horizontal
+    showdescription: true
+    size: md
