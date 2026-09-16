@@ -1,0 +1,154 @@
+meta:
+  kind: patterns
+  version: 2
+  ds_name: 42 UI Kit V3
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  generated_at: 2026-09-16
+  scope: pages
+  pattern_count: 17
+patterns:
+  table-v2:
+    figma_node_id: "22814:25653"
+    description: Exemple de table
+    block_type: autre
+    size: {w: 1216, h: 900}
+    skeleton:
+      - zone: "Table [V2]"
+        component: "Table [V2]"
+        props:
+          {Breakpoint: Desktop, InternalScroll: False, Empty: False, Header: True}
+    components_used: ["Card header [V2]", "Badge [V2]", "Input field [V2]", search, "Buttons/Button [V2]", ellipsis-vertical, "Table header cell [V2]", "Checkbox [V2]", "Table cell [V2]", "Table header [V2]", "Avatar [V2]", "Help icon [V2]", info, list-filter, rocket, "Select [V2]", "Buttons/Button utility [V2]", "Pagination [V2]", arrow-left, arrow-right]
+  cardmediacontent:
+    figma_node_id: "15076:7038"
+    description: Card/MediaContent
+    figma_key: 309e66ef9a4641b4ec8f163b6b55dd13f1a6842b
+    block_type: info-card
+    size: {w: 1174, h: 618}
+    skeleton:
+      - zone: Type=Closed
+        layout: "VERTICAL, centré, max-w 338"
+        children:
+          - zone: Cards/Card
+            component: Cards/Card
+            props:
+              {variant: default, padding: md}
+      - zone: Type=Opened
+        layout: "VERTICAL, centré, max-w 338"
+        children:
+          - zone: Cards/Card
+            component: Cards/Card
+            props:
+              {variant: default, padding: md}
+      - zone: Type=Paused
+        layout: "VERTICAL, max-w 338"
+        children:
+          - zone: Cards/Card
+            component: Cards/Card
+            props:
+              {variant: default, padding: md}
+    components_used: [Cards/Card, Buttons/Button, map-pin, chevron-down, Separators]
+  cardsactivityfeed:
+    figma_node_id: "22352:109009"
+    description: Cards/ActivityFeed
+    figma_key: 70c22344ef10a9d00b9fdb39186430ee06648bbc
+    block_type: info-card
+    size: {w: 1096, h: 156}
+    skeleton:
+      - zone: Cards/Card
+        component: Cards/Card
+        props:
+          {variant: default, padding: md}
+    components_used: [Cards/Card, ThemeIcon/md/Teal/OpacityCircle, rocket, Badge/sm/Simple/Gray/True, calendar, Avatar/sm/False/False/False/False/False/False, Buttons/Button]
+  cardscard:
+    figma_node_id: "22768:24786"
+    description: Cards/Card
+    block_type: info-card
+    size: {w: 1096, h: 156}
+    skeleton:
+      - zone: Cards/Card
+        component: Cards/Card
+        props:
+          {variant: filled, padding: md}
+    components_used: [ThemeIcon/md/Teal/OpacityCircle, rocket, Badge/sm/Simple/Gray/True, calendar, Avatar/sm/False/False/False/False/False/False, Buttons/Button]
+  cardsnotification:
+    figma_node_id: "22352:108616"
+    description: Cards/Notification
+    figma_key: a31c4d469c40d1bf5c1067fc4aa636c401111270
+    block_type: action-card
+    size: {w: 612, h: 534}
+    skeleton:
+      - zone: Cards/Card
+        component: Cards/Card
+        props:
+          {variant: default, padding: lg}
+    components_used: [Cards/Card, Buttons/Button, Notification, info, x, triangle-alert]
+  cardsdashboardhours:
+    figma_node_id: "22352:108615"
+    description: Cards/DashboardHours
+    figma_key: d0d3b6f5a3e59e21f74abcd51e253285585b66a5
+    block_type: chart-widget
+    size: {w: 352, h: 272}
+    skeleton:
+      - zone: Cards/Card
+        component: Cards/Card
+        props:
+          {variant: default, padding: lg}
+    components_used: [Cards/Card, Switch, CircularProgress]
+  sectiontitle:
+    figma_node_id: "22352:109567"
+    description: SectionTitle
+    block_type: autre
+    size: {w: 190, h: 32}
+    skeleton:
+      - zone: SectionTitle
+        component: SectionTitle
+        props:
+          {size: xl, iconPosition: left}
+    components_used: [hourglass]
+  cardseventlocation:
+    figma_node_id: "22352:109659"
+    description: Cards/EventLocation
+    figma_key: 9f8e2f14d05893b3c798d71ea923c7e00521f5ae
+    block_type: info-card
+    size: {w: 304, h: 310}
+    skeleton:
+      - zone: Cards/Card
+        component: Cards/Card
+        props:
+          {variant: default, padding: lg}
+    components_used: [Cards/Card, Badge/gray/lg/light, check, Buttons/Button]
+  cardsreviewsprogression:
+    figma_node_id: "22352:108753"
+    description: Cards/ReviewsProgression
+    figma_key: 8ad65b5476318b975b74e39a06112f093f26780b
+    block_type: chart-widget
+    size: {w: 352, h: 190}
+    skeleton:
+      - zone: Cards/Card
+        component: Cards/Card
+        props:
+          {variant: default, padding: lg}
+    components_used: [Cards/Card, Progress, CircularProgress]
+  sectiontitle-2:
+    figma_node_id: "22352:109558"
+    description: SectionTitle
+    block_type: autre
+    size: {w: 292, h: 32}
+    skeleton:
+      - zone: SectionTitle
+        component: SectionTitle
+        props:
+          {size: xl, iconPosition: left}
+    components_used: [trending-up]
+  cardsoverlayprofile:
+    figma_node_id: "22352:108437"
+    description: Cards/OverlayProfile
+    figma_key: da6fab4b582803fd3d0ce148f8304b752abc1b97
+    block_type: action-card
+    size: {w: 230, h: 278}
+    skeleton:
+      - zone: Cards/Card
+        component: Cards/Card
+        props:
+          {variant: default, padding: sm}
+    components_used: [Cards/Card, map-pin, user-round, settings, Switch]
