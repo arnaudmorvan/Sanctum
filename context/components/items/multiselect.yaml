@@ -1,0 +1,52 @@
+# items/multiselect.yaml — detail complet du composant 'multiselect'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: multiselect
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+multiselect:
+  figma_key: 74131a57bf60894c1f7fa4483a00d68a6ccfca71
+  figma_node_id: "21473:65212"
+  component_type: COMPONENT
+  instanciable: true
+  page: "      ↳ MultiSelect"
+  description: "MultiSelect — pick several values, shown as removable pills inside the field: the _BaseField shell with its badge slot on, plus a menu of options. Use it on its own, or swap it into the Field slot when it needs a label. AXES isOpen: whether the menu is shown. Off by default. Runtime only — turn it on to spec the open state, then back off when composing a screen. size, variant, state, status, the text and the slots live on the nested _BaseField instance, which is exposed: pick it in the instance panel instead of looking for an axis here. MultiSelect does not duplicate the shell's 64 variants, it inherits them. COMPOSITION A MultiSelect can stand alone: with no label it is a bare control and needs nothing around it. As soon as it needs a label, a description or a status message, do not build that text beside it — swap it into the Field contentSlot. Field owns the whole text scaffold. Keep both statuses equal: an error Field holds a nested _BaseField in status=error. In code this is automatic. The selected values live in the shell's badge slot, one per value, with showBadges on. The field wraps: it grows taller as values are added, it never scrolls sideways. Show that growth — a one-line mock hides the layout problem this control actually has. Empty selection is the honest default state to mock: badge slot off, placeholder in the text property. Each pill is removable in code. Do not draw a value that cannot be taken back out. Fill the menu through its Menu items slot, with real labels. Selected options stay in the list and carry a check, unless the product hides them. The menu is anchored to the field and matches its width. Use MultiSelect when the number of values is open. A fixed short set that all fits on screen is a checkbox group. ACCESSIBILITY On its own a MultiSelect has no accessible name. It gets one from the Field label (or from aria-label in code). The control is a combobox in code: typing filters, arrows move, Escape closes. Every pill carries its own remove button with an accessible name, and Backspace on the empty field removes the last value. Announce the count somewhere the user can read it — a field full of pills is hard to parse by ear. Hidden inputs back form submission, one per value. Never rely on pill colour to convey meaning; the label carries it. CODE — @42/ui-react MultiSelect Combobox in multiple mode, drawn in the PillsInput shell, one Pill per value. Note the naming: what stands in here as a Badge is a Pill in code. data matches Select (strings, objects, groups); value is an array of strings. The nested _BaseField carries the shell props: size→size, variant→variant, status=error→invalid (or the Field error prop), state Disabled→disabled, Hovered / Focused→runtime data-* (Ark UI). isOpen has no prop — the open state belongs to the machine. showBadges + badgeSlot → the rendered pills; there is no prop for them, they follow the value. showStartSlot + startSlot → startSlot. endIcon is the chevron; endSlot in code sits BEFORE it. status=success and status=warning have no React equivalent. React-only, do not mock these up here: searchable (on by default), clearable and clearSectionMode, maxValues, maxLines (caps the pill rows and collapses the rest into a +N counter), hidePickedOptions, nothingFound (default \"Nothing found\"), variant=filled, size xs / lg / xl, color, readOnly, invalid override, name, classNames."
+  size: {w: 320, h: HUG}
+  direction: HORIZONTAL
+  text:
+    sample: Label
+    fill: "@text-primary"
+    size: 10
+    weight: Medium
+    lineHeight: 16
+  slots:
+    badgeSlot: {slot_id: "I21473:65213;21473:915", node_type: SLOT, depth: 4}
+    Icon: {slot_id: "I21473:65213;21440:1008;3463:404534", node_type: VECTOR, depth: 5}
+  nested_instances:
+    - name: _BaseField
+      depth: 1
+      main_component: _BaseField
+      variant_axes:
+        size: [sm, md]
+        variant: [unstyled, default]
+        state: [focused, disabled, hovered, placeholder]
+        status: [error, default]
+      bool_props:
+        showValue: false
+        showPlaceholder: false
+        showBadges: true
+        showEndIcon: true
+        showStartSlot: true
+    - name: _MenuOpen
+      depth: 1
+      visible: false
+      main_component: _MenuOpen
+      variant_axes:
+        state: [select, treeselect, treemultiselect, multicombobox, menu]
+      bool_props:
+        {showTitle: true}
+  how_to_use: "1. Instancier le composant via figma_node_id (createInstance()).\n2. Si besoin masquer les actions : inst.findOne(n => n.name === \"_BaseField\")?.setProperties({\"showBadges\":false,\"showEndIcon\":false,\"showPlaceholder\":false,\"showStartSlot\":false,\"showValue\":false})"
+  variants:
+    isopen: [false, true]
+  defaults: {isopen: false}
