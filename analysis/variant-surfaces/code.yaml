@@ -1,0 +1,61 @@
+# analysis/variant-surfaces/code.yaml — la SURFACE peinte par chaque variante.
+# Hors de context/ deliberement : lu par la console, jamais par un agent.
+# Les surfaces identiques sont stockees une fois et pointees.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: code
+  generated_at: "2026-09-16"
+  variants: 7
+  surfaces: 7
+surfaces:
+  s1:
+    fill: "@bg-secondary"
+    stroke: {color: "@border-primary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 2, h: 6}
+    text: {fill: "@text-primary", size: 14, weight: Regular, lineHeight: 20}
+  s2:
+    fill: "@bg-secondary"
+    stroke: {color: "@border-primary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 2, h: 6}
+    text: {fill: "@text-blue-primary", size: 14, weight: Regular, lineHeight: 20}
+  s3:
+    fill: "@bg-secondary"
+    stroke: {color: "@border-primary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 2, h: 6}
+    text: {fill: "@text-success-primary", size: 14, weight: Regular, lineHeight: 20}
+  s4:
+    fill: "@bg-secondary"
+    stroke: {color: "@border-primary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 2, h: 6}
+    text: {fill: "@text-warning-primary", size: 14, weight: Regular, lineHeight: 20}
+  s5:
+    fill: "@bg-secondary"
+    stroke: {color: "@border-primary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 2, h: 6}
+    text: {fill: "@text-pink-primary", size: 14, weight: Regular, lineHeight: 20}
+  s6:
+    fill: "@bg-secondary"
+    stroke: {color: "@border-primary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 2, h: 6}
+    text: {fill: "@text-purple-primary", size: 14, weight: Regular, lineHeight: 20}
+  s7:
+    fill: "@bg-secondary"
+    stroke: {color: "@border-primary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 2, h: 6}
+    text: {fill: "@text-error-primary", size: 14, weight: Regular, lineHeight: 20}
+variants:
+  color-brand: s2
+  color-green: s3
+  color-neutral: s1
+  color-orange: s4
+  color-pink: s5
+  color-purple: s6
+  color-red: s7
