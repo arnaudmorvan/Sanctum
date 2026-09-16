@@ -1,0 +1,26 @@
+# analysis/variant-surfaces/popover.yaml — la SURFACE peinte par chaque variante.
+# Hors de context/ deliberement : lu par la console, jamais par un agent.
+# Les surfaces identiques sont stockees une fois et pointees.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: popover
+  generated_at: "2026-09-16"
+  variants: 4
+  surfaces: 3
+surfaces:
+  s1:
+    gap: 6
+    text: {fill: "@text-primary-inverse", size: 12, weight: Bold, lineHeight: 20}
+  s2:
+    gap: 6
+    text: {fill: "@text-primary", size: 16, weight: SemiBold, lineHeight: 24}
+  s3:
+    gap: 6
+    height: 320
+    text: {fill: "@text-primary-inverse", size: 12, weight: Bold, lineHeight: 20}
+variants:
+  position-bottom: s1
+  position-left: s2
+  position-right: s3
+  position-top: s2
