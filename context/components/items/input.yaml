@@ -1,0 +1,40 @@
+# items/input.yaml — detail complet du composant 'input'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: input
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+input:
+  figma_key: 85f677cacedc979db638266eae870a593ed249f8
+  figma_node_id: "21462:73266"
+  component_type: COMPONENT
+  instanciable: true
+  page: "      ↳ Inputs"
+  description: "Input — single-line text field: the _BaseField shell with its text property filled. Use it on its own, or swap it into the Field slot when it needs a label. AXES None of its own. size, variant, state, status, the text and both slots live on the nested _BaseField instance, which is exposed: pick it in the instance panel instead of looking for an axis here. Input does not duplicate the shell's 64 variants — it inherits them. Input is that shell with nothing added: plain text, no badges, no control beside it. Add one and you are building another component, not configuring this one. COMPOSITION An Input can stand alone: with no label it is a bare control and needs nothing around it. As soon as it needs a label, a description or a status message, do not build that text beside it — swap it into the Field contentSlot. Field owns the whole text scaffold. Keep both statuses equal: an error Field holds a nested _BaseField in status=error. In code this is automatic. The value is the shell's text property — edit the property, not the layer. showStartSlot and showEndIcon ship on here and off in code. Turn off what you do not need — the mail and circle-help icons are placeholders, not a recommendation. Start slot = meaning, what the field holds. End icon = feedback or affordance: a status glyph, a chevron, a spinner. Anything CLICKABLE — clear, reveal, steppers — is not the end icon: that slot is aria-hidden in code and the control is rendered beside it. Slots are RTL-aware: start is left in LTR, right in RTL. Never use the end icon to explain the field — that copy belongs to the Field description. If the answer runs to several lines, use Textarea. If it steps by a known increment, use NumberInput. ACCESSIBILITY On its own an Input has no accessible name. It gets one from the Field label (or from aria-label in code). A placeholder is not a label: it vanishes on first keystroke. Slot icons are decorative and hidden from assistive tech. Disabled is skipped by the tab order; prefer read-only when the value must stay reachable. status=error is never the only signal: the Field status message carries the reason in words. The focus ring belongs to the shell, so it shows wherever focus lands inside it. CODE — @42/ui-react Input Input is InputBase wrapping a real input element — exactly what this component is: the _BaseField shell and nothing else. Native props (value, onChange, name, type, ref, …) forward straight to the element; className styles the shell root. The nested _BaseField carries the shell props: size→size, variant→variant, status=error→invalid (or the Field error prop, whose presence sets it). state has no prop: Disabled→disabled, Hovered / Focused→ runtime data-* (Ark UI). showStartSlot + startSlot → startSlot. showEndIcon + endIcon → endSlot. Mind the name: in code both adornments are startSlot / endSlot. status=success and status=warning have no React equivalent. React-only, do not mock these up here: variant=filled, size xs / lg / xl, color (focus-ring palette), readOnly, pointer, invalid override, classNames, testId."
+  size: {w: 320, h: HUG}
+  direction: VERTICAL
+  text:
+    sample: Input placeholder
+    fill: "@text-tertiary"
+    size: 14
+    weight: Regular
+    lineHeight: 20
+  nested_instances:
+    - name: _BaseField
+      depth: 1
+      main_component: _BaseField
+      variant_axes:
+        size: [sm, md]
+        variant: [unstyled, default]
+        state: [focused, disabled, hovered, placeholder]
+        status: [error, default]
+      bool_props:
+        showValue: false
+        showBadges: false
+        showPlaceholder: true
+        showStartSlot: true
+        showEndIcon: true
+  text_nodes:
+    - {name: Placeholder, sample: Input placeholder}
+  how_to_use: "1. Instancier le composant via figma_node_id (createInstance()).\n2. setTxt(inst, \"Placeholder\", \"Input placeholder\")\n3. Si besoin masquer les actions : inst.findOne(n => n.name === \"_BaseField\")?.setProperties({\"showBadges\":false,\"showEndIcon\":false,\"showPlaceholder\":false,\"showStartSlot\":false,\"showValue\":false})"
