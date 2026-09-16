@@ -20,6 +20,8 @@ multicomboboxlist:
     size: 14
     weight: Regular
     lineHeight: 20
+  slots:
+    menuItems: {slot_id: "I21511:338;21511:64901", node_type: SLOT, depth: 2}
   nested_instances:
     - name: _BaseField
       depth: 1
@@ -45,7 +47,8 @@ multicomboboxlist:
         {showTitle: true}
   text_nodes:
     - {name: Placeholder, sample: Placeholder}
-  how_to_use: "1. Instancier le composant via figma_node_id (createInstance()).\n2. setTxt(inst, \"Placeholder\", \"Placeholder\")\n3. Si besoin masquer les actions : inst.findOne(n => n.name === \"_BaseField\")?.setProperties({\"showBadges\":false,\"showEndIcon\":false,\"showPlaceholder\":false,\"showStartSlot\":false,\"showValue\":false})"
+    - {name: Text, sample: Label}
+  how_to_use: "1. Instancier le composant via figma_node_id (createInstance()).\n2. setTxt(inst, \"Placeholder\", \"Placeholder\")\n3. setTxt(inst, \"Text\", \"Label\")\n4. Si besoin masquer les actions : inst.findOne(n => n.name === \"_BaseField\")?.setProperties({\"showBadges\":false,\"showEndIcon\":false,\"showPlaceholder\":false,\"showStartSlot\":false,\"showValue\":false})"
   variants:
     isopen: [false, true]
   defaults: {isopen: false}
