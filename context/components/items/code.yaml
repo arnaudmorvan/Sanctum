@@ -1,0 +1,42 @@
+# items/code.yaml — detail complet du composant 'code'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: code
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+code:
+  figma_key: b741d5859a385016b5170eb998ef37ebd469c2ee
+  figma_node_id: "23116:30"
+  component_type: COMPONENT_SET
+  instanciable: false
+  default_variant_id: "23116:2"
+  key_variants:
+    color-neutral: "23116:2"
+    color-brand: "23116:6"
+    color-green: "23116:10"
+    color-orange: "23116:14"
+    color-pink: "23116:18"
+    color-purple: "23116:22"
+    color-red: "23116:26"
+  page: "      ↳ Code"
+  description: "AXES - color (neutral, brand, green, orange, pink, purple, red): tints the TEXT only. The neutral background and border never change, whatever the colour. - size (sm, md): Kode Mono 14 or 16, matching the prose the pill sits in. Figma-only axis, see CODE. - 14 variants. No state axis: inline code has no interaction. COMPOSITION - Horizontal auto-layout, hugs both axes. Padding 6 / 2, radius 4, 1px inside border. - Surface is bg-secondary + border-primary, one step above the card it sits on. - Sits inline inside a text line. It is not a Badge: a Badge labels a thing, this quotes a literal. ACCESSIBILITY - The colour carries no meaning on its own; the token must still read as text with the tint removed. - Contrast is measured against bg-secondary over the card, not against the page. CODE - @42/ui-react Code, in react/kit v0.8.0. NOT present in kit-main. - color -> color. React accepts 12 colours (brand, gray, neutral, red, orange, yellow, green, teal, cyan, blue, purple, pink); Figma publishes the 7 of Badge. gray, yellow, teal, cyan and blue have no variant here, logged in ds-actions. - size has NO React prop: the inline element inherits the surrounding prose size. This axis exists only because Figma has no inheritance. - Code.Mark IS Mark itself, attached with Object.assign, not a second implementation."
+  size: {w: HUG, h: HUG}
+  padding: {v: 2, h: 6}
+  radius: 4
+  direction: HORIZONTAL
+  align: {counter: CENTER}
+  fills: "@bg-secondary"
+  stroke: {color: "@border-primary", width: 1, align: INSIDE}
+  text:
+    sample: npm install
+    fill: "@text-primary"
+    size: 14
+    weight: Regular
+    lineHeight: 20
+  text_nodes:
+    - {name: npm install, sample: npm install}
+  how_to_use: "1. Instancier via key_variants (jamais le ComponentSet).\n2. Exemple : const variantNode = await figma.getNodeByIdAsync(key_variants[\"<variant-slug>\"]); const inst = variantNode.createInstance()\n3. setTxt(inst, \"npm install\", \"npm install\")"
+  variants:
+    color: [brand, green, neutral, orange, pink, purple, red]
+  defaults: {color: neutral}
