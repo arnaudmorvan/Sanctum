@@ -1,0 +1,20 @@
+# analysis/variant-surfaces/chart--scatter.yaml — la SURFACE peinte par chaque variante.
+# Hors de context/ deliberement : lu par la console, jamais par un agent.
+# Les surfaces identiques sont stockees une fois et pointees.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: chart--scatter
+  generated_at: "2026-09-16"
+  variants: 4
+  surfaces: 1
+surfaces:
+  s1:
+    gap: 12
+    height: 200
+    text: {fill: "@text-tertiary", size: 12, weight: Medium, lineHeight: 18}
+variants:
+  mode-bubble-series-multi: s1
+  mode-bubble-series-single: s1
+  mode-scatter-series-multi: s1
+  mode-scatter-series-single: s1
