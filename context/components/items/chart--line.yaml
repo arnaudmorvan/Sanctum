@@ -1,0 +1,37 @@
+# items/chart--line.yaml — detail complet du composant 'chart--line'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: chart--line
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+chart--line:
+  figma_key: 1b272294b291e8569dc8d4acd5386fe2dacde183
+  figma_node_id: "23036:168"
+  component_type: COMPONENT_SET
+  instanciable: false
+  default_variant_id: "23036:36"
+  key_variants:
+    fill-none-series-single: "23036:36"
+    fill-none-series-multi: "23036:62"
+    fill-area-series-single: "23036:100"
+    fill-area-series-multi: "23036:127"
+  page: "      ↳ Charts"
+  description: "Line chart - an evolution over time, ordered x axis. AXES - fill: none (default) or area. area fills under the curve at 16 percent of the series colour, on the node opacity and not on the paint. - series: single (default) or multi. multi paints three series and shows the legend. - No size axis: the component is 360 wide and stretches to its container. COMPOSITION Vertical auto-layout: Body (Y axis 28 wide, then Plot), X axis row, then the legend instance. Plot holds Grid (five lines, auto-layout SPACE_BETWEEN so it redistributes on resize) then one vector per series. Series 1 utility-brand-600, then 500, 400, 300, 200, then utility-gray-200 for series 6. One hue, six steps, in that order. Grid stays on border-primary and labels on text-tertiary: hues live in the marks, never in the chrome. Y axis values and month labels are Kode Mono (machine register, the rule covers anything that measures, duration included); category labels would be Lato. Instantiate it INSIDE a card (cardscard), never bare on the canvas: a chart is card content, not a surface. Padding comes from the card padding prop (lg 24 / md 16 / sm 12) and is never doubled here. The chart takes the width of its container: paths carry SCALE constraints, grids and bars are auto-layout. ACCESSIBILITY The line is decoration. What the series means has to survive in text: the legend, the axis labels, or a sentence next to the chart. A chart with no legend and more than one series is not readable. CODE @42/ui-react, component Chart (import from index.ts/chart), a wrapper over TanStack Charts. The chart TYPE is not a prop: it comes from the definition and the marks passed to the chart. So the variant axes below do NOT map one to one onto React props, they map onto separate definitions. Colour maps exactly: color takes one Color for a one-series chart (sets data-color and the ts-chart-1 slot), colors takes an ordered Color array for a multi-series chart (sets ts-chart-1 to ts-chart-N, see CHART_PALETTE and chartColors). TanStack cycles six categorical slots by default, which is why the Figma ramp stops at six. renderSvg and renderer are mutually exclusive. DEFAUT OUVERT 2026-09-14 - the six Figma steps are assumed to be the counterpart of CHART_PALETTE but the values were never compared. Until someone diffs them, treat the ramp as a Figma-side convention, not as proven parity. Second open point: a one-series chart pins utility-brand-600 here, while the React color prop and the Figma collection 7. Accent both express an accent that can be switched. Two mechanisms for one job."
+  size: {w: 360, h: 200}
+  direction: VERTICAL
+  gap: 12
+  text:
+    sample: "100"
+    fill: "@text-tertiary"
+    size: 12
+    weight: Medium
+    lineHeight: 18
+  text_nodes:
+    - {name: Tick, sample: 100}
+    - {name: Label, role: label, sample: Jan}
+  how_to_use: "1. Instancier via key_variants (jamais le ComponentSet).\n2. Exemple : const variantNode = await figma.getNodeByIdAsync(key_variants[\"<variant-slug>\"]); const inst = variantNode.createInstance()\n3. setTxt(inst, \"Tick\", \"100\")\n4. setTxt(inst, \"Label\", \"Jan\")"
+  variants:
+    fill: [area, none]
+    series: [multi, single]
+  defaults: {fill: none, series: single}
