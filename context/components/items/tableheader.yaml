@@ -1,0 +1,61 @@
+# items/tableheader.yaml — detail complet du composant 'tableheader'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: tableheader
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+tableheader:
+  figma_key: 07e4a128358b575bd6b3294699329151ed34a1c7
+  figma_node_id: "1211:169"
+  component_type: COMPONENT_SET
+  instanciable: false
+  default_variant_id: "1211:168"
+  key_variants: {avatar-false: "1211:168"}
+  page: "      ↳ Tables"
+  description: "AXES - breakpoint (desktop | mobile): responsive concern, not a variant. - title, supporting-text, badge, searchbar, primarybutton, secondarybutton, dotsicon: seven booleans that are slots in disguise, content and not shape. - avatar: single value false only. A dead axis; remove it or give it a true variant. - Only 2 key variants (desktop, mobile); content toggles are instance overrides. COMPOSITION - Vertical auto-layout, 1216 x hug, bottom padding 20, gap 20, 1px @border-secondary stroke as separator. - Slots: Badge [V2], Actions (frame holding the search input and buttons). - Nested: Badge [V2], Input field [V2] (search, icon leading, no label or hint), Button [V2]. Text nodes: Text (18/28 SemiBold), Supporting text (hint). - Only the top block of table-v2. Not a card header for the card_* layouts. ACCESSIBILITY - The title must be a real heading and should label the table via aria-labelledby. - The search input needs a label; the overflow trigger needs a name and aria-haspopup. - Actions act on the table below, so their names must say so. CODE - React: Table.Toolbar containing Table.Title; DataTable renders it from title, toolbarActions, enableGlobalFilter, enableColumnVisibility. - Card (variant plus padding plus color plus gradient; parts Header / Title / Description / Content / Footer) is the primitive for card-like headers. - Bespoke layout, not a card primitive: its axes are content toggles. React ships ONE Card primitive. Rebuild this layout as a composition of that primitive instead of shipping it as its own component. - title / supporting-text / badge / searchbar / buttons / dotsicon -> children or the DataTable toolbar props above; breakpoint -> responsive CSS. None of them is a variant in React."
+  size: {w: 1216, h: HUG}
+  padding: {t: 0, r: 0, b: 20, l: 0}
+  direction: VERTICAL
+  gap: 20
+  stroke: {color: "@border-secondary", width: 1, align: INSIDE}
+  text:
+    sample: Team members
+    fill: "@text-primary"
+    size: 18
+    weight: SemiBold
+    lineHeight: 28
+  slots:
+    Text and supporting text: {slot_id: "1211:75", node_type: SLOT, depth: 2}
+    Actions: {slot_id: "3292:532759", node_type: FRAME, depth: 2}
+  nested_instances:
+    - {name: Input, depth: 3, main_component: Input}
+    - name: "Buttons/Button "
+      depth: 3
+      main_component: Buttons/Button
+      variant_axes:
+        color: [gray, brand, red, green, orange]
+        size: [xs, sm, md]
+        variant: [filled, light, outline, subtle, link]
+        state: [default, disabled, focus, hover]
+      bool_props:
+        {showStartSlot: false, showLabel: true, showEndSlot: false}
+  text_nodes:
+    - {name: Text, sample: Team members}
+    - name: Supporting text
+      role: hint
+      sample: Manage your team members and their ac...
+  how_to_use: "1. Instancier via key_variants (jamais le ComponentSet).\n2. Exemple : const variantNode = await figma.getNodeByIdAsync(key_variants[\"<variant-slug>\"]); const inst = variantNode.createInstance()\n3. setTxt(inst, \"Text\", \"Team members\")\n4. setTxt(inst, \"Supporting text\", \"Manage your team members and their ac...\")\n5. Si besoin masquer les actions : inst.findOne(n => n.name === \"Buttons/Button \")?.setProperties({\"showEndSlot\":false,\"showLabel\":false,\"showStartSlot\":false})"
+  variants:
+    avatar: ["false"]
+    dotsicon: [false, true]
+    primarybutton: [false, true]
+    searchbar: [false, true]
+    secondarybutton: [false, true]
+  defaults:
+    avatar: "false"
+    dotsicon: true
+    primarybutton: true
+    searchbar: true
+    secondarybutton: true
+  notes: ["Variant axis name \"Avatar\" was normalised to \"avatar\" (use lowercase slugs for consistency)."]
