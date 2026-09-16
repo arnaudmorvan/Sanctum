@@ -1,0 +1,27 @@
+# items/chart--heatmap.yaml — detail complet du composant 'chart--heatmap'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: chart--heatmap
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+chart--heatmap:
+  figma_key: 26d09c64eae084665b14e67236cf84564f643608
+  figma_node_id: "23046:189"
+  component_type: COMPONENT
+  instanciable: true
+  page: "      ↳ Charts"
+  description: "Intensity grid - attendance, contributions, anything counted per day over a long window. AXES - No axis. 20 columns by 7 rows, cell 12, gap 4. COMPOSITION The void stays MAJORITY: about 39 percent of cells are non zero and weekends are hollow. A grid where colour is everywhere says nothing about progress - measured twice on the 42next attendance grid. Ramp: level 0 on utility-gray-200 (the no-data ground of the kit), then brand 300, 400, 500, 600. The 200 step is deliberately skipped: on the dark canvas it does not separate from the void. A scale row (Moins / Plus) sits under the grid and is not optional. Instantiate it INSIDE a card (cardscard), never bare on the canvas: a chart is card content, not a surface. Padding comes from the card padding prop (lg 24 / md 16 / sm 12) and is never doubled here. The chart takes the width of its container: paths carry SCALE constraints, grids and bars are auto-layout. ACCESSIBILITY Four intensity steps is the maximum a reader can rank without a legend, and the legend is shipped anyway. Do not add a fifth. CODE @42/ui-react, component Chart (import from index.ts/chart), a wrapper over TanStack Charts. The chart TYPE is not a prop: it comes from the definition and the marks passed to the chart. So the variant axes below do NOT map one to one onto React props, they map onto separate definitions. Colour maps exactly: color takes one Color for a one-series chart (sets data-color and the ts-chart-1 slot), colors takes an ordered Color array for a multi-series chart (sets ts-chart-1 to ts-chart-N, see CHART_PALETTE and chartColors). TanStack cycles six categorical slots by default, which is why the Figma ramp stops at six. renderSvg and renderer are mutually exclusive. A heatmap is a Chart whose marks are rects on two categorical scales, with a sequential colour scale rather than the categorical palette: it does not consume CHART_PALETTE. DEFAUT OUVERT 2026-09-14 - the six Figma steps are assumed to be the counterpart of CHART_PALETTE but the values were never compared. Until someone diffs them, treat the ramp as a Figma-side convention, not as proven parity. Second open point: a one-series chart pins utility-brand-600 here, while the React color prop and the Figma collection 7. Accent both express an accent that can be switched. Two mechanisms for one job."
+  size: {w: HUG, h: HUG}
+  direction: VERTICAL
+  gap: 12
+  text:
+    sample: Moins
+    fill: "@text-tertiary"
+    size: 12
+    weight: Regular
+    lineHeight: 18
+  text_nodes:
+    - {name: Min, sample: Moins}
+    - {name: Max, sample: Plus}
+  how_to_use: "1. Instancier le composant via figma_node_id (createInstance()).\n2. setTxt(inst, \"Min\", \"Moins\")\n3. setTxt(inst, \"Max\", \"Plus\")"
