@@ -1,0 +1,19 @@
+# analysis/variant-surfaces/drawer.yaml — la SURFACE peinte par chaque variante.
+# Hors de context/ deliberement : lu par la console, jamais par un agent.
+# Les surfaces identiques sont stockees une fois et pointees.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: drawer
+  generated_at: "2026-09-16"
+  variants: 4
+  surfaces: 1
+surfaces:
+  s1:
+    height: 960
+    text: {fill: "@text-primary", size: 18, weight: Bold, lineHeight: 28}
+variants:
+  placement-bottom: s1
+  placement-end: s1
+  placement-start: s1
+  placement-top: s1
