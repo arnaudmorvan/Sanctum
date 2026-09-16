@@ -1,0 +1,23 @@
+# Librairie : Logos d'entreprises
+# Usage : Logos de marques tierces : intégrations, social proof, social login. Couleurs officielles.
+#
+# logos-d-entreprises.yaml — index PLAT name -> [key, node] (variant format=stroke weight=regular). Lib : Logos d'entreprises
+# 1 ligne / asset : nom -> [key publiée (import cross-fichier), node_id (backup in-file)]. Grep CE fichier pour choisir l'asset (icone, illustration, drapeau, logo...).
+# Genere par le plugin (quickref kind=icons-index). Catalogue multi-weights (ds-icons.yaml) retire du repo.
+# Grep : grep '^  <nom>:' logos-d-entreprises.yaml
+
+meta:
+  kind: icons
+  library: "Logos d'entreprises"
+  ds_name: 42 UI Kit V3
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  generated_at: 2026-09-16
+  last_scanned: 2026-09-16
+  icon_count: 3
+  usage: "Logos de marques tierces : intégrations, social proof, social login. Couleurs officielles."
+  note: "Index plat name -> [key, node] : key publiee (importComponentByKeyAsync, cross-fichier) + node_id (getNodeByIdAsync, backup in-file). Variant format=stroke weight=regular. Genere par le plugin (quickref kind=icons-index)."
+  paint: "Icones stroke-based : au swap/recolor dans un ButtonIcon ou ailleurs, VIDER le fill du vecteur 'artboard' plein-cadre (w≈h≈taille de l'icone, sinon il rend un carre plein) et recolorer les paths (strokes pour les traits, fills pour les pleins type dots) en @on surface variant. JAMAIS de fill sur l'artboard ni sur le conteneur."
+icons:
+  logo: [08b0affc23a8f9ec94878bc9190f31d8b850191f, "14573:187148"]
+  logocampus: [f093e81998b5b3c8581c10214c9a148e18234b97, "16004:25162"]
+  logomark: [45953d55adb3519d4f8b748f0eed92d06c118cae, "14573:187141"]
