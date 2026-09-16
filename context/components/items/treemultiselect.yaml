@@ -1,0 +1,51 @@
+# items/treemultiselect.yaml — detail complet du composant 'treemultiselect'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: treemultiselect
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+treemultiselect:
+  figma_key: 1c259f78d19fffbc8705205cf1151637a9af2c3b
+  figma_node_id: "21534:51"
+  component_type: COMPONENT
+  instanciable: true
+  page: "      ↳ TreeMultiSelect"
+  description: "TreeMultiSelect — pick SEVERAL values from hierarchical data: the _BaseField shell as a trigger, plus an always-expanded checkbox tree in the menu. Use it on its own, or swap it into the Field slot when it needs a label. AXES isOpen: whether the menu is shown. Off by default. Runtime only — turn it on to spec the open state, then back off when composing a screen. size, variant, state, status, the text and the slots live on the nested _BaseField instance, which is exposed: pick it in the instance panel. TreeMultiSelect does not duplicate the shell's 64 variants, it inherits them. The menu is a _MenuOpen instance on state=TreeMultiSelect. COMPOSITION A TreeMultiSelect can stand alone: with no label it is a bare control and needs nothing around it. As soon as it needs a label, a description or a status message, do not build that text beside it — swap it into the Field contentSlot. Field owns the whole text scaffold. Keep both statuses equal: an error Field holds a nested _BaseField in status=error. In code this is automatic. The trigger shows the selection as REMOVABLE PILLS, in the shell's badge slot with showBadges on — the same trigger as MultiSelect, not a line of text. The field wraps and grows taller as values are added; show that growth. Every row carries a checkbox. Checking a BRANCH cascades to all its leaves; a branch with only part of its leaves checked reads as indeterminate. Those three states — checked, indeterminate, unchecked — all have to exist in a mock that claims to show a tree in use. Only leaf values are ever stored. A branch checkbox is a shortcut for its leaves, never a value of its own. The tree is ALWAYS fully expanded. No chevron, no disclosure triangle, no collapsed state — top-level rows sit flush and their descendants are connected by indent guide lines. Fill the menu through its menuItems slot, with real names at real depths. A two-level toy tree hides every problem this control has. Use a tree only when the hierarchy carries meaning the user needs. A flat grouped list is a MultiSelect. ACCESSIBILITY On its own a TreeMultiSelect has no accessible name. It gets one from the Field label (or from aria-label in code). Depth must be conveyed by more than indentation: the guide lines are decorative, the structure has to be announced. The indeterminate state is a real checkbox state, not a greyed-out check. It has to be announced as such. Every pill carries its own remove button with an accessible name. Do not draw a value that cannot be taken back out. Announce the count somewhere the user can read it — a trigger full of pills is hard to parse by ear. A search field filters the tree from the top of the menu. Filtering must keep a matching leaf's ancestors visible. CODE — @42/ui-react TreeMultiSelect data is a tree of value / label / disabled / children. value is an array of LEAF values; branch state is derived from it, never stored. The trigger renders the values as Pills, exactly like MultiSelect. Note the naming: what stands in here as a Badge is a Pill in code. The tree renders inside a Popover, fully expanded, with no expand or collapse. Picking does not close it. The nested _BaseField carries the shell props: size→size, variant→variant, status=error→invalid (or the Field error prop), state Disabled→disabled, Hovered / Focused→runtime data-* (Ark UI). isOpen has no prop — the open state belongs to the Popover. endIcon is the component's own chevron; clearable swaps it for a clear button. The search field at the top of the popover has NO Figma equivalent today — the _MenuOpen variant does not draw one. status=success and status=warning have no React equivalent. React-only, do not mock these up here: clearable and clearSectionMode, placeholder, renderItem, variant=filled, size xs / lg / xl, color, readOnly, invalid override, classNames.a"
+  size: {w: 320, h: HUG}
+  direction: VERTICAL
+  text:
+    sample: Placeholder
+    fill: "@text-tertiary"
+    size: 14
+    weight: Regular
+    lineHeight: 20
+  nested_instances:
+    - name: _BaseField
+      depth: 1
+      main_component: _BaseField
+      variant_axes:
+        size: [sm, md]
+        variant: [unstyled, default]
+        state: [focused, disabled, hovered, placeholder]
+        status: [error, default]
+      bool_props:
+        showValue: false
+        showBadges: false
+        showEndIcon: true
+        showPlaceholder: true
+        showStartSlot: false
+    - name: _MenuOpen
+      depth: 1
+      visible: false
+      main_component: _MenuOpen
+      variant_axes:
+        state: [select, treeselect, treemultiselect, multicombobox, menu]
+      bool_props:
+        {showTitle: true}
+  text_nodes:
+    - {name: Placeholder, sample: Placeholder}
+  how_to_use: "1. Instancier le composant via figma_node_id (createInstance()).\n2. setTxt(inst, \"Placeholder\", \"Placeholder\")\n3. Si besoin masquer les actions : inst.findOne(n => n.name === \"_BaseField\")?.setProperties({\"showBadges\":false,\"showEndIcon\":false,\"showPlaceholder\":false,\"showStartSlot\":false,\"showValue\":false})"
+  variants:
+    isopen: [false, true]
+  defaults: {isopen: false}
