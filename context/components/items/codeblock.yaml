@@ -1,0 +1,50 @@
+# items/codeblock.yaml — detail complet du composant 'codeblock'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: codeblock
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+codeblock:
+  figma_key: 3ef6863a1f7971e6c92439be31ecf7026c2b2b81
+  figma_node_id: "23127:132"
+  component_type: COMPONENT_SET
+  instanciable: false
+  default_variant_id: "23125:48913"
+  key_variants:
+    collapse-none: "23125:48913"
+    collapse-collapsed: "23127:60"
+    collapse-expanded: "23127:89"
+  page: "      ↳ CodeBlock"
+  description: "AXES - collapse (none, collapsed, expanded): whether the block truncates, and which way the chevron points. 3 variants. - No axis carries the code itself. The content is _CodeBlockLine instances, that is geometry and text. Changing a line is an instance override, never a component property. COMPOSITION - The shell IS a cardscard instance, variant=default, with its padding overridden to 0 horizontally and 12 vertically. This component does not draw a surface of its own. - The Content slot holds _CodeBlockLine instances, each in FILL. - _CodeBlockControls is absolutely positioned, 8 from the top and from the right edge. On a single-line block, centre it vertically instead. - collapse=collapsed adds a Fade rectangle carrying the Gradient/Fade/Bottom paint style, pinned to the bottom edge. ACCESSIBILITY - The controls row floats over the code: keep it clear of the first line's reading zone. - The fade must never be the only signal that content is hidden; the chevron carries that. CODE - @42/ui-react CodeBlock, in react/kit v0.8.0. NOT present in kit-main. Highlighting is Shiki, so the client component renders a plain unhighlighted pre until it resolves. - collapse -> collapsedLines plus expanded / defaultExpanded. collapse=none means collapsedLines is omitted. - CodeBlock.Static is the Server Component twin: same chrome, zero client JS spent on Shiki. - CodeBlock.Button is published separately here as CodeBlock / Button; use it for a custom entry in the controls prop. - Ship @42/ui-react/code-block/styles.css alongside the component; it is not part of the universal colours chain."
+  size: {w: 600, h: HUG}
+  direction: VERTICAL
+  text:
+    sample: "const highlight = () => ({})"
+    fill: "@text-primary"
+    size: 14
+    weight: Regular
+    lineHeight: 20
+  slots:
+    Content: {slot_id: "I23125:48914;21615:2509", node_type: SLOT, depth: 2}
+  nested_instances:
+    - name: Cards/Card
+      depth: 1
+      main_component: Cards/Card
+      variant_axes:
+        variant: [default, filled, outline, gradient]
+        padding: [md, xs, sm, lg, xl]
+      bool_props:
+        {showFooter: false, showContent: true, showHeader: false}
+    - name: _CodeBlockControls
+      depth: 1
+      main_component: _CodeBlockControls
+      variant_axes:
+        state: [default, copied]
+        expand: [none, more, less]
+  text_nodes:
+    - {name: Code, sample: "const highlight = () => ({})"}
+  how_to_use: "1. Instancier via key_variants (jamais le ComponentSet).\n2. Exemple : const variantNode = await figma.getNodeByIdAsync(key_variants[\"<variant-slug>\"]); const inst = variantNode.createInstance()\n3. setTxt(inst, \"Code\", \"const highlight = () => ({})\")\n4. Si besoin masquer les actions : inst.findOne(n => n.name === \"Cards/Card\")?.setProperties({\"showContent\":false,\"showFooter\":false,\"showHeader\":false})"
+  variants:
+    collapse: [collapsed, expanded, none]
+  defaults: {collapse: none}
