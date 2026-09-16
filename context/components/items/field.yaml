@@ -1,0 +1,58 @@
+# items/field.yaml — detail complet du composant 'field'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: field
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+field:
+  figma_key: e23c58ad34714f744e00db33cc34600e6a346357
+  figma_node_id: "21190:68141"
+  component_type: COMPONENT_SET
+  instanciable: false
+  default_variant_id: "21188:68191"
+  key_variants:
+    size-md-status-default: "21188:68191"
+    size-md-status-error: "21190:68125"
+    size-sm-status-default: "21389:11"
+    size-sm-status-error: "21389:29"
+  page: "      ↳ Field"
+  description: "Field — the entry point for adding a label, description and status to any form control. Form elements never carry their own text scaffold: they get it by being wrapped in a Field. AXES status: validation outcome, not interaction state. default = no validation ran. Status message hidden. success = passed validation. Green message. error = blocking problem. Red message. Maps to invalid. warning = non-blocking caution. Orange message. size: matches the size of the nested form control. md = default, pairs with md-sized controls (height 44). sm = compact, pairs with sm-sized controls (height 36). COMPOSITION contentSlot takes exactly one form control. Accepted slot components: - Input — single-line text field (email, password, search…) - Textarea — multi-line text area - Select — dropdown selection menu - Slider — numeric value slider Swap the control, never rebuild a label or helper text beside a bare control: Field is where that text lives. required toggles the asterisk. showInfo adds the help icon. showLabel / showDescription trim the scaffold down. labelText / descriptionText carry the copy — edit the properties, not the text layers. Keep the nested control's status equal to the Field status (error Field = error control). In code this is automatic. ACCESSIBILITY The label is bound to the control: clicking it moves focus, assistive tech announces it as the control's name. Description and status message are read with the control via aria-describedby. error additionally sets aria-invalid. required and disabled are set once on the Field and propagate to the nested control. CODE — @42/ui-react Field labelText→label, descriptionText→description, required→required (asterisk + semantic flag travel together). status=error → error=\"…\": its presence sets invalid and turns the field-aware control red automatically. success and warning have no React equivalent yet. contentSlot→children: any field-aware control (Input, Select, Combobox, Slider…) receives id, aria-describedby, aria-invalid, disabled, required through Field context — no manual wiring. Order differs in code: description renders below the control and an error replaces it — they never coexist. React-only, do not mock these up here: size (xs–xl), disabled, readOnly, invalid override, classNames. showInfo has no prop — compose a help icon into label."
+  size: {w: 320, h: HUG}
+  direction: VERTICAL
+  gap: 4
+  text:
+    sample: Label
+    fill: "@text-primary"
+    size: 16
+    weight: Regular
+    lineHeight: 24
+  slots:
+    contentSlot: {slot_id: "21188:68196", node_type: SLOT, depth: 1}
+  nested_instances:
+    - {name: info, depth: 2, visible: false, main_component: info}
+  text_nodes:
+    - {name: Label, role: label, sample: Label}
+    - {name: Asterisk, sample: "*"}
+    - {name: Description, role: description, sample: Helper description text}
+    - {name: Status message, sample: Error message}
+  how_to_use: "1. Instancier via key_variants (jamais le ComponentSet).\n2. Exemple : const variantNode = await figma.getNodeByIdAsync(key_variants[\"<variant-slug>\"]); const inst = variantNode.createInstance()\n3. setTxt(inst, \"Description\", \"Helper description text\")"
+  variants:
+    descriptiontext: "<text>"
+    labeltext: "<text>"
+    required: [false, true]
+    showdescription: [false, true]
+    showinfo: [false, true]
+    showlabel: [false, true]
+    size: [md, sm]
+    status: [default, error]
+  defaults:
+    descriptiontext: Helper description text
+    labeltext: Label
+    required: true
+    showdescription: false
+    showinfo: false
+    showlabel: true
+    size: md
+    status: default
+  notes: ["Variant axis \"status\" looks like a typo of \"state\" (distance 2)."]
