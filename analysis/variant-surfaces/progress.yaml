@@ -1,0 +1,38 @@
+# analysis/variant-surfaces/progress.yaml — la SURFACE peinte par chaque variante.
+# Hors de context/ deliberement : lu par la console, jamais par un agent.
+# Les surfaces identiques sont stockees une fois et pointees.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: progress
+  generated_at: "2026-09-16"
+  variants: 24
+  surfaces: 1
+surfaces:
+  s1:
+    gap: 8
+variants:
+  progress-0-color-pink: s1
+  progress-0-color-white: s1
+  progress-10-color-pink: s1
+  progress-10-color-white: s1
+  progress-100-color-pink: s1
+  progress-100-color-white: s1
+  progress-100-success-color-pink: s1
+  progress-100-success-color-white: s1
+  progress-20-color-pink: s1
+  progress-20-color-white: s1
+  progress-30-color-pink: s1
+  progress-30-color-white: s1
+  progress-40-color-pink: s1
+  progress-40-color-white: s1
+  progress-50-color-pink: s1
+  progress-50-color-white: s1
+  progress-60-color-pink: s1
+  progress-60-color-white: s1
+  progress-70-color-pink: s1
+  progress-70-color-white: s1
+  progress-80-color-pink: s1
+  progress-80-color-white: s1
+  progress-90-color-pink: s1
+  progress-90-color-white: s1
