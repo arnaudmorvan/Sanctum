@@ -1,0 +1,53 @@
+# items/treeselect.yaml — detail complet du composant 'treeselect'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: treeselect
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+treeselect:
+  figma_key: e63d492348d4e229be5c52f4ed3abc0a87e16ce8
+  figma_node_id: "21534:48"
+  component_type: COMPONENT
+  instanciable: true
+  page: "      ↳ TreeSelect"
+  description: "TreeSelect — pick ONE value from hierarchical data: the _BaseField shell as a trigger, plus an always-expanded tree in the menu. Use it on its own, or swap it into the Field slot when it needs a label. AXES isOpen: whether the menu is shown. Off by default. Runtime only — turn it on to spec the open state, then back off when composing a screen. size, variant, state, status, the text and the start slot live on the nested _BaseField instance, which is exposed: pick it in the instance panel. TreeSelect does not duplicate the shell's 64 variants, it inherits them. The menu is a _MenuOpen instance on state=TreeSelect. COMPOSITION A TreeSelect can stand alone: with no label it is a bare control and needs nothing around it. As soon as it needs a label, a description or a status message, do not build that text beside it — swap it into the Field contentSlot. Field owns the whole text scaffold. Keep both statuses equal: an error Field holds a nested _BaseField in status=error. In code this is automatic. ONLY LEAVES ARE SELECTABLE. A row with children is an organizational branch, not a value: it can never be picked, and it must not read as pickable. Never mock a check or a selected state on a branch row. The tree is ALWAYS fully expanded. There is no chevron, no disclosure triangle, no collapsed state to draw — top-level rows sit flush and their descendants are connected by indent guide lines. The trigger shows the selected leaf's label as plain text, through the shell's text property. Not its path — if two leaves share a label, that ambiguity is a data problem to solve upstream, not a trigger to lengthen. Fill the menu through its menuItems slot, with real names at real depths. A two-level toy tree hides every problem this control has: long labels, deep nesting, guide lines. Use a tree only when the hierarchy carries meaning the user needs. A flat list that happens to be grouped is a Select with groups, not a TreeSelect. ACCESSIBILITY On its own a TreeSelect has no accessible name. It gets one from the Field label (or from aria-label in code). Depth must be conveyed by more than indentation: the guide lines are decorative, the structure has to be announced. Never rely on indent alone to say what belongs to what. Branch rows are not interactive. They must not be focus stops, and they must not look like the leaves around them. The chevron sits in endIcon and is the component's own control — do not put anything else there. A search field filters the tree from the top of the menu. Filtering must keep a matching leaf's ancestors visible, or the result loses its meaning. CODE — @42/ui-react TreeSelect data is a tree of value / label / disabled / children. value is a single string or null, and it is always a LEAF value — branch values are never selectable. The tree renders inside a Popover, fully expanded, with no expand or collapse. Picking a leaf marks it and closes the popover, like Select. The nested _BaseField carries the shell props: size→size, variant→variant, status=error→invalid (or the Field error prop), state Disabled→disabled, Hovered / Focused→runtime data-* (Ark UI). isOpen has no prop — the open state belongs to the Popover. endIcon is the component's own chevron; clearable swaps it for a clear button once a value is set. The search field at the top of the popover has NO Figma equivalent today — the _MenuOpen variant does not draw one. status=success and status=warning have no React equivalent. React-only, do not mock these up here: clearable and clearSectionMode, placeholder, renderItem, variant=filled, size xs / lg / xl, color, readOnly, invalid override, classNames."
+  size: {w: 320, h: HUG}
+  direction: VERTICAL
+  text:
+    sample: Placeholder
+    fill: "@text-tertiary"
+    size: 14
+    weight: Regular
+    lineHeight: 20
+  slots:
+    menuItems: {slot_id: "I21534:50;21508:174", node_type: SLOT, depth: 2}
+  nested_instances:
+    - name: _BaseField
+      depth: 1
+      main_component: _BaseField
+      variant_axes:
+        size: [sm, md]
+        variant: [unstyled, default]
+        state: [focused, disabled, hovered, placeholder]
+        status: [error, default]
+      bool_props:
+        showValue: false
+        showBadges: false
+        showEndIcon: true
+        showPlaceholder: true
+        showStartSlot: false
+    - name: _MenuOpen
+      depth: 1
+      visible: false
+      main_component: _MenuOpen
+      variant_axes:
+        state: [select, treeselect, treemultiselect, multicombobox, menu]
+      bool_props:
+        {showTitle: true}
+  text_nodes:
+    - {name: Placeholder, sample: Placeholder}
+  how_to_use: "1. Instancier le composant via figma_node_id (createInstance()).\n2. setTxt(inst, \"Placeholder\", \"Placeholder\")\n3. Si besoin masquer les actions : inst.findOne(n => n.name === \"_BaseField\")?.setProperties({\"showBadges\":false,\"showEndIcon\":false,\"showPlaceholder\":false,\"showStartSlot\":false,\"showValue\":false})"
+  variants:
+    isopen: [false, true]
+  defaults: {isopen: false}
