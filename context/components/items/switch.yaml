@@ -1,0 +1,80 @@
+# items/switch.yaml — detail complet du composant 'switch'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: switch
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+switch:
+  figma_key: e93a6c0c071449ada2042bf5820eb060211713e3
+  figma_node_id: "14886:22554"
+  component_type: COMPONENT_SET
+  instanciable: false
+  default_variant_id: "14886:22739"
+  key_variants:
+    size-md-checked-true-disabled-false: "14886:22619"
+    size-sm-checked-true-disabled-false: "14886:22634"
+    size-md-checked-true-disabled-true: "14886:22649"
+    size-sm-checked-true-disabled-true: "14886:22664"
+    size-md-checked-false-disabled-false: "14886:22739"
+    size-sm-checked-false-disabled-false: "14886:22754"
+    size-md-checked-false-disabled-true: "14886:22769"
+    size-sm-checked-false-disabled-true: "14886:22784"
+    size-xs-checked-true-disabled-true: "21360:65112"
+    size-xs-checked-true-disabled-false: "21360:65118"
+    size-xs-checked-false-disabled-true: "21360:65124"
+    size-xs-checked-false-disabled-false: "21360:65130"
+  page: "      ↳ Switch"
+  description: "AXES - 6 axes, 32 key variants: pressed x size (sm | md) x text x state (default | hover | focus | disabled). type has a single value, default. - pressed and state are runtime, not design axes. - text and supporting-text are composition booleans: the inline label and the helper line. - size stops at sm/md, so the xs, lg and xl steps used in code have no Figma equivalent. COMPOSITION - Vertical auto-layout, hug x hug, gap 10. Slot Button (FRAME, depth 2) holds the track. - One nested instance, _Toggle base42, carrying type / pressed / size / state. - The text block sits beside the track when text=true; supporting-text adds a second line under it. - For an immediate binary setting. For a value submitted with a form, prefer checkbox-v2. ACCESSIBILITY - The label must be the accessible name; the track on its own carries none. - The on/off state must be exposed semantically: thumb position and fill colour are not enough. - Do not let the green fill alone mean on. CODE - React: Switch (Ark UI Switch). The Figma name toggle was renamed switch in code. - Props: checked, defaultChecked, onCheckedChange, label, description, error, required, invalid, disabled, readOnly, size, color (defaults to green), name, value, id, ref, onBlur. - pressed -> checked, driven at runtime through Ark data-[state=checked]; state -> data-focus-visible / data-disabled / data-invalid, never a variant. - text -> label, supporting-text -> description. - size: React xs/sm/md/lg/xl vs Figma sm/md, mismatch. Only size is a cva variant; there is no shape variant."
+  size: {w: HUG, h: HUG}
+  direction: HORIZONTAL
+  gap: 12
+  text:
+    sample: Remember me
+    fill: "@text-primary"
+    size: 16
+    weight: Medium
+    lineHeight: 24
+  slots:
+    Button: {slot_id: "I14886:22740;14886:22535", node_type: FRAME, depth: 2}
+  nested_instances:
+    - name: _Toggle base42
+      depth: 1
+      main_component: _Toggle base42
+      variant_axes:
+        size: [md, sm, xs]
+        checked: ["true", "false"]
+        disabled: ["false", "true"]
+  text_nodes:
+    - {name: Text, sample: Remember me}
+    - name: Supporting text
+      role: hint
+      sample: Save my login details for next time.
+    - {name: Error text, sample: This field is required}
+  how_to_use: "1. Instancier via key_variants (jamais le ComponentSet).\n2. Exemple : const variantNode = await figma.getNodeByIdAsync(key_variants[\"<variant-slug>\"]); const inst = variantNode.createInstance()\n3. setTxt(inst, \"Text\", \"Remember me\")\n4. setTxt(inst, \"Supporting text\", \"Save my login details for next time.\")"
+  variants:
+    checked: ["false", "true"]
+    description: "<text>"
+    disabled: ["false", "true"]
+    error: "<text>"
+    invalid: [false, true]
+    label: "<text>"
+    readonly: [false, true]
+    required: [false, true]
+    showdescription: [false, true]
+    showerror: [false, true]
+    showlabel: [false, true]
+    size: [md, sm, xs]
+  defaults:
+    checked: "false"
+    description: Save my login details for next time.
+    disabled: "false"
+    error: This field is required
+    invalid: false
+    label: Remember me
+    readonly: false
+    required: false
+    showdescription: true
+    showerror: false
+    showlabel: true
+    size: md
