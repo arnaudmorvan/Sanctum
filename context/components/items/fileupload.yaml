@@ -1,0 +1,48 @@
+# items/fileupload.yaml — detail complet du composant 'fileupload'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: fileupload
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+fileupload:
+  figma_key: 2a435c7f38e9a5989236cac66df6b6cfa290a96a
+  figma_node_id: "15030:133188"
+  component_type: COMPONENT_SET
+  instanciable: false
+  default_variant_id: "15030:133201"
+  key_variants:
+    showfilesqueued-true-progressstyle-progress-bar: "15030:133189"
+    showfilesqueued-false-progressstyle-progress-bar: "15030:133201"
+  page: "      ↳ File Upload"
+  description: "FileInput - dropzone plus the queue of files being uploaded. 2 variants. AXES - showFilesQueued (False, True): whether the list of queued files is drawn under the dropzone. - progressStyle: one value only, Progress bar. A second style was planned and never built. - The nested _File upload base is exposed. Its state (Default, Hover, Disabled), showDropHint and withButton are set there, not here. COMPOSITION - Vertical auto-layout, width 512, hug height, gap 16: dropzone, then the queued file list. - Each queued row is a _File upload item base instance: its own state carries In progress / Complete / Error. ACCESSIBILITY - The dropzone must stay reachable by keyboard: the action button is the real control, drag and drop is an enhancement. - Upload progress needs a text percentage, not only the bar. CODE - @42/ui-react FileUpload - withButton -> withButton. state=Disabled -> disabled. showDropHint has no prop, the hint text is always rendered. - showFilesQueued has no prop: the queue renders whenever value holds files. - Item states (In progress / Complete / Error) come from the upload lifecycle, never from a class you set. - React-only, do not try to mock these up: accept, maxFiles, maxFileSize, directory, onDrop, hint, size, color, invalid, name, id. KNOWN ISSUE - progressStyle is a single-value axis and carries no information. Either build the second style or remove the axis. - Renamed 2026-08-28: Type -> progressStyle, File drag and drop -> showDropHint, State -> state, and withButton was added to match React. - The previous description was wrong: it announced 3 axes and 8 key variants including a breakpoint (desktop | mobile). Neither the breakpoint axis nor those variants exist - the set holds 2."
+  size: {w: 512, h: HUG}
+  direction: VERTICAL
+  gap: 16
+  text:
+    sample: Click to upload
+    fill: "@text-primary"
+    size: 14
+    weight: SemiBold
+    lineHeight: 20
+  slots:
+    Action: {slot_id: "I15030:133202;15030:132663", node_type: FRAME, depth: 4}
+  nested_instances:
+    - name: _File upload base
+      depth: 1
+      main_component: _File upload base
+      variant_axes:
+        state: [default, hover, disabled]
+      bool_props:
+        {showDropHint: true, withButton: true}
+  text_nodes:
+    - {name: Text, sample: or drag and drop}
+    - name: Supporting text
+      role: hint
+      sample: "SVG, PNG, JPG or GIF (max. 2 MB) You ..."
+  how_to_use: "1. Instancier via key_variants (jamais le ComponentSet).\n2. Exemple : const variantNode = await figma.getNodeByIdAsync(key_variants[\"<variant-slug>\"]); const inst = variantNode.createInstance()\n3. setTxt(inst, \"Text\", \"or drag and drop\")\n4. setTxt(inst, \"Supporting text\", \"SVG, PNG, JPG or GIF (max. 2 MB) You ...\")\n5. Si besoin masquer les actions : inst.findOne(n => n.name === \"_File upload base\")?.setProperties({\"showDropHint\":false,\"withButton\":false})"
+  variants:
+    progressstyle: [progress bar]
+    showfilesqueued: ["false", "true"]
+  defaults: {progressstyle: progress bar, showfilesqueued: "false"}
+  notes: ["Variant axis name \"showFilesQueued\" was normalised to \"showfilesqueued\" (use lowercase slugs for consistency).", "Variant axis name \"progressStyle\" was normalised to \"progressstyle\" (use lowercase slugs for consistency)."]
