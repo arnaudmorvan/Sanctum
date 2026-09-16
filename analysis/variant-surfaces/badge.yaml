@@ -1,0 +1,750 @@
+# analysis/variant-surfaces/badge.yaml — la SURFACE peinte par chaque variante.
+# Hors de context/ deliberement : lu par la console, jamais par un agent.
+# Les surfaces identiques sont stockees une fois et pointees.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: badge
+  generated_at: "2026-09-16"
+  variants: 87
+  surfaces: 87
+surfaces:
+  s1:
+    fill: "@bg-blue-secondary"
+    stroke: {color: "@border-blue-solid", width: 0.5, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 6}
+    gap: 4
+    height: 24
+    text: {fill: "@text-blue-secondary", size: 14, weight: Medium, lineHeight: 20}
+  s2:
+    fill: "@bg-blue-secondary"
+    stroke: {color: "@border-blue-solid", width: 0.5, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 4}
+    gap: 4
+    height: 20
+    text: {fill: "@text-blue-secondary", size: 10, weight: Medium, lineHeight: 16}
+  s3:
+    stroke: {color: "@border-blue-solid", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 4}
+    gap: 4
+    height: 20
+    text: {fill: "@text-blue-secondary", size: 10, weight: Medium, lineHeight: 16}
+  s4:
+    fill: "@bg-blue-solid"
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 4}
+    gap: 4
+    height: 20
+    text: {fill: "@text-primary-inverse", size: 10, weight: Medium, lineHeight: 16}
+  s5:
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 4}
+    gap: 4
+    height: 20
+    text: {fill: "@text-blue-secondary", size: 10, weight: Medium, lineHeight: 16}
+  s6:
+    fill: "@bg-blue-secondary"
+    stroke: {color: "@border-blue-solid", width: 0.5, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 10}
+    gap: 4
+    height: 28
+    text: {fill: "@text-blue-secondary", size: 14, weight: Medium, lineHeight: 20}
+  s7:
+    stroke: {color: "@border-blue-solid", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 10}
+    gap: 4
+    height: 28
+    text: {fill: "@text-blue-secondary", size: 14, weight: Medium, lineHeight: 20}
+  s8:
+    fill: "@bg-blue-solid"
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 10}
+    gap: 4
+    height: 28
+    text: {fill: "@text-primary-inverse", size: 14, weight: Medium, lineHeight: 20}
+  s9:
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 10}
+    gap: 4
+    height: 28
+    text: {fill: "@text-blue-secondary", size: 14, weight: Medium, lineHeight: 20}
+  s10:
+    stroke: {color: "@border-blue-solid", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 6}
+    gap: 4
+    height: 24
+    text: {fill: "@text-blue-secondary", size: 14, weight: Medium, lineHeight: 20}
+  s11:
+    fill: "@bg-blue-solid"
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 6}
+    gap: 4
+    height: 24
+    text: {fill: "@text-primary-inverse", size: 14, weight: Medium, lineHeight: 20}
+  s12:
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 6}
+    gap: 4
+    height: 24
+    text: {fill: "@text-blue-secondary", size: 14, weight: Medium, lineHeight: 20}
+  s13:
+    fill: "@bg-inverse"
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 4}
+    gap: 4
+    height: 20
+    text: {fill: "@text-primary-inverse", size: 10, weight: Medium, lineHeight: 16}
+  s14:
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 4}
+    gap: 4
+    height: 20
+    text: {fill: "@text-primary", size: 10, weight: Medium, lineHeight: 16}
+  s15:
+    fill: "@bg-inverse-lighter"
+    stroke: {color: "@border-full", width: 0.5, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 10}
+    gap: 4
+    height: 28
+    text: {fill: "@text-primary", size: 14, weight: Medium, lineHeight: 20}
+  s16:
+    stroke: {color: "@border-full", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 10}
+    gap: 4
+    height: 28
+    text: {fill: "@text-primary", size: 14, weight: Medium, lineHeight: 20}
+  s17:
+    fill: "@bg-inverse"
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 10}
+    gap: 4
+    height: 28
+    text: {fill: "@text-primary-inverse", size: 14, weight: Medium, lineHeight: 20}
+  s18:
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 10}
+    gap: 4
+    height: 28
+    text: {fill: "@text-primary", size: 14, weight: Medium, lineHeight: 20}
+  s19:
+    fill: "@bg-inverse-lighter"
+    stroke: {color: "@border-full", width: 0.5, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 6}
+    gap: 4
+    height: 24
+    text: {fill: "@text-primary", size: 14, weight: Medium, lineHeight: 20}
+  s20:
+    stroke: {color: "@border-full", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 6}
+    gap: 4
+    height: 24
+    text: {fill: "@text-primary", size: 14, weight: Medium, lineHeight: 20}
+  s21:
+    fill: "@bg-inverse"
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 6}
+    gap: 4
+    height: 24
+    text: {fill: "@text-primary-inverse", size: 14, weight: Medium, lineHeight: 20}
+  s22:
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 6}
+    gap: 4
+    height: 24
+    text: {fill: "@text-primary", size: 14, weight: Medium, lineHeight: 20}
+  s23:
+    stroke: {color: "@border-full", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 4}
+    gap: 4
+    height: 20
+    text: {fill: "@text-primary", size: 10, weight: Medium, lineHeight: 16}
+  s24:
+    fill: "@bg-inverse-lighter"
+    stroke: {color: "@border-full", width: 0.5, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 4}
+    gap: 4
+    height: 20
+    text: {fill: "@text-primary", size: 10, weight: Medium, lineHeight: 16}
+  s25:
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 6}
+    gap: 4
+    height: 24
+    text: {fill: "@text-success-secondary", size: 14, weight: Medium, lineHeight: 20}
+  s26:
+    fill: "@bg-success-solid"
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 6}
+    gap: 4
+    height: 24
+    text: {fill: "@text-primary-inverse", size: 14, weight: Medium, lineHeight: 20}
+  s27:
+    stroke: {color: "@border-success-solid", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 6}
+    gap: 4
+    height: 24
+    text: {fill: "@text-success-secondary", size: 14, weight: Medium, lineHeight: 20}
+  s28:
+    fill: "@bg-success-secondary"
+    stroke: {color: "@border-success-solid", width: 0.5, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 6}
+    gap: 4
+    height: 24
+    text: {fill: "@text-success-secondary", size: 14, weight: Medium, lineHeight: 20}
+  s29:
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 10}
+    gap: 4
+    height: 28
+    text: {fill: "@text-success-secondary", size: 14, weight: Medium, lineHeight: 20}
+  s30:
+    fill: "@bg-success-solid"
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 10}
+    gap: 4
+    height: 28
+    text: {fill: "@text-primary-inverse", size: 14, weight: Medium, lineHeight: 20}
+  s31:
+    stroke: {color: "@border-success-solid", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 10}
+    gap: 4
+    height: 28
+    text: {fill: "@text-success-secondary", size: 14, weight: Medium, lineHeight: 20}
+  s32:
+    fill: "@bg-success-secondary"
+    stroke: {color: "@border-success-solid", width: 0.5, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 10}
+    gap: 4
+    height: 28
+    text: {fill: "@text-success-secondary", size: 14, weight: Medium, lineHeight: 20}
+  s33:
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 4}
+    gap: 4
+    height: 20
+    text: {fill: "@text-success-secondary", size: 10, weight: Medium, lineHeight: 16}
+  s34:
+    fill: "@bg-success-solid"
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 4}
+    gap: 4
+    height: 20
+    text: {fill: "@text-primary-inverse", size: 10, weight: Medium, lineHeight: 16}
+  s35:
+    stroke: {color: "@border-success-solid", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 4}
+    gap: 4
+    height: 20
+    text: {fill: "@text-success-secondary", size: 10, weight: Medium, lineHeight: 16}
+  s36:
+    fill: "@bg-success-secondary"
+    stroke: {color: "@border-success-solid", width: 0.5, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 4}
+    gap: 4
+    height: 20
+    text: {fill: "@text-success-secondary", size: 10, weight: Medium, lineHeight: 16}
+  s37:
+    stroke: {color: "@border-warning-solid", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 4}
+    gap: 4
+    height: 20
+    text: {fill: "@text-warning-secondary", size: 10, weight: Medium, lineHeight: 16}
+  s38:
+    fill: "@bg-warning-solid"
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 4}
+    gap: 4
+    height: 22
+    text: {fill: "@text-primary-inverse", size: 10, weight: Medium, lineHeight: 16}
+  s39:
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 4}
+    gap: 4
+    height: 20
+    text: {fill: "@text-warning-secondary", size: 10, weight: Medium, lineHeight: 16}
+  s40:
+    fill: "@bg-warning-secondary"
+    stroke: {color: "@border-warning-solid", width: 0.5, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 10}
+    gap: 4
+    height: 28
+    text: {fill: "@text-warning-secondary", size: 14, weight: Medium, lineHeight: 20}
+  s41:
+    stroke: {color: "@border-warning-solid", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 10}
+    gap: 4
+    height: 28
+    text: {fill: "@text-warning-secondary", size: 14, weight: Medium, lineHeight: 20}
+  s42:
+    fill: "@bg-warning-solid"
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 10}
+    gap: 4
+    height: 28
+    text: {fill: "@text-primary-inverse", size: 14, weight: Medium, lineHeight: 20}
+  s43:
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 10}
+    gap: 4
+    height: 28
+    text: {fill: "@text-warning-secondary", size: 14, weight: Medium, lineHeight: 20}
+  s44:
+    fill: "@bg-warning-secondary"
+    stroke: {color: "@border-warning-solid", width: 0.5, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 6}
+    gap: 4
+    height: 24
+    text: {fill: "@text-warning-secondary", size: 14, weight: Medium, lineHeight: 20}
+  s45:
+    stroke: {color: "@border-warning-solid", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 6}
+    gap: 4
+    height: 24
+    text: {fill: "@text-warning-secondary", size: 14, weight: Medium, lineHeight: 20}
+  s46:
+    fill: "@bg-warning-solid"
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 6}
+    gap: 4
+    height: 24
+    text: {fill: "@text-primary-inverse", size: 14, weight: Medium, lineHeight: 20}
+  s47:
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 6}
+    gap: 4
+    height: 24
+    text: {fill: "@text-warning-secondary", size: 14, weight: Medium, lineHeight: 20}
+  s48:
+    fill: "@bg-warning-secondary"
+    stroke: {color: "@border-warning-solid", width: 0.5, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 4}
+    gap: 4
+    height: 20
+    text: {fill: "@text-warning-secondary", size: 10, weight: Medium, lineHeight: 16}
+  s49:
+    fill: "@bg-pink-solid"
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 10}
+    gap: 4
+    height: 28
+    text: {fill: "@text-primary-inverse", size: 14, weight: Medium, lineHeight: 20}
+  s50:
+    fill: "@bg-pink-secondary"
+    stroke: {color: "@border-pink-solid", width: 0.5, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 4}
+    gap: 4
+    height: 20
+    text: {fill: "@text-pink-secondary", size: 10, weight: Medium, lineHeight: 16}
+  s51:
+    stroke: {color: "@border-pink-solid", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 4}
+    gap: 4
+    height: 20
+    text: {fill: "@text-pink-secondary", size: 10, weight: Medium, lineHeight: 16}
+  s52:
+    fill: "@bg-pink-solid"
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 4}
+    gap: 4
+    height: 20
+    text: {fill: "@text-primary-inverse", size: 10, weight: Medium, lineHeight: 16}
+  s53:
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 4}
+    gap: 4
+    height: 20
+    text: {fill: "@text-pink-secondary", size: 10, weight: Medium, lineHeight: 16}
+  s54:
+    fill: "@bg-pink-secondary"
+    stroke: {color: "@border-pink-solid", width: 0.5, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 10}
+    gap: 4
+    height: 28
+    text: {fill: "@text-pink-secondary", size: 14, weight: Medium, lineHeight: 20}
+  s55:
+    stroke: {color: "@border-pink-solid", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 10}
+    gap: 4
+    height: 28
+    text: {fill: "@text-pink-secondary", size: 14, weight: Medium, lineHeight: 20}
+  s56:
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 10}
+    gap: 4
+    height: 28
+    text: {fill: "@text-pink-secondary", size: 14, weight: Medium, lineHeight: 20}
+  s57:
+    fill: "@bg-pink-secondary"
+    stroke: {color: "@border-pink-solid", width: 0.5, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 6}
+    gap: 4
+    height: 24
+    text: {fill: "@text-pink-secondary", size: 14, weight: Medium, lineHeight: 20}
+  s58:
+    stroke: {color: "@border-pink-solid", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 6}
+    gap: 4
+    height: 24
+    text: {fill: "@text-pink-secondary", size: 14, weight: Medium, lineHeight: 20}
+  s59:
+    fill: "@bg-pink-solid"
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 6}
+    gap: 4
+    height: 24
+    text: {fill: "@text-primary-inverse", size: 14, weight: Medium, lineHeight: 20}
+  s60:
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 6}
+    gap: 4
+    height: 24
+    text: {fill: "@text-pink-secondary", size: 14, weight: Medium, lineHeight: 20}
+  s61:
+    stroke: {color: "@border-purple-solid", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 4}
+    gap: 4
+    height: 20
+    text: {fill: "@text-purple-secondary", size: 10, weight: Medium, lineHeight: 16}
+  s62:
+    fill: "@bg-purple-secondary"
+    stroke: {color: "@border-purple-solid", width: 0.5, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 4}
+    gap: 4
+    height: 20
+    text: {fill: "@text-purple-secondary", size: 10, weight: Medium, lineHeight: 16}
+  s63:
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 6}
+    gap: 4
+    height: 24
+    text: {fill: "@text-purple-secondary", size: 14, weight: Medium, lineHeight: 20}
+  s64:
+    fill: "@bg-purple-solid"
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 6}
+    gap: 4
+    height: 24
+    text: {fill: "@text-primary-inverse", size: 14, weight: Medium, lineHeight: 20}
+  s65:
+    stroke: {color: "@border-purple-solid", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 6}
+    gap: 4
+    height: 24
+    text: {fill: "@text-purple-secondary", size: 14, weight: Medium, lineHeight: 20}
+  s66:
+    fill: "@bg-purple-secondary"
+    stroke: {color: "@border-purple-solid", width: 0.5, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 6}
+    gap: 4
+    height: 24
+    text: {fill: "@text-purple-secondary", size: 14, weight: Medium, lineHeight: 20}
+  s67:
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 10}
+    gap: 4
+    height: 28
+    text: {fill: "@text-purple-secondary", size: 14, weight: Medium, lineHeight: 20}
+  s68:
+    fill: "@bg-purple-solid"
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 10}
+    gap: 4
+    height: 28
+    text: {fill: "@text-primary-inverse", size: 14, weight: Medium, lineHeight: 20}
+  s69:
+    stroke: {color: "@border-purple-solid", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 10}
+    gap: 4
+    height: 28
+    text: {fill: "@text-purple-secondary", size: 14, weight: Medium, lineHeight: 20}
+  s70:
+    fill: "@bg-purple-secondary"
+    stroke: {color: "@border-purple-solid", width: 0.5, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 10}
+    gap: 4
+    height: 28
+    text: {fill: "@text-purple-secondary", size: 14, weight: Medium, lineHeight: 20}
+  s71:
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 4}
+    gap: 4
+    height: 20
+    text: {fill: "@text-purple-secondary", size: 10, weight: Medium, lineHeight: 16}
+  s72:
+    fill: "@bg-purple-solid"
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 4}
+    gap: 4
+    height: 20
+    text: {fill: "@text-primary-inverse", size: 10, weight: Medium, lineHeight: 16}
+  s73:
+    stroke: {color: "@border-error-solid", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 4}
+    gap: 4
+    height: 20
+    text: {fill: "@text-error-secondary", size: 10, weight: Medium, lineHeight: 16}
+  s74:
+    fill: "@bg-error-solid"
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 4}
+    gap: 4
+    height: 20
+    text: {fill: "@text-primary-inverse", size: 10, weight: Medium, lineHeight: 16}
+  s75:
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 4}
+    gap: 4
+    height: 20
+    text: {fill: "@text-error-secondary", size: 10, weight: Medium, lineHeight: 16}
+  s76:
+    fill: "@bg-error-secondary"
+    stroke: {color: "@border-error-solid", width: 0.5, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 10}
+    gap: 4
+    height: 28
+    text: {fill: "@text-error-secondary", size: 14, weight: Medium, lineHeight: 20}
+  s77:
+    stroke: {color: "@border-error-solid", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 10}
+    gap: 4
+    height: 28
+    text: {fill: "@text-error-secondary", size: 14, weight: Medium, lineHeight: 20}
+  s78:
+    fill: "@bg-error-secondary"
+    stroke: {color: "@border-error-solid", width: 0.5, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 4}
+    gap: 4
+    height: 20
+    text: {fill: "@text-error-secondary", size: 10, weight: Medium, lineHeight: 16}
+  s79:
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 10}
+    gap: 4
+    height: 28
+    text: {fill: "@text-error-secondary", size: 14, weight: Medium, lineHeight: 20}
+  s80:
+    fill: "@bg-error-secondary"
+    stroke: {color: "@border-error-solid", width: 0.5, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 6}
+    gap: 4
+    height: 24
+    text: {fill: "@text-error-secondary", size: 14, weight: Medium, lineHeight: 20}
+  s81:
+    stroke: {color: "@border-error-solid", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 6}
+    gap: 4
+    height: 24
+    text: {fill: "@text-error-secondary", size: 14, weight: Medium, lineHeight: 20}
+  s82:
+    fill: "@bg-error-solid"
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 6}
+    gap: 4
+    height: 24
+    text: {fill: "@text-primary-inverse", size: 14, weight: Medium, lineHeight: 20}
+  s83:
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 6}
+    gap: 4
+    height: 24
+    text: {fill: "@text-error-secondary", size: 14, weight: Medium, lineHeight: 20}
+  s84:
+    fill: "@bg-error-solid"
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 10}
+    gap: 4
+    height: 28
+    text: {fill: "@text-primary-inverse", size: 14, weight: Medium, lineHeight: 20}
+  s85:
+    stroke: {color: "@white", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 6}
+    gap: 4
+    height: 20
+    text: {fill: "@black", size: 10, weight: Medium, lineHeight: 16}
+  s86:
+    stroke: {color: "@white", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 6}
+    gap: 4
+    height: 24
+    text: {fill: "@black", size: 14, weight: Medium, lineHeight: 20}
+  s87:
+    stroke: {color: "@white", width: 1, align: INSIDE}
+    radius: 4
+    padding: {v: 0, h: 10}
+    gap: 4
+    height: 28
+    text: {fill: "@black", size: 14, weight: Medium, lineHeight: 20}
+variants:
+  color-brand-size-lg-variant-filled: s8
+  color-brand-size-lg-variant-gradient: s87
+  color-brand-size-lg-variant-light: s6
+  color-brand-size-lg-variant-outline: s7
+  color-brand-size-lg-variant-subtle: s9
+  color-brand-size-md-variant-filled: s11
+  color-brand-size-md-variant-gradient: s86
+  color-brand-size-md-variant-light: s1
+  color-brand-size-md-variant-outline: s10
+  color-brand-size-md-variant-subtle: s12
+  color-brand-size-sm-variant-filled: s4
+  color-brand-size-sm-variant-gradient: s85
+  color-brand-size-sm-variant-light: s2
+  color-brand-size-sm-variant-outline: s3
+  color-brand-size-sm-variant-subtle: s5
+  color-green-size-lg-variant-filled: s30
+  color-green-size-lg-variant-light: s32
+  color-green-size-lg-variant-outline: s31
+  color-green-size-lg-variant-subtle: s29
+  color-green-size-md-variant-filled: s26
+  color-green-size-md-variant-light: s28
+  color-green-size-md-variant-outline: s27
+  color-green-size-md-variant-subtle: s25
+  color-green-size-sm-variant-filled: s34
+  color-green-size-sm-variant-light: s36
+  color-green-size-sm-variant-outline: s35
+  color-green-size-sm-variant-subtle: s33
+  color-neutral-size-lg-variant-filled: s17
+  color-neutral-size-lg-variant-light: s15
+  color-neutral-size-lg-variant-outline: s16
+  color-neutral-size-lg-variant-subtle: s18
+  color-neutral-size-md-variant-filled: s21
+  color-neutral-size-md-variant-light: s19
+  color-neutral-size-md-variant-outline: s20
+  color-neutral-size-md-variant-subtle: s22
+  color-neutral-size-sm-variant-filled: s13
+  color-neutral-size-sm-variant-light: s24
+  color-neutral-size-sm-variant-outline: s23
+  color-neutral-size-sm-variant-subtle: s14
+  color-orange-size-lg-variant-filled: s42
+  color-orange-size-lg-variant-light: s40
+  color-orange-size-lg-variant-outline: s41
+  color-orange-size-lg-variant-subtle: s43
+  color-orange-size-md-variant-filled: s46
+  color-orange-size-md-variant-light: s44
+  color-orange-size-md-variant-outline: s45
+  color-orange-size-md-variant-subtle: s47
+  color-orange-size-sm-variant-filled: s38
+  color-orange-size-sm-variant-light: s48
+  color-orange-size-sm-variant-outline: s37
+  color-orange-size-sm-variant-subtle: s39
+  color-pink-size-lg-variant-filled: s49
+  color-pink-size-lg-variant-light: s54
+  color-pink-size-lg-variant-outline: s55
+  color-pink-size-lg-variant-subtle: s56
+  color-pink-size-md-variant-filled: s59
+  color-pink-size-md-variant-light: s57
+  color-pink-size-md-variant-outline: s58
+  color-pink-size-md-variant-subtle: s60
+  color-pink-size-sm-variant-filled: s52
+  color-pink-size-sm-variant-light: s50
+  color-pink-size-sm-variant-outline: s51
+  color-pink-size-sm-variant-subtle: s53
+  color-purple-size-lg-variant-filled: s68
+  color-purple-size-lg-variant-light: s70
+  color-purple-size-lg-variant-outline: s69
+  color-purple-size-lg-variant-subtle: s67
+  color-purple-size-md-variant-filled: s64
+  color-purple-size-md-variant-light: s66
+  color-purple-size-md-variant-outline: s65
+  color-purple-size-md-variant-subtle: s63
+  color-purple-size-sm-variant-filled: s72
+  color-purple-size-sm-variant-light: s62
+  color-purple-size-sm-variant-outline: s61
+  color-purple-size-sm-variant-subtle: s71
+  color-red-size-lg-variant-filled: s84
+  color-red-size-lg-variant-light: s76
+  color-red-size-lg-variant-outline: s77
+  color-red-size-lg-variant-subtle: s79
+  color-red-size-md-variant-filled: s82
+  color-red-size-md-variant-light: s80
+  color-red-size-md-variant-outline: s81
+  color-red-size-md-variant-subtle: s83
+  color-red-size-sm-variant-filled: s74
+  color-red-size-sm-variant-light: s78
+  color-red-size-sm-variant-outline: s73
+  color-red-size-sm-variant-subtle: s75
