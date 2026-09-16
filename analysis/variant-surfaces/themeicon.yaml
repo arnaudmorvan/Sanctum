@@ -1,0 +1,1302 @@
+# analysis/variant-surfaces/themeicon.yaml — la SURFACE peinte par chaque variante.
+# Hors de context/ deliberement : lu par la console, jamais par un agent.
+# Les surfaces identiques sont stockees une fois et pointees.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: themeicon
+  generated_at: "2026-09-16"
+  variants: 360
+  surfaces: 190
+surfaces:
+  s1:
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 8
+    height: 28
+  s2:
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 9999
+    height: 28
+  s3:
+    fill: "@bg-blue-secondary"
+    stroke: {color: "@border-blue-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 28
+  s4:
+    fill: "@bg-blue-secondary"
+    stroke: {color: "@border-blue-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 28
+  s5:
+    fill: "@transparent"
+    stroke: {color: "@border-blue-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 28
+  s6:
+    fill: "@transparent"
+    stroke: {color: "@border-blue-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 28
+  s7:
+    fill: "@transparent"
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 8
+    height: 28
+  s8:
+    fill: "@transparent"
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 9999
+    height: 28
+  s9:
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 8
+    height: 32
+  s10:
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 9999
+    height: 32
+  s11:
+    fill: "@bg-blue-secondary"
+    stroke: {color: "@border-blue-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 32
+  s12:
+    fill: "@bg-blue-secondary"
+    stroke: {color: "@border-blue-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 32
+  s13:
+    fill: "@transparent"
+    stroke: {color: "@border-blue-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 32
+  s14:
+    fill: "@transparent"
+    stroke: {color: "@border-blue-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 32
+  s15:
+    fill: "@transparent"
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 8
+    height: 32
+  s16:
+    fill: "@transparent"
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 9999
+    height: 32
+  s17:
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 8
+    height: 36
+  s18:
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 9999
+    height: 36
+  s19:
+    fill: "@bg-blue-secondary"
+    stroke: {color: "@border-blue-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 36
+  s20:
+    fill: "@bg-blue-secondary"
+    stroke: {color: "@border-blue-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 36
+  s21:
+    fill: "@transparent"
+    stroke: {color: "@border-blue-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 36
+  s22:
+    fill: "@transparent"
+    stroke: {color: "@border-blue-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 36
+  s23:
+    fill: "@transparent"
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 8
+    height: 36
+  s24:
+    fill: "@transparent"
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 9999
+    height: 36
+  s25:
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 8
+    height: 40
+  s26:
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 9999
+    height: 40
+  s27:
+    fill: "@bg-blue-secondary"
+    stroke: {color: "@border-blue-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 40
+  s28:
+    fill: "@bg-blue-secondary"
+    stroke: {color: "@border-blue-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 40
+  s29:
+    fill: "@transparent"
+    stroke: {color: "@border-blue-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 40
+  s30:
+    fill: "@transparent"
+    stroke: {color: "@border-blue-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 40
+  s31:
+    fill: "@transparent"
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 8
+    height: 40
+  s32:
+    fill: "@transparent"
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 9999
+    height: 40
+  s33:
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 8
+    height: 48
+  s34:
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 9999
+    height: 48
+  s35:
+    fill: "@bg-blue-secondary"
+    stroke: {color: "@border-blue-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 48
+  s36:
+    fill: "@bg-blue-secondary"
+    stroke: {color: "@border-blue-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 48
+  s37:
+    fill: "@transparent"
+    stroke: {color: "@border-blue-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 48
+  s38:
+    fill: "@transparent"
+    stroke: {color: "@border-blue-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 48
+  s39:
+    fill: "@transparent"
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 8
+    height: 48
+  s40:
+    fill: "@transparent"
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 9999
+    height: 48
+  s41:
+    fill: "@bg-inverse-lighter"
+    stroke: {color: "@border-full", width: 1, align: INSIDE}
+    radius: 8
+    height: 28
+  s42:
+    fill: "@bg-inverse-lighter"
+    stroke: {color: "@border-full", width: 1, align: INSIDE}
+    radius: 9999
+    height: 28
+  s43:
+    fill: "@transparent"
+    stroke: {color: "@border-full", width: 1, align: INSIDE}
+    radius: 8
+    height: 28
+  s44:
+    fill: "@transparent"
+    stroke: {color: "@border-full", width: 1, align: INSIDE}
+    radius: 9999
+    height: 28
+  s45:
+    fill: "@bg-inverse-lighter"
+    stroke: {color: "@border-full", width: 1, align: INSIDE}
+    radius: 8
+    height: 32
+  s46:
+    fill: "@bg-inverse-lighter"
+    stroke: {color: "@border-full", width: 1, align: INSIDE}
+    radius: 9999
+    height: 32
+  s47:
+    fill: "@transparent"
+    stroke: {color: "@border-full", width: 1, align: INSIDE}
+    radius: 8
+    height: 32
+  s48:
+    fill: "@transparent"
+    stroke: {color: "@border-full", width: 1, align: INSIDE}
+    radius: 9999
+    height: 32
+  s49:
+    fill: "@bg-inverse-lighter"
+    stroke: {color: "@border-full", width: 1, align: INSIDE}
+    radius: 8
+    height: 36
+  s50:
+    fill: "@bg-inverse-lighter"
+    stroke: {color: "@border-full", width: 1, align: INSIDE}
+    radius: 9999
+    height: 36
+  s51:
+    fill: "@transparent"
+    stroke: {color: "@border-full", width: 1, align: INSIDE}
+    radius: 8
+    height: 36
+  s52:
+    fill: "@transparent"
+    stroke: {color: "@border-full", width: 1, align: INSIDE}
+    radius: 9999
+    height: 36
+  s53:
+    fill: "@bg-inverse-lighter"
+    stroke: {color: "@border-full", width: 1, align: INSIDE}
+    radius: 8
+    height: 40
+  s54:
+    fill: "@bg-inverse-lighter"
+    stroke: {color: "@border-full", width: 1, align: INSIDE}
+    radius: 9999
+    height: 40
+  s55:
+    fill: "@transparent"
+    stroke: {color: "@border-full", width: 1, align: INSIDE}
+    radius: 8
+    height: 40
+  s56:
+    fill: "@transparent"
+    stroke: {color: "@border-full", width: 1, align: INSIDE}
+    radius: 9999
+    height: 40
+  s57:
+    fill: "@bg-inverse-lighter"
+    stroke: {color: "@border-full", width: 1, align: INSIDE}
+    radius: 8
+    height: 48
+  s58:
+    fill: "@bg-inverse-lighter"
+    stroke: {color: "@border-full", width: 1, align: INSIDE}
+    radius: 9999
+    height: 48
+  s59:
+    fill: "@transparent"
+    stroke: {color: "@border-full", width: 1, align: INSIDE}
+    radius: 8
+    height: 48
+  s60:
+    fill: "@transparent"
+    stroke: {color: "@border-full", width: 1, align: INSIDE}
+    radius: 9999
+    height: 48
+  s61:
+    fill: "@bg-error-secondary"
+    stroke: {color: "@border-error-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 28
+  s62:
+    fill: "@bg-error-secondary"
+    stroke: {color: "@border-error-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 28
+  s63:
+    fill: "@transparent"
+    stroke: {color: "@border-error-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 28
+  s64:
+    fill: "@transparent"
+    stroke: {color: "@border-error-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 28
+  s65:
+    fill: "@bg-error-secondary"
+    stroke: {color: "@border-error-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 32
+  s66:
+    fill: "@bg-error-secondary"
+    stroke: {color: "@border-error-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 32
+  s67:
+    fill: "@transparent"
+    stroke: {color: "@border-error-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 32
+  s68:
+    fill: "@transparent"
+    stroke: {color: "@border-error-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 32
+  s69:
+    fill: "@bg-error-secondary"
+    stroke: {color: "@border-error-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 36
+  s70:
+    fill: "@bg-error-secondary"
+    stroke: {color: "@border-error-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 36
+  s71:
+    fill: "@transparent"
+    stroke: {color: "@border-error-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 36
+  s72:
+    fill: "@transparent"
+    stroke: {color: "@border-error-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 36
+  s73:
+    fill: "@bg-error-secondary"
+    stroke: {color: "@border-error-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 40
+  s74:
+    fill: "@bg-error-secondary"
+    stroke: {color: "@border-error-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 40
+  s75:
+    fill: "@transparent"
+    stroke: {color: "@border-error-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 40
+  s76:
+    fill: "@transparent"
+    stroke: {color: "@border-error-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 40
+  s77:
+    fill: "@bg-error-secondary"
+    stroke: {color: "@border-error-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 48
+  s78:
+    fill: "@bg-error-secondary"
+    stroke: {color: "@border-error-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 48
+  s79:
+    fill: "@transparent"
+    stroke: {color: "@border-error-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 48
+  s80:
+    fill: "@transparent"
+    stroke: {color: "@border-error-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 48
+  s81:
+    fill: "@bg-warning-secondary"
+    stroke: {color: "@border-warning-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 28
+  s82:
+    fill: "@bg-warning-secondary"
+    stroke: {color: "@border-warning-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 28
+  s83:
+    fill: "@transparent"
+    stroke: {color: "@border-warning-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 28
+  s84:
+    fill: "@transparent"
+    stroke: {color: "@border-warning-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 28
+  s85:
+    fill: "@bg-warning-secondary"
+    stroke: {color: "@border-warning-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 32
+  s86:
+    fill: "@bg-warning-secondary"
+    stroke: {color: "@border-warning-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 32
+  s87:
+    fill: "@transparent"
+    stroke: {color: "@border-warning-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 32
+  s88:
+    fill: "@transparent"
+    stroke: {color: "@border-warning-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 32
+  s89:
+    fill: "@bg-warning-secondary"
+    stroke: {color: "@border-warning-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 36
+  s90:
+    fill: "@bg-warning-secondary"
+    stroke: {color: "@border-warning-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 36
+  s91:
+    fill: "@transparent"
+    stroke: {color: "@border-warning-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 36
+  s92:
+    fill: "@transparent"
+    stroke: {color: "@border-warning-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 36
+  s93:
+    fill: "@bg-warning-secondary"
+    stroke: {color: "@border-warning-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 40
+  s94:
+    fill: "@bg-warning-secondary"
+    stroke: {color: "@border-warning-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 40
+  s95:
+    fill: "@transparent"
+    stroke: {color: "@border-warning-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 40
+  s96:
+    fill: "@transparent"
+    stroke: {color: "@border-warning-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 40
+  s97:
+    fill: "@bg-warning-secondary"
+    stroke: {color: "@border-warning-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 48
+  s98:
+    fill: "@bg-warning-secondary"
+    stroke: {color: "@border-warning-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 48
+  s99:
+    fill: "@transparent"
+    stroke: {color: "@border-warning-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 48
+  s100:
+    fill: "@transparent"
+    stroke: {color: "@border-warning-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 48
+  s101:
+    stroke: {color: "#352400", width: 1, align: INSIDE}
+    radius: 8
+    height: 28
+  s102:
+    stroke: {color: "#352400", width: 1, align: INSIDE}
+    radius: 9999
+    height: 28
+  s103:
+    fill: "@utility-yellow-50"
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 8
+    height: 28
+  s104:
+    fill: "@utility-yellow-50"
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 9999
+    height: 28
+  s105:
+    fill: "@transparent"
+    stroke: {color: "@utility-yellow-500", width: 1, align: INSIDE}
+    radius: 8
+    height: 28
+  s106:
+    fill: "@transparent"
+    stroke: {color: "@utility-yellow-500", width: 1, align: INSIDE}
+    radius: 9999
+    height: 28
+  s107:
+    stroke: {color: "#352400", width: 1, align: INSIDE}
+    radius: 8
+    height: 32
+  s108:
+    stroke: {color: "#352400", width: 1, align: INSIDE}
+    radius: 9999
+    height: 32
+  s109:
+    fill: "@utility-yellow-50"
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 8
+    height: 32
+  s110:
+    fill: "@utility-yellow-50"
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 9999
+    height: 32
+  s111:
+    fill: "@transparent"
+    stroke: {color: "@utility-yellow-500", width: 1, align: INSIDE}
+    radius: 8
+    height: 32
+  s112:
+    fill: "@transparent"
+    stroke: {color: "@utility-yellow-500", width: 1, align: INSIDE}
+    radius: 9999
+    height: 32
+  s113:
+    stroke: {color: "#352400", width: 1, align: INSIDE}
+    radius: 8
+    height: 36
+  s114:
+    stroke: {color: "#352400", width: 1, align: INSIDE}
+    radius: 9999
+    height: 36
+  s115:
+    fill: "@utility-yellow-50"
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 8
+    height: 36
+  s116:
+    fill: "@utility-yellow-50"
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 9999
+    height: 36
+  s117:
+    fill: "@transparent"
+    stroke: {color: "@utility-yellow-500", width: 1, align: INSIDE}
+    radius: 8
+    height: 36
+  s118:
+    fill: "@transparent"
+    stroke: {color: "@utility-yellow-500", width: 1, align: INSIDE}
+    radius: 9999
+    height: 36
+  s119:
+    stroke: {color: "#352400", width: 1, align: INSIDE}
+    radius: 8
+    height: 40
+  s120:
+    stroke: {color: "#352400", width: 1, align: INSIDE}
+    radius: 9999
+    height: 40
+  s121:
+    fill: "@utility-yellow-50"
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 8
+    height: 40
+  s122:
+    fill: "@utility-yellow-50"
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 9999
+    height: 40
+  s123:
+    fill: "@transparent"
+    stroke: {color: "@utility-yellow-500", width: 1, align: INSIDE}
+    radius: 8
+    height: 40
+  s124:
+    fill: "@transparent"
+    stroke: {color: "@utility-yellow-500", width: 1, align: INSIDE}
+    radius: 9999
+    height: 40
+  s125:
+    stroke: {color: "#352400", width: 1, align: INSIDE}
+    radius: 8
+    height: 48
+  s126:
+    stroke: {color: "#352400", width: 1, align: INSIDE}
+    radius: 9999
+    height: 48
+  s127:
+    fill: "@utility-yellow-50"
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 8
+    height: 48
+  s128:
+    fill: "@utility-yellow-50"
+    stroke: {color: "@transparent", width: 1, align: INSIDE}
+    radius: 9999
+    height: 48
+  s129:
+    fill: "@transparent"
+    stroke: {color: "@utility-yellow-500", width: 1, align: INSIDE}
+    radius: 8
+    height: 48
+  s130:
+    fill: "@transparent"
+    stroke: {color: "@utility-yellow-500", width: 1, align: INSIDE}
+    radius: 9999
+    height: 48
+  s131:
+    fill: "@bg-success-secondary"
+    stroke: {color: "@border-success-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 28
+  s132:
+    fill: "@bg-success-secondary"
+    stroke: {color: "@border-success-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 28
+  s133:
+    fill: "@transparent"
+    stroke: {color: "@border-success-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 28
+  s134:
+    fill: "@transparent"
+    stroke: {color: "@border-success-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 28
+  s135:
+    fill: "@bg-success-secondary"
+    stroke: {color: "@border-success-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 32
+  s136:
+    fill: "@bg-success-secondary"
+    stroke: {color: "@border-success-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 32
+  s137:
+    fill: "@transparent"
+    stroke: {color: "@border-success-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 32
+  s138:
+    fill: "@transparent"
+    stroke: {color: "@border-success-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 32
+  s139:
+    fill: "@bg-success-secondary"
+    stroke: {color: "@border-success-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 36
+  s140:
+    fill: "@bg-success-secondary"
+    stroke: {color: "@border-success-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 36
+  s141:
+    fill: "@transparent"
+    stroke: {color: "@border-success-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 36
+  s142:
+    fill: "@transparent"
+    stroke: {color: "@border-success-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 36
+  s143:
+    fill: "@bg-success-secondary"
+    stroke: {color: "@border-success-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 40
+  s144:
+    fill: "@bg-success-secondary"
+    stroke: {color: "@border-success-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 40
+  s145:
+    fill: "@transparent"
+    stroke: {color: "@border-success-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 40
+  s146:
+    fill: "@transparent"
+    stroke: {color: "@border-success-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 40
+  s147:
+    fill: "@bg-success-secondary"
+    stroke: {color: "@border-success-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 48
+  s148:
+    fill: "@bg-success-secondary"
+    stroke: {color: "@border-success-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 48
+  s149:
+    fill: "@transparent"
+    stroke: {color: "@border-success-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 48
+  s150:
+    fill: "@transparent"
+    stroke: {color: "@border-success-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 48
+  s151:
+    fill: "@bg-purple-secondary"
+    stroke: {color: "@border-purple-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 28
+  s152:
+    fill: "@bg-purple-secondary"
+    stroke: {color: "@border-purple-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 28
+  s153:
+    fill: "@transparent"
+    stroke: {color: "@border-purple-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 28
+  s154:
+    fill: "@transparent"
+    stroke: {color: "@border-purple-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 28
+  s155:
+    fill: "@bg-purple-secondary"
+    stroke: {color: "@border-purple-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 32
+  s156:
+    fill: "@bg-purple-secondary"
+    stroke: {color: "@border-purple-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 32
+  s157:
+    fill: "@transparent"
+    stroke: {color: "@border-purple-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 32
+  s158:
+    fill: "@transparent"
+    stroke: {color: "@border-purple-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 32
+  s159:
+    fill: "@bg-purple-secondary"
+    stroke: {color: "@border-purple-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 36
+  s160:
+    fill: "@bg-purple-secondary"
+    stroke: {color: "@border-purple-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 36
+  s161:
+    fill: "@transparent"
+    stroke: {color: "@border-purple-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 36
+  s162:
+    fill: "@transparent"
+    stroke: {color: "@border-purple-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 36
+  s163:
+    fill: "@bg-purple-secondary"
+    stroke: {color: "@border-purple-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 40
+  s164:
+    fill: "@bg-purple-secondary"
+    stroke: {color: "@border-purple-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 40
+  s165:
+    fill: "@transparent"
+    stroke: {color: "@border-purple-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 40
+  s166:
+    fill: "@transparent"
+    stroke: {color: "@border-purple-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 40
+  s167:
+    fill: "@bg-purple-secondary"
+    stroke: {color: "@border-purple-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 48
+  s168:
+    fill: "@bg-purple-secondary"
+    stroke: {color: "@border-purple-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 48
+  s169:
+    fill: "@transparent"
+    stroke: {color: "@border-purple-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 48
+  s170:
+    fill: "@transparent"
+    stroke: {color: "@border-purple-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 48
+  s171:
+    fill: "@bg-pink-secondary"
+    stroke: {color: "@border-pink-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 28
+  s172:
+    fill: "@bg-pink-secondary"
+    stroke: {color: "@border-pink-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 28
+  s173:
+    fill: "@transparent"
+    stroke: {color: "@border-pink-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 28
+  s174:
+    fill: "@transparent"
+    stroke: {color: "@border-pink-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 28
+  s175:
+    fill: "@bg-pink-secondary"
+    stroke: {color: "@border-pink-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 32
+  s176:
+    fill: "@bg-pink-secondary"
+    stroke: {color: "@border-pink-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 32
+  s177:
+    fill: "@transparent"
+    stroke: {color: "@border-pink-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 32
+  s178:
+    fill: "@transparent"
+    stroke: {color: "@border-pink-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 32
+  s179:
+    fill: "@bg-pink-secondary"
+    stroke: {color: "@border-pink-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 36
+  s180:
+    fill: "@bg-pink-secondary"
+    stroke: {color: "@border-pink-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 36
+  s181:
+    fill: "@transparent"
+    stroke: {color: "@border-pink-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 36
+  s182:
+    fill: "@transparent"
+    stroke: {color: "@border-pink-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 36
+  s183:
+    fill: "@bg-pink-secondary"
+    stroke: {color: "@border-pink-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 40
+  s184:
+    fill: "@bg-pink-secondary"
+    stroke: {color: "@border-pink-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 40
+  s185:
+    fill: "@transparent"
+    stroke: {color: "@border-pink-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 40
+  s186:
+    fill: "@transparent"
+    stroke: {color: "@border-pink-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 40
+  s187:
+    fill: "@bg-pink-secondary"
+    stroke: {color: "@border-pink-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 48
+  s188:
+    fill: "@bg-pink-secondary"
+    stroke: {color: "@border-pink-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 48
+  s189:
+    fill: "@transparent"
+    stroke: {color: "@border-pink-solid", width: 1, align: INSIDE}
+    radius: 8
+    height: 48
+  s190:
+    fill: "@transparent"
+    stroke: {color: "@border-pink-solid", width: 1, align: INSIDE}
+    radius: 9999
+    height: 48
+variants:
+  color-blue-size-lg-variant-filled-radius-full: s26
+  color-blue-size-lg-variant-filled-radius-md: s25
+  color-blue-size-lg-variant-light-radius-full: s28
+  color-blue-size-lg-variant-light-radius-md: s27
+  color-blue-size-lg-variant-outline-radius-full: s30
+  color-blue-size-lg-variant-outline-radius-md: s29
+  color-blue-size-lg-variant-subtle-radius-full: s32
+  color-blue-size-lg-variant-subtle-radius-md: s31
+  color-blue-size-md-variant-filled-radius-full: s18
+  color-blue-size-md-variant-filled-radius-md: s17
+  color-blue-size-md-variant-light-radius-full: s20
+  color-blue-size-md-variant-light-radius-md: s19
+  color-blue-size-md-variant-outline-radius-full: s22
+  color-blue-size-md-variant-outline-radius-md: s21
+  color-blue-size-md-variant-subtle-radius-full: s24
+  color-blue-size-md-variant-subtle-radius-md: s23
+  color-blue-size-sm-variant-filled-radius-full: s10
+  color-blue-size-sm-variant-filled-radius-md: s9
+  color-blue-size-sm-variant-light-radius-full: s12
+  color-blue-size-sm-variant-light-radius-md: s11
+  color-blue-size-sm-variant-outline-radius-full: s14
+  color-blue-size-sm-variant-outline-radius-md: s13
+  color-blue-size-sm-variant-subtle-radius-full: s16
+  color-blue-size-sm-variant-subtle-radius-md: s15
+  color-blue-size-xl-variant-filled-radius-full: s34
+  color-blue-size-xl-variant-filled-radius-md: s33
+  color-blue-size-xl-variant-light-radius-full: s36
+  color-blue-size-xl-variant-light-radius-md: s35
+  color-blue-size-xl-variant-outline-radius-full: s38
+  color-blue-size-xl-variant-outline-radius-md: s37
+  color-blue-size-xl-variant-subtle-radius-full: s40
+  color-blue-size-xl-variant-subtle-radius-md: s39
+  color-blue-size-xs-variant-filled-radius-full: s2
+  color-blue-size-xs-variant-filled-radius-md: s1
+  color-blue-size-xs-variant-light-radius-full: s4
+  color-blue-size-xs-variant-light-radius-md: s3
+  color-blue-size-xs-variant-outline-radius-full: s6
+  color-blue-size-xs-variant-outline-radius-md: s5
+  color-blue-size-xs-variant-subtle-radius-full: s8
+  color-blue-size-xs-variant-subtle-radius-md: s7
+  color-brand-size-lg-variant-filled-radius-full: s26
+  color-brand-size-lg-variant-filled-radius-md: s25
+  color-brand-size-lg-variant-light-radius-full: s28
+  color-brand-size-lg-variant-light-radius-md: s27
+  color-brand-size-lg-variant-outline-radius-full: s30
+  color-brand-size-lg-variant-outline-radius-md: s29
+  color-brand-size-lg-variant-subtle-radius-full: s32
+  color-brand-size-lg-variant-subtle-radius-md: s31
+  color-brand-size-md-variant-filled-radius-full: s18
+  color-brand-size-md-variant-filled-radius-md: s17
+  color-brand-size-md-variant-light-radius-full: s20
+  color-brand-size-md-variant-light-radius-md: s19
+  color-brand-size-md-variant-outline-radius-full: s22
+  color-brand-size-md-variant-outline-radius-md: s21
+  color-brand-size-md-variant-subtle-radius-full: s24
+  color-brand-size-md-variant-subtle-radius-md: s23
+  color-brand-size-sm-variant-filled-radius-full: s10
+  color-brand-size-sm-variant-filled-radius-md: s9
+  color-brand-size-sm-variant-light-radius-full: s12
+  color-brand-size-sm-variant-light-radius-md: s11
+  color-brand-size-sm-variant-outline-radius-full: s14
+  color-brand-size-sm-variant-outline-radius-md: s13
+  color-brand-size-sm-variant-subtle-radius-full: s16
+  color-brand-size-sm-variant-subtle-radius-md: s15
+  color-brand-size-xl-variant-filled-radius-full: s34
+  color-brand-size-xl-variant-filled-radius-md: s33
+  color-brand-size-xl-variant-light-radius-full: s36
+  color-brand-size-xl-variant-light-radius-md: s35
+  color-brand-size-xl-variant-outline-radius-full: s38
+  color-brand-size-xl-variant-outline-radius-md: s37
+  color-brand-size-xl-variant-subtle-radius-full: s40
+  color-brand-size-xl-variant-subtle-radius-md: s39
+  color-brand-size-xs-variant-filled-radius-full: s2
+  color-brand-size-xs-variant-filled-radius-md: s1
+  color-brand-size-xs-variant-light-radius-full: s4
+  color-brand-size-xs-variant-light-radius-md: s3
+  color-brand-size-xs-variant-outline-radius-full: s6
+  color-brand-size-xs-variant-outline-radius-md: s5
+  color-brand-size-xs-variant-subtle-radius-full: s8
+  color-brand-size-xs-variant-subtle-radius-md: s7
+  color-gray-size-lg-variant-filled-radius-full: s26
+  color-gray-size-lg-variant-filled-radius-md: s25
+  color-gray-size-lg-variant-light-radius-full: s54
+  color-gray-size-lg-variant-light-radius-md: s53
+  color-gray-size-lg-variant-outline-radius-full: s56
+  color-gray-size-lg-variant-outline-radius-md: s55
+  color-gray-size-lg-variant-subtle-radius-full: s32
+  color-gray-size-lg-variant-subtle-radius-md: s31
+  color-gray-size-md-variant-filled-radius-full: s18
+  color-gray-size-md-variant-filled-radius-md: s17
+  color-gray-size-md-variant-light-radius-full: s50
+  color-gray-size-md-variant-light-radius-md: s49
+  color-gray-size-md-variant-outline-radius-full: s52
+  color-gray-size-md-variant-outline-radius-md: s51
+  color-gray-size-md-variant-subtle-radius-full: s24
+  color-gray-size-md-variant-subtle-radius-md: s23
+  color-gray-size-sm-variant-filled-radius-full: s10
+  color-gray-size-sm-variant-filled-radius-md: s9
+  color-gray-size-sm-variant-light-radius-full: s46
+  color-gray-size-sm-variant-light-radius-md: s45
+  color-gray-size-sm-variant-outline-radius-full: s48
+  color-gray-size-sm-variant-outline-radius-md: s47
+  color-gray-size-sm-variant-subtle-radius-full: s16
+  color-gray-size-sm-variant-subtle-radius-md: s15
+  color-gray-size-xl-variant-filled-radius-full: s34
+  color-gray-size-xl-variant-filled-radius-md: s33
+  color-gray-size-xl-variant-light-radius-full: s58
+  color-gray-size-xl-variant-light-radius-md: s57
+  color-gray-size-xl-variant-outline-radius-full: s60
+  color-gray-size-xl-variant-outline-radius-md: s59
+  color-gray-size-xl-variant-subtle-radius-full: s40
+  color-gray-size-xl-variant-subtle-radius-md: s39
+  color-gray-size-xs-variant-filled-radius-full: s2
+  color-gray-size-xs-variant-filled-radius-md: s1
+  color-gray-size-xs-variant-light-radius-full: s42
+  color-gray-size-xs-variant-light-radius-md: s41
+  color-gray-size-xs-variant-outline-radius-full: s44
+  color-gray-size-xs-variant-outline-radius-md: s43
+  color-gray-size-xs-variant-subtle-radius-full: s8
+  color-gray-size-xs-variant-subtle-radius-md: s7
+  color-green-size-lg-variant-filled-radius-full: s26
+  color-green-size-lg-variant-filled-radius-md: s25
+  color-green-size-lg-variant-light-radius-full: s144
+  color-green-size-lg-variant-light-radius-md: s143
+  color-green-size-lg-variant-outline-radius-full: s146
+  color-green-size-lg-variant-outline-radius-md: s145
+  color-green-size-lg-variant-subtle-radius-full: s32
+  color-green-size-lg-variant-subtle-radius-md: s31
+  color-green-size-md-variant-filled-radius-full: s18
+  color-green-size-md-variant-filled-radius-md: s17
+  color-green-size-md-variant-light-radius-full: s140
+  color-green-size-md-variant-light-radius-md: s139
+  color-green-size-md-variant-outline-radius-full: s142
+  color-green-size-md-variant-outline-radius-md: s141
+  color-green-size-md-variant-subtle-radius-full: s24
+  color-green-size-md-variant-subtle-radius-md: s23
+  color-green-size-sm-variant-filled-radius-full: s10
+  color-green-size-sm-variant-filled-radius-md: s9
+  color-green-size-sm-variant-light-radius-full: s136
+  color-green-size-sm-variant-light-radius-md: s135
+  color-green-size-sm-variant-outline-radius-full: s138
+  color-green-size-sm-variant-outline-radius-md: s137
+  color-green-size-sm-variant-subtle-radius-full: s16
+  color-green-size-sm-variant-subtle-radius-md: s15
+  color-green-size-xl-variant-filled-radius-full: s34
+  color-green-size-xl-variant-filled-radius-md: s33
+  color-green-size-xl-variant-light-radius-full: s148
+  color-green-size-xl-variant-light-radius-md: s147
+  color-green-size-xl-variant-outline-radius-full: s150
+  color-green-size-xl-variant-outline-radius-md: s149
+  color-green-size-xl-variant-subtle-radius-full: s40
+  color-green-size-xl-variant-subtle-radius-md: s39
+  color-green-size-xs-variant-filled-radius-full: s2
+  color-green-size-xs-variant-filled-radius-md: s1
+  color-green-size-xs-variant-light-radius-full: s132
+  color-green-size-xs-variant-light-radius-md: s131
+  color-green-size-xs-variant-outline-radius-full: s134
+  color-green-size-xs-variant-outline-radius-md: s133
+  color-green-size-xs-variant-subtle-radius-full: s8
+  color-green-size-xs-variant-subtle-radius-md: s7
+  color-orange-size-lg-variant-filled-radius-full: s26
+  color-orange-size-lg-variant-filled-radius-md: s25
+  color-orange-size-lg-variant-light-radius-full: s94
+  color-orange-size-lg-variant-light-radius-md: s93
+  color-orange-size-lg-variant-outline-radius-full: s96
+  color-orange-size-lg-variant-outline-radius-md: s95
+  color-orange-size-lg-variant-subtle-radius-full: s32
+  color-orange-size-lg-variant-subtle-radius-md: s31
+  color-orange-size-md-variant-filled-radius-full: s18
+  color-orange-size-md-variant-filled-radius-md: s17
+  color-orange-size-md-variant-light-radius-full: s90
+  color-orange-size-md-variant-light-radius-md: s89
+  color-orange-size-md-variant-outline-radius-full: s92
+  color-orange-size-md-variant-outline-radius-md: s91
+  color-orange-size-md-variant-subtle-radius-full: s24
+  color-orange-size-md-variant-subtle-radius-md: s23
+  color-orange-size-sm-variant-filled-radius-full: s10
+  color-orange-size-sm-variant-filled-radius-md: s9
+  color-orange-size-sm-variant-light-radius-full: s86
+  color-orange-size-sm-variant-light-radius-md: s85
+  color-orange-size-sm-variant-outline-radius-full: s88
+  color-orange-size-sm-variant-outline-radius-md: s87
+  color-orange-size-sm-variant-subtle-radius-full: s16
+  color-orange-size-sm-variant-subtle-radius-md: s15
+  color-orange-size-xl-variant-filled-radius-full: s34
+  color-orange-size-xl-variant-filled-radius-md: s33
+  color-orange-size-xl-variant-light-radius-full: s98
+  color-orange-size-xl-variant-light-radius-md: s97
+  color-orange-size-xl-variant-outline-radius-full: s100
+  color-orange-size-xl-variant-outline-radius-md: s99
+  color-orange-size-xl-variant-subtle-radius-full: s40
+  color-orange-size-xl-variant-subtle-radius-md: s39
+  color-orange-size-xs-variant-filled-radius-full: s2
+  color-orange-size-xs-variant-filled-radius-md: s1
+  color-orange-size-xs-variant-light-radius-full: s82
+  color-orange-size-xs-variant-light-radius-md: s81
+  color-orange-size-xs-variant-outline-radius-full: s84
+  color-orange-size-xs-variant-outline-radius-md: s83
+  color-orange-size-xs-variant-subtle-radius-full: s8
+  color-orange-size-xs-variant-subtle-radius-md: s7
+  color-pink-size-lg-variant-filled-radius-full: s26
+  color-pink-size-lg-variant-filled-radius-md: s25
+  color-pink-size-lg-variant-light-radius-full: s184
+  color-pink-size-lg-variant-light-radius-md: s183
+  color-pink-size-lg-variant-outline-radius-full: s186
+  color-pink-size-lg-variant-outline-radius-md: s185
+  color-pink-size-lg-variant-subtle-radius-full: s32
+  color-pink-size-lg-variant-subtle-radius-md: s31
+  color-pink-size-md-variant-filled-radius-full: s18
+  color-pink-size-md-variant-filled-radius-md: s17
+  color-pink-size-md-variant-light-radius-full: s180
+  color-pink-size-md-variant-light-radius-md: s179
+  color-pink-size-md-variant-outline-radius-full: s182
+  color-pink-size-md-variant-outline-radius-md: s181
+  color-pink-size-md-variant-subtle-radius-full: s24
+  color-pink-size-md-variant-subtle-radius-md: s23
+  color-pink-size-sm-variant-filled-radius-full: s10
+  color-pink-size-sm-variant-filled-radius-md: s9
+  color-pink-size-sm-variant-light-radius-full: s176
+  color-pink-size-sm-variant-light-radius-md: s175
+  color-pink-size-sm-variant-outline-radius-full: s178
+  color-pink-size-sm-variant-outline-radius-md: s177
+  color-pink-size-sm-variant-subtle-radius-full: s16
+  color-pink-size-sm-variant-subtle-radius-md: s15
+  color-pink-size-xl-variant-filled-radius-full: s34
+  color-pink-size-xl-variant-filled-radius-md: s33
+  color-pink-size-xl-variant-light-radius-full: s188
+  color-pink-size-xl-variant-light-radius-md: s187
+  color-pink-size-xl-variant-outline-radius-full: s190
+  color-pink-size-xl-variant-outline-radius-md: s189
+  color-pink-size-xl-variant-subtle-radius-full: s40
+  color-pink-size-xl-variant-subtle-radius-md: s39
+  color-pink-size-xs-variant-filled-radius-full: s2
+  color-pink-size-xs-variant-filled-radius-md: s1
+  color-pink-size-xs-variant-light-radius-full: s172
+  color-pink-size-xs-variant-light-radius-md: s171
+  color-pink-size-xs-variant-outline-radius-full: s174
+  color-pink-size-xs-variant-outline-radius-md: s173
+  color-pink-size-xs-variant-subtle-radius-full: s8
+  color-pink-size-xs-variant-subtle-radius-md: s7
+  color-purple-size-lg-variant-filled-radius-full: s26
+  color-purple-size-lg-variant-filled-radius-md: s25
+  color-purple-size-lg-variant-light-radius-full: s164
+  color-purple-size-lg-variant-light-radius-md: s163
+  color-purple-size-lg-variant-outline-radius-full: s166
+  color-purple-size-lg-variant-outline-radius-md: s165
+  color-purple-size-lg-variant-subtle-radius-full: s32
+  color-purple-size-lg-variant-subtle-radius-md: s31
+  color-purple-size-md-variant-filled-radius-full: s18
+  color-purple-size-md-variant-filled-radius-md: s17
+  color-purple-size-md-variant-light-radius-full: s160
+  color-purple-size-md-variant-light-radius-md: s159
+  color-purple-size-md-variant-outline-radius-full: s162
+  color-purple-size-md-variant-outline-radius-md: s161
+  color-purple-size-md-variant-subtle-radius-full: s24
+  color-purple-size-md-variant-subtle-radius-md: s23
+  color-purple-size-sm-variant-filled-radius-full: s10
+  color-purple-size-sm-variant-filled-radius-md: s9
+  color-purple-size-sm-variant-light-radius-full: s156
+  color-purple-size-sm-variant-light-radius-md: s155
+  color-purple-size-sm-variant-outline-radius-full: s158
+  color-purple-size-sm-variant-outline-radius-md: s157
+  color-purple-size-sm-variant-subtle-radius-full: s16
+  color-purple-size-sm-variant-subtle-radius-md: s15
+  color-purple-size-xl-variant-filled-radius-full: s34
+  color-purple-size-xl-variant-filled-radius-md: s33
+  color-purple-size-xl-variant-light-radius-full: s168
+  color-purple-size-xl-variant-light-radius-md: s167
+  color-purple-size-xl-variant-outline-radius-full: s170
+  color-purple-size-xl-variant-outline-radius-md: s169
+  color-purple-size-xl-variant-subtle-radius-full: s40
+  color-purple-size-xl-variant-subtle-radius-md: s39
+  color-purple-size-xs-variant-filled-radius-full: s2
+  color-purple-size-xs-variant-filled-radius-md: s1
+  color-purple-size-xs-variant-light-radius-full: s152
+  color-purple-size-xs-variant-light-radius-md: s151
+  color-purple-size-xs-variant-outline-radius-full: s154
+  color-purple-size-xs-variant-outline-radius-md: s153
+  color-purple-size-xs-variant-subtle-radius-full: s8
+  color-purple-size-xs-variant-subtle-radius-md: s7
+  color-red-size-lg-variant-filled-radius-full: s26
+  color-red-size-lg-variant-filled-radius-md: s25
+  color-red-size-lg-variant-light-radius-full: s74
+  color-red-size-lg-variant-light-radius-md: s73
+  color-red-size-lg-variant-outline-radius-full: s76
+  color-red-size-lg-variant-outline-radius-md: s75
+  color-red-size-lg-variant-subtle-radius-full: s32
+  color-red-size-lg-variant-subtle-radius-md: s31
+  color-red-size-md-variant-filled-radius-full: s18
+  color-red-size-md-variant-filled-radius-md: s17
+  color-red-size-md-variant-light-radius-full: s70
+  color-red-size-md-variant-light-radius-md: s69
+  color-red-size-md-variant-outline-radius-full: s72
+  color-red-size-md-variant-outline-radius-md: s71
+  color-red-size-md-variant-subtle-radius-full: s24
+  color-red-size-md-variant-subtle-radius-md: s23
+  color-red-size-sm-variant-filled-radius-full: s10
+  color-red-size-sm-variant-filled-radius-md: s9
+  color-red-size-sm-variant-light-radius-full: s66
+  color-red-size-sm-variant-light-radius-md: s65
+  color-red-size-sm-variant-outline-radius-full: s68
+  color-red-size-sm-variant-outline-radius-md: s67
+  color-red-size-sm-variant-subtle-radius-full: s16
+  color-red-size-sm-variant-subtle-radius-md: s15
+  color-red-size-xl-variant-filled-radius-full: s34
+  color-red-size-xl-variant-filled-radius-md: s33
+  color-red-size-xl-variant-light-radius-full: s78
+  color-red-size-xl-variant-light-radius-md: s77
+  color-red-size-xl-variant-outline-radius-full: s80
+  color-red-size-xl-variant-outline-radius-md: s79
+  color-red-size-xl-variant-subtle-radius-full: s40
+  color-red-size-xl-variant-subtle-radius-md: s39
+  color-red-size-xs-variant-filled-radius-full: s2
+  color-red-size-xs-variant-filled-radius-md: s1
+  color-red-size-xs-variant-light-radius-full: s62
+  color-red-size-xs-variant-light-radius-md: s61
+  color-red-size-xs-variant-outline-radius-full: s64
+  color-red-size-xs-variant-outline-radius-md: s63
+  color-red-size-xs-variant-subtle-radius-full: s8
+  color-red-size-xs-variant-subtle-radius-md: s7
+  color-yellow-size-lg-variant-filled-radius-full: s120
+  color-yellow-size-lg-variant-filled-radius-md: s119
+  color-yellow-size-lg-variant-light-radius-full: s122
+  color-yellow-size-lg-variant-light-radius-md: s121
+  color-yellow-size-lg-variant-outline-radius-full: s124
+  color-yellow-size-lg-variant-outline-radius-md: s123
+  color-yellow-size-lg-variant-subtle-radius-full: s32
+  color-yellow-size-lg-variant-subtle-radius-md: s31
+  color-yellow-size-md-variant-filled-radius-full: s114
+  color-yellow-size-md-variant-filled-radius-md: s113
+  color-yellow-size-md-variant-light-radius-full: s116
+  color-yellow-size-md-variant-light-radius-md: s115
+  color-yellow-size-md-variant-outline-radius-full: s118
+  color-yellow-size-md-variant-outline-radius-md: s117
+  color-yellow-size-md-variant-subtle-radius-full: s24
+  color-yellow-size-md-variant-subtle-radius-md: s23
+  color-yellow-size-sm-variant-filled-radius-full: s108
+  color-yellow-size-sm-variant-filled-radius-md: s107
+  color-yellow-size-sm-variant-light-radius-full: s110
+  color-yellow-size-sm-variant-light-radius-md: s109
+  color-yellow-size-sm-variant-outline-radius-full: s112
+  color-yellow-size-sm-variant-outline-radius-md: s111
+  color-yellow-size-sm-variant-subtle-radius-full: s16
+  color-yellow-size-sm-variant-subtle-radius-md: s15
+  color-yellow-size-xl-variant-filled-radius-full: s126
+  color-yellow-size-xl-variant-filled-radius-md: s125
+  color-yellow-size-xl-variant-light-radius-full: s128
+  color-yellow-size-xl-variant-light-radius-md: s127
+  color-yellow-size-xl-variant-outline-radius-full: s130
+  color-yellow-size-xl-variant-outline-radius-md: s129
+  color-yellow-size-xl-variant-subtle-radius-full: s40
+  color-yellow-size-xl-variant-subtle-radius-md: s39
+  color-yellow-size-xs-variant-filled-radius-full: s102
+  color-yellow-size-xs-variant-filled-radius-md: s101
+  color-yellow-size-xs-variant-light-radius-full: s104
+  color-yellow-size-xs-variant-light-radius-md: s103
+  color-yellow-size-xs-variant-outline-radius-full: s106
+  color-yellow-size-xs-variant-outline-radius-md: s105
+  color-yellow-size-xs-variant-subtle-radius-full: s8
+  color-yellow-size-xs-variant-subtle-radius-md: s7
