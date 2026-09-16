@@ -1,0 +1,2110 @@
+# analysis/variant-surfaces/buttonsbutton.yaml — la SURFACE peinte par chaque variante.
+# Hors de context/ deliberement : lu par la console, jamais par un agent.
+# Les surfaces identiques sont stockees une fois et pointees.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: buttonsbutton
+  generated_at: "2026-09-16"
+  variants: 300
+  surfaces: 253
+surfaces:
+  s1:
+    fill: "@bg-inverse"
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    text: {fill: "@text-primary-inverse", size: 12, weight: Bold, lineHeight: 20}
+  s2:
+    fill: "@bg-disabled"
+    stroke: {color: "@border-disabled", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    text: {fill: "@text-disabled", size: 12, weight: Bold, lineHeight: 20}
+  s3:
+    fill: "@bg-inverse"
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-primary-inverse", size: 12, weight: Bold, lineHeight: 20}
+  s4:
+    fill: "@bg-inverse-hover"
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    text: {fill: "@text-primary-inverse", size: 12, weight: Bold, lineHeight: 20}
+  s5:
+    fill: "@bg-secondary"
+    stroke: {color: "@border-tertiary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    text: {fill: "@white", size: 12, weight: Bold, lineHeight: 20}
+  s6:
+    fill: "@bg-secondary"
+    stroke: {color: "@border-tertiary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    shadow: ["@focus-ring"]
+    text: {fill: "@white", size: 12, weight: Bold, lineHeight: 20}
+  s7:
+    fill: "@white"
+    stroke: {color: "@border-full", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    text: {fill: "@white", size: 12, weight: Bold, lineHeight: 20}
+  s8:
+    fill: "@bg-solid"
+    stroke: {color: "@border-tertiary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    text: {fill: "@white", size: 12, weight: Bold, lineHeight: 20}
+  s9:
+    fill: "@bg-solid"
+    stroke: {color: "@border-tertiary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    shadow: ["@focus-ring"]
+    text: {fill: "@white", size: 12, weight: Bold, lineHeight: 20}
+  s10:
+    fill: "@bg-primary"
+    stroke: {color: "@border-full", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    text: {fill: "@white", size: 12, weight: Bold, lineHeight: 20}
+  s11:
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    text: {fill: "@text-primary", size: 12, weight: Bold, lineHeight: 20}
+  s12:
+    fill: "@transparent"
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    text: {fill: "@text-disabled", size: 12, weight: Bold, lineHeight: 20}
+  s13:
+    fill: "@bg-primary"
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    shadow: ["@focus-ring"]
+    text: {fill: "@white", size: 12, weight: Bold, lineHeight: 20}
+  s14:
+    fill: "@bg-tertiary"
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    text: {fill: "@text-primary", size: 12, weight: Bold, lineHeight: 20}
+  s15:
+    gap: 4
+    height: 20
+    text: {fill: "@text-primary", size: 14, weight: Bold, lineHeight: 20}
+  s16:
+    gap: 4
+    height: 20
+    text: {fill: "@text-disabled", size: 14, weight: Bold, lineHeight: 20}
+  s17:
+    fill: "@white"
+    radius: 4
+    gap: 4
+    height: 20
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-primary", size: 14, weight: Bold, lineHeight: 20}
+  s18:
+    gap: 4
+    height: 20
+    text: {fill: "@text-tertiary", size: 14, weight: Bold, lineHeight: 20}
+  s19:
+    fill: "@bg-inverse"
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    text: {fill: "@text-primary-inverse", size: 14, weight: Bold, lineHeight: 20}
+  s20:
+    fill: "@bg-disabled"
+    stroke: {color: "@border-disabled", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    text: {fill: "@text-disabled", size: 14, weight: Bold, lineHeight: 20}
+  s21:
+    fill: "@bg-inverse"
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-primary-inverse", size: 14, weight: Bold, lineHeight: 20}
+  s22:
+    fill: "@bg-inverse-hover"
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    text: {fill: "@text-primary-inverse", size: 14, weight: Bold, lineHeight: 20}
+  s23:
+    fill: "@bg-secondary"
+    stroke: {color: "@border-tertiary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    text: {fill: "@white", size: 14, weight: Bold, lineHeight: 20}
+  s24:
+    fill: "@bg-secondary"
+    stroke: {color: "@border-tertiary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    shadow: ["@focus-ring"]
+    text: {fill: "@white", size: 14, weight: Bold, lineHeight: 20}
+  s25:
+    fill: "@white"
+    stroke: {color: "@border-full", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    text: {fill: "@white", size: 14, weight: Bold, lineHeight: 20}
+  s26:
+    fill: "@bg-solid"
+    stroke: {color: "@border-tertiary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    text: {fill: "@white", size: 14, weight: Bold, lineHeight: 20}
+  s27:
+    fill: "@bg-solid"
+    stroke: {color: "@border-tertiary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    shadow: ["@focus-ring"]
+    text: {fill: "@white", size: 14, weight: Bold, lineHeight: 20}
+  s28:
+    fill: "@bg-primary"
+    stroke: {color: "@border-full", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    text: {fill: "@white", size: 14, weight: Bold, lineHeight: 20}
+  s29:
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    text: {fill: "@text-primary", size: 14, weight: Bold, lineHeight: 20}
+  s30:
+    fill: "@transparent"
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    text: {fill: "@text-disabled", size: 14, weight: Bold, lineHeight: 20}
+  s31:
+    fill: "@bg-primary"
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    shadow: ["@focus-ring"]
+    text: {fill: "@white", size: 14, weight: Bold, lineHeight: 20}
+  s32:
+    fill: "@bg-tertiary"
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    text: {fill: "@text-primary", size: 14, weight: Bold, lineHeight: 20}
+  s33:
+    fill: "@bg-inverse"
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    text: {fill: "@text-primary-inverse", size: 16, weight: Bold, lineHeight: 24}
+  s34:
+    fill: "@bg-disabled"
+    stroke: {color: "@border-disabled", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    text: {fill: "@text-disabled", size: 16, weight: Bold, lineHeight: 24}
+  s35:
+    fill: "@bg-inverse"
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-primary-inverse", size: 16, weight: Bold, lineHeight: 24}
+  s36:
+    fill: "@bg-inverse-hover"
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    text: {fill: "@text-primary-inverse", size: 16, weight: Bold, lineHeight: 24}
+  s37:
+    fill: "@bg-secondary"
+    stroke: {color: "@border-tertiary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    text: {fill: "@white", size: 16, weight: Bold, lineHeight: 24}
+  s38:
+    fill: "@bg-secondary"
+    stroke: {color: "@border-tertiary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    shadow: ["@focus-ring"]
+    text: {fill: "@white", size: 16, weight: Bold, lineHeight: 24}
+  s39:
+    fill: "@white"
+    stroke: {color: "@border-full", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    text: {fill: "@white", size: 16, weight: Bold, lineHeight: 24}
+  s40:
+    fill: "@bg-solid"
+    stroke: {color: "@border-tertiary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    text: {fill: "@white", size: 16, weight: Bold, lineHeight: 24}
+  s41:
+    fill: "@bg-solid"
+    stroke: {color: "@border-tertiary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    shadow: ["@focus-ring"]
+    text: {fill: "@white", size: 16, weight: Bold, lineHeight: 24}
+  s42:
+    fill: "@bg-primary"
+    stroke: {color: "@border-full", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    text: {fill: "@white", size: 16, weight: Bold, lineHeight: 24}
+  s43:
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    text: {fill: "@text-primary", size: 16, weight: Bold, lineHeight: 24}
+  s44:
+    fill: "@transparent"
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    text: {fill: "@text-disabled", size: 16, weight: Bold, lineHeight: 24}
+  s45:
+    fill: "@bg-primary"
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    shadow: ["@focus-ring"]
+    text: {fill: "@white", size: 16, weight: Bold, lineHeight: 24}
+  s46:
+    fill: "@bg-tertiary"
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    text: {fill: "@text-primary", size: 16, weight: Bold, lineHeight: 24}
+  s47:
+    gap: 6
+    height: 24
+    text: {fill: "@text-primary", size: 16, weight: Bold, lineHeight: 24}
+  s48:
+    gap: 6
+    height: 24
+    text: {fill: "@text-disabled", size: 16, weight: Bold, lineHeight: 24}
+  s49:
+    fill: "@white"
+    radius: 4
+    gap: 6
+    height: 24
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-primary", size: 16, weight: Bold, lineHeight: 24}
+  s50:
+    gap: 6
+    height: 24
+    text: {fill: "@text-tertiary", size: 16, weight: Bold, lineHeight: 24}
+  s51:
+    fill: "@bg-blue-solid"
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    text: {fill: "@text-dark", size: 12, weight: Bold, lineHeight: 20}
+  s52:
+    fill: "@bg-blue-disabled"
+    stroke: {color: "@border-blue-disabled", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    text: {fill: "@text-blue-disabled", size: 12, weight: Bold, lineHeight: 20}
+  s53:
+    fill: "@bg-blue-solid"
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-dark", size: 12, weight: Bold, lineHeight: 20}
+  s54:
+    fill: "@bg-blue-solid-hover"
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    text: {fill: "@text-dark", size: 12, weight: Bold, lineHeight: 20}
+  s55:
+    fill: "@bg-blue-secondary"
+    stroke: {color: "@border-blue-secondary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    text: {fill: "@text-blue-secondary", size: 12, weight: Bold, lineHeight: 20}
+  s56:
+    fill: "@bg-blue-secondary"
+    stroke: {color: "@border-blue-secondary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-blue-secondary", size: 12, weight: Bold, lineHeight: 20}
+  s57:
+    fill: "@bg-blue-secondary-hover"
+    stroke: {color: "@border-blue-primary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    text: {fill: "@text-blue-secondary", size: 12, weight: Bold, lineHeight: 20}
+  s58:
+    stroke: {color: "@border-blue-secondary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    text: {fill: "@text-blue-primary", size: 12, weight: Bold, lineHeight: 20}
+  s59:
+    fill: "@bg-primary"
+    stroke: {color: "@border-blue-secondary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-blue-primary", size: 12, weight: Bold, lineHeight: 20}
+  s60:
+    stroke: {color: "@border-blue-primary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    text: {fill: "@text-blue-primary", size: 12, weight: Bold, lineHeight: 20}
+  s61:
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    text: {fill: "@text-blue-primary", size: 12, weight: Bold, lineHeight: 20}
+  s62:
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    text: {fill: "@text-blue-disabled", size: 12, weight: Bold, lineHeight: 20}
+  s63:
+    fill: "@bg-primary"
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-blue-primary", size: 12, weight: Bold, lineHeight: 20}
+  s64:
+    fill: "@bg-blue-tertiary"
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    text: {fill: "@text-blue-primary", size: 12, weight: Bold, lineHeight: 20}
+  s65:
+    gap: 4
+    height: 20
+    text: {fill: "@text-blue-primary", size: 14, weight: Bold, lineHeight: 20}
+  s66:
+    gap: 4
+    height: 20
+    text: {fill: "@text-blue-disabled", size: 14, weight: Bold, lineHeight: 20}
+  s67:
+    fill: "@white"
+    radius: 4
+    gap: 4
+    height: 20
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-blue-primary", size: 14, weight: Bold, lineHeight: 20}
+  s68:
+    gap: 4
+    height: 20
+    text: {fill: "@text-blue-primary-hover", size: 14, weight: Bold, lineHeight: 20}
+  s69:
+    fill: "@bg-blue-solid"
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    text: {fill: "@text-dark", size: 14, weight: Bold, lineHeight: 20}
+  s70:
+    fill: "@bg-blue-disabled"
+    stroke: {color: "@border-blue-disabled", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    text: {fill: "@text-blue-disabled", size: 14, weight: Bold, lineHeight: 20}
+  s71:
+    fill: "@bg-blue-solid"
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-dark", size: 14, weight: Bold, lineHeight: 20}
+  s72:
+    fill: "@bg-blue-solid-hover"
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    text: {fill: "@text-dark", size: 14, weight: Bold, lineHeight: 20}
+  s73:
+    fill: "@bg-blue-secondary"
+    stroke: {color: "@border-blue-secondary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    text: {fill: "@text-blue-secondary", size: 14, weight: Bold, lineHeight: 20}
+  s74:
+    fill: "@bg-blue-secondary"
+    stroke: {color: "@border-blue-secondary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-blue-secondary", size: 14, weight: Bold, lineHeight: 20}
+  s75:
+    fill: "@bg-blue-secondary-hover"
+    stroke: {color: "@border-blue-primary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    text: {fill: "@text-blue-secondary", size: 14, weight: Bold, lineHeight: 20}
+  s76:
+    stroke: {color: "@border-blue-secondary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    text: {fill: "@text-blue-primary", size: 14, weight: Bold, lineHeight: 20}
+  s77:
+    fill: "@bg-primary"
+    stroke: {color: "@border-blue-secondary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-blue-primary", size: 14, weight: Bold, lineHeight: 20}
+  s78:
+    stroke: {color: "@border-blue-primary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    text: {fill: "@text-blue-primary", size: 14, weight: Bold, lineHeight: 20}
+  s79:
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    text: {fill: "@text-blue-primary", size: 14, weight: Bold, lineHeight: 20}
+  s80:
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    text: {fill: "@text-blue-disabled", size: 14, weight: Bold, lineHeight: 20}
+  s81:
+    fill: "@bg-primary"
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-blue-primary", size: 14, weight: Bold, lineHeight: 20}
+  s82:
+    fill: "@bg-blue-tertiary"
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    text: {fill: "@text-blue-primary", size: 14, weight: Bold, lineHeight: 20}
+  s83:
+    fill: "@bg-blue-solid"
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    text: {fill: "@text-dark", size: 16, weight: Bold, lineHeight: 24}
+  s84:
+    fill: "@bg-blue-disabled"
+    stroke: {color: "@border-blue-disabled", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    text: {fill: "@text-blue-disabled", size: 16, weight: Bold, lineHeight: 24}
+  s85:
+    fill: "@bg-blue-solid"
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-dark", size: 16, weight: Bold, lineHeight: 24}
+  s86:
+    fill: "@bg-blue-solid-hover"
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    text: {fill: "@text-dark", size: 16, weight: Bold, lineHeight: 24}
+  s87:
+    fill: "@bg-blue-secondary"
+    stroke: {color: "@border-blue-secondary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    text: {fill: "@text-blue-secondary", size: 16, weight: Bold, lineHeight: 24}
+  s88:
+    fill: "@bg-blue-secondary"
+    stroke: {color: "@border-blue-secondary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-blue-secondary", size: 16, weight: Bold, lineHeight: 24}
+  s89:
+    fill: "@bg-blue-secondary-hover"
+    stroke: {color: "@border-blue-primary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    text: {fill: "@text-blue-secondary", size: 16, weight: Bold, lineHeight: 24}
+  s90:
+    stroke: {color: "@border-blue-secondary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    text: {fill: "@text-blue-primary", size: 16, weight: Bold, lineHeight: 24}
+  s91:
+    fill: "@bg-primary"
+    stroke: {color: "@border-blue-secondary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-blue-primary", size: 16, weight: Bold, lineHeight: 24}
+  s92:
+    stroke: {color: "@border-blue-primary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    text: {fill: "@text-blue-primary", size: 16, weight: Bold, lineHeight: 24}
+  s93:
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    text: {fill: "@text-blue-primary", size: 16, weight: Bold, lineHeight: 24}
+  s94:
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    text: {fill: "@text-blue-disabled", size: 16, weight: Bold, lineHeight: 24}
+  s95:
+    fill: "@bg-primary"
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-blue-primary", size: 16, weight: Bold, lineHeight: 24}
+  s96:
+    fill: "@bg-blue-tertiary"
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    text: {fill: "@text-blue-primary", size: 16, weight: Bold, lineHeight: 24}
+  s97:
+    gap: 6
+    height: 24
+    text: {fill: "@text-blue-primary", size: 16, weight: Bold, lineHeight: 24}
+  s98:
+    gap: 6
+    height: 24
+    text: {fill: "@text-blue-disabled", size: 16, weight: Bold, lineHeight: 24}
+  s99:
+    fill: "@white"
+    radius: 4
+    gap: 6
+    height: 24
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-blue-primary", size: 16, weight: Bold, lineHeight: 24}
+  s100:
+    gap: 6
+    height: 24
+    text: {fill: "@text-blue-primary-hover", size: 16, weight: Bold, lineHeight: 24}
+  s101:
+    fill: "@bg-error-solid"
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    text: {fill: "@text-dark", size: 12, weight: Bold, lineHeight: 20}
+  s102:
+    fill: "@bg-error-disabled"
+    stroke: {color: "@border-error-disabled", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    text: {fill: "@text-error-disabled", size: 12, weight: Bold, lineHeight: 20}
+  s103:
+    fill: "@bg-error-solid"
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-dark", size: 12, weight: Bold, lineHeight: 20}
+  s104:
+    fill: "@bg-error-solid-hover"
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    text: {fill: "@text-dark", size: 12, weight: Bold, lineHeight: 20}
+  s105:
+    fill: "@bg-error-secondary"
+    stroke: {color: "@border-error-secondary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    text: {fill: "@text-error-secondary", size: 12, weight: Bold, lineHeight: 20}
+  s106:
+    fill: "@bg-error-secondary"
+    stroke: {color: "@border-error-secondary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-error-secondary", size: 12, weight: Bold, lineHeight: 20}
+  s107:
+    fill: "@bg-error-secondary-hover"
+    stroke: {color: "@border-error-primary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    text: {fill: "@text-error-secondary", size: 12, weight: Bold, lineHeight: 20}
+  s108:
+    stroke: {color: "@border-error-secondary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    text: {fill: "@text-error-primary", size: 12, weight: Bold, lineHeight: 20}
+  s109:
+    fill: "@bg-primary"
+    stroke: {color: "@border-error-secondary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-error-primary", size: 12, weight: Bold, lineHeight: 20}
+  s110:
+    stroke: {color: "@border-error-primary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    text: {fill: "@text-error-primary", size: 12, weight: Bold, lineHeight: 20}
+  s111:
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    text: {fill: "@text-error-primary", size: 12, weight: Bold, lineHeight: 20}
+  s112:
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    text: {fill: "@text-error-disabled", size: 12, weight: Bold, lineHeight: 20}
+  s113:
+    fill: "@bg-primary"
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-error-primary", size: 12, weight: Bold, lineHeight: 20}
+  s114:
+    fill: "@bg-error-tertiary"
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    text: {fill: "@text-error-primary", size: 12, weight: Bold, lineHeight: 20}
+  s115:
+    gap: 4
+    height: 20
+    text: {fill: "@text-error-primary", size: 14, weight: Bold, lineHeight: 20}
+  s116:
+    gap: 4
+    height: 20
+    text: {fill: "@text-error-disabled", size: 14, weight: Bold, lineHeight: 20}
+  s117:
+    fill: "@white"
+    radius: 4
+    gap: 4
+    height: 20
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-error-primary", size: 14, weight: Bold, lineHeight: 20}
+  s118:
+    gap: 4
+    height: 20
+    text: {fill: "@text-error-primary-hover", size: 14, weight: Bold, lineHeight: 20}
+  s119:
+    fill: "@bg-error-solid"
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    text: {fill: "@text-dark", size: 14, weight: Bold, lineHeight: 20}
+  s120:
+    fill: "@bg-error-disabled"
+    stroke: {color: "@border-error-disabled", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    text: {fill: "@text-error-disabled", size: 14, weight: Bold, lineHeight: 20}
+  s121:
+    fill: "@bg-error-solid"
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-dark", size: 14, weight: Bold, lineHeight: 20}
+  s122:
+    fill: "@bg-error-solid-hover"
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    text: {fill: "@text-dark", size: 14, weight: Bold, lineHeight: 20}
+  s123:
+    fill: "@bg-error-secondary"
+    stroke: {color: "@border-error-secondary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    text: {fill: "@text-error-secondary", size: 14, weight: Bold, lineHeight: 20}
+  s124:
+    fill: "@bg-error-secondary"
+    stroke: {color: "@border-error-secondary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-error-secondary", size: 14, weight: Bold, lineHeight: 20}
+  s125:
+    fill: "@bg-error-secondary-hover"
+    stroke: {color: "@border-error-primary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    text: {fill: "@text-error-secondary", size: 14, weight: Bold, lineHeight: 20}
+  s126:
+    stroke: {color: "@border-error-secondary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    text: {fill: "@text-error-primary", size: 14, weight: Bold, lineHeight: 20}
+  s127:
+    fill: "@bg-primary"
+    stroke: {color: "@border-error-secondary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-error-primary", size: 14, weight: Bold, lineHeight: 20}
+  s128:
+    stroke: {color: "@border-error-primary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    text: {fill: "@text-error-primary", size: 14, weight: Bold, lineHeight: 20}
+  s129:
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    text: {fill: "@text-error-primary", size: 14, weight: Bold, lineHeight: 20}
+  s130:
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    text: {fill: "@text-error-disabled", size: 14, weight: Bold, lineHeight: 20}
+  s131:
+    fill: "@bg-primary"
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-error-primary", size: 14, weight: Bold, lineHeight: 20}
+  s132:
+    fill: "@bg-error-tertiary"
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    text: {fill: "@text-error-primary", size: 14, weight: Bold, lineHeight: 20}
+  s133:
+    fill: "@bg-error-solid"
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    text: {fill: "@text-dark", size: 16, weight: Bold, lineHeight: 24}
+  s134:
+    fill: "@bg-error-disabled"
+    stroke: {color: "@border-error-disabled", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    text: {fill: "@text-error-disabled", size: 16, weight: Bold, lineHeight: 24}
+  s135:
+    fill: "@bg-error-solid"
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-dark", size: 16, weight: Bold, lineHeight: 24}
+  s136:
+    fill: "@bg-error-solid-hover"
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    text: {fill: "@text-dark", size: 16, weight: Bold, lineHeight: 24}
+  s137:
+    fill: "@bg-error-secondary"
+    stroke: {color: "@border-error-secondary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    text: {fill: "@text-error-secondary", size: 16, weight: Bold, lineHeight: 24}
+  s138:
+    fill: "@bg-error-secondary"
+    stroke: {color: "@border-error-secondary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-error-secondary", size: 16, weight: Bold, lineHeight: 24}
+  s139:
+    fill: "@bg-error-secondary-hover"
+    stroke: {color: "@border-error-primary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    text: {fill: "@text-error-secondary", size: 16, weight: Bold, lineHeight: 24}
+  s140:
+    stroke: {color: "@border-error-secondary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    text: {fill: "@text-error-primary", size: 16, weight: Bold, lineHeight: 24}
+  s141:
+    fill: "@bg-primary"
+    stroke: {color: "@border-error-secondary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-error-primary", size: 16, weight: Bold, lineHeight: 24}
+  s142:
+    stroke: {color: "@border-error-primary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    text: {fill: "@text-error-primary", size: 16, weight: Bold, lineHeight: 24}
+  s143:
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    text: {fill: "@text-error-primary", size: 16, weight: Bold, lineHeight: 24}
+  s144:
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    text: {fill: "@text-error-disabled", size: 16, weight: Bold, lineHeight: 24}
+  s145:
+    fill: "@bg-primary"
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-error-primary", size: 16, weight: Bold, lineHeight: 24}
+  s146:
+    fill: "@bg-error-tertiary"
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    text: {fill: "@text-error-primary", size: 16, weight: Bold, lineHeight: 24}
+  s147:
+    gap: 6
+    height: 24
+    text: {fill: "@text-error-primary", size: 16, weight: Bold, lineHeight: 24}
+  s148:
+    gap: 6
+    height: 24
+    text: {fill: "@text-error-disabled", size: 16, weight: Bold, lineHeight: 24}
+  s149:
+    fill: "@white"
+    radius: 4
+    gap: 6
+    height: 24
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-error-primary", size: 16, weight: Bold, lineHeight: 24}
+  s150:
+    gap: 6
+    height: 24
+    text: {fill: "@text-error-primary-hover", size: 16, weight: Bold, lineHeight: 24}
+  s151:
+    fill: "@bg-success-solid"
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    text: {fill: "@text-dark", size: 12, weight: Bold, lineHeight: 20}
+  s152:
+    fill: "@bg-success-disabled"
+    stroke: {color: "@border-success-disabled", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    text: {fill: "@text-success-disabled", size: 12, weight: Bold, lineHeight: 20}
+  s153:
+    fill: "@bg-success-solid"
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-dark", size: 12, weight: Bold, lineHeight: 20}
+  s154:
+    fill: "@bg-success-solid-hover"
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    text: {fill: "@text-dark", size: 12, weight: Bold, lineHeight: 20}
+  s155:
+    fill: "@bg-success-secondary"
+    stroke: {color: "@border-success-secondary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    text: {fill: "@text-success-primary", size: 12, weight: Bold, lineHeight: 20}
+  s156:
+    fill: "@bg-success-secondary"
+    stroke: {color: "@border-success-secondary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-success-primary", size: 12, weight: Bold, lineHeight: 20}
+  s157:
+    fill: "@bg-success-primary"
+    stroke: {color: "@border-success-primary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    text: {fill: "@text-success-primary", size: 12, weight: Bold, lineHeight: 20}
+  s158:
+    stroke: {color: "@border-success-secondary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    text: {fill: "@text-success-primary", size: 12, weight: Bold, lineHeight: 20}
+  s159:
+    fill: "@bg-success-disabled"
+    stroke: {color: "@border-success-disabled", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    shadow: ["@shadow-xs"]
+    text: {fill: "@text-success-disabled", size: 12, weight: Bold, lineHeight: 20}
+  s160:
+    fill: "@bg-primary"
+    stroke: {color: "@border-success-secondary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-success-primary", size: 12, weight: Bold, lineHeight: 20}
+  s161:
+    stroke: {color: "@border-success-primary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    text: {fill: "@text-success-primary", size: 12, weight: Bold, lineHeight: 20}
+  s162:
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    text: {fill: "@text-success-primary", size: 12, weight: Bold, lineHeight: 20}
+  s163:
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    text: {fill: "@text-success-disabled", size: 12, weight: Bold, lineHeight: 20}
+  s164:
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-success-primary", size: 12, weight: Bold, lineHeight: 20}
+  s165:
+    fill: "@bg-success-secondary"
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    text: {fill: "@text-success-primary", size: 12, weight: Bold, lineHeight: 20}
+  s166:
+    gap: 4
+    height: 20
+    text: {fill: "@text-success-primary", size: 14, weight: Bold, lineHeight: 20}
+  s167:
+    gap: 4
+    height: 20
+    text: {fill: "@text-success-disabled", size: 14, weight: Bold, lineHeight: 20}
+  s168:
+    fill: "@white"
+    radius: 4
+    gap: 4
+    height: 20
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-success-primary", size: 14, weight: Bold, lineHeight: 20}
+  s169:
+    gap: 4
+    height: 20
+    text: {fill: "@text-success-primary-hover", size: 14, weight: Bold, lineHeight: 20}
+  s170:
+    fill: "@bg-success-solid"
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    text: {fill: "@text-dark", size: 14, weight: Bold, lineHeight: 20}
+  s171:
+    fill: "@bg-success-disabled"
+    stroke: {color: "@border-success-disabled", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    text: {fill: "@text-success-disabled", size: 14, weight: Bold, lineHeight: 20}
+  s172:
+    fill: "@bg-success-solid"
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-dark", size: 14, weight: Bold, lineHeight: 20}
+  s173:
+    fill: "@bg-success-solid-hover"
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    text: {fill: "@text-dark", size: 14, weight: Bold, lineHeight: 20}
+  s174:
+    fill: "@bg-success-secondary"
+    stroke: {color: "@border-success-secondary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    text: {fill: "@text-success-primary", size: 14, weight: Bold, lineHeight: 20}
+  s175:
+    fill: "@bg-success-secondary"
+    stroke: {color: "@border-success-secondary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-success-primary", size: 14, weight: Bold, lineHeight: 20}
+  s176:
+    fill: "@bg-success-primary"
+    stroke: {color: "@border-success-primary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    text: {fill: "@text-success-primary", size: 14, weight: Bold, lineHeight: 20}
+  s177:
+    stroke: {color: "@border-success-secondary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    text: {fill: "@text-success-primary", size: 14, weight: Bold, lineHeight: 20}
+  s178:
+    fill: "@bg-success-disabled"
+    stroke: {color: "@border-success-disabled", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    shadow: ["@shadow-xs"]
+    text: {fill: "@text-success-disabled", size: 14, weight: Bold, lineHeight: 20}
+  s179:
+    fill: "@bg-primary"
+    stroke: {color: "@border-success-secondary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-success-primary", size: 14, weight: Bold, lineHeight: 20}
+  s180:
+    stroke: {color: "@border-success-primary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    text: {fill: "@text-success-primary", size: 14, weight: Bold, lineHeight: 20}
+  s181:
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    text: {fill: "@text-success-primary", size: 14, weight: Bold, lineHeight: 20}
+  s182:
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    text: {fill: "@text-success-disabled", size: 14, weight: Bold, lineHeight: 20}
+  s183:
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-success-primary", size: 14, weight: Bold, lineHeight: 20}
+  s184:
+    fill: "@bg-success-secondary"
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    text: {fill: "@text-success-primary", size: 14, weight: Bold, lineHeight: 20}
+  s185:
+    fill: "@bg-success-solid"
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    text: {fill: "@text-dark", size: 16, weight: Bold, lineHeight: 24}
+  s186:
+    fill: "@bg-success-disabled"
+    stroke: {color: "@border-success-disabled", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    text: {fill: "@text-success-disabled", size: 16, weight: Bold, lineHeight: 24}
+  s187:
+    fill: "@bg-success-solid"
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-dark", size: 16, weight: Bold, lineHeight: 24}
+  s188:
+    fill: "@bg-success-solid-hover"
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    text: {fill: "@text-dark", size: 16, weight: Bold, lineHeight: 24}
+  s189:
+    fill: "@bg-success-secondary"
+    stroke: {color: "@border-success-secondary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    text: {fill: "@text-success-primary", size: 16, weight: Bold, lineHeight: 24}
+  s190:
+    fill: "@bg-success-secondary"
+    stroke: {color: "@border-success-secondary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-success-primary", size: 16, weight: Bold, lineHeight: 24}
+  s191:
+    fill: "@bg-success-primary"
+    stroke: {color: "@border-success-primary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    text: {fill: "@text-success-primary", size: 16, weight: Bold, lineHeight: 24}
+  s192:
+    stroke: {color: "@border-success-secondary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    text: {fill: "@text-success-primary", size: 16, weight: Bold, lineHeight: 24}
+  s193:
+    fill: "@bg-success-disabled"
+    stroke: {color: "@border-success-disabled", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    shadow: ["@shadow-xs"]
+    text: {fill: "@text-success-disabled", size: 16, weight: Bold, lineHeight: 24}
+  s194:
+    fill: "@bg-primary"
+    stroke: {color: "@border-success-secondary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-success-primary", size: 16, weight: Bold, lineHeight: 24}
+  s195:
+    stroke: {color: "@border-success-primary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    text: {fill: "@text-success-primary", size: 16, weight: Bold, lineHeight: 24}
+  s196:
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    text: {fill: "@text-success-primary", size: 16, weight: Bold, lineHeight: 24}
+  s197:
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    text: {fill: "@text-success-disabled", size: 16, weight: Bold, lineHeight: 24}
+  s198:
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-success-primary", size: 16, weight: Bold, lineHeight: 24}
+  s199:
+    fill: "@bg-success-secondary"
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    text: {fill: "@text-success-primary", size: 16, weight: Bold, lineHeight: 24}
+  s200:
+    gap: 6
+    height: 24
+    text: {fill: "@text-success-primary", size: 16, weight: Bold, lineHeight: 24}
+  s201:
+    gap: 6
+    height: 24
+    text: {fill: "@text-success-disabled", size: 16, weight: Bold, lineHeight: 24}
+  s202:
+    fill: "@white"
+    radius: 4
+    gap: 6
+    height: 24
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-success-primary", size: 16, weight: Bold, lineHeight: 24}
+  s203:
+    gap: 6
+    height: 24
+    text: {fill: "@text-success-primary-hover", size: 16, weight: Bold, lineHeight: 24}
+  s204:
+    fill: "@bg-warning-solid"
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    text: {fill: "@text-dark", size: 12, weight: Bold, lineHeight: 20}
+  s205:
+    fill: "@bg-warning-disabled"
+    stroke: {color: "@border-warning-disabled", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    text: {fill: "@text-warning-disabled", size: 12, weight: Bold, lineHeight: 20}
+  s206:
+    fill: "@bg-warning-solid"
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-dark", size: 12, weight: Bold, lineHeight: 20}
+  s207:
+    fill: "@bg-warning-solid_hover"
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    text: {fill: "@text-dark", size: 12, weight: Bold, lineHeight: 20}
+  s208:
+    fill: "@bg-warning-secondary"
+    stroke: {color: "@border-warning-secondary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    text: {fill: "@text-warning-secondary", size: 12, weight: Bold, lineHeight: 20}
+  s209:
+    fill: "@bg-warning-secondary"
+    stroke: {color: "@border-warning-secondary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-warning-secondary", size: 12, weight: Bold, lineHeight: 20}
+  s210:
+    fill: "@bg-warning-tertiary"
+    stroke: {color: "@border-warning-primary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    text: {fill: "@text-warning-secondary", size: 12, weight: Bold, lineHeight: 20}
+  s211:
+    stroke: {color: "@border-warning-secondary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    text: {fill: "@text-warning-primary", size: 12, weight: Bold, lineHeight: 20}
+  s212:
+    fill: "@bg-primary"
+    stroke: {color: "@border-warning-secondary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-warning-primary", size: 12, weight: Bold, lineHeight: 20}
+  s213:
+    stroke: {color: "@border-warning-primary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    text: {fill: "@text-warning-primary", size: 12, weight: Bold, lineHeight: 20}
+  s214:
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    text: {fill: "@text-warning-primary", size: 12, weight: Bold, lineHeight: 20}
+  s215:
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    text: {fill: "@text-warning-disabled", size: 12, weight: Bold, lineHeight: 20}
+  s216:
+    fill: "@bg-primary"
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-warning-primary", size: 12, weight: Bold, lineHeight: 20}
+  s217:
+    fill: "@bg-warning-primary"
+    radius: 4
+    padding: {all: 8}
+    gap: 4
+    height: 36
+    text: {fill: "@text-warning-primary", size: 12, weight: Bold, lineHeight: 20}
+  s218:
+    gap: 4
+    height: 20
+    text: {fill: "@text-warning-primary", size: 14, weight: Bold, lineHeight: 20}
+  s219:
+    gap: 4
+    height: 20
+    text: {fill: "@text-warning-disabled", size: 14, weight: Bold, lineHeight: 20}
+  s220:
+    fill: "@white"
+    radius: 4
+    gap: 4
+    height: 20
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-warning-primary", size: 14, weight: Bold, lineHeight: 20}
+  s221:
+    gap: 4
+    height: 20
+    text: {fill: "@text-warning-primary-hover", size: 14, weight: Bold, lineHeight: 20}
+  s222:
+    fill: "@bg-warning-solid"
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    text: {fill: "@text-dark", size: 14, weight: Bold, lineHeight: 20}
+  s223:
+    fill: "@bg-warning-disabled"
+    stroke: {color: "@border-warning-disabled", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    text: {fill: "@text-warning-disabled", size: 14, weight: Bold, lineHeight: 20}
+  s224:
+    fill: "@bg-warning-solid"
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-dark", size: 14, weight: Bold, lineHeight: 20}
+  s225:
+    fill: "@bg-warning-solid_hover"
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    text: {fill: "@text-dark", size: 14, weight: Bold, lineHeight: 20}
+  s226:
+    fill: "@bg-warning-secondary"
+    stroke: {color: "@border-warning-secondary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    text: {fill: "@text-warning-secondary", size: 14, weight: Bold, lineHeight: 20}
+  s227:
+    fill: "@bg-warning-secondary"
+    stroke: {color: "@border-warning-secondary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-warning-secondary", size: 14, weight: Bold, lineHeight: 20}
+  s228:
+    fill: "@bg-warning-tertiary"
+    stroke: {color: "@border-warning-primary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    text: {fill: "@text-warning-secondary", size: 14, weight: Bold, lineHeight: 20}
+  s229:
+    stroke: {color: "@border-warning-secondary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    text: {fill: "@text-warning-primary", size: 14, weight: Bold, lineHeight: 20}
+  s230:
+    fill: "@bg-primary"
+    stroke: {color: "@border-warning-secondary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-warning-primary", size: 14, weight: Bold, lineHeight: 20}
+  s231:
+    stroke: {color: "@border-warning-primary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    text: {fill: "@text-warning-primary", size: 14, weight: Bold, lineHeight: 20}
+  s232:
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    text: {fill: "@text-warning-primary", size: 14, weight: Bold, lineHeight: 20}
+  s233:
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    text: {fill: "@text-warning-disabled", size: 14, weight: Bold, lineHeight: 20}
+  s234:
+    fill: "@bg-primary"
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-warning-primary", size: 14, weight: Bold, lineHeight: 20}
+  s235:
+    fill: "@bg-warning-primary"
+    radius: 4
+    padding: {all: 10}
+    gap: 4
+    height: 40
+    text: {fill: "@text-warning-primary", size: 14, weight: Bold, lineHeight: 20}
+  s236:
+    fill: "@bg-warning-solid"
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    text: {fill: "@text-dark", size: 16, weight: Bold, lineHeight: 24}
+  s237:
+    fill: "@bg-warning-disabled"
+    stroke: {color: "@border-warning-disabled", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    text: {fill: "@text-warning-disabled", size: 16, weight: Bold, lineHeight: 24}
+  s238:
+    fill: "@bg-warning-solid"
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-dark", size: 16, weight: Bold, lineHeight: 24}
+  s239:
+    fill: "@bg-warning-solid_hover"
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    text: {fill: "@text-dark", size: 16, weight: Bold, lineHeight: 24}
+  s240:
+    fill: "@bg-warning-secondary"
+    stroke: {color: "@border-warning-secondary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    text: {fill: "@text-warning-secondary", size: 16, weight: Bold, lineHeight: 24}
+  s241:
+    fill: "@bg-warning-secondary"
+    stroke: {color: "@border-warning-secondary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-warning-secondary", size: 16, weight: Bold, lineHeight: 24}
+  s242:
+    fill: "@bg-warning-tertiary"
+    stroke: {color: "@border-warning-primary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    text: {fill: "@text-warning-secondary", size: 16, weight: Bold, lineHeight: 24}
+  s243:
+    stroke: {color: "@border-warning-secondary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    text: {fill: "@text-warning-primary", size: 16, weight: Bold, lineHeight: 24}
+  s244:
+    fill: "@bg-primary"
+    stroke: {color: "@border-warning-secondary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-warning-primary", size: 16, weight: Bold, lineHeight: 24}
+  s245:
+    stroke: {color: "@border-warning-primary", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    text: {fill: "@text-warning-primary", size: 16, weight: Bold, lineHeight: 24}
+  s246:
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    text: {fill: "@text-warning-primary", size: 16, weight: Bold, lineHeight: 24}
+  s247:
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    text: {fill: "@text-warning-disabled", size: 16, weight: Bold, lineHeight: 24}
+  s248:
+    fill: "@bg-primary"
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-warning-primary", size: 16, weight: Bold, lineHeight: 24}
+  s249:
+    fill: "@bg-warning-primary"
+    radius: 4
+    padding: {all: 10}
+    gap: 6
+    height: 44
+    text: {fill: "@text-warning-primary", size: 16, weight: Bold, lineHeight: 24}
+  s250:
+    gap: 6
+    height: 24
+    text: {fill: "@text-warning-primary", size: 16, weight: Bold, lineHeight: 24}
+  s251:
+    gap: 6
+    height: 24
+    text: {fill: "@text-warning-disabled", size: 16, weight: Bold, lineHeight: 24}
+  s252:
+    fill: "@white"
+    radius: 4
+    gap: 6
+    height: 24
+    shadow: ["@focus-ring"]
+    text: {fill: "@text-warning-primary", size: 16, weight: Bold, lineHeight: 24}
+  s253:
+    gap: 6
+    height: 24
+    text: {fill: "@text-warning-primary-hover", size: 16, weight: Bold, lineHeight: 24}
+variants:
+  color-brand-size-md-variant-filled-state-default: s83
+  color-brand-size-md-variant-filled-state-disabled: s84
+  color-brand-size-md-variant-filled-state-focus: s85
+  color-brand-size-md-variant-filled-state-hover: s86
+  color-brand-size-md-variant-light-state-default: s87
+  color-brand-size-md-variant-light-state-disabled: s84
+  color-brand-size-md-variant-light-state-focus: s88
+  color-brand-size-md-variant-light-state-hover: s89
+  color-brand-size-md-variant-link-state-default: s97
+  color-brand-size-md-variant-link-state-disabled: s98
+  color-brand-size-md-variant-link-state-focus: s99
+  color-brand-size-md-variant-link-state-hover: s100
+  color-brand-size-md-variant-outline-state-default: s90
+  color-brand-size-md-variant-outline-state-disabled: s84
+  color-brand-size-md-variant-outline-state-focus: s91
+  color-brand-size-md-variant-outline-state-hover: s92
+  color-brand-size-md-variant-subtle-state-default: s93
+  color-brand-size-md-variant-subtle-state-disabled: s94
+  color-brand-size-md-variant-subtle-state-focus: s95
+  color-brand-size-md-variant-subtle-state-hover: s96
+  color-brand-size-sm-variant-filled-state-default: s69
+  color-brand-size-sm-variant-filled-state-disabled: s70
+  color-brand-size-sm-variant-filled-state-focus: s71
+  color-brand-size-sm-variant-filled-state-hover: s72
+  color-brand-size-sm-variant-light-state-default: s73
+  color-brand-size-sm-variant-light-state-disabled: s70
+  color-brand-size-sm-variant-light-state-focus: s74
+  color-brand-size-sm-variant-light-state-hover: s75
+  color-brand-size-sm-variant-link-state-default: s65
+  color-brand-size-sm-variant-link-state-disabled: s66
+  color-brand-size-sm-variant-link-state-focus: s67
+  color-brand-size-sm-variant-link-state-hover: s68
+  color-brand-size-sm-variant-outline-state-default: s76
+  color-brand-size-sm-variant-outline-state-disabled: s70
+  color-brand-size-sm-variant-outline-state-focus: s77
+  color-brand-size-sm-variant-outline-state-hover: s78
+  color-brand-size-sm-variant-subtle-state-default: s79
+  color-brand-size-sm-variant-subtle-state-disabled: s80
+  color-brand-size-sm-variant-subtle-state-focus: s81
+  color-brand-size-sm-variant-subtle-state-hover: s82
+  color-brand-size-xs-variant-filled-state-default: s51
+  color-brand-size-xs-variant-filled-state-disabled: s52
+  color-brand-size-xs-variant-filled-state-focus: s53
+  color-brand-size-xs-variant-filled-state-hover: s54
+  color-brand-size-xs-variant-light-state-default: s55
+  color-brand-size-xs-variant-light-state-disabled: s52
+  color-brand-size-xs-variant-light-state-focus: s56
+  color-brand-size-xs-variant-light-state-hover: s57
+  color-brand-size-xs-variant-link-state-default: s65
+  color-brand-size-xs-variant-link-state-disabled: s66
+  color-brand-size-xs-variant-link-state-focus: s67
+  color-brand-size-xs-variant-link-state-hover: s68
+  color-brand-size-xs-variant-outline-state-default: s58
+  color-brand-size-xs-variant-outline-state-disabled: s52
+  color-brand-size-xs-variant-outline-state-focus: s59
+  color-brand-size-xs-variant-outline-state-hover: s60
+  color-brand-size-xs-variant-subtle-state-default: s61
+  color-brand-size-xs-variant-subtle-state-disabled: s62
+  color-brand-size-xs-variant-subtle-state-focus: s63
+  color-brand-size-xs-variant-subtle-state-hover: s64
+  color-gray-size-md-variant-filled-state-default: s33
+  color-gray-size-md-variant-filled-state-disabled: s34
+  color-gray-size-md-variant-filled-state-focus: s35
+  color-gray-size-md-variant-filled-state-hover: s36
+  color-gray-size-md-variant-light-state-default: s37
+  color-gray-size-md-variant-light-state-disabled: s34
+  color-gray-size-md-variant-light-state-focus: s38
+  color-gray-size-md-variant-light-state-hover: s39
+  color-gray-size-md-variant-link-state-default: s47
+  color-gray-size-md-variant-link-state-disabled: s48
+  color-gray-size-md-variant-link-state-focus: s49
+  color-gray-size-md-variant-link-state-hover: s50
+  color-gray-size-md-variant-outline-state-default: s40
+  color-gray-size-md-variant-outline-state-disabled: s34
+  color-gray-size-md-variant-outline-state-focus: s41
+  color-gray-size-md-variant-outline-state-hover: s42
+  color-gray-size-md-variant-subtle-state-default: s43
+  color-gray-size-md-variant-subtle-state-disabled: s44
+  color-gray-size-md-variant-subtle-state-focus: s45
+  color-gray-size-md-variant-subtle-state-hover: s46
+  color-gray-size-sm-variant-filled-state-default: s19
+  color-gray-size-sm-variant-filled-state-disabled: s20
+  color-gray-size-sm-variant-filled-state-focus: s21
+  color-gray-size-sm-variant-filled-state-hover: s22
+  color-gray-size-sm-variant-light-state-default: s23
+  color-gray-size-sm-variant-light-state-disabled: s20
+  color-gray-size-sm-variant-light-state-focus: s24
+  color-gray-size-sm-variant-light-state-hover: s25
+  color-gray-size-sm-variant-link-state-default: s15
+  color-gray-size-sm-variant-link-state-disabled: s16
+  color-gray-size-sm-variant-link-state-focus: s17
+  color-gray-size-sm-variant-link-state-hover: s18
+  color-gray-size-sm-variant-outline-state-default: s26
+  color-gray-size-sm-variant-outline-state-disabled: s20
+  color-gray-size-sm-variant-outline-state-focus: s27
+  color-gray-size-sm-variant-outline-state-hover: s28
+  color-gray-size-sm-variant-subtle-state-default: s29
+  color-gray-size-sm-variant-subtle-state-disabled: s30
+  color-gray-size-sm-variant-subtle-state-focus: s31
+  color-gray-size-sm-variant-subtle-state-hover: s32
+  color-gray-size-xs-variant-filled-state-default: s1
+  color-gray-size-xs-variant-filled-state-disabled: s2
+  color-gray-size-xs-variant-filled-state-focus: s3
+  color-gray-size-xs-variant-filled-state-hover: s4
+  color-gray-size-xs-variant-light-state-default: s5
+  color-gray-size-xs-variant-light-state-disabled: s2
+  color-gray-size-xs-variant-light-state-focus: s6
+  color-gray-size-xs-variant-light-state-hover: s7
+  color-gray-size-xs-variant-link-state-default: s15
+  color-gray-size-xs-variant-link-state-disabled: s16
+  color-gray-size-xs-variant-link-state-focus: s17
+  color-gray-size-xs-variant-link-state-hover: s18
+  color-gray-size-xs-variant-outline-state-default: s8
+  color-gray-size-xs-variant-outline-state-disabled: s2
+  color-gray-size-xs-variant-outline-state-focus: s9
+  color-gray-size-xs-variant-outline-state-hover: s10
+  color-gray-size-xs-variant-subtle-state-default: s11
+  color-gray-size-xs-variant-subtle-state-disabled: s12
+  color-gray-size-xs-variant-subtle-state-focus: s13
+  color-gray-size-xs-variant-subtle-state-hover: s14
+  color-green-size-md-variant-filled-state-default: s185
+  color-green-size-md-variant-filled-state-disabled: s186
+  color-green-size-md-variant-filled-state-focus: s187
+  color-green-size-md-variant-filled-state-hover: s188
+  color-green-size-md-variant-light-state-default: s189
+  color-green-size-md-variant-light-state-disabled: s186
+  color-green-size-md-variant-light-state-focus: s190
+  color-green-size-md-variant-light-state-hover: s191
+  color-green-size-md-variant-link-state-default: s200
+  color-green-size-md-variant-link-state-disabled: s201
+  color-green-size-md-variant-link-state-focus: s202
+  color-green-size-md-variant-link-state-hover: s203
+  color-green-size-md-variant-outline-state-default: s192
+  color-green-size-md-variant-outline-state-disabled: s193
+  color-green-size-md-variant-outline-state-focus: s194
+  color-green-size-md-variant-outline-state-hover: s195
+  color-green-size-md-variant-subtle-state-default: s196
+  color-green-size-md-variant-subtle-state-disabled: s197
+  color-green-size-md-variant-subtle-state-focus: s198
+  color-green-size-md-variant-subtle-state-hover: s199
+  color-green-size-sm-variant-filled-state-default: s170
+  color-green-size-sm-variant-filled-state-disabled: s171
+  color-green-size-sm-variant-filled-state-focus: s172
+  color-green-size-sm-variant-filled-state-hover: s173
+  color-green-size-sm-variant-light-state-default: s174
+  color-green-size-sm-variant-light-state-disabled: s171
+  color-green-size-sm-variant-light-state-focus: s175
+  color-green-size-sm-variant-light-state-hover: s176
+  color-green-size-sm-variant-link-state-default: s166
+  color-green-size-sm-variant-link-state-disabled: s167
+  color-green-size-sm-variant-link-state-focus: s168
+  color-green-size-sm-variant-link-state-hover: s169
+  color-green-size-sm-variant-outline-state-default: s177
+  color-green-size-sm-variant-outline-state-disabled: s178
+  color-green-size-sm-variant-outline-state-focus: s179
+  color-green-size-sm-variant-outline-state-hover: s180
+  color-green-size-sm-variant-subtle-state-default: s181
+  color-green-size-sm-variant-subtle-state-disabled: s182
+  color-green-size-sm-variant-subtle-state-focus: s183
+  color-green-size-sm-variant-subtle-state-hover: s184
+  color-green-size-xs-variant-filled-state-default: s151
+  color-green-size-xs-variant-filled-state-disabled: s152
+  color-green-size-xs-variant-filled-state-focus: s153
+  color-green-size-xs-variant-filled-state-hover: s154
+  color-green-size-xs-variant-light-state-default: s155
+  color-green-size-xs-variant-light-state-disabled: s152
+  color-green-size-xs-variant-light-state-focus: s156
+  color-green-size-xs-variant-light-state-hover: s157
+  color-green-size-xs-variant-link-state-default: s166
+  color-green-size-xs-variant-link-state-disabled: s167
+  color-green-size-xs-variant-link-state-focus: s168
+  color-green-size-xs-variant-link-state-hover: s169
+  color-green-size-xs-variant-outline-state-default: s158
+  color-green-size-xs-variant-outline-state-disabled: s159
+  color-green-size-xs-variant-outline-state-focus: s160
+  color-green-size-xs-variant-outline-state-hover: s161
+  color-green-size-xs-variant-subtle-state-default: s162
+  color-green-size-xs-variant-subtle-state-disabled: s163
+  color-green-size-xs-variant-subtle-state-focus: s164
+  color-green-size-xs-variant-subtle-state-hover: s165
+  color-orange-size-md-variant-filled-state-default: s236
+  color-orange-size-md-variant-filled-state-disabled: s237
+  color-orange-size-md-variant-filled-state-focus: s238
+  color-orange-size-md-variant-filled-state-hover: s239
+  color-orange-size-md-variant-light-state-default: s240
+  color-orange-size-md-variant-light-state-disabled: s237
+  color-orange-size-md-variant-light-state-focus: s241
+  color-orange-size-md-variant-light-state-hover: s242
+  color-orange-size-md-variant-link-state-default: s250
+  color-orange-size-md-variant-link-state-disabled: s251
+  color-orange-size-md-variant-link-state-focus: s252
+  color-orange-size-md-variant-link-state-hover: s253
+  color-orange-size-md-variant-outline-state-default: s243
+  color-orange-size-md-variant-outline-state-disabled: s237
+  color-orange-size-md-variant-outline-state-focus: s244
+  color-orange-size-md-variant-outline-state-hover: s245
+  color-orange-size-md-variant-subtle-state-default: s246
+  color-orange-size-md-variant-subtle-state-disabled: s247
+  color-orange-size-md-variant-subtle-state-focus: s248
+  color-orange-size-md-variant-subtle-state-hover: s249
+  color-orange-size-sm-variant-filled-state-default: s222
+  color-orange-size-sm-variant-filled-state-disabled: s223
+  color-orange-size-sm-variant-filled-state-focus: s224
+  color-orange-size-sm-variant-filled-state-hover: s225
+  color-orange-size-sm-variant-light-state-default: s226
+  color-orange-size-sm-variant-light-state-disabled: s223
+  color-orange-size-sm-variant-light-state-focus: s227
+  color-orange-size-sm-variant-light-state-hover: s228
+  color-orange-size-sm-variant-link-state-default: s218
+  color-orange-size-sm-variant-link-state-disabled: s219
+  color-orange-size-sm-variant-link-state-focus: s220
+  color-orange-size-sm-variant-link-state-hover: s221
+  color-orange-size-sm-variant-outline-state-default: s229
+  color-orange-size-sm-variant-outline-state-disabled: s223
+  color-orange-size-sm-variant-outline-state-focus: s230
+  color-orange-size-sm-variant-outline-state-hover: s231
+  color-orange-size-sm-variant-subtle-state-default: s232
+  color-orange-size-sm-variant-subtle-state-disabled: s233
+  color-orange-size-sm-variant-subtle-state-focus: s234
+  color-orange-size-sm-variant-subtle-state-hover: s235
+  color-orange-size-xs-variant-filled-state-default: s204
+  color-orange-size-xs-variant-filled-state-disabled: s205
+  color-orange-size-xs-variant-filled-state-focus: s206
+  color-orange-size-xs-variant-filled-state-hover: s207
+  color-orange-size-xs-variant-light-state-default: s208
+  color-orange-size-xs-variant-light-state-disabled: s205
+  color-orange-size-xs-variant-light-state-focus: s209
+  color-orange-size-xs-variant-light-state-hover: s210
+  color-orange-size-xs-variant-link-state-default: s218
+  color-orange-size-xs-variant-link-state-disabled: s219
+  color-orange-size-xs-variant-link-state-focus: s220
+  color-orange-size-xs-variant-link-state-hover: s221
+  color-orange-size-xs-variant-outline-state-default: s211
+  color-orange-size-xs-variant-outline-state-disabled: s205
+  color-orange-size-xs-variant-outline-state-focus: s212
+  color-orange-size-xs-variant-outline-state-hover: s213
+  color-orange-size-xs-variant-subtle-state-default: s214
+  color-orange-size-xs-variant-subtle-state-disabled: s215
+  color-orange-size-xs-variant-subtle-state-focus: s216
+  color-orange-size-xs-variant-subtle-state-hover: s217
+  color-red-size-md-variant-filled-state-default: s133
+  color-red-size-md-variant-filled-state-disabled: s134
+  color-red-size-md-variant-filled-state-focus: s135
+  color-red-size-md-variant-filled-state-hover: s136
+  color-red-size-md-variant-light-state-default: s137
+  color-red-size-md-variant-light-state-disabled: s134
+  color-red-size-md-variant-light-state-focus: s138
+  color-red-size-md-variant-light-state-hover: s139
+  color-red-size-md-variant-link-state-default: s147
+  color-red-size-md-variant-link-state-disabled: s148
+  color-red-size-md-variant-link-state-focus: s149
+  color-red-size-md-variant-link-state-hover: s150
+  color-red-size-md-variant-outline-state-default: s140
+  color-red-size-md-variant-outline-state-disabled: s134
+  color-red-size-md-variant-outline-state-focus: s141
+  color-red-size-md-variant-outline-state-hover: s142
+  color-red-size-md-variant-subtle-state-default: s143
+  color-red-size-md-variant-subtle-state-disabled: s144
+  color-red-size-md-variant-subtle-state-focus: s145
+  color-red-size-md-variant-subtle-state-hover: s146
+  color-red-size-sm-variant-filled-state-default: s119
+  color-red-size-sm-variant-filled-state-disabled: s120
+  color-red-size-sm-variant-filled-state-focus: s121
+  color-red-size-sm-variant-filled-state-hover: s122
+  color-red-size-sm-variant-light-state-default: s123
+  color-red-size-sm-variant-light-state-disabled: s120
+  color-red-size-sm-variant-light-state-focus: s124
+  color-red-size-sm-variant-light-state-hover: s125
+  color-red-size-sm-variant-link-state-default: s115
+  color-red-size-sm-variant-link-state-disabled: s116
+  color-red-size-sm-variant-link-state-focus: s117
+  color-red-size-sm-variant-link-state-hover: s118
+  color-red-size-sm-variant-outline-state-default: s126
+  color-red-size-sm-variant-outline-state-disabled: s120
+  color-red-size-sm-variant-outline-state-focus: s127
+  color-red-size-sm-variant-outline-state-hover: s128
+  color-red-size-sm-variant-subtle-state-default: s129
+  color-red-size-sm-variant-subtle-state-disabled: s130
+  color-red-size-sm-variant-subtle-state-focus: s131
+  color-red-size-sm-variant-subtle-state-hover: s132
+  color-red-size-xs-variant-filled-state-default: s101
+  color-red-size-xs-variant-filled-state-disabled: s102
+  color-red-size-xs-variant-filled-state-focus: s103
+  color-red-size-xs-variant-filled-state-hover: s104
+  color-red-size-xs-variant-light-state-default: s105
+  color-red-size-xs-variant-light-state-disabled: s102
+  color-red-size-xs-variant-light-state-focus: s106
+  color-red-size-xs-variant-light-state-hover: s107
+  color-red-size-xs-variant-link-state-default: s115
+  color-red-size-xs-variant-link-state-disabled: s116
+  color-red-size-xs-variant-link-state-focus: s117
+  color-red-size-xs-variant-link-state-hover: s118
+  color-red-size-xs-variant-outline-state-default: s108
+  color-red-size-xs-variant-outline-state-disabled: s102
+  color-red-size-xs-variant-outline-state-focus: s109
+  color-red-size-xs-variant-outline-state-hover: s110
+  color-red-size-xs-variant-subtle-state-default: s111
+  color-red-size-xs-variant-subtle-state-disabled: s112
+  color-red-size-xs-variant-subtle-state-focus: s113
+  color-red-size-xs-variant-subtle-state-hover: s114
