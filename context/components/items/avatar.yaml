@@ -1,0 +1,93 @@
+# items/avatar.yaml — detail complet du composant 'avatar'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: avatar
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+avatar:
+  figma_key: 3024d1331a5acc1a393f7fd9872acfa8de1f247c
+  figma_node_id: "22009:34149"
+  component_type: COMPONENT_SET
+  instanciable: false
+  default_variant_id: "22009:2323"
+  key_variants:
+    size-md-shape-circle: "22009:2323"
+    size-md-shape-square: "22009:2341"
+    size-xs-shape-circle: "22009:2251"
+    size-xs-shape-square: "22009:2269"
+    size-sm-shape-circle: "22009:2287"
+    size-sm-shape-square: "22009:2305"
+    size-lg-shape-circle: "22009:2359"
+    size-lg-shape-square: "22009:2377"
+    size-xl-shape-circle: "22009:2395"
+    size-xl-shape-square: "22009:2413"
+  page: "      ↳ Avatars "
+  description: "Avatar - the identity token for a person or an organisation. 10 variants: size x shape. Everything else is carried by 8 booleans, 3 text props and 1 instance swap. AXES - size (xs, sm, md, lg, xl): 24 / 32 / 40 / 48 / 64 px. This is the SAME scale as @42/ui-react Avatar, one to one - do not add a rung here without adding it to lib/sizes.ts. It drives the placeholder glyph (16 / 20 / 24 / 28 / 36), the initials (12/18, 14/20, 16/24, 18/28, 22/32), the badge sizes and the gap to the label (8, 8, 8, 12, 16). - shape (circle, square): circle is radius 9999; square is 4 at xs, 6 at sm and md, 8 at lg and xl. - No color axis and no state axis: an avatar is content, not a control. CONTENT - one photo, three alternatives, three booleans - All booleans off: the photo. avatarImage is an INSTANCE_SWAP with 20 preferred values from _Avatar photos. - placeholder: the _user-01 glyph on a flat ground. textInitials: initials on a flat ground. gradientInitials: the same initials over a linear gradient. Both initials frames read the same initials text prop. - These four are stacked siblings inside avatar-mask, not an axis: nothing stops two being on at once, and the topmost visible one wins (gradient, then text, then placeholder, then photo). Turn on exactly one. BADGES - md, lg and xl ONLY - badgeOnline, badgeVerified, badgeCompany: three independent booleans, three nested instances at the bottom-right corner. Sizes: online 10 / 12 / 16, verified and company 14 / 16 / 20. - xs (24) and sm (32) carry NO badge layer, on purpose: a 10 px tick on a 24 px avatar covers a sixth of the face and reads as noise. The rule is no badge under 40 px. - Figma has no per-variant properties, so the three booleans stay declared on the set. Switching one on an xs or sm instance does nothing at all. That is the accepted cost of the rule, not a bug to report. - On the sizes that do have them the three are not exclusive: two on means two badges stacked on the same corner. Pick one. - badgeOnline has no offline value here, although the _Avatar online indicator set it instantiates does publish one. LABEL - showLabel, title, supportingText. Off by default. On, it adds a name plus a secondary line to the right of the avatar. OFFBOARD - offboard lays a Dark Alpha 400 overlay at 56 percent over the whole mask. It marks a deactivated or departed account. It is not loading and it is not disabled. COMPOSITION - Root: horizontal auto-layout, hug on both axes, avatar frame plus label. - Avatar frame: fixed square, no auto-layout. avatar-mask clips its content and carries the radius; the badges sit outside the mask, so they are never clipped. - Placeholder, Text initials and Gradient initials are auto-layout frames centring a single child. If you resize a rung, check that the glyph and the initials re-centre. - For overlapping stacks use AvatarGroup, not several instances placed by hand. ACCESSIBILITY - With a name beside it (showLabel on, or a table cell that already names the row) the avatar is decorative and takes an empty alt. Alone, it is the only identifier of the row and takes the person name as alt - never the word avatar or photo. - badgeOnline and badgeVerified carry their meaning through colour and shape alone. The status has to exist as text somewhere. - Initials are not an accessible name: two people can share the same two letters. Keep the full name in the markup. - Contrast: the initials measure 3.9:1 against their own ground - under the 4.5:1 required, at every size except xl where 22 px SemiBold clears the 3:1 large-text threshold. Both colours are hardcoded, so the ratio never changes with the theme. CODE - @42/ui-react Avatar, SHIPPED (packages/react/src/components/avatar), wraps Ark Avatar Root plus Image plus Fallback - size maps one to one, xs to xl. - shape becomes radius, which in code is INDEPENDENT of size: circle is radius full; square is radius sm at xs, md at sm and md, lg at lg and xl. - photo is src. placeholder is the no-src no-name case and renders lucide UserRound, NOT _user-01 - the two glyphs differ. textInitials is name (React derives the two letters itself) or explicit children. In code the fallback is a runtime outcome; here it is an author choice. - gradientInitials, the three badges and offboard have NO React equivalent, and there is no Indicator component in the kit. Do not spec a screen that depends on them. - The label block is not part of the React API: the avatar is a primitive there, the label is composed with Flex and Text. - React ships what this component cannot draw: color (12 palettes) plus color=name and color=initials, which hash the name into a stable per-person tint from AVATAR_PALETTE. Nothing here maps to it. - React also draws a permanent 1 px border (brand-900/20 light, white/15 dark) that is not drawn here. KNOWN ISSUE - Colours are raw hex, not variables: placeholder ground, initials ground, the initials themselves, the gradient, the verified tick and both label text nodes. Only the offboard overlay and the online dot are bound. The component cannot follow Light and Dark mode - what you see is the dark rendering, in both modes. - No text style on any text node: initials in Kode Mono SemiBold, label in Lato. All local and detached. - The square radius is a raw number on all 10 variants, not bound to the Radius collection. - badgeCompany sits 4 px past the right edge and 2 px past the bottom at every size that has it, while badgeOnline and badgeVerified are flush. - Label stacks title and supporting text at gap 0 with automatic line height, and at md both are 14 px - no hierarchy. - supportingText still defaults to olivia@untitledui.com - an Untitled UI leftover, like the photo names. - Aligned on the React scale 2026-09-10: md was 36 px with its inner layers still at 40, xl was 56, 2xl was removed, and the badges were dropped below 40. Written 2026-09-10."
+  size: {w: HUG, h: HUG}
+  direction: HORIZONTAL
+  gap: 8
+  align: {counter: CENTER}
+  slots:
+    Avatar: {slot_id: "22009:2324", node_type: FRAME, depth: 1}
+  nested_instances:
+    - name: avatarImage
+      depth: 3
+      main_component: _Avatar photos
+      variant_axes:
+        photo: [olivia rhye, lana steiner, drew cano, koray okumus, ava wright, alec whitten, pippa wilkinson, brianna ware, sarah page, bailey richards]
+    - {name: _user-01, depth: 4, main_component: _user-01}
+    - name: Badge online
+      depth: 2
+      visible: false
+      main_component: _Avatar online indicator
+      variant_axes:
+        size: [xs, sm, md, lg, xl, 2xl]
+        online: ["false", "true"]
+    - name: Badge verified
+      depth: 2
+      visible: false
+      main_component: _Verified tick
+      variant_axes:
+        size: [xs, sm, md, lg, xl, 2xl, 3xl, 4xl]
+    - name: Badge company
+      depth: 2
+      visible: false
+      main_component: _Avatar company icon
+      variant_axes:
+        size: [xs, sm, md, lg, xl, 2xl]
+  text_nodes:
+    - {name: Initials, sample: OR}
+    - {name: Title, role: title, sample: Olivia Rhye}
+    - {name: Supporting text, role: hint, sample: "olivia@untitledui.com"}
+  how_to_use: "1. Instancier via key_variants (jamais le ComponentSet).\n2. Exemple : const variantNode = await figma.getNodeByIdAsync(key_variants[\"<variant-slug>\"]); const inst = variantNode.createInstance()\n3. setTxt(inst, \"Title\", \"Olivia Rhye\")"
+  variants:
+    avatarimage: "<instance>"
+    badgecompany: [false, true]
+    badgeonline: [false, true]
+    badgeverified: [false, true]
+    gradientinitials: [false, true]
+    initials: "<text>"
+    offboard: [false, true]
+    placeholder: [false, true]
+    shape: [circle, square]
+    showlabel: [false, true]
+    size: [lg, md, sm, xl, xs]
+    supportingtext: "<text>"
+    textinitials: [false, true]
+    title: "<text>"
+  defaults:
+    avatarimage: "→22013:39636"
+    badgecompany: false
+    badgeonline: false
+    badgeverified: false
+    gradientinitials: false
+    initials: OR
+    offboard: false
+    placeholder: false
+    shape: circle
+    showlabel: false
+    size: md
+    supportingtext: "olivia@untitledui.com"
+    textinitials: false
+    title: Olivia Rhye
