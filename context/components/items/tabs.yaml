@@ -1,0 +1,40 @@
+# items/tabs.yaml — detail complet du composant 'tabs'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: tabs
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+tabs:
+  figma_key: 59dc183b657e6dd7ef2b3ddbbf4a4118243ebaf6
+  figma_node_id: "23176:148"
+  component_type: COMPONENT_SET
+  instanciable: false
+  default_variant_id: "23176:159"
+  key_variants:
+    orientation-horizontal-size-md: "23176:159"
+    orientation-horizontal-size-sm: "23176:149"
+    orientation-vertical-size-sm: "23176:169"
+    orientation-vertical-size-md: "23176:179"
+  page: "      ↳ Tabs"
+  description: "Tabs — a tablist: a tray of mutually exclusive tabs, one of which is always current, each revealing its own content panel. Reach for it when the tabs CHANGE WHAT IS SHOWN under them. If the tabs only filter a list or a table that stays where it is, that is a single-choice control and SegmentedControl is the right component. The two are drawn from the same _SegmentTab atom and are identical at the pixel on purpose. What separates them is the panel and the absence of a Field. AXES orientation horizontal = tabs in a row, the tray hugging them vertical = tabs stacked, the tray hugging the widest size sm = 36px tab, label text-sm semibold, tray 40px md = 40px tab, label text-md semibold, tray 44px Tab padding holds at spacing-md vertical and spacing-lg horizontal on both, and the tray keeps its spacing-xxs inset and its spacing-xs gap. Only the tab height and the type scale move. SLOTS items — the tabs. Two minimum, preferred value _SegmentTab. Its axes: Current (False = resting, True = the current tab), Size (sm / md, mirror the set size by hand), state (Default / Hover / Focus), showBadge (a Badge after the label). panel — the content of the current tab. Zero or one child, and it stretches to the tray on insert. It sits spacing-lg under the tray. BOOLEAN showPanel — off by default. Off, the component is the tab bar alone, to sit above a section you lay out yourself; that is the common case. On, the panel shows and Tabs becomes the whole control. Why a boolean and not just an empty slot: an empty SLOT does NOT collapse on an instance, it keeps its box. Without showPanel every bare tab bar would carry 48px of dead space. Toggle the boolean, do not try to shrink the slot by hand. COMPOSITION The order is fixed: the tray, then the panel. There is no label, no description and no error. Tabs is navigation, not a form control. If you need a label over a tab bar, what you are describing is a SegmentedControl. Add and remove tabs inside the items slot. Do not detach the component to do it. Two tabs minimum; past five, or once the labels run long, the row stops reading and the view wants splitting instead. Exactly one tab carries Current=True. Nothing in the set enforces it — a second one simply draws a second pill. Keep the nested Size equal to the set size. They are two independent axes, so a size=md tray holding sm tabs is possible and wrong. In vertical the tabs hug their own label, so the column comes out ragged and the current pill never spans the tray. Set each tab to fill the tray width by hand. Hover and Focus are drawn on the tab, never on the tray. One tab in Hover or in Focus at a time, and never both at once on the same one. There is no color axis and no variant axis. The current tab is bg-inverse with a text-primary-inverse label, full stop. React Tabs publishes filled / light / outline / subtle / default and twelve palettes; only default is drawable here, exactly as for SegmentedControl. TOKENS tray bg-primary at 4% over a 0.5px Gray 700 hairline, spacing-xxs inset, radius-sm, spacing-xs gap between tabs tray to panel spacing-lg tab spacing-md vertical and spacing-lg horizontal padding, spacing-md gap, radius-xs resting bg-solid fill, text-primary label current bg-inverse fill, text-primary-inverse label hover bg-secondary at 16% when resting, bg-inverse-hover when current focus the focus-ring effect style, fill unchanged label text-sm semibold at sm, text-md semibold at md ACCESSIBILITY This is a tablist, not a radiogroup and not a toolbar. The tray is one tab stop, then the arrow keys move between tabs. The current panel is the next tab stop after the tray. Do not spec each tab as its own tab stop. Each tab owns its panel: the panel is named by its tab, and only the current panel belongs in the accessibility tree. The focus ring belongs to the tab and is the focus-ring effect style. Never remove it, and never redraw it as a border: the resting tab and the focused tab share the same bg-solid fill, so the ring is the only thing separating them. Never let the fill alone carry the current tab. The current label also flips to text-primary-inverse — keep both. Tabs are 36px tall at sm and 40px at md, so both clear the 24px minimum target. A vertical group at sm still needs enough width to stay comfortable on touch. Switching tabs shows the panel on the spot. Do not put a Tabs behind a Save button, and do not use it for steps in a sequence — that is a different pattern."
+  size: {w: HUG, h: HUG}
+  direction: VERTICAL
+  gap: 12
+  text:
+    sample: Profile
+    fill: "@text-primary-inverse"
+    size: 16
+    weight: SemiBold
+    lineHeight: 24
+  slots:
+    items: {slot_id: "23176:163", node_type: SLOT, depth: 2}
+    panel: {slot_id: "23178:45", node_type: SLOT, depth: 1}
+  text_nodes:
+    - {name: Text, sample: Profile}
+  how_to_use: "1. Instancier via key_variants (jamais le ComponentSet).\n2. Exemple : const variantNode = await figma.getNodeByIdAsync(key_variants[\"<variant-slug>\"]); const inst = variantNode.createInstance()\n3. setTxt(inst, \"Text\", \"Profile\")"
+  variants:
+    orientation: [horizontal, vertical]
+    showpanel: [false, true]
+    size: [md, sm]
+  defaults: {orientation: horizontal, showpanel: false, size: md}
