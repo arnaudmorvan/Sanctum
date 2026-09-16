@@ -1,0 +1,40 @@
+# items/textarea.yaml — detail complet du composant 'textarea'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: textarea
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+textarea:
+  figma_key: 17e6cd892ef02084ac7ffb629856b8dd73d4cdf9
+  figma_node_id: "21457:66083"
+  component_type: COMPONENT
+  instanciable: true
+  page: "      ↳ Textarea"
+  description: "Textarea — multi-line text control: the _BaseField shell with a resize handle, measured in rows instead of a single line. Use it on its own, or swap it into the Field slot when it needs a label. AXES None of its own. size, variant, state, status, the text and the slots all live on the nested _BaseField instance, which is exposed: pick it in the instance panel instead of looking for an axis here. Textarea does not duplicate the shell's 64 variants — it inherits them. COMPOSITION A Textarea can stand alone: with no label it is a bare control and needs nothing around it. As soon as it needs a label, a description or a status message, do not build that text beside it — swap it into the Field contentSlot. Field owns the whole text scaffold. Keep both statuses equal: an error Field holds a nested _BaseField in status=error. In code this is automatic. The value is the shell's text property — edit the property, not the layer. Leave showEndIcon off: the resize handle already occupies the inline-end corner. Height is not an axis. Drag the instance taller to show the number of rows you intend — the code default is 3 rows, so the one-line preview here is the floor, not the norm. The resize handle is decorative: it announces that the control is vertically resizable at runtime. Keep it. If the answer fits on one line, use Input. ACCESSIBILITY On its own a Textarea has no accessible name. It gets one from the Field label (or from aria-label in code). A placeholder is not a label: it vanishes on first keystroke. Disabled is skipped by the tab order and unreadable by keyboard — prefer read-only when the content must stay reachable. status=error is never the only signal: the Field status message carries the reason in words. Do not suppress the resize affordance. Forcing a fixed height on a long answer is a usability failure. CODE — @42/ui-react Textarea The nested _BaseField carries the shell props: size→size, variant→variant, status=error→invalid (or the Field error prop), state Disabled→disabled, Hovered / Focused→runtime data-* (Ark UI). Alone in Figma, this is Textarea with no label prop. Inside a Field, either wrap it or use the built-in props: Textarea also carries label, description, error and required itself and renders its own Field. The resize handle has no prop — the control is vertically resizable by default. status=success and status=warning have no React equivalent. React-only, do not mock these up here: variant=filled, size xs / lg / xl, rows (initial height, default 3), color (focus-ring palette), readOnly, invalid override, classNames."
+  size: {w: 320, h: HUG}
+  direction: HORIZONTAL
+  text:
+    sample: Textarea placeholder
+    fill: "@text-tertiary"
+    size: 16
+    weight: Regular
+    lineHeight: 24
+  nested_instances:
+    - name: _BaseField
+      depth: 1
+      main_component: _BaseField
+      variant_axes:
+        size: [sm, md]
+        variant: [unstyled, default]
+        state: [focused, disabled, hovered, placeholder]
+        status: [error, default]
+      bool_props:
+        showValue: false
+        showPlaceholder: true
+        showBadges: false
+        showEndIcon: false
+        showStartSlot: true
+  text_nodes:
+    - {name: Placeholder, sample: Textarea placeholder}
+  how_to_use: "1. Instancier le composant via figma_node_id (createInstance()).\n2. setTxt(inst, \"Placeholder\", \"Textarea placeholder\")\n3. Si besoin masquer les actions : inst.findOne(n => n.name === \"_BaseField\")?.setProperties({\"showBadges\":false,\"showEndIcon\":false,\"showPlaceholder\":false,\"showStartSlot\":false,\"showValue\":false})"
