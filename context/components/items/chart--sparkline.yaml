@@ -1,0 +1,32 @@
+# items/chart--sparkline.yaml — detail complet du composant 'chart--sparkline'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: chart--sparkline
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+chart--sparkline:
+  figma_key: 076c3ea50e3c084bddb8429751593b41d1252204
+  figma_node_id: "23043:140"
+  component_type: COMPONENT_SET
+  instanciable: false
+  default_variant_id: "23043:114"
+  key_variants:
+    type-line-trend-up: "23043:114"
+    type-line-trend-down: "23043:116"
+    type-area-trend-up: "23043:118"
+    type-area-trend-down: "23043:121"
+    type-bar-trend-up: "23043:124"
+    type-bar-trend-down: "23043:132"
+    type-line-trend-flat: "23044:128"
+    type-area-trend-flat: "23044:130"
+    type-bar-trend-flat: "23044:133"
+  page: "      ↳ Charts"
+  description: "Sparkline - a micro chart with no axes and no legend, for a dashboard card or for Chart / KPI. AXES - type: line, area or bar. - trend: up, down or flat. trend drives the SHAPE of the data only, never the colour. - 96 by 32 by default, resizable: the paths carry SCALE constraints. COMPOSITION No axis, no grid, no label: a sparkline shows a direction, not a value. The value that goes with it lives next to it, which is exactly what Chart / KPI composes. Series colour is utility-brand-600. ACCESSIBILITY Colour never carries the direction. The sign stays in the text next to the chart (plus 12,4 percent), and Chart / KPI puts it in a Badge. A sparkline alone, with no figure, says nothing. CODE @42/ui-react, component Chart (import from index.ts/chart), a wrapper over TanStack Charts. The chart TYPE is not a prop: it comes from the definition and the marks passed to the chart. So the variant axes below do NOT map one to one onto React props, they map onto separate definitions. Colour maps exactly: color takes one Color for a one-series chart (sets data-color and the ts-chart-1 slot), colors takes an ordered Color array for a multi-series chart (sets ts-chart-1 to ts-chart-N, see CHART_PALETTE and chartColors). TanStack cycles six categorical slots by default, which is why the Figma ramp stops at six. renderSvg and renderer are mutually exclusive. No dedicated React export: a sparkline is a Chart with no axes and a single mark. DEFAUT OUVERT 2026-09-14 - the six Figma steps are assumed to be the counterpart of CHART_PALETTE but the values were never compared. Until someone diffs them, treat the ramp as a Figma-side convention, not as proven parity. Second open point: a one-series chart pins utility-brand-600 here, while the React color prop and the Figma collection 7. Accent both express an accent that can be switched. Two mechanisms for one job."
+  size: {w: 96, h: 32}
+  how_to_use: "1. Instancier via key_variants (jamais le ComponentSet).\n2. Exemple : const variantNode = await figma.getNodeByIdAsync(key_variants[\"<variant-slug>\"]); const inst = variantNode.createInstance()"
+  variants:
+    trend: [down, flat, up]
+    type: [area, bar, line]
+  defaults: {trend: up, type: line}
+  notes: ["Variant axis \"type\": value \"line\" looks like a typo of \"link\" (distance 1)."]
