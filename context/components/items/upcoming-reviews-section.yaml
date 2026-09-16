@@ -1,0 +1,53 @@
+# items/upcoming-reviews-section.yaml — detail complet du composant 'upcoming-reviews-section'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: upcoming-reviews-section
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+upcoming-reviews-section:
+  figma_key: 86df99b2c280d92a02ed6f58c563c544f659274f
+  figma_node_id: "17598:5396"
+  component_type: COMPONENT_SET
+  instanciable: false
+  default_variant_id: "17598:5397"
+  key_variants:
+    device-desktop: "17598:5397"
+    device-tablet: "17598:5407"
+    device-mobile: "17598:5417"
+  page: "      ↳ Card"
+  size: {w: FILL, h: HUG}
+  direction: VERTICAL
+  gap: 16
+  text:
+    sample: My Upcoming Reviews
+    fill: "@white"
+    size: 24
+    weight: Bold
+    lineHeight: 32
+  slots:
+    Avatars 2: {slot_id: "I17598:5403;17598:5167", node_type: INSTANCE, depth: 6}
+    Avatars: {slot_id: "I17598:5404;17598:5192", node_type: INSTANCE, depth: 7}
+  nested_instances:
+    - {name: circle-check-big, depth: 2, main_component: circle-check-big}
+    - name: Upcoming reviews
+      depth: 2
+      main_component: Upcoming reviews
+      variant_axes:
+        type: [rushes, projects, empty, team project]
+        device: [desktop, mobile]
+        pov: [reviewer, reviewee, both]
+        time: [default, until 15min before, until 1h after schedule, last 15min]
+  text_nodes:
+    - {name: My Upcoming Reviews, sample: My Upcoming Reviews}
+    - {name: LABEL, role: label, sample: START REVIEW}
+    - {name: "the June 17 at 12:45 PM", sample: "the June 17 at 12:45 PM"}
+    - name: "No reviews to complete right now! 🎉"
+      sample: "No reviews to complete right now! 🎉"
+    - name: Enjoy a break or focus on your projects - new reviews will appear here when you’re needed.
+      sample: Enjoy a break or focus on your projec...
+  how_to_use: "1. Instancier via key_variants (jamais le ComponentSet).\n2. Exemple : const variantNode = await figma.getNodeByIdAsync(key_variants[\"<variant-slug>\"]); const inst = variantNode.createInstance()\n3. setTxt(inst, \"My Upcoming Reviews\", \"My Upcoming Reviews\")\n4. setTxt(inst, \"LABEL\", \"START REVIEW\")"
+  variants:
+    device: [desktop, mobile, tablet]
+  defaults: {device: desktop}
+  notes: ["Variant axis name \"Device\" was normalised to \"device\" (use lowercase slugs for consistency)."]
