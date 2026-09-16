@@ -1,0 +1,63 @@
+# items/upcoming-reviews.yaml — detail complet du composant 'upcoming-reviews'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: upcoming-reviews
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+upcoming-reviews:
+  figma_key: 5b7a059f5a579b33a66fcea4f9df1cfb2f141ddc
+  figma_node_id: "17598:5039"
+  component_type: COMPONENT_SET
+  instanciable: false
+  default_variant_id: "17598:5040"
+  key_variants:
+    type-empty-device-desktop-pov-both-time-default: "17598:5040"
+    type-empty-device-mobile-pov-both-time-default: "17598:5044"
+    type-projects-device-desktop-pov-reviewer-time-until-15min-before: "17598:5048"
+    type-projects-device-mobile-pov-reviewer-time-until-15min-before: "17598:5066"
+    type-projects-device-desktop-pov-reviewee-time-until-15min-before: "17598:5084"
+    type-projects-device-mobile-pov-reviewee-time-until-15min-before: "17598:5101"
+    type-projects-device-desktop-pov-reviewee-time-until-1h-after-schedule: "17598:5118"
+    type-projects-device-mobile-pov-reviewee-time-until-1h-after-schedule: "17598:5138"
+    type-rushes-device-desktop-pov-reviewer-time-default: "17598:5158"
+    type-rushes-device-mobile-pov-reviewer-time-default: "17598:5171"
+    type-rushes-device-desktop-pov-reviewee-time-default: "17598:5184"
+    type-rushes-device-mobile-pov-reviewee-time-default: "17598:5200"
+    type-team-project-device-desktop-pov-reviewer-time-last-15min: "17598:5216"
+    type-team-project-device-mobile-pov-reviewer-time-last-15min: "17598:5232"
+    type-team-project-device-desktop-pov-reviewer-time-until-15min-before: "17598:5253"
+    type-team-project-device-mobile-pov-reviewer-time-until-15min-before: "17598:5265"
+    type-team-project-device-desktop-pov-reviewee-time-last-15min: "17598:5276"
+    type-team-project-device-mobile-pov-reviewee-time-last-15min: "17598:5293"
+    type-team-project-device-desktop-pov-reviewee-time-until-15min-before: "17598:5309"
+    type-team-project-device-mobile-pov-reviewee-time-until-15min-before: "17598:5320"
+    type-team-project-device-desktop-pov-reviewee-time-until-1h-after-schedule: "17598:5330"
+    type-team-project-device-mobile-pov-reviewee-time-until-1h-after-schedule: "17598:5350"
+  page: "      ↳ Card"
+  size: {w: FILL, h: HUG}
+  padding: {all: 24}
+  radius: 4
+  direction: VERTICAL
+  gap: 8
+  fills: "@white"
+  stroke: {color: "@white", width: 1, align: INSIDE}
+  text:
+    sample: "No reviews to complete right now! 🎉"
+    fill: "@white"
+    size: 20
+    weight: Bold
+    lineHeight: 26
+  text_nodes:
+    - name: "No reviews to complete right now! 🎉"
+      sample: "No reviews to complete right now! 🎉"
+    - name: Enjoy a break or focus on your projects - new reviews will appear here when you’re needed.
+      sample: Enjoy a break or focus on your projec...
+  how_to_use: "1. Instancier via key_variants (jamais le ComponentSet).\n2. Exemple : const variantNode = await figma.getNodeByIdAsync(key_variants[\"<variant-slug>\"]); const inst = variantNode.createInstance()\n3. setTxt(inst, \"No reviews to complete right now! 🎉\", \"No reviews to complete right now! 🎉\")\n4. setTxt(inst, \"Enjoy a break or focus on your projects - new reviews will appear here when you’re needed.\", \"Enjoy a break or focus on your projec...\")"
+  variants:
+    device: [desktop, mobile]
+    pov: [both, reviewee, reviewer]
+    time: [default, last 15min, until 15min before, until 1h after schedule]
+    type: [empty, projects, rushes, team project]
+  defaults: {device: desktop, pov: both, time: default, type: empty}
+  notes: ["Variant axis name \"Type\" was normalised to \"type\" (use lowercase slugs for consistency).", "Variant axis name \"Device\" was normalised to \"device\" (use lowercase slugs for consistency).", "Variant axis name \"POV\" was normalised to \"pov\" (use lowercase slugs for consistency).", "Variant axis \"pov\": values \"reviewer\" and \"reviewee\" look like a typo (distance 1).", "Variant axis name \"Time\" was normalised to \"time\" (use lowercase slugs for consistency).", "Variant axis \"time\" looks like a typo of \"type\" (distance 2)."]
