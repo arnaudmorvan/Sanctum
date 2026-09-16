@@ -1,0 +1,50 @@
+# analysis/variant-surfaces/feedback-card.yaml — la SURFACE peinte par chaque variante.
+# Hors de context/ deliberement : lu par la console, jamais par un agent.
+# Les surfaces identiques sont stockees une fois et pointees.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: feedback-card
+  generated_at: "2026-09-16"
+  variants: 10
+  surfaces: 4
+surfaces:
+  s1:
+    fill: "@white"
+    stroke: {color: "@white", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 24}
+    gap: 8
+    text: {fill: "@white", size: 16, lineHeight: 22}
+  s2:
+    fill: "@white"
+    stroke: {color: "@white", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 16}
+    gap: 8
+    text: {fill: "@white", size: 16, lineHeight: 22}
+  s3:
+    fill: "@white"
+    stroke: {color: "@white", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 24}
+    gap: 8
+    text: {fill: "@white", size: 16, weight: Bold, lineHeight: 22}
+  s4:
+    fill: "@white"
+    stroke: {color: "@white", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 16}
+    gap: 8
+    text: {fill: "@white", size: 16, weight: Bold, lineHeight: 22}
+variants:
+  pov-reviewee-device-desktop-type-event: s3
+  pov-reviewee-device-desktop-type-post-review-feedback: s1
+  pov-reviewee-device-desktop-type-social-vote: s3
+  pov-reviewee-device-desktop-type-team-project: s3
+  pov-reviewee-device-mobile-type-even: s4
+  pov-reviewee-device-mobile-type-post-review-feedback: s2
+  pov-reviewee-device-mobile-type-social-vote: s4
+  pov-reviewee-device-mobile-type-team-project: s4
+  pov-reviewer-device-desktop-type-post-review-feedback: s1
+  pov-reviewer-device-mobile-type-post-review-feedback: s2
