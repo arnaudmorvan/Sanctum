@@ -1,0 +1,37 @@
+# items/chart--tooltip.yaml — detail complet du composant 'chart--tooltip'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: chart--tooltip
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+chart--tooltip:
+  figma_key: b116ffe91669cf62d89676aa757259fc8859afc1
+  figma_node_id: "23104:3129"
+  component_type: COMPONENT_SET
+  instanciable: false
+  default_variant_id: "23104:3090"
+  key_variants: {series-1: "23104:3090", series-2: "23104:3098", series-3: "23104:3111"}
+  page: "      ↳ Charts"
+  description: "Chart tooltip - the hover card of a chart: a date, then one row per series. AXES - series: 1, 2 or 3 rows. COMPOSITION Date at the top in Kode Mono (machine register), then per row a dot in the EXACT colour of the series, the name in Lato, and the value right aligned in Kode Mono Bold. Surface on bg-solid with a border-secondary stroke, radius xs. It is laid OVER the chart, absolutely positioned on the parent frame: x and y cannot be overridden inside an instance. ACCESSIBILITY The dot repeats the series colour, so the name next to it is what actually identifies the series. Never ship the dots alone. CODE @42/ui-react, component Chart (import from index.ts/chart), a wrapper over TanStack Charts. The chart TYPE is not a prop: it comes from the definition and the marks passed to the chart. So the variant axes below do NOT map one to one onto React props, they map onto separate definitions. Colour maps exactly: color takes one Color for a one-series chart (sets data-color and the ts-chart-1 slot), colors takes an ordered Color array for a multi-series chart (sets ts-chart-1 to ts-chart-N, see CHART_PALETTE and chartColors). TanStack cycles six categorical slots by default, which is why the Figma ramp stops at six. renderSvg and renderer are mutually exclusive. TanStack owns the tooltip: this component is the visual spec of that slot, not a component to port as is. DEFAUT OUVERT 2026-09-14 - this does NOT derive from the DS tooltip (1052:489). That component declares showContentSlot but its contentSlot is a FRAME and not a SLOT, so nothing can be inserted into it. Same pattern as the other declared-but-unwired props of this file. Re-derive as soon as the slot is repaired. Surface is bg-solid and not bg-inverse on purpose: a light surface flattens the brand ramp dots. DEFAUT OUVERT 2026-09-14 - the six Figma steps are assumed to be the counterpart of CHART_PALETTE but the values were never compared. Until someone diffs them, treat the ramp as a Figma-side convention, not as proven parity. Second open point: a one-series chart pins utility-brand-600 here, while the React color prop and the Figma collection 7. Accent both express an accent that can be switched. Two mechanisms for one job."
+  size: {w: 184, h: HUG}
+  padding: {all: 12}
+  radius: 4
+  direction: VERTICAL
+  gap: 8
+  fills: "@bg-solid"
+  stroke: {color: "@border-secondary", width: 1, align: INSIDE}
+  text:
+    sample: 12 mars 2026
+    fill: "@text-tertiary"
+    size: 12
+    weight: Medium
+    lineHeight: 18
+  text_nodes:
+    - {name: Date, sample: 12 mars 2026}
+    - {name: Name, sample: Serie 1}
+    - {name: Value, sample: 1 248}
+  how_to_use: "1. Instancier via key_variants (jamais le ComponentSet).\n2. Exemple : const variantNode = await figma.getNodeByIdAsync(key_variants[\"<variant-slug>\"]); const inst = variantNode.createInstance()\n3. setTxt(inst, \"Date\", \"12 mars 2026\")\n4. setTxt(inst, \"Name\", \"Serie 1\")"
+  variants:
+    series: [1, 2, 3]
+  defaults: {series: 1}
