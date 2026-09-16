@@ -1,0 +1,112 @@
+# analysis/variant-surfaces/upcoming-reviews.yaml — la SURFACE peinte par chaque variante.
+# Hors de context/ deliberement : lu par la console, jamais par un agent.
+# Les surfaces identiques sont stockees une fois et pointees.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: upcoming-reviews
+  generated_at: "2026-09-16"
+  variants: 22
+  surfaces: 11
+surfaces:
+  s1:
+    fill: "@white"
+    stroke: {color: "@white", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 24}
+    gap: 8
+    text: {fill: "@white", size: 20, weight: Bold, lineHeight: 26}
+  s2:
+    fill: "@white"
+    stroke: {color: "@white", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 16}
+    gap: 8
+    text: {fill: "@white", size: 18, weight: Bold, lineHeight: 24}
+  s3:
+    fill: "@white"
+    stroke: {color: "@white", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 24}
+    gap: 8
+    text: {fill: "@white", size: 16, lineHeight: 22}
+  s4:
+    fill: "@white"
+    stroke: {color: "@white", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 16}
+    gap: 8
+    text: {fill: "@white", size: 16, lineHeight: 22}
+  s5:
+    fill: "@white"
+    stroke: {color: "@white", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 24}
+    gap: 8
+    text: {fill: "@white", size: 16, weight: Bold, lineHeight: 22}
+  s6:
+    fill: "@white"
+    stroke: {color: "@white", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 16}
+    gap: 8
+    text: {fill: "@white", size: 16, weight: Bold, lineHeight: 22}
+  s7:
+    gap: 16
+    height: 132
+    text: {fill: "@white", size: 16, weight: Bold, lineHeight: 22}
+  s8:
+    fill: "@white"
+    stroke: {color: "@white", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 16}
+    gap: 8
+    height: 238
+    text: {fill: "@white", size: 16, weight: Bold, lineHeight: 22}
+  s9:
+    fill: "@white"
+    stroke: {color: "@white", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 24}
+    gap: 8
+    height: 114
+    text: {fill: "@brand-950", size: 16, weight: Bold, lineHeight: 22}
+  s10:
+    fill: "@white"
+    stroke: {color: "@white", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 24}
+    gap: 8
+    height: 114
+    text: {fill: "@white", size: 16, weight: Bold, lineHeight: 22}
+  s11:
+    fill: "@white"
+    stroke: {color: "@white", width: 1, align: INSIDE}
+    radius: 4
+    padding: {all: 16}
+    gap: 8
+    height: 216
+    text: {fill: "@white", size: 16, weight: Bold, lineHeight: 22}
+variants:
+  type-empty-device-desktop-pov-both-time-default: s1
+  type-empty-device-mobile-pov-both-time-default: s2
+  type-projects-device-desktop-pov-reviewee-time-until-15min-before: s3
+  type-projects-device-desktop-pov-reviewee-time-until-1h-after-schedule: s3
+  type-projects-device-desktop-pov-reviewer-time-until-15min-before: s3
+  type-projects-device-mobile-pov-reviewee-time-until-15min-before: s4
+  type-projects-device-mobile-pov-reviewee-time-until-1h-after-schedule: s4
+  type-projects-device-mobile-pov-reviewer-time-until-15min-before: s4
+  type-rushes-device-desktop-pov-reviewee-time-default: s3
+  type-rushes-device-desktop-pov-reviewer-time-default: s5
+  type-rushes-device-mobile-pov-reviewee-time-default: s4
+  type-rushes-device-mobile-pov-reviewer-time-default: s6
+  type-team-project-device-desktop-pov-reviewee-time-last-15min: s9
+  type-team-project-device-desktop-pov-reviewee-time-until-15min-before: s10
+  type-team-project-device-desktop-pov-reviewee-time-until-1h-after-schedule: s3
+  type-team-project-device-desktop-pov-reviewer-time-last-15min: s7
+  type-team-project-device-desktop-pov-reviewer-time-until-15min-before: s5
+  type-team-project-device-mobile-pov-reviewee-time-last-15min: s4
+  type-team-project-device-mobile-pov-reviewee-time-until-15min-before: s11
+  type-team-project-device-mobile-pov-reviewee-time-until-1h-after-schedule: s4
+  type-team-project-device-mobile-pov-reviewer-time-last-15min: s8
+  type-team-project-device-mobile-pov-reviewer-time-until-15min-before: s6
