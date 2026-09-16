@@ -1,0 +1,36 @@
+# analysis/variant-surfaces/slider.yaml — la SURFACE peinte par chaque variante.
+# Hors de context/ deliberement : lu par la console, jamais par un agent.
+# Les surfaces identiques sont stockees une fois et pointees.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: slider
+  generated_at: "2026-09-16"
+  variants: 16
+  surfaces: 2
+surfaces:
+  s1:
+    padding: {t: 38, r: 0, b: 0, l: 0}
+    gap: 6
+    text: {fill: "@text-primary-inverse", size: 14, weight: SemiBold, lineHeight: 20}
+  s2:
+    padding: {t: 34, r: 0, b: 0, l: 0}
+    gap: 6
+    text: {fill: "@text-primary-inverse", size: 14, weight: SemiBold, lineHeight: 20}
+variants:
+  range-range-value-0-100-size-md: s1
+  range-range-value-0-100-size-sm: s2
+  range-range-value-0-25-size-md: s1
+  range-range-value-0-25-size-sm: s2
+  range-range-value-0-75-size-md: s1
+  range-range-value-0-75-size-sm: s2
+  range-range-value-25-75-size-md: s1
+  range-range-value-25-75-size-sm: s2
+  range-single-value-100-size-md: s1
+  range-single-value-100-size-sm: s2
+  range-single-value-25-size-md: s1
+  range-single-value-25-size-sm: s2
+  range-single-value-50-size-md: s1
+  range-single-value-50-size-sm: s2
+  range-single-value-75-size-md: s1
+  range-single-value-75-size-sm: s2
