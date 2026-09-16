@@ -1,0 +1,309 @@
+# ds-paint-styles.yaml — Styles de fill Figma non-réductibles (kind: paint-styles)
+# Généré par le plugin figma-to-yaml — 2026-09-16
+# create-maquette APPLIQUE ces styles (setFillStyleIdAsync) au lieu de reconstruire les fills.
+# PÉRIMÈTRE : dégradés, images, piles de paints. Les styles à 1 seul paint SOLID sont
+# volontairement EXCLUS — ils sont couverts par ds-variables.yaml.
+# Par style : id + key (importStyleByKeyAsync cross-fichier) + description (RÈGLE D'USAGE) + paints résolus.
+
+meta:
+  kind: paint-styles
+  ds_name: 42 UI Kit V3
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  last_scanned: 2026-09-16
+paint_styles:
+  Gradient/skeuemorphic-gradient-border:
+    id: "S:8b3944ab833a3974c213fbb063feccd29cff77af,"
+    key: 8b3944ab833a3974c213fbb063feccd29cff77af
+    description: Used to create a subtle skeuemorphic effect in components such as primary buttons. This can be removed or replaced with a 1px stroke if you prefer a flat style.
+    paints:
+      - type: GRADIENT_LINEAR
+        stops:
+          ["#FFFFFF1F @0", "#FFFFFF00 @1"]
+  Gradient/Gray/600 -> 500 (90deg):
+    id: "S:e5883f2ec31098e40584112952147a6a027d0c29,"
+    key: e5883f2ec31098e40584112952147a6a027d0c29
+    description: ""
+    paints:
+      - type: GRADIENT_LINEAR
+        stops:
+          ["#535862 @0", "#717680 @1"]
+  Gradient/Gray/700 -> 600 (45deg):
+    id: "S:a15ef4e1689ed8d272c67d6cb6af0916ede3aafc,"
+    key: a15ef4e1689ed8d272c67d6cb6af0916ede3aafc
+    description: ""
+    paints:
+      - type: GRADIENT_LINEAR
+        stops:
+          ["#414651 @0", "#535862 @1"]
+  Gradient/Gray/800 -> 600 (45deg):
+    id: "S:d89ca586ab6c2d327b9e0422898787ebb20d182a,"
+    key: d89ca586ab6c2d327b9e0422898787ebb20d182a
+    description: ""
+    paints:
+      - type: GRADIENT_LINEAR
+        stops:
+          ["#252B37 @0", "#535862 @1"]
+  Gradient/Gray/800 -> 600 (90deg):
+    id: "S:1677a82a59bc8c754764eb7973edf01f9575b7a9,"
+    key: 1677a82a59bc8c754764eb7973edf01f9575b7a9
+    description: ""
+    paints:
+      - type: GRADIENT_LINEAR
+        stops:
+          ["#252B37 @0", "#535862 @1"]
+  Gradient/Gray/800 -> 700 (26.5deg):
+    id: "S:310a6a1f8f817b3e94046c2d7a6dad08f0af6028,"
+    key: 310a6a1f8f817b3e94046c2d7a6dad08f0af6028
+    description: ""
+    paints:
+      - type: GRADIENT_LINEAR
+        stops:
+          ["#252B37 @0", "#414651 @1"]
+  Gradient/Gray/900 -> 600 (45deg):
+    id: "S:66cc8497010b82ee88b3a63a3b3450f840466dc4,"
+    key: 66cc8497010b82ee88b3a63a3b3450f840466dc4
+    description: ""
+    paints:
+      - type: GRADIENT_LINEAR
+        stops:
+          ["#181D27 @0", "#535862 @1"]
+  Gradient/Gray/900 -> 700 (45deg):
+    id: "S:fa3fb94e7216019c8ffe1154cc2535e8a1624b95,"
+    key: fa3fb94e7216019c8ffe1154cc2535e8a1624b95
+    description: ""
+    paints:
+      - type: GRADIENT_LINEAR
+        stops:
+          ["#181D27 @0", "#414651 @1"]
+  Gradient/Gray/White Opacity (90deg):
+    id: "S:d63ad82407b04c18f3c5cae46e1b8e27f83d4b59,"
+    key: d63ad82407b04c18f3c5cae46e1b8e27f83d4b59
+    description: ""
+    paints:
+      - type: GRADIENT_LINEAR
+        stops:
+          ["#FFFFFF14 @0", "#FFFFFF59 @1"]
+  Gradient/Gray/White Opacity (180deg):
+    id: "S:0e8d134758739fcd67fbd278182eab79a6f9e806,"
+    key: 0e8d134758739fcd67fbd278182eab79a6f9e806
+    description: ""
+    paints:
+      - type: GRADIENT_LINEAR
+        stops:
+          ["#FFFFFF14 @0", "#FFFFFF59 @1"]
+  Gradient/Brand/600 -> 500 (90deg):
+    id: "S:e73c534d5f50d2dcfa9796b6861d8be3d2a1dfa3,"
+    key: e73c534d5f50d2dcfa9796b6861d8be3d2a1dfa3
+    description: ""
+    paints:
+      - type: GRADIENT_LINEAR
+        stops:
+          ["#4D6FC3 @0", "#6388E3 @1"]
+  Gradient/Brand/700 -> 600 (45deg):
+    id: "S:c2ee0d9f2631aee053e05b19c4858e6035171336,"
+    key: c2ee0d9f2631aee053e05b19c4858e6035171336
+    description: ""
+    paints:
+      - type: GRADIENT_LINEAR
+        stops:
+          ["#365399 @0", "#4D6FC3 @1"]
+  Gradient/Brand/800 -> 600 (45deg):
+    id: "S:cecfcba0983ea590524186de278b27e10c9fadad,"
+    key: cecfcba0983ea590524186de278b27e10c9fadad
+    description: ""
+    paints:
+      - type: GRADIENT_LINEAR
+        stops:
+          ["#233970 @0", "#4D6FC3 @1"]
+  Gradient/Brand/800 -> 600 (90deg):
+    id: "S:39bd33b46771fb864674dff6a22a767a1b48b6d0,"
+    key: 39bd33b46771fb864674dff6a22a767a1b48b6d0
+    description: ""
+    paints:
+      - type: GRADIENT_LINEAR
+        stops:
+          ["#233970 @0", "#4D6FC3 @1"]
+  Gradient/Brand/800 -> 700 (26.5deg):
+    id: "S:b582bafa7ccfc80f447ec7adea01769089d73fa3,"
+    key: b582bafa7ccfc80f447ec7adea01769089d73fa3
+    description: ""
+    paints:
+      - type: GRADIENT_LINEAR
+        stops:
+          ["#233970 @0", "#365399 @1"]
+  Gradient/Brand/900 -> 600 (45deg):
+    id: "S:2b1efe022526474065cf8e76f81c620a803f575c,"
+    key: 2b1efe022526474065cf8e76f81c620a803f575c
+    description: ""
+    paints:
+      - type: GRADIENT_LINEAR
+        stops:
+          ["#0A1E41 @0", "#4D6FC3 @1"]
+  Gradient/Brand/900 -> 700 (45deg):
+    id: "S:1151b4493226fe136e5f5c0a45815acd1b706090,"
+    key: 1151b4493226fe136e5f5c0a45815acd1b706090
+    description: ""
+    paints:
+      - type: GRADIENT_LINEAR
+        stops:
+          ["#0A1E41 @0", "#365399 @1"]
+  Gradient/Signature/0deg:
+    id: "S:5523e640a00e2c75383a52f63ee668259e25228f,"
+    key: 5523e640a00e2c75383a52f63ee668259e25228f
+    description: "Dégradé signature 42 — Pink/400 (#F670C7) → Purple/300 (#BDB4FE).\nL'identité tient au COUPLE DE COULEURS ; le suffixe n'est qu'une orientation.\n\nGRILLE — un style par direction, convention (Ndeg) identique aux groupes Brand/ et Gray/ :\n0 · 45 · 90 · 180 · 225 · 270. Les pas 135 et 315 n'existent pas — à créer si besoin.\nTous les stops sont dans le même ordre (pink → purple) : seule l'orientation change.\n\nALPHA — 270deg-alpha8 / -alpha16 / -alpha60 pour les fonds et les surfaces discrètes.\n\nMODES — bindé aux primitives (Colors/Pink/400, Colors/Purple/300), donc CONSTANT en\nLight comme en Dark. Voulu : une couleur d'identité ne bascule pas avec le thème."
+    paints:
+      - type: GRADIENT_LINEAR
+        stops:
+          ["#F670C7 @0", "#BDB4FE @1"]
+  Gradient/Signature/180deg:
+    id: "S:c36f442ffe47e93daf87c31aeb860ee17c14728d,"
+    key: c36f442ffe47e93daf87c31aeb860ee17c14728d
+    description: "Variante d'orientation du dégradé signature. Grille et règles : voir Gradient/Signature/0deg."
+    paints:
+      - type: GRADIENT_LINEAR
+        stops:
+          ["#F670C7 @0", "#BDB4FE @1"]
+  Gradient/Signature/90deg:
+    id: "S:1ae87e02bd27ee47daca273028106f3a14c295d2,"
+    key: 1ae87e02bd27ee47daca273028106f3a14c295d2
+    description: "Variante d'orientation du dégradé signature. Grille et règles : voir Gradient/Signature/0deg."
+    paints:
+      - type: GRADIENT_LINEAR
+        stops:
+          ["#F670C7 @0", "#BDB4FE @1"]
+  Gradient/Signature/270deg:
+    id: "S:9c18e8bf098c78f79e5637c0fefb864fcaa1fc3c,"
+    key: 9c18e8bf098c78f79e5637c0fefb864fcaa1fc3c
+    description: "Variante d'orientation du dégradé signature. Grille et règles : voir Gradient/Signature/0deg."
+    paints:
+      - type: GRADIENT_LINEAR
+        stops:
+          ["#F670C7 @0", "#BDB4FE @1"]
+  Gradient/Signature/270deg-alpha8:
+    id: "S:b1ed48a01bdfd05250efeca490d29c49c0114103,"
+    key: b1ed48a01bdfd05250efeca490d29c49c0114103
+    description: "Variante d'orientation du dégradé signature. Grille et règles : voir Gradient/Signature/0deg."
+    paints:
+      - type: GRADIENT_LINEAR
+        opacity: 0.08
+        stops:
+          ["#F670C7 @0", "#BDB4FE @1"]
+  Gradient/Signature/270deg-alpha16:
+    id: "S:ca900eaa5b41f93996f3639246cd6979b6b63ef8,"
+    key: ca900eaa5b41f93996f3639246cd6979b6b63ef8
+    description: "Variante d'orientation du dégradé signature. Grille et règles : voir Gradient/Signature/0deg."
+    paints:
+      - type: GRADIENT_LINEAR
+        opacity: 0.16
+        stops:
+          ["#F670C7 @0", "#BDB4FE @1"]
+  Gradient/Signature/270deg-alpha60:
+    id: "S:e964b0639be83af7f8dcfe3da0b0f286535e107f,"
+    key: e964b0639be83af7f8dcfe3da0b0f286535e107f
+    description: "Variante d'orientation du dégradé signature. Grille et règles : voir Gradient/Signature/0deg."
+    paints:
+      - type: GRADIENT_LINEAR
+        opacity: 0.6
+        stops:
+          ["#F670C7 @0", "#BDB4FE @1"]
+  Gradient/Signature/45deg:
+    id: "S:46dd4e4caf826a77c1ecc0d610ece7f668dbb14d,"
+    key: 46dd4e4caf826a77c1ecc0d610ece7f668dbb14d
+    description: "Variante d'orientation du dégradé signature. Grille et règles : voir Gradient/Signature/0deg."
+    paints:
+      - type: GRADIENT_LINEAR
+        stops:
+          ["#F670C7 @0", "#BDB4FE @1"]
+  Gradient/Signature/225deg:
+    id: "S:8eee4d69b03f6d390be12d0991f5d208b9769e96,"
+    key: 8eee4d69b03f6d390be12d0991f5d208b9769e96
+    description: "Variante d'orientation du dégradé signature. Grille et règles : voir Gradient/Signature/0deg."
+    paints:
+      - type: GRADIENT_LINEAR
+        stops:
+          ["#F670C7 @0", "#BDB4FE @1"]
+  Gradient/Linear/07:
+    id: "S:1631053283889a7eaffe0ee1b620fb5bfb0b2ae1,"
+    key: 1631053283889a7eaffe0ee1b620fb5bfb0b2ae1
+    description: ""
+    paints:
+      - type: GRADIENT_LINEAR
+        stops:
+          ["#030D20 @0", "#0A1E41 @1"]
+  Gradient/Linear/08:
+    id: "S:8dedc77ee3d990e44227d15c2859edb475929516,"
+    key: 8dedc77ee3d990e44227d15c2859edb475929516
+    description: ""
+    paints:
+      - type: GRADIENT_LINEAR
+        stops:
+          ["#030D20 @0", "#233970 @1"]
+  Gradient/Radial/01:
+    id: "S:5d9544c9a0ca41dd86bf3e209ce7513f190cbf02,"
+    key: 5d9544c9a0ca41dd86bf3e209ce7513f190cbf02
+    description: ""
+    paints:
+      - type: GRADIENT_RADIAL
+        stops:
+          ["#0A1E41 @0", "#030D20 @1"]
+      - type: IMAGE
+        blendMode: COLOR_BURN
+        visible: false
+        scaleMode: FILL
+        scalingFactor: 0.5
+        imageHash: bb3b8a132e1ea2d1e73eec80819692295ce126f8
+      - type: IMAGE
+        blendMode: SOFT_LIGHT
+        visible: false
+        scaleMode: TILE
+        scalingFactor: 0.4000000059604645
+        imageHash: 6135468195fef6995ea65e7a31aac8646c583cad
+      - type: IMAGE
+        opacity: 0.32
+        visible: false
+        scaleMode: TILE
+        scalingFactor: 1
+        imageHash: 64f99940bd6e24372f2a6f3db246d0d61b569c2c
+  Gradient/Radial/02:
+    id: "S:5a669dd0d5a8d083e246e2d6401b43652dc9b604,"
+    key: 5a669dd0d5a8d083e246e2d6401b43652dc9b604
+    description: ""
+    paints:
+      - type: GRADIENT_RADIAL
+        stops:
+          ["#F4F3FF @0", "#B8CDFF @1"]
+      - type: IMAGE
+        blendMode: COLOR_BURN
+        opacity: 0.06
+        visible: false
+        scaleMode: TILE
+        scalingFactor: 1
+        imageHash: 64f99940bd6e24372f2a6f3db246d0d61b569c2c
+      - type: IMAGE
+        blendMode: SOFT_LIGHT
+        visible: false
+        scaleMode: FILL
+        scalingFactor: 0.5
+        imageHash: 65191a5ac37e0abeab4a8353255ef311310834a4
+  Gradient/Fade/Bottom:
+    id: "S:7e8c718aa7b02d5ec3b1341ad5daeeee3ea89545,"
+    key: 7e8c718aa7b02d5ec3b1341ad5daeeee3ea89545
+    description: "Vertical fade used to veil truncated content (CodeBlock collapsed). Stops bound to bg-solid, so the fade resolves to the page ground in both modes. Transparent at the top, 95% at the bottom."
+    paints:
+      - type: GRADIENT_LINEAR
+        stops:
+          ["#030D20 @0", "#030D20 @1"]
+  Background/Canvas:
+    id: "S:5fdefca837ea730671b8b6aef0fd48637812703a,"
+    key: 5fdefca837ea730671b8b6aef0fd48637812703a
+    description: "App canvas background. Apply to the ROOT frame of a screen — never rebuild it by hand, never place a rectangle behind the content.\n\nCOMPOSITION\n1. Radial gradient #0A1E41 (center) -> #030D20 (edge), ellipse mapped to the frame bounds.\n2. Grain texture, Soft Light blend, 24% opacity, tiled at 1:1 so density stays constant at any frame size.\n\nSCOPE\nScreens only (survey screens and full-page layouts). Do NOT apply to Card or any nested surface: cards stay translucent (bg-primary) and let this canvas show through. Stacking the grain on cards breaks the texture continuity.\n\nMODES\nDark only. Paint styles do not follow variable modes — a Light equivalent must be a separate style.\n\nCODE\nbackground: radial-gradient(ellipse 100% 100% at 50% 50%, #0A1E41 0%, #030D20 100%);\ngrain: ::after with background-repeat: repeat; mix-blend-mode: soft-light; opacity: .24;"
+    paints:
+      - type: GRADIENT_RADIAL
+        stops:
+          ["#0A1E41 @0", "#030D20 @1"]
+      - type: IMAGE
+        blendMode: SOFT_LIGHT
+        opacity: 0.24
+        scaleMode: TILE
+        scalingFactor: 1
+        imageHash: 64f99940bd6e24372f2a6f3db246d0d61b569c2c
