@@ -1,0 +1,60 @@
+# items/rating.yaml — detail complet du composant 'rating'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: rating
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+rating:
+  figma_key: b46187a6a9236a121b9885a91c8c6fc748217ef3
+  figma_node_id: "23246:136"
+  component_type: COMPONENT_SET
+  instanciable: false
+  default_variant_id: "23246:76"
+  key_variants:
+    size-md: "23246:76"
+    size-xs: "23246:36"
+    size-sm: "23246:56"
+    size-lg: "23246:96"
+    size-xl: "23246:116"
+  page: "      ↳ Rating"
+  description: "AXES - size (xs, sm, md, lg, xl): symbol 14 / 16 / 20 / 24 / 28 and the gap between symbols (2 / 2 / 4 / 4 / 6). 5 variants, one per size. Nothing else is an axis. - The VALUE is not an axis. The five nested _RatingStar instances are exposed: set each one's fill (empty / half / full) in the properties panel. A 3.5 rating is three full, one half, one empty - there is no variant to hunt for. - count is not an axis either. Hide a Star layer to go under five; five is the React default and the only count this set draws. - No state axis: disabled and readOnly are runtime in React (Ark data-*), so they are deliberately not frozen here. COMPOSITION - Horizontal auto-layout, hug x hug, centred on the cross axis. The gap is bound: spacing-xxs (xs, sm), spacing-xs (md, lg), spacing-sm (xl). - Five instances of _RatingStar named Star 1 to Star 5, all exposed. Switching the size variant re-picks the matching star size on its own. - Bare control: no label, no description, no error. Wrap it in Field when it needs one - that is exactly what the React component asks for. - The filled portion INHERITS the accent: set the 7. Accent mode (brand / gray / pink) on the instance. Setting that mode on ONE star rather than on the row is how a per-star scale gets drawn. ACCESSIBILITY - The symbols are decorative on their own. React names each one (Rate 3 stars) and exposes the group as a radiogroup; nothing on the Figma side carries that, so a screen that must state the number writes it next to the row. - Touch target: at xs (14) and sm (16) a symbol is far below the 24 px floor. Those two sizes are for read-only display, never for a rating the user sets by tapping. - Half fill is a SHAPE cue, not a colour cue: it survives a reader who does not perceive the accent. CODE - @42/ui-react Rating, subpath @42/ui-react/rating. - size -> size. Same five steps, same default (md). - the Star instances' fill -> value / defaultValue (a number). A half comes from allowHalf. - the number of Star layers -> count (React default 5). - 7. Accent mode -> color. See KNOWN ISSUE. - onChange, name, form, translations, readOnly, disabled, highlightSelectedOnly: runtime, no Figma counterpart. - fullSymbol / emptySymbol -> swap the glyph inside _RatingStar. KNOWN ISSUE - color: React takes the 12 kit colours plus a (index) => Color resolver for a per-star scale; Figma inherits the 7. Accent mode and has three (brand, gray, pink). The DS rule is that a data colour is inherited and never picked, so the axis is absent on purpose - but a yellow or red rating cannot be specced in this file. - highlightSelectedOnly (fill only the selected symbol instead of every symbol up to it) has no Figma equivalent: draw it by leaving a single star full. - A full star keeps a thin outline halo around it, because the outline layer sits under the filled one in both mediums. That is what rating.tsx renders, not a drawing defect."
+  size: {w: HUG, h: HUG}
+  direction: HORIZONTAL
+  gap: 4
+  align: {counter: CENTER}
+  nested_instances:
+    - name: Star 1
+      depth: 1
+      main_component: _RatingStar
+      variant_axes:
+        fill: [empty, half, full]
+        size: [xs, sm, md, lg, xl]
+    - name: Star 2
+      depth: 1
+      main_component: _RatingStar
+      variant_axes:
+        fill: [empty, half, full]
+        size: [xs, sm, md, lg, xl]
+    - name: Star 3
+      depth: 1
+      main_component: _RatingStar
+      variant_axes:
+        fill: [empty, half, full]
+        size: [xs, sm, md, lg, xl]
+    - name: Star 4
+      depth: 1
+      main_component: _RatingStar
+      variant_axes:
+        fill: [empty, half, full]
+        size: [xs, sm, md, lg, xl]
+    - name: Star 5
+      depth: 1
+      main_component: _RatingStar
+      variant_axes:
+        fill: [empty, half, full]
+        size: [xs, sm, md, lg, xl]
+  how_to_use: "1. Instancier via key_variants (jamais le ComponentSet).\n2. Exemple : const variantNode = await figma.getNodeByIdAsync(key_variants[\"<variant-slug>\"]); const inst = variantNode.createInstance()"
+  variants:
+    size: [lg, md, sm, xl, xs]
+  defaults: {size: md}
