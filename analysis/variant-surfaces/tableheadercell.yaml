@@ -1,0 +1,28 @@
+# analysis/variant-surfaces/tableheadercell.yaml — la SURFACE peinte par chaque variante.
+# Hors de context/ deliberement : lu par la console, jamais par un agent.
+# Les surfaces identiques sont stockees une fois et pointees.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: tableheadercell
+  generated_at: "2026-09-16"
+  variants: 3
+  surfaces: 2
+surfaces:
+  s1:
+    fill: "@alpha-black-5"
+    stroke: {color: "@border-secondary", width: 1, align: INSIDE}
+    padding: {v: 12, h: 24}
+    gap: 8
+    height: 44
+    text: {fill: "@text-primary", size: 12, weight: Medium, lineHeight: 18}
+  s2:
+    fill: "@alpha-black-5"
+    stroke: {color: "@border-secondary", width: 1, align: INSIDE}
+    padding: {v: 12, h: 24}
+    gap: 8
+    height: 44
+variants:
+  text-false-checkbox-false: s2
+  text-false-checkbox-true: s2
+  text-true-checkbox-false: s1
