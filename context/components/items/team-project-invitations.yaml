@@ -1,0 +1,51 @@
+# items/team-project-invitations.yaml — detail complet du composant 'team-project-invitations'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: team-project-invitations
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+team-project-invitations:
+  figma_key: a85e10986558b255aff59011ef48cbf6a88d2a95
+  figma_node_id: "17598:5427"
+  component_type: COMPONENT_SET
+  instanciable: false
+  default_variant_id: "17598:5428"
+  key_variants: {device-desktop: "17598:5428", device-mobile: "17598:5449"}
+  page: "      ↳ Card"
+  size: {w: 752, h: HUG}
+  direction: VERTICAL
+  gap: 16
+  text:
+    sample: Team project invitations
+    fill: "@white"
+    size: 24
+    weight: Bold
+    lineHeight: 32
+  slots:
+    Avatars: {slot_id: "17598:5443", node_type: INSTANCE, depth: 6}
+    Avatars 2: {slot_id: "17598:5444", node_type: INSTANCE, depth: 6}
+  nested_instances:
+    - name: mail-plus legacy
+      depth: 2
+      main_component: mail-plus legacy
+      variant_axes:
+        size: [32, 24, 16, 12]
+    - {name: folder-dot, depth: 5, main_component: folder-dot}
+    - name: Buttons
+      depth: 5
+      main_component: Buttons
+      variant_axes:
+        style: [primary, secondary, tertiary, quaternary, link, destructive, success]
+        state: [default, hover, active, focus, loading, disabled]
+        type: [icon + label, label, icon]
+        size: [large, medium]
+      bool_props:
+        {Has Right Icon: false, Has Left Icon: true, Has Label: true}
+  text_nodes:
+    - {name: Team project invitations, sample: Team project invitations}
+  how_to_use: "1. Instancier via key_variants (jamais le ComponentSet).\n2. Exemple : const variantNode = await figma.getNodeByIdAsync(key_variants[\"<variant-slug>\"]); const inst = variantNode.createInstance()\n3. setTxt(inst, \"Team project invitations\", \"Team project invitations\")\n4. Si besoin masquer les actions : inst.findOne(n => n.name === \"Buttons\")?.setProperties({\"Has Label\":false,\"Has Left Icon\":false,\"Has Right Icon\":false})"
+  variants:
+    device: [desktop, mobile]
+  defaults: {device: desktop}
+  notes: ["Variant axis name \"Device\" was normalised to \"device\" (use lowercase slugs for consistency)."]
