@@ -1,0 +1,20 @@
+# analysis/variant-surfaces/timeinput.yaml — la SURFACE peinte par chaque variante.
+# Hors de context/ deliberement : lu par la console, jamais par un agent.
+# Les surfaces identiques sont stockees une fois et pointees.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: timeinput
+  generated_at: "2026-09-16"
+  variants: 2
+  surfaces: 2
+surfaces:
+  s1:
+    gap: 8
+    text: {fill: "@white", size: 14, weight: Regular, lineHeight: 20}
+  s2:
+    gap: 8
+    text: {fill: "@white", size: 16, weight: Regular, lineHeight: 24}
+variants:
+  size-md: s2
+  size-sm: s1
