@@ -1,0 +1,69 @@
+# items/calendar.yaml — detail complet du composant 'calendar'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: calendar
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+calendar:
+  figma_key: cc3932596e8d082856cbebdbb77471d59e09ccb9
+  figma_node_id: "1150:1925"
+  component_type: COMPONENT_SET
+  instanciable: false
+  default_variant_id: "1150:1918"
+  key_variants: {type-dualdates: "1150:1918", type-singledate: "1150:6988"}
+  page: "      ↳ Calendar"
+  description: "AXES - type (Single date | Dual dates): the real shape axis, one date or a range. - opened (True | False): runtime state frozen as an axis. In code the panel open state is Ark data-*, never a cva variant. - state (Placeholder | Active): runtime state frozen as an axis, whether a value has been picked. - modal (False | True): duplicates the whole CalendarModal set inside this one. Pick one of the two and delete the other. - 9 published variants out of the 16 the four axes allow: the matrix is incomplete, and modal=True exists in exactly one combination. COMPOSITION - Vertical auto-layout: a Buttons/Button trigger (label 14/20, sample Select dates) plus a _Date picker menu instance, 808 x 524. - _Date picker menu splits into Leading content (9 _Date picker list item preset rows, 152 wide) and Trailing content (the Date pickers grid, 656 x 392, over a Bottom panel, 656 x 132, holding the Apply and Cancel actions). - Trigger plus anchored panel. On small screens use CalendarModal rather than stretching this one. ACCESSIBILITY - Keyboard: arrows by day, PageUp/PageDown by month, Home/End to week bounds, Escape closes and returns focus to the trigger. - The trigger owns aria-expanded; the focused day and the selected day must be distinguishable without colour. - 12h vs 24h and the first day of week are locale-driven, not hardcoded; a range must announce both endpoints, not only the last click. - The preset rows are real buttons and need text labels. CODE - There is no date-picker in @42/ui-react: docs/rfcs/date-picker.md specifies DatePicker / Calendar / TimeField as a draft with no implementation in packages/react/src. - TimeInput ships (format, hourCycle, minuteStep, withSeconds, locale, size, variant, color, plus the Field props) and is the low-confidence match recorded in the parity report. That match is unconfirmed. - On implementation, opened and state must become Ark data-*, and modal a separate surface, not a fourth axis. KNOWN ISSUE - The hour axis flagged in the parity report as a typo of hover is gone from the file; the index and the report are stale on this component."
+  size: {w: HUG, h: HUG}
+  radius: 16
+  direction: HORIZONTAL
+  fills: "@bg-solid"
+  stroke: {color: "@white", width: 1, align: OUTSIDE}
+  shadow: ["@shadow-xl"]
+  text:
+    sample: Today
+    fill: "@text-secondary"
+    size: 14
+    weight: Medium
+    lineHeight: 20
+  slots:
+    Leading content: {slot_id: "1150:1454", node_type: FRAME, depth: 1}
+    Trailing content: {slot_id: "1150:1415", node_type: FRAME, depth: 1}
+  nested_instances:
+    - name: _Date picker list item
+      depth: 2
+      main_component: _Date picker list item
+      variant_axes:
+        selected: ["false", "true"]
+        state: [default, hover, focused]
+    - name: TimeInput
+      depth: 3
+      main_component: TimeInput
+      variant_axes:
+        size: [sm, md]
+      bool_props:
+        {showPeriod: true, showLabel: false}
+    - name: _Input
+      depth: 5
+      main_component: Input/sm/default/Filled/default
+      bool_props:
+        {Start slot: false, End slot: false}
+    - name: "Buttons/Button "
+      depth: 5
+      main_component: Buttons/Button
+      variant_axes:
+        color: [gray, brand, red, green, orange]
+        size: [xs, sm, md]
+        variant: [filled, light, outline, subtle, link]
+        state: [default, disabled, focus, hover]
+      bool_props:
+        {showStartSlot: false, showLabel: true, showEndSlot: false}
+  text_nodes:
+    - {name: Text, sample: Today}
+  how_to_use: "1. Instancier via key_variants (jamais le ComponentSet).\n2. Exemple : const variantNode = await figma.getNodeByIdAsync(key_variants[\"<variant-slug>\"]); const inst = variantNode.createInstance()\n3. setTxt(inst, \"Text\", \"Today\")\n4. Si besoin masquer les actions : inst.findOne(n => n.name === \"TimeInput\")?.setProperties({\"showLabel\":false,\"showPeriod\":false})"
+  variants:
+    actions: [false, true]
+    presetranges: [false, true]
+    showtime: [false, true]
+    type: [dualdates, singledate]
+  defaults: {actions: true, presetranges: true, showtime: true, type: dualdates}
