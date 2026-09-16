@@ -1,0 +1,70 @@
+# items/feedback-card.yaml — detail complet du composant 'feedback-card'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: feedback-card
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+feedback-card:
+  figma_key: 0def5a72402d176f63d151eb419b9bd5fdffa294
+  figma_node_id: "17598:4910"
+  component_type: COMPONENT_SET
+  instanciable: false
+  default_variant_id: "17598:4911"
+  key_variants:
+    pov-reviewer-device-desktop-type-post-review-feedback: "17598:4911"
+    pov-reviewer-device-mobile-type-post-review-feedback: "17598:4927"
+    pov-reviewee-device-desktop-type-post-review-feedback: "17598:4943"
+    pov-reviewee-device-mobile-type-post-review-feedback: "17598:4959"
+    pov-reviewee-device-desktop-type-social-vote: "17598:4975"
+    pov-reviewee-device-mobile-type-social-vote: "17598:4984"
+    pov-reviewee-device-desktop-type-event: "17598:4993"
+    pov-reviewee-device-mobile-type-even: "17598:5002"
+    pov-reviewee-device-desktop-type-team-project: "17598:5011"
+    pov-reviewee-device-mobile-type-team-project: "17598:5025"
+  page: "      ↳ Card"
+  size: {w: FILL, h: HUG}
+  padding: {all: 24}
+  radius: 4
+  direction: VERTICAL
+  gap: 8
+  align: {primary: CENTER}
+  fills: "@white"
+  stroke: {color: "@white", width: 1, align: INSIDE}
+  text:
+    sample: You need to provide feedback to Jdoe’...
+    fill: "@white"
+    size: 16
+    lineHeight: 22
+  slots:
+    Avatars: {slot_id: "17598:4919", node_type: INSTANCE, depth: 5}
+  nested_instances:
+    - {name: folder-dot, depth: 3, main_component: folder-dot}
+    - name: Avatars
+      depth: 5
+      main_component: Avatars
+      variant_axes:
+        size: [xl, lg, md, sm, xs]
+        style: [blank, initial, number, icon]
+    - name: Buttons
+      depth: 2
+      main_component: Buttons
+      variant_axes:
+        style: [primary, secondary, tertiary, quaternary, link, destructive, success]
+        state: [default, hover, active, focus, loading, disabled]
+        type: [icon + label, label, icon]
+        size: [large, medium]
+      bool_props:
+        {Has Left Icon: false, Has Label: true, Has Right Icon: false}
+  text_nodes:
+    - name: You need to provide feedback to Jdoe’ work
+      sample: You need to provide feedback to Jdoe’...
+    - {name: on Project 00, sample: on Project 00}
+    - {name: LABEL, role: label, sample: GIVE FEEDBACK}
+  how_to_use: "1. Instancier via key_variants (jamais le ComponentSet).\n2. Exemple : const variantNode = await figma.getNodeByIdAsync(key_variants[\"<variant-slug>\"]); const inst = variantNode.createInstance()\n3. setTxt(inst, \"You need to provide feedback to Jdoe’ work\", \"You need to provide feedback to Jdoe’...\")\n4. setTxt(inst, \"on Project 00\", \"on Project 00\")\n5. Si besoin masquer les actions : inst.findOne(n => n.name === \"Buttons\")?.setProperties({\"Has Label\":false,\"Has Left Icon\":false,\"Has Right Icon\":false})"
+  variants:
+    device: [desktop, mobile]
+    pov: [reviewee, reviewer]
+    type: [even, event, post-review feedback, social vote, team project]
+  defaults: {device: desktop, pov: reviewer, type: post-review feedback}
+  notes: ["Variant axis name \"POV\" was normalised to \"pov\" (use lowercase slugs for consistency).", "Variant axis \"pov\": values \"reviewer\" and \"reviewee\" look like a typo (distance 1).", "Variant axis name \"Device\" was normalised to \"device\" (use lowercase slugs for consistency).", "Variant axis name \"Type\" was normalised to \"type\" (use lowercase slugs for consistency).", "Variant axis \"type\": values \"event\" and \"even\" look like a typo (distance 1)."]
