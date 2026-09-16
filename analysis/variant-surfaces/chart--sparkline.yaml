@@ -1,0 +1,26 @@
+# analysis/variant-surfaces/chart--sparkline.yaml — la SURFACE peinte par chaque variante.
+# Hors de context/ deliberement : lu par la console, jamais par un agent.
+# Les surfaces identiques sont stockees une fois et pointees.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: chart--sparkline
+  generated_at: "2026-09-16"
+  variants: 9
+  surfaces: 2
+surfaces:
+  s1:
+    height: 32
+  s2:
+    gap: 4
+    height: 32
+variants:
+  type-area-trend-down: s1
+  type-area-trend-flat: s1
+  type-area-trend-up: s1
+  type-bar-trend-down: s2
+  type-bar-trend-flat: s2
+  type-bar-trend-up: s2
+  type-line-trend-down: s1
+  type-line-trend-flat: s1
+  type-line-trend-up: s1
