@@ -1,0 +1,56 @@
+# items/tooltip.yaml — detail complet du composant 'tooltip'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: tooltip
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+tooltip:
+  figma_key: f0740dacd46e999ba2c19f7f450fa00ac9feaf67
+  figma_node_id: "1052:489"
+  component_type: COMPONENT_SET
+  instanciable: false
+  default_variant_id: "1052:587"
+  key_variants:
+    positioning-none: "1052:587"
+    positioning-start: "1052:621"
+    positioning-end: "1052:633"
+    positioning-bottom: "1052:582"
+    positioning-top: "1052:597"
+    positioning-bottom-start: "1052:609"
+    positioning-bottom-end: "1052:645"
+    positioning-top-start: "21180:2"
+    positioning-top-end: "21180:10"
+  page: "      ↳ Tooltip"
+  description: "AXES - arrow (none | top center | bottom center | bottom left | bottom right | left | right): 7 frozen arrow placements. In code this is one boolean plus a placement, not a variant axis. - supporting-text (false | true): slot, adds a second line under the label. - text: a Figma text property, not a variant. - 14 key variants = supporting-text x arrow. No size, no color, no state axis. COMPOSITION - Vertical auto-layout, hug x hug, counter CENTER, shadow @shadow-lg. - Inverted bubble: text 14/20 SemiBold on @text-primary-inverse. One text node, Text. - Anchored to a trigger only. Never place it inline in page flow, and never put interactive controls inside it. ACCESSIBILITY - Must open on keyboard focus as well as hover, and dismiss on Esc; hover-only is a fail. - Never the sole carrier of essential information: it is a hint, not content. - The arrow is decorative and must not be the only way to identify the trigger. - Never trap focus: that is Popover territory. CODE - React: Tooltip (over Ark UI Tooltip). Props: label, position, offset, withArrow, variant, asChild, withinPortal, container, classNames. - arrow -> withArrow (boolean) plus position; position takes Ark placements plus RTL-aware start / end. supporting-text -> richer label content, no prop. - React variant (text | inline) styles the trigger, not the bubble, and has no Figma axis. - opened is runtime: Ark writes data-state and wires role=tooltip plus aria-describedby. Never model it as an axis. - offset maps to the positioner gutter."
+  size: {w: HUG, h: HUG}
+  direction: VERTICAL
+  align: {counter: CENTER}
+  shadow: ["@shadow-lg"]
+  text:
+    sample: This is a tooltip
+    fill: "@text-primary-inverse"
+    size: 14
+    weight: SemiBold
+    lineHeight: 20
+  text_nodes:
+    - {name: Label, role: label, sample: This is a tooltip}
+    - name: Supporting text
+      role: hint
+      sample: Tooltips are used to describe or iden...
+    - {name: slot content, sample: Slot content}
+  how_to_use: "1. Instancier via key_variants (jamais le ComponentSet).\n2. Exemple : const variantNode = await figma.getNodeByIdAsync(key_variants[\"<variant-slug>\"]); const inst = variantNode.createInstance()\n3. setTxt(inst, \"Label\", \"This is a tooltip\")\n4. setTxt(inst, \"Supporting text\", \"Tooltips are used to describe or iden...\")"
+  variants:
+    label: "<text>"
+    positioning: [bottom, bottom-end, bottom-start, end, none, start, top, top-end, top-start]
+    showcontentslot: [false, true]
+    showlabel: [false, true]
+    showsupportingtext: [false, true]
+    supportingtext: "<text>"
+  defaults:
+    label: This is a tooltip
+    positioning: none
+    showcontentslot: false
+    showlabel: true
+    showsupportingtext: false
+    supportingtext: "Tooltips are used to describe or identify an element. In most scenarios, tooltips help the user understand meaning, function or alt-text."
