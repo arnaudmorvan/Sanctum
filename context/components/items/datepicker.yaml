@@ -1,0 +1,61 @@
+# items/datepicker.yaml — detail complet du composant 'datepicker'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: datepicker
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+datepicker:
+  figma_key: bdd6516fe02ff559185b79c171cf97304abc4860
+  figma_node_id: "21599:15879"
+  component_type: COMPONENT_SET
+  instanciable: false
+  default_variant_id: "21599:15880"
+  key_variants:
+    variant-input-value-null: "21599:15880"
+    variant-input-value-selected: "21938:168787"
+    variant-button-value-null: "1150:18447"
+    variant-button-value-selected: "21938:168769"
+  page: "      ↳ DatePicker"
+  description: "DateInput — the field that opens a date picker. The name is wrong. The kit ships DatePicker; there is no DateInput. Rename this set before anyone specs against it. Careful, this file holds TWO components for one React one: DateInput (here) — the trigger, field-shaped. Correct. Calendar (1150:16803) — trigger + popover, with a Button as its trigger. Its popover content is right, its trigger is not: the shipped DatePicker trigger is a field, not a button. Neither is the React Calendar, which is the same grid rendered INLINE, with no trigger at all. Three objects, two components, one honest name each — see KNOWN GAPS. AXES None. `Property 1 = Default` is Figma's untouched default axis, not a design decision — it means nothing, ignore it. Everything is set on the nested _BaseField instance, which is exposed: size, variant, state, status. Read _BaseField for what each one means. COMPOSITION text carries the placeholder when empty, the formatted date once picked. Edit the property, never the layer. Write the sample date in the locale of the product. The one shipped here, 07/15/2013, is US month-first — it reads as the 7th of the 15th month in half of Europe. startSlot holds the calendar glyph. It is decorative: the whole field opens the popover, not the icon. The popover is NOT in this component. Presets, month grid and footer live in _Date picker menu, under Calendar. To spec an open picker you need both — that split is a defect, not a pattern to copy. status=error is the red field. The message that explains it belongs to Field, never to a text layer inside the control. Label, description and status message go in the Field contentSlot. This control has no label prop of its own. ACCESSIBILITY The field has no accessible name of its own — it takes one from the Field label. A placeholder is not a label: it disappears the moment a date is picked. The trigger states that it opens a dialog, and focus moves into the grid when it does. Esc closes without picking and returns focus to the field. The picked date is announced in full, not as digits — the screen reader reads a date, not 07/15/2013. A field the user can also type into must accept the format it displays. If typing is not supported, say so: a text cursor on a read-only field is a trap. CODE — @42/ui-react DatePicker There is no DateInput export. This is DatePicker. text -> placeholder startSlot -> startSlot size -> size (React runs xs to xl) variant -> variant status=error -> invalid state=Disabled -> disabled; Hovered / Focused -> runtime value is a Date, or { start, end } when range is on. No Figma equivalent — do not mock these up here: range, withTime, presets, withConfirm, clearable, numOfMonths, fixedWeeks, isDateUnavailable, min, max, minView, maxView, locale, timeZone, format (12 | 24), hourCycle, minuteStep, withSeconds, translations, color, readOnly, name, classNames. withTime embeds the TimeInput hour / minute row in the popover — same row, one implementation. The API table exposes no label / description / error props: wrap the control in Field for those. KNOWN GAPS IN THIS SET 1. Rename DateInput -> DatePicker. 2. Drop the `Property 1` axis: a single-value axis is noise in the instance panel. 3. Delete the `error` text layer inside the component. It duplicates the Field status message, which _BaseField's own description forbids. 4. Only the empty state is mocked (showValue is off). Ship a filled example too — a date field with no date in it hides the format question entirely. 5. Arbitrate against Calendar (1150:16803): one DatePicker with a field trigger, one inline Calendar grid. Today the two overlap and neither matches the code."
+  size: {w: HUG, h: HUG}
+  direction: VERTICAL
+  gap: 16
+  text:
+    sample: Pick a date
+    fill: "@text-tertiary"
+    size: 14
+    weight: Regular
+    lineHeight: 20
+  nested_instances:
+    - name: _BaseField
+      depth: 1
+      main_component: _BaseField
+      variant_axes:
+        size: [sm, md]
+        variant: [unstyled, default]
+        state: [focused, disabled, hovered, placeholder]
+        status: [error, default]
+      bool_props:
+        showValue: false
+        showBadges: false
+        showPlaceholder: true
+        showStartSlot: true
+        showEndIcon: false
+    - name: Calendar
+      depth: 1
+      visible: false
+      main_component: Calendar
+      variant_axes:
+        type: [dualdates, singledate]
+      bool_props:
+        {showTime: true, actions: true, preSetRanges: true}
+  text_nodes:
+    - {name: Placeholder, sample: Pick a date}
+    - {name: error, sample: A date is required.}
+  how_to_use: "1. Instancier via key_variants (jamais le ComponentSet).\n2. Exemple : const variantNode = await figma.getNodeByIdAsync(key_variants[\"<variant-slug>\"]); const inst = variantNode.createInstance()\n3. setTxt(inst, \"Placeholder\", \"Pick a date\")\n4. setTxt(inst, \"error\", \"A date is required.\")\n5. Si besoin masquer les actions : inst.findOne(n => n.name === \"_BaseField\")?.setProperties({\"showBadges\":false,\"showEndIcon\":false,\"showPlaceholder\":false,\"showStartSlot\":false,\"showValue\":false})"
+  variants:
+    isopen: [false, true]
+    value: ["null", selected]
+    variant: [button, input]
+  defaults: {isopen: false, value: "null", variant: input}
