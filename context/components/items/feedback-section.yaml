@@ -1,0 +1,46 @@
+# items/feedback-section.yaml — detail complet du composant 'feedback-section'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: feedback-section
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+feedback-section:
+  figma_key: 46c7f600396e02fe5aa96f2347eeedcdb79a0f99
+  figma_node_id: "17598:5370"
+  component_type: COMPONENT_SET
+  instanciable: false
+  default_variant_id: "17598:5371"
+  key_variants:
+    device-desktop: "17598:5371"
+    device-tablet: "17598:5378"
+    device-mobile: "17598:5389"
+  page: "      ↳ Card"
+  size: {w: FILL, h: HUG}
+  direction: VERTICAL
+  gap: 16
+  text:
+    sample: My Feedback
+    fill: "@white"
+    size: 24
+    weight: Bold
+    lineHeight: 32
+  slots:
+    Avatars: {slot_id: "I17598:5376;17598:4951", node_type: INSTANCE, depth: 7}
+  nested_instances:
+    - {name: message-square-text, depth: 2, main_component: message-square-text}
+    - name: Feedback card
+      depth: 2
+      main_component: Feedback card
+      variant_axes:
+        pov: [reviewer, reviewee]
+        device: [desktop, mobile]
+        type: [social vote, post-review feedback, event, even, team project]
+  text_nodes:
+    - {name: My Feedback, sample: My Feedback}
+    - {name: LABEL, role: label, sample: GIVE FEEDBACK}
+  how_to_use: "1. Instancier via key_variants (jamais le ComponentSet).\n2. Exemple : const variantNode = await figma.getNodeByIdAsync(key_variants[\"<variant-slug>\"]); const inst = variantNode.createInstance()\n3. setTxt(inst, \"My Feedback\", \"My Feedback\")\n4. setTxt(inst, \"LABEL\", \"GIVE FEEDBACK\")"
+  variants:
+    device: [desktop, mobile, tablet]
+  defaults: {device: desktop}
+  notes: ["Variant axis name \"Device\" was normalised to \"device\" (use lowercase slugs for consistency)."]
