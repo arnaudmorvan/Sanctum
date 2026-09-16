@@ -1,0 +1,42 @@
+# analysis/variant-surfaces/checkbox.yaml — la SURFACE peinte par chaque variante.
+# Hors de context/ deliberement : lu par la console, jamais par un agent.
+# Les surfaces identiques sont stockees une fois et pointees.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: checkbox
+  generated_at: "2026-09-16"
+  variants: 24
+  surfaces: 2
+surfaces:
+  s1:
+    gap: 8
+    text: {fill: "@text-primary", size: 14, weight: Medium, lineHeight: 20}
+  s2:
+    gap: 12
+    text: {fill: "@text-primary", size: 16, weight: Medium, lineHeight: 24}
+variants:
+  checked-false-indeterminate-false-size-md-state-default: s2
+  checked-false-indeterminate-false-size-md-state-disabled: s2
+  checked-false-indeterminate-false-size-md-state-focus: s2
+  checked-false-indeterminate-false-size-md-state-hover: s2
+  checked-false-indeterminate-false-size-sm-state-default: s1
+  checked-false-indeterminate-false-size-sm-state-disabled: s1
+  checked-false-indeterminate-false-size-sm-state-focus: s1
+  checked-false-indeterminate-false-size-sm-state-hover: s1
+  checked-true-indeterminate-false-size-md-state-default: s2
+  checked-true-indeterminate-false-size-md-state-disabled: s2
+  checked-true-indeterminate-false-size-md-state-focus: s2
+  checked-true-indeterminate-false-size-md-state-hover: s2
+  checked-true-indeterminate-false-size-sm-state-default: s1
+  checked-true-indeterminate-false-size-sm-state-disabled: s1
+  checked-true-indeterminate-false-size-sm-state-focus: s1
+  checked-true-indeterminate-false-size-sm-state-hover: s1
+  checked-true-indeterminate-true-size-md-state-default: s2
+  checked-true-indeterminate-true-size-md-state-disabled: s2
+  checked-true-indeterminate-true-size-md-state-focus: s2
+  checked-true-indeterminate-true-size-md-state-hover: s2
+  checked-true-indeterminate-true-size-sm-state-default: s1
+  checked-true-indeterminate-true-size-sm-state-disabled: s1
+  checked-true-indeterminate-true-size-sm-state-focus: s1
+  checked-true-indeterminate-true-size-sm-state-hover: s1
