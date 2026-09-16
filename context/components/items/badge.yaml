@@ -1,0 +1,152 @@
+# items/badge.yaml — detail complet du composant 'badge'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: badge
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+badge:
+  figma_key: c8ecd19667c31d635d843b04bbcb113627d213e6
+  figma_node_id: "14950:143827"
+  component_type: COMPONENT_SET
+  instanciable: false
+  default_variant_id: "14950:144617"
+  key_variants:
+    color-brand-size-md-variant-light: "14950:144617"
+    color-brand-size-sm-variant-light: "14950:144001"
+    color-brand-size-sm-variant-outline: "19123:20308"
+    color-brand-size-sm-variant-filled: "21628:2"
+    color-brand-size-sm-variant-subtle: "21628:67338"
+    color-brand-size-lg-variant-light: "14950:145227"
+    color-brand-size-lg-variant-outline: "19123:20644"
+    color-brand-size-lg-variant-filled: "21628:100"
+    color-brand-size-lg-variant-subtle: "21628:67408"
+    color-brand-size-md-variant-outline: "19123:20476"
+    color-brand-size-md-variant-filled: "21628:51"
+    color-brand-size-md-variant-subtle: "21628:67373"
+    color-neutral-size-sm-variant-filled: "21628:16"
+    color-neutral-size-sm-variant-subtle: "21628:67348"
+    color-neutral-size-lg-variant-light: "14950:145508"
+    color-neutral-size-lg-variant-outline: "19123:20692"
+    color-neutral-size-lg-variant-filled: "21628:114"
+    color-neutral-size-lg-variant-subtle: "21628:67418"
+    color-neutral-size-md-variant-light: "14950:144898"
+    color-neutral-size-md-variant-outline: "19123:20524"
+    color-neutral-size-md-variant-filled: "21628:65"
+    color-neutral-size-md-variant-subtle: "21628:67383"
+    color-neutral-size-sm-variant-outline: "19123:20356"
+    color-neutral-size-sm-variant-light: "14950:144282"
+    color-green-size-md-variant-subtle: "21628:67378"
+    color-green-size-md-variant-filled: "21628:58"
+    color-green-size-md-variant-outline: "19123:20488"
+    color-green-size-md-variant-light: "14971:147611"
+    color-green-size-lg-variant-subtle: "21628:67413"
+    color-green-size-lg-variant-filled: "21628:107"
+    color-green-size-lg-variant-outline: "19123:20656"
+    color-green-size-lg-variant-light: "14971:147633"
+    color-green-size-sm-variant-subtle: "21628:67343"
+    color-green-size-sm-variant-filled: "21628:9"
+    color-green-size-sm-variant-outline: "19123:20323"
+    color-green-size-sm-variant-light: "14971:147589"
+    color-orange-size-sm-variant-outline: "19123:20364"
+    color-orange-size-sm-variant-filled: "21628:30"
+    color-orange-size-sm-variant-subtle: "21628:67358"
+    color-orange-size-lg-variant-light: "15049:3485"
+    color-orange-size-lg-variant-outline: "19123:20700"
+    color-orange-size-lg-variant-filled: "21628:128"
+    color-orange-size-lg-variant-subtle: "21628:67428"
+    color-orange-size-md-variant-light: "15049:3463"
+    color-orange-size-md-variant-outline: "19123:20532"
+    color-orange-size-md-variant-filled: "21628:79"
+    color-orange-size-md-variant-subtle: "21628:67393"
+    color-orange-size-sm-variant-light: "15049:3441"
+    color-pink-size-lg-variant-filled: "21628:142"
+    color-pink-size-sm-variant-light: "15051:4028"
+    color-pink-size-sm-variant-outline: "19123:20372"
+    color-pink-size-sm-variant-filled: "21628:44"
+    color-pink-size-sm-variant-subtle: "21628:67368"
+    color-pink-size-lg-variant-light: "15051:4072"
+    color-pink-size-lg-variant-outline: "19123:20708"
+    color-pink-size-lg-variant-subtle: "21628:67438"
+    color-pink-size-md-variant-light: "15051:4050"
+    color-pink-size-md-variant-outline: "19123:20540"
+    color-pink-size-md-variant-filled: "21628:93"
+    color-pink-size-md-variant-subtle: "21628:67403"
+    color-purple-size-sm-variant-outline: "19123:20368"
+    color-purple-size-sm-variant-light: "15049:3699"
+    color-purple-size-md-variant-subtle: "21628:67398"
+    color-purple-size-md-variant-filled: "21628:86"
+    color-purple-size-md-variant-outline: "19123:20536"
+    color-purple-size-md-variant-light: "15049:3721"
+    color-purple-size-lg-variant-subtle: "21628:67433"
+    color-purple-size-lg-variant-filled: "21628:135"
+    color-purple-size-lg-variant-outline: "19123:20704"
+    color-purple-size-lg-variant-light: "15049:3743"
+    color-purple-size-sm-variant-subtle: "21628:67363"
+    color-purple-size-sm-variant-filled: "21628:37"
+    color-red-size-sm-variant-outline: "19123:20360"
+    color-red-size-sm-variant-filled: "21628:23"
+    color-red-size-sm-variant-subtle: "21628:67353"
+    color-red-size-lg-variant-light: "15049:3227"
+    color-red-size-lg-variant-outline: "19123:20696"
+    color-red-size-sm-variant-light: "15049:3183"
+    color-red-size-lg-variant-subtle: "21628:67423"
+    color-red-size-md-variant-light: "15049:3205"
+    color-red-size-md-variant-outline: "19123:20528"
+    color-red-size-md-variant-filled: "21628:72"
+    color-red-size-md-variant-subtle: "21628:67388"
+    color-red-size-lg-variant-filled: "21628:121"
+    color-brand-size-sm-variant-gradient: "22918:2"
+    color-brand-size-md-variant-gradient: "22918:8"
+    color-brand-size-lg-variant-gradient: "22918:14"
+  page: "      ↳ Badges"
+  description: "AXES - color (brand, error, gray, pink, purple, success, warning): a palette axis, semantic names. - filled (false, true): the shape axis, filled surface against soft/bordered. size (sm, md, lg). - icon (dot, simple, icon leading, icon trailing, only, country, avatar): composition; icon = only drops the text node. - close (false, true) and three swap props: composition, not shape. - 294 published variants, color x icon x filled x size flattened into one set. No state axis: a badge is not interactive. COMPOSITION - Horizontal auto-layout, gap 2, padding 2/4, radius 6; fill @bg-blue-secondary, stroke @border-blue-secondary, text 12/18 Medium. - Text node &quot;Text&quot;; nested _Dot (size sm/md/lg, outline bool) and x. - A badge labels, it does not act. If it must be selectable or removable, use chips-42. ACCESSIBILITY - Dot and leading icon are decorative; the status must be readable in the label text, not in the hue. - filled = false on pale palettes (pink, warning) is the weakest pairing: check @text-*-secondary on @bg-*-secondary at 4.5:1 for 12 px text. - close = true draws an x with no name; if it is really clickable it needs an aria-label and a 24 px target, which sm does not reach. CODE - React: Badge. filled -&gt; variant (filled|light|outline|subtle|default|gradient); color -&gt; prop color as data-color; size -&gt; size, aligned sm/md/lg; icon and close -&gt; children. - React palettes are hue-named (brand, gray, red, orange, yellow, green, teal, cyan, blue, purple, pink): error/success/warning must be remapped. - Badge has no close affordance and no state prop; the removable chip is Pill. variant = gradient (added 2026-09-10, node ids 22918:2 / 22918:8 / 22918:14): the only variant that IGNORES color — the React component drops data-color and always paints purple-300 -> pink-400 left to right, black text and icons, white/20 border. Published for color=brand only, one row per size at the bottom of the set: crossing it with the 7 other palettes would publish 21 identical variants and lie about the model."
+  size: {w: HUG, h: 24}
+  padding: {v: 0, h: 6}
+  radius: 4
+  direction: HORIZONTAL
+  gap: 4
+  align: {counter: CENTER}
+  fills: "@bg-blue-secondary"
+  stroke: {color: "@border-blue-solid", width: 0.5, align: INSIDE}
+  text:
+    sample: Label
+    fill: "@text-blue-secondary"
+    size: 14
+    weight: Medium
+    lineHeight: 20
+  slots:
+    leading-icon?: {slot_id: "14950:144618", node_type: INSTANCE, depth: 1}
+    trailing-icon?: {slot_id: "21612:4963", node_type: INSTANCE, depth: 1}
+  nested_instances:
+    - {name: leading-icon, depth: 1, visible: false, main_component: arrow-up}
+    - {name: trailing-icon, depth: 1, visible: false, main_component: x}
+  text_nodes:
+    - {name: Text, sample: Label}
+  how_to_use: "1. Instancier via key_variants (jamais le ComponentSet).\n2. Exemple : const variantNode = await figma.getNodeByIdAsync(key_variants[\"<variant-slug>\"]); const inst = variantNode.createInstance()\n3. setTxt(inst, \"Text\", \"Label\")"
+  variants:
+    close: [false, true]
+    color: [brand, green, neutral, orange, pink, purple, red]
+    flag-swap: "<instance>"
+    icon-leading-swap: "<instance>"
+    icon-trailing-swap: "<instance>"
+    iconleadingswap: "<instance>"
+    icontrailingswap: "<instance>"
+    showleading: [false, true]
+    showtext: [false, true]
+    showtrailing: [false, true]
+    size: [lg, md, sm]
+    variant: [filled, gradient, light, outline, subtle]
+  defaults:
+    close: true
+    color: brand
+    flag-swap: "→21880:156031"
+    icon-leading-swap: "→22772:26048"
+    icon-trailing-swap: "→22772:26046"
+    iconleadingswap: "→14574:848"
+    icontrailingswap: "→14574:3684"
+    showleading: false
+    showtext: true
+    showtrailing: false
+    size: md
+    variant: light
