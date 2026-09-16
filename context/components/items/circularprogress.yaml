@@ -1,0 +1,89 @@
+# items/circularprogress.yaml — detail complet du composant 'circularprogress'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: circularprogress
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+circularprogress:
+  figma_key: 547603e6f9332794c4501f55178b030875b5df60
+  figma_node_id: "22332:264"
+  component_type: COMPONENT_SET
+  instanciable: false
+  default_variant_id: "22336:166"
+  key_variants:
+    variant-filled-size-xs-thickness-thin: "22336:166"
+    variant-filled-size-sm-thickness-thin: "22336:180"
+    variant-filled-size-md-thickness-thin: "22336:194"
+    variant-filled-size-lg-thickness-thin: "22336:208"
+    variant-filled-size-xl-thickness-thin: "22336:222"
+    variant-filled-size-2xl-thickness-thin: "22336:236"
+    variant-filled-size-3xl-thickness-thin: "22336:250"
+    variant-filled-size-4xl-thickness-thin: "22336:264"
+    variant-filled-size-xs-thickness-regular: "22332:152"
+    variant-filled-size-sm-thickness-regular: "22332:159"
+    variant-filled-size-md-thickness-regular: "22332:166"
+    variant-filled-size-lg-thickness-regular: "22332:173"
+    variant-filled-size-xl-thickness-regular: "22332:180"
+    variant-filled-size-2xl-thickness-regular: "22332:187"
+    variant-filled-size-3xl-thickness-regular: "22332:194"
+    variant-filled-size-4xl-thickness-regular: "22332:201"
+    variant-filled-size-xs-thickness-thick: "22336:173"
+    variant-filled-size-sm-thickness-thick: "22336:187"
+    variant-filled-size-md-thickness-thick: "22336:201"
+    variant-filled-size-lg-thickness-thick: "22336:215"
+    variant-filled-size-xl-thickness-thick: "22336:229"
+    variant-filled-size-2xl-thickness-thick: "22336:243"
+    variant-filled-size-3xl-thickness-thick: "22336:257"
+    variant-filled-size-4xl-thickness-thick: "22336:271"
+    variant-gradient-size-xs-thickness-thin: "22336:278"
+    variant-gradient-size-sm-thickness-thin: "22336:292"
+    variant-gradient-size-md-thickness-thin: "22336:306"
+    variant-gradient-size-lg-thickness-thin: "22336:320"
+    variant-gradient-size-xl-thickness-thin: "22336:334"
+    variant-gradient-size-2xl-thickness-thin: "22336:348"
+    variant-gradient-size-3xl-thickness-thin: "22336:362"
+    variant-gradient-size-4xl-thickness-thin: "22336:376"
+    variant-gradient-size-xs-thickness-regular: "22332:208"
+    variant-gradient-size-sm-thickness-regular: "22332:215"
+    variant-gradient-size-md-thickness-regular: "22332:222"
+    variant-gradient-size-lg-thickness-regular: "22332:229"
+    variant-gradient-size-xl-thickness-regular: "22332:236"
+    variant-gradient-size-2xl-thickness-regular: "22332:243"
+    variant-gradient-size-3xl-thickness-regular: "22332:250"
+    variant-gradient-size-4xl-thickness-regular: "22332:257"
+    variant-gradient-size-xs-thickness-thick: "22336:285"
+    variant-gradient-size-sm-thickness-thick: "22336:299"
+    variant-gradient-size-md-thickness-thick: "22336:313"
+    variant-gradient-size-lg-thickness-thick: "22336:327"
+    variant-gradient-size-xl-thickness-thick: "22336:341"
+    variant-gradient-size-2xl-thickness-thick: "22336:355"
+    variant-gradient-size-3xl-thickness-thick: "22336:369"
+    variant-gradient-size-4xl-thickness-thick: "22336:383"
+    variant-filled-size-5xl-thickness-regular: "22379:164"
+    variant-filled-size-5xl-thickness-thick: "22379:173"
+    variant-gradient-size-5xl-thickness-thin: "22379:45211"
+    variant-gradient-size-5xl-thickness-regular: "22379:45220"
+    variant-gradient-size-5xl-thickness-thick: "22379:45229"
+    variant-filled-size-5xl-thickness-thin: "22394:4"
+  page: "      ↳ CircularProgress"
+  description: "CircularProgress — ring progress indicator, the circular counterpart of Progress bar. Non-interactive: it reports a value, it never takes input. AXES variant = arc treatment filled = the accent colour, driven by the variable mode gradient = purple-300 to pink-400, swept top-left to bottom-right. Ignores the accent mode. size = ring diameter, 9 steps xs 24 · sm 32 · md 44 · lg 60 · xl 80 are the exact values of the React kit. 2xl 104 · 3xl 136 · 4xl 176 · 5xl 224 are Figma-only. thickness = stroke width, three steps regular is the code value for xs to xl. thick is three times thin, which is the rule every variant is drawn to. xs 2/3/6 · sm 2/3/6 · md 3/4/9 · lg 4/5/12 · xl 4/6/12 2xl 5/7/15 · 3xl 6/9/18 · 4xl 8/11/24 · 5xl 10/13/30 Each pair is REDRAWN, never rescaled: the radius is recomputed as (size minus thickness) / 2, so the ring fills its box exactly at every step. Never fake a thickness by typing a stroke width on the instance — that pushes the stroke outside the box. showLabel = boolean, default true, shows the centred readout. The text style climbs with size: Text xs at md, Text sm for lg and xl, then Display xs 2xl · Display sm 3xl · Display md 4xl · Display lg 5xl. xs and sm carry NO readout and no slot at all: the ring is too small for either, so compose the value next to them. Content = SLOT, sits just ABOVE the label, centred. Drop any layer or instance in it: an icon, a ThemeIcon, a Badge, a trend arrow, a live figure. Empty by default, it takes no room when empty. Present from md to 4xl. NOT on xs and sm by design, and not yet on 5xl (see DEFAUT OUVERT). COLOUR IS NOT AN AXIS. It is a variable mode. Select the instance and switch the mode of the collection « 7. Accent » in the right-hand panel: brand, gray, pink. accent-solid aliases utility-[fam]-500 (utility-gray-700 for gray), the exact iso of the code slot --c-solid in both light and dark. Adding a colour = adding a MODE, never a variant. There is deliberately NO indeterminate value. Use Spinner. COMPOSITION Auto-layout that hugs its content. Two children: Ring = an instance of .CircularProgress_Ring, in the flow, so it drives the box size. Each of the 54 variants nests the Ring drawn at its own size and thickness. Nothing here is rescaled. Content = absolutely positioned, centred by constraints, a vertical stack of the slot then the Label ONE axis is not reachable out of the box: progress. To get it, select the nested Ring inside this component and tick « Expose nested instances ». It is a one-time manual step: the Figma plugin API cannot set that flag, so no script can do it. Until it is ticked, every instance sits at 50%. Nothing else goes in the box. A caption or a step counter placed OUTSIDE the ring is not this component: compose it in the parent frame, or use Progress bar, which owns the label positions. ACCESSIBILITY The ring is decoration. What the value means has to be readable as text: the Label, the slot, or a sentence next to it. A ring on its own, with no readout, is not accessible. In code Ark stamps role=progressbar plus aria-valuenow / valuemin / valuemax and the consumer passes aria-label. Figma carries none of that, so do not treat this mockup as the a11y spec. CODE @42/ui-react, component CircularProgress (single component, not a compound). packages/react/src/components/circular-progress. variant : variant, filled | gradient, default filled size : size, default md thickness : thickness (a free number in code) progress : value, 0..100 (min/max default 0/100) accent mode : color, the data-color slot, default brand showLabel plus the Content slot : children DEFAUT OUVERT 2026-09-03 - the six 5xl variants have no Content slot. The plugin API cannot create a SLOT node and degrades one to a FRAME on clone, so it has to be added by hand: copy the Content slot from a 4xl variant and paste it into each 5xl content block. Until then the Content property is unreachable at 5xl. - gradient / thick does not have « Expose nested instances » ticked, on 4xl and on 5xl. Every other variant does. - 2xl / 3xl / 4xl / 5xl do not exist in the code. React Size stops at xl and CIRCULAR_DIMENSIONS knows nothing beyond it. Either the kit gains them or these four sizes stay mockup-only. - the accent collection only carries brand, gray and pink. The code has 11 colours; teal and cyan have no utility ramp at all and cannot be modelled. - gradient: the sweep is anchored on the arc, not on the whole ring, so the full purple-to-pink shows at every value. The code anchors it on the ring and only completes at 100%. Fixing it would mean a 4th axis on the Ring set. - thickness is a free number in code, three steps here. - the thickness dropdown lists regular before thin: the option order was frozen when the axis was added to an existing set. Cosmetic only. - Track uses utility-gray-100: exact in dark mode (#22262f), one step light in light mode (#f5f5f5 instead of gray-light-200 #e9eaeb). utility-gray-200 would fix light and break dark. - Progress bar (linear) sweeps its gradient pink-400 to purple-300, the reverse of the code and of this component. - .CircularProgress_Ring: 40 variants of the thick row, progress 60% to 100%, have their geometry offset horizontally on every size except 5xl. Avoid thick above 50% until it is fixed."
+  size: {w: HUG, h: HUG}
+  direction: HORIZONTAL
+  align: {primary: CENTER, counter: CENTER}
+  nested_instances:
+    - name: Ring
+      depth: 1
+      main_component: _CircularProgress_Ring
+      variant_axes:
+        size: [xs, sm, md, lg, xl, 2xl, 3xl, 4xl, 5xl]
+        thickness: [thin, regular, thick]
+        progress: ["0%", "10%", "20%", "30%", "40%", "50%", "60%", "70%", "80%", "90%", "100%"]
+  how_to_use: "1. Instancier via key_variants (jamais le ComponentSet).\n2. Exemple : const variantNode = await figma.getNodeByIdAsync(key_variants[\"<variant-slug>\"]); const inst = variantNode.createInstance()"
+  variants:
+    showlabel: [false, true]
+    size: [2xl, 3xl, 4xl, 5xl, lg, md, sm, xl, xs]
+    thickness: [regular, thick, thin]
+    variant: [filled, gradient]
+  defaults: {showlabel: true, size: xs, thickness: thin, variant: filled}
+  notes: ["Variant axis \"thickness\": values \"thin\" and \"thick\" look like a typo (distance 2)."]
