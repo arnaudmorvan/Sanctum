@@ -1,0 +1,40 @@
+# items/chart--combo.yaml — detail complet du composant 'chart--combo'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: chart--combo
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+chart--combo:
+  figma_key: 5e82691b89a0a663fb5e9e514e4fbdb44e6b27e2
+  figma_node_id: "23104:3089"
+  component_type: COMPONENT_SET
+  instanciable: false
+  default_variant_id: "23104:2968"
+  key_variants: {axis-single: "23104:2968", axis-dual: "23104:3025"}
+  page: "      ↳ Charts"
+  description: "Combo chart - two measures of a different nature on the same plot: a VOLUME in bars and a RATE as a line. AXES - axis: single or dual. dual adds the right hand axis. - Bars on brand-400 sit behind, the line on brand-600 sits in front. Two series, legend always shown. COMPOSITION Same shell as Chart / Bar plus a second Y axis column when axis is dual, and a matching gutter on the X axis row so labels stay under their bars. The line is centred on the bar slots, not on the plot edges. Instantiate it INSIDE a card (cardscard), never bare on the canvas: a chart is card content, not a surface. Padding comes from the card padding prop (lg 24 / md 16 / sm 12) and is never doubled here. The chart takes the width of its container: paths carry SCALE constraints, grids and bars are auto-layout. ACCESSIBILITY A dual axis is only legitimate when the two measures do not share a unit. Two scales can be tuned to make two curves say anything, so state both units and keep axis=single whenever the unit is shared. CODE @42/ui-react, component Chart (import from index.ts/chart), a wrapper over TanStack Charts. The chart TYPE is not a prop: it comes from the definition and the marks passed to the chart. So the variant axes below do NOT map one to one onto React props, they map onto separate definitions. Colour maps exactly: color takes one Color for a one-series chart (sets data-color and the ts-chart-1 slot), colors takes an ordered Color array for a multi-series chart (sets ts-chart-1 to ts-chart-N, see CHART_PALETTE and chartColors). TanStack cycles six categorical slots by default, which is why the Figma ramp stops at six. renderSvg and renderer are mutually exclusive. A combo is one Chart with two marks sharing an x scale and two y scales, not two charts stacked. DEFAUT OUVERT 2026-09-14 - the six Figma steps are assumed to be the counterpart of CHART_PALETTE but the values were never compared. Until someone diffs them, treat the ramp as a Figma-side convention, not as proven parity. Second open point: a one-series chart pins utility-brand-600 here, while the React color prop and the Figma collection 7. Accent both express an accent that can be switched. Two mechanisms for one job."
+  size: {w: 360, h: 200}
+  direction: VERTICAL
+  gap: 12
+  text:
+    sample: "100"
+    fill: "@text-tertiary"
+    size: 12
+    weight: Medium
+    lineHeight: 18
+  nested_instances:
+    - name: Legend
+      depth: 1
+      main_component: _Legend
+      variant_axes:
+        orientation: [vertical, horizontal]
+  text_nodes:
+    - {name: Tick, sample: 100}
+    - {name: Category, sample: Jan}
+    - {name: Series 1, sample: Series 1}
+    - {name: Series 2, sample: Series 2}
+  how_to_use: "1. Instancier via key_variants (jamais le ComponentSet).\n2. Exemple : const variantNode = await figma.getNodeByIdAsync(key_variants[\"<variant-slug>\"]); const inst = variantNode.createInstance()\n3. setTxt(inst, \"Tick\", \"100\")\n4. setTxt(inst, \"Category\", \"Jan\")"
+  variants:
+    axis: [dual, single]
+  defaults: {axis: single}
