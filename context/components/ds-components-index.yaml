@@ -1,0 +1,96 @@
+# ds-components-index.yaml — index SLIM (1 ligne / composant), genere par 42 — Sync Design System.
+# But : router vers le bon composant en UNE lecture (key, node, type, axes=noms, kv_count, notes/typos),
+# sans dumper les blocs CSpec. Detail complet d'un composant -> items/<slug>.yaml (meme slug que la cle ici).
+# Grep : grep '^  modal:' ds-components-index.yaml
+
+meta:
+  kind: components-index
+  source: ds-components-full.yaml
+  schema_version: 2
+  ds_name: "42 UI Kit V3"
+  figma_file_key: "yoP06GsdWscdgqpJMV2YuN"
+  generated_at: 2026-09-16
+  last_scanned: 2026-09-16
+  scope: pages
+  component_count: 78
+  note: "Index SLIM (1 ligne/composant) : key, node, type, axes(noms), kv_count. Detail complet -> items/<slug>.yaml."
+
+components:
+  accordion: {"key":"a169b2b204e41dedec5e4b2b3232d7ad8a9b232f","node":"23274:50867","type":"SET","inst":false,"default":"23274:50865","page":"      ↳ Accordion","axes":["variant"],"kv_count":2}
+  actionicon: {"key":"9e158c7aebad53b990a7bd25bf7b8039820c8744","node":"23149:52","type":"COMP","inst":true,"page":"      ↳ Buttons"}
+  alert: {"key":"1cf59245e2603e884e37fcbb84f619eb3a77ecd6","node":"21813:114074","type":"SET","inst":false,"default":"21813:114075","page":"      ↳ Alerts","axes":["type","variant"],"kv_count":8}
+  avatar: {"key":"3024d1331a5acc1a393f7fd9872acfa8de1f247c","node":"22009:34149","type":"SET","inst":false,"default":"22009:2323","page":"      ↳ Avatars ","axes":["badgecompany","badgeonline","badgeverified","gradientinitials","offboard","placeholder","shape","showlabel","size","textinitials"],"kv_count":10}
+  avatargroup: {"key":"c921a3aec3bfed1a99e5aabd9fb3b9cd9e2d844d","node":"22350:107927","type":"COMP","inst":true,"page":"      ↳ Avatars "}
+  badge: {"key":"c8ecd19667c31d635d843b04bbcb113627d213e6","node":"14950:143827","type":"SET","inst":false,"default":"14950:144617","page":"      ↳ Badges","axes":["close","color","showleading","showtext","showtrailing","size","variant"],"kv_count":87}
+  breadcrumb: {"key":"147cd16805075e58c88586950b68f2aad6390d57","node":"22021:61","type":"COMP","inst":true,"page":"      ↳ Breadcrumbs "}
+  buttongroup: {"key":"6580c8a6033858b35a3feb8061b895adf9d40226","node":"21100:989","type":"SET","inst":false,"default":"21087:68836","page":"      ↳ ButtonGroup","axes":["color","orientation","variant"],"kv_count":32}
+  buttonsbutton: {"key":"29d2239a20067db05f7458ffca3492f6d85df766","node":"14581:1078","type":"SET","inst":false,"default":"14581:1219","page":"      ↳ Buttons","axes":["color","showendslot","showlabel","showstartslot","size","state","variant"],"kv_count":300}
+  calendar: {"key":"cc3932596e8d082856cbebdbb77471d59e09ccb9","node":"1150:1925","type":"SET","inst":false,"default":"1150:1918","page":"      ↳ Calendar","axes":["actions","presetranges","showtime","type"],"kv_count":2}
+  cardscard: {"key":"2f582f7df0b7316463c38ddf7757ab8015112fb8","node":"21615:2531","type":"SET","inst":false,"default":"21615:2507","page":"      ↳ Card","axes":["padding","showcontent","showfooter","showheader","variant"],"kv_count":20}
+  cardscardcardscardlightlg: {"key":"c4444d72268a5741a50e8ddc7c6b1ccd80c3ed18","node":"21941:33687","type":"COMP","inst":true,"page":"      ↳ Card"}
+  cardscardcardscardlightmd: {"key":"6bf5e421fa65524ea03ff326020d706f2fddffa2","node":"21615:2515","type":"COMP","inst":true,"page":"      ↳ Card"}
+  cardscardcardscardlightsm: {"key":"84f032358ecd353ee2f207610a2d80a9c036c702","node":"21941:33683","type":"COMP","inst":true,"page":"      ↳ Card"}
+  cardscardcardscardlightxl: {"key":"c78d71d686a08d788308fe429c9cc2ee3ffc4453","node":"21941:33691","type":"COMP","inst":true,"page":"      ↳ Card"}
+  cardscardcardscardlightxs: {"key":"342b7a30ffc2049aa6c9aa59fd4a51c0aa8b1e70","node":"21941:33679","type":"COMP","inst":true,"page":"      ↳ Card"}
+  chart--bar: {"key":"37e20b76cadf359ecce866546687d1fa27fe7686","node":"23041:345","type":"SET","inst":false,"default":"23041:54","page":"      ↳ Charts","axes":["grouping","orientation"],"kv_count":6}
+  chart--combo: {"key":"5e82691b89a0a663fb5e9e514e4fbdb44e6b27e2","node":"23104:3089","type":"SET","inst":false,"default":"23104:2968","page":"      ↳ Charts","axes":["axis"],"kv_count":2}
+  chart--funnel: {"key":"c4f65f2ce40a535859d0bebef5b8c68e99e461f0","node":"23046:360","type":"COMP","inst":true,"page":"      ↳ Charts"}
+  chart--heatmap: {"key":"26d09c64eae084665b14e67236cf84564f643608","node":"23046:189","type":"COMP","inst":true,"page":"      ↳ Charts"}
+  chart--kpi: {"key":"03656e0d67cb9988168f6a3983313d4548bcd7fc","node":"23043:179","type":"SET","inst":false,"default":"23043:141","page":"      ↳ Charts","axes":["trend"],"kv_count":3}
+  chart--line: {"key":"1b272294b291e8569dc8d4acd5386fe2dacde183","node":"23036:168","type":"SET","inst":false,"default":"23036:36","page":"      ↳ Charts","axes":["fill","series"],"kv_count":4}
+  chart--scatter: {"key":"f9f2cb03f4eda87c10a961e4c076310556b90281","node":"23103:3136","type":"SET","inst":false,"default":"23103:2920","page":"      ↳ Charts","axes":["mode","series"],"kv_count":4}
+  chart--sparkline: {"key":"076c3ea50e3c084bddb8429751593b41d1252204","node":"23043:140","type":"SET","inst":false,"default":"23043:114","page":"      ↳ Charts","axes":["trend","type"],"kv_count":9,"notes":["Variant axis \"type\": value \"line\" looks like a typo of \"link\" (distance 1)."]}
+  chart--stacked-area: {"key":"cdb010bc80465c5823ccd3b0e694ed994fe9e479","node":"23103:3231","type":"SET","inst":false,"default":"23103:3137","page":"      ↳ Charts","axes":["scale"],"kv_count":2,"notes":["Variant axis \"scale\" looks like a typo of \"state\" (distance 2)."]}
+  chart--tooltip: {"key":"b116ffe91669cf62d89676aa757259fc8859afc1","node":"23104:3129","type":"SET","inst":false,"default":"23104:3090","page":"      ↳ Charts","axes":["series"],"kv_count":3}
+  checkbox: {"key":"6bc4ba10dcb6def889a4ccf0ee34149b8dd7943d","node":"21310:557","type":"SET","inst":false,"default":"21310:453","page":"      ↳ Checkbox","axes":["checked","indeterminate","showdescription","showlabel","size","state"],"kv_count":24}
+  choicecardgroup: {"key":"a61c3831d2c53a976c65b5894ae46a6bbf04d853","node":"21334:41139","type":"SET","inst":false,"default":"21381:307","page":"      ↳ ChoiceCardGroup","axes":["orientation","showdescription","size"],"kv_count":4}
+  circularprogress: {"key":"547603e6f9332794c4501f55178b030875b5df60","node":"22332:264","type":"SET","inst":false,"default":"22336:166","page":"      ↳ CircularProgress","axes":["showlabel","size","thickness","variant"],"kv_count":54,"notes":["Variant axis \"thickness\": values \"thin\" and \"thick\" look like a typo (distance 2)."]}
+  code: {"key":"b741d5859a385016b5170eb998ef37ebd469c2ee","node":"23116:30","type":"SET","inst":false,"default":"23116:2","page":"      ↳ Code","axes":["color"],"kv_count":7}
+  codeblock: {"key":"3ef6863a1f7971e6c92439be31ecf7026c2b2b81","node":"23127:132","type":"SET","inst":false,"default":"23125:48913","page":"      ↳ CodeBlock","axes":["collapse"],"kv_count":3}
+  codeblock--button: {"key":"9d380e093d6d979c9c5c25df067225ce3bf2c04c","node":"23230:37655","type":"SET","inst":false,"default":"23230:37643","page":"      ↳ CodeBlock","axes":["state"],"kv_count":4}
+  comboboxlist: {"key":"60ad86093d3c435cc4a3834c65a8a0ee3aec9dbb","node":"21511:321","type":"COMP","inst":true,"page":"      ↳ ComboboxList","axes":["isopen"]}
+  datepicker: {"key":"bdd6516fe02ff559185b79c171cf97304abc4860","node":"21599:15879","type":"SET","inst":false,"default":"21599:15880","page":"      ↳ DatePicker","axes":["isopen","value","variant"],"kv_count":4}
+  drawer: {"key":"f02e5e9aa00ee93fefdcf5b9e8972b8e02a95818","node":"23184:50227","type":"SET","inst":false,"default":"23184:49955","page":"      ↳  Drawer","axes":["placement","withbackdrop"],"kv_count":4}
+  feedback-card: {"key":"0def5a72402d176f63d151eb419b9bd5fdffa294","node":"17598:4910","type":"SET","inst":false,"default":"17598:4911","page":"      ↳ Card","axes":["device","pov","type"],"kv_count":10,"notes":["Variant axis \"pov\": values \"reviewer\" and \"reviewee\" look like a typo (distance 1).","Variant axis \"type\": values \"event\" and \"even\" look like a typo (distance 1)."]}
+  feedback-section: {"key":"46c7f600396e02fe5aa96f2347eeedcdb79a0f99","node":"17598:5370","type":"SET","inst":false,"default":"17598:5371","page":"      ↳ Card","axes":["device"],"kv_count":3}
+  field: {"key":"e23c58ad34714f744e00db33cc34600e6a346357","node":"21190:68141","type":"SET","inst":false,"default":"21188:68191","page":"      ↳ Field","axes":["required","showdescription","showinfo","showlabel","size","status"],"kv_count":4,"notes":["Variant axis \"status\" looks like a typo of \"state\" (distance 2)."]}
+  fileupload: {"key":"2a435c7f38e9a5989236cac66df6b6cfa290a96a","node":"15030:133188","type":"SET","inst":false,"default":"15030:133201","page":"      ↳ File Upload","axes":["progressstyle","showfilesqueued"],"kv_count":2}
+  indicator: {"key":"79c7246071d3847271081ca8a53b2f72f9b3f5c0","node":"23261:51593","type":"SET","inst":false,"default":"23261:51087","page":"      ↳ Indicator","axes":["color","processing","size","type","withborder"],"kv_count":90}
+  input: {"key":"85f677cacedc979db638266eae870a593ed249f8","node":"21462:73266","type":"COMP","inst":true,"page":"      ↳ Inputs"}
+  menu: {"key":"10411b82ecc48759b4ad4d20f8df5067e7a8bfeb","node":"21825:124647","type":"COMP","inst":true,"page":"      ↳ Menu","axes":["isopen"]}
+  modal: {"key":"8344de2d639c6954785e20bd6949d288f56c7df4","node":"21813:124491","type":"COMP","inst":true,"page":"      ↳ Modal ","axes":["withbackdrop"]}
+  multicomboboxlist: {"key":"c3fdbdb7f9f8588b176cb2c5fb329159d545fc92","node":"21511:336","type":"COMP","inst":true,"page":"      ↳ MultiComboboxList","axes":["isopen"]}
+  multiselect: {"key":"74131a57bf60894c1f7fa4483a00d68a6ccfca71","node":"21473:65212","type":"COMP","inst":true,"page":"      ↳ MultiSelect","axes":["isopen"]}
+  navlink: {"key":"640d054594e50ecc6a03d70cb79194a696aceaae","node":"14925:140932","type":"SET","inst":false,"default":"14604:131352","page":"      ↳ NavLink","axes":["property-1","showdivider","showusermenu"],"kv_count":1}
+  notification: {"key":"1431b7d72d46a3bb4e7ac647fb99bfbdfb233373","node":"21805:113622","type":"SET","inst":false,"default":"21805:113625","page":"      ↳ Notification","axes":["type","variant"],"kv_count":8}
+  numberinput: {"key":"d43e4fcde167a906c28df46c11e5d03f7753f9ea","node":"21457:1556","type":"COMP","inst":true,"page":"      ↳ NumberInput"}
+  ongoing-projects-card: {"key":"e26d667c13a0742bbf1e503c099574a860126339","node":"17598:5477","type":"SET","inst":false,"default":"17598:5478","page":"      ↳ Card","axes":["device","state"],"kv_count":4}
+  pagination: {"key":"998f96155b8a56fa84699b9f39e9e056196a9502","node":"1115:68622","type":"SET","inst":false,"default":"226:519","page":"      ↳ Tables","axes":["breakpoint","shape","type"],"kv_count":1}
+  passwordinput: {"key":"8a7eeb35347323f2c2111bdad0fa965714428e91","node":"21457:66121","type":"SET","inst":false,"default":"21457:66095","page":"      ↳ PasswordInput","axes":["revealed"],"kv_count":2}
+  pininput: {"key":"b21f1f1c06011aba88630055b1fa2fa7429b39eb","node":"1106:66757","type":"SET","inst":false,"default":"1106:66810","page":"      ↳ PinInput","axes":["digits","hint-text","label","size"],"kv_count":4}
+  popover: {"key":"ac10cce48c0c0a4f5c57f22ffaf2604aa28408b0","node":"21826:125390","type":"SET","inst":false,"default":"21826:125389","page":"      ↳ Popover","axes":["isopen","position"],"kv_count":4}
+  progress: {"key":"f02503a89212f0351f149763eeb021c03f47af11","node":"1085:57382","type":"SET","inst":false,"default":"22319:2","page":"      ↳ Progress","axes":["color","progress","showbottomlabel","showbottomtooltip","showheader","showrightlabel","showtoptooltip"],"kv_count":24}
+  radiogroup: {"key":"cacce5c8b28d3b4a0ac94ea078724990d6794f57","node":"21300:70105","type":"SET","inst":false,"default":"21300:70059","page":"      ↳ RadioGroup","axes":["orientation","showdescription","size"],"kv_count":4}
+  rating: {"key":"b46187a6a9236a121b9885a91c8c6fc748217ef3","node":"23246:136","type":"SET","inst":false,"default":"23246:76","page":"      ↳ Rating","axes":["size"],"kv_count":5}
+  schedule: {"key":"542286a55f479c759ecbde5cc43ecf3a767bd2cf","node":"23243:54766","type":"SET","inst":false,"default":"23243:54767","page":"      ↳ Schedule","axes":["type"],"kv_count":2}
+  sectiontitle: {"key":"0f17efe17ee53d0a8d6474aa419f777b73f4f019","node":"22442:44394","type":"SET","inst":false,"default":"22442:44364","page":"      ↳ SectionTitle","axes":["showleadingicon","showtrailingicon","size"],"kv_count":6}
+  segmentgroup: {"key":"48a541a32f8a532982d39539f40632c506dab321","node":"21367:261","type":"SET","inst":false,"default":"21367:207","page":"      ↳ SegmentGroup ","axes":["orientation","showdescription","showerror","showlabel","size"],"kv_count":4}
+  select: {"key":"bdd078075c566cc1ec9a356c83d9e48b6db2a5ca","node":"21455:70850","type":"COMP","inst":true,"page":"      ↳ Select","axes":["isopen"]}
+  slider: {"key":"23b207f2ec3331f9bbb77466f58baecef36b3b99","node":"21149:820","type":"SET","inst":false,"default":"21149:350","page":"      ↳ Slider","axes":["range","showmarksdots","showmarkslabel","size","value"],"kv_count":16,"notes":["Variant axis \"value\": values \"100%\" and \"0-100%\" look like a typo (distance 2).","Variant axis \"value\": values \"25-75%\" and \"0-75%\" look like a typo (distance 2).","Variant axis \"value\": values \"0-75%\" and \"0-25%\" look like a typo (distance 1)."]}
+  spinner: {"key":"22b811415372b5eee34f72689ba636d12a271668","node":"1192:610","type":"SET","inst":false,"default":"1198:99438","page":"      ↳ Spinner","axes":["showsupportingtext","size","withtrack"],"kv_count":8}
+  switch: {"key":"e93a6c0c071449ada2042bf5820eb060211713e3","node":"14886:22554","type":"SET","inst":false,"default":"14886:22739","page":"      ↳ Switch","axes":["checked","disabled","invalid","readonly","required","showdescription","showerror","showlabel","size"],"kv_count":12}
+  tablecell: {"key":"c5e416c415624a469198595c30751919e6817531","node":"21703:59973","type":"SET","inst":false,"default":"21604:23330","page":"      ↳ Tables","axes":["state"],"kv_count":2}
+  tableheader: {"key":"07e4a128358b575bd6b3294699329151ed34a1c7","node":"1211:169","type":"SET","inst":false,"default":"1211:168","page":"      ↳ Tables","axes":["avatar","dotsicon","primarybutton","searchbar","secondarybutton"],"kv_count":1}
+  tableheadercell: {"key":"b0e0d1627154505547be0f83a6af12e1c3c5dd08","node":"21688:48866","type":"SET","inst":false,"default":"21678:3859","page":"      ↳ Tables","axes":["arrow-down","arrow-up","calendar","checkbox","chevrons","filter","help-icon","text"],"kv_count":3}
+  tabs: {"key":"59dc183b657e6dd7ef2b3ddbbf4a4118243ebaf6","node":"23176:148","type":"SET","inst":false,"default":"23176:159","page":"      ↳ Tabs","axes":["orientation","showpanel","size"],"kv_count":4}
+  tagsinput: {"key":"149afa696f509aa5ba160582b4eb9647a2008e8f","node":"21542:65346","type":"COMP","inst":true,"page":"      ↳  TagsInput"}
+  team-project-invitations: {"key":"a85e10986558b255aff59011ef48cbf6a88d2a95","node":"17598:5427","type":"SET","inst":false,"default":"17598:5428","page":"      ↳ Card","axes":["device"],"kv_count":2}
+  textarea: {"key":"17e6cd892ef02084ac7ffb629856b8dd73d4cdf9","node":"21457:66083","type":"COMP","inst":true,"page":"      ↳ Textarea"}
+  themeicon: {"key":"38200e457eb5e8f2049efaf3a4828ad558e30ff7","node":"17583:16687","type":"SET","inst":false,"default":"21644:141","page":"      ↳ ThemeIcon","axes":["color","radius","size","variant"],"kv_count":360}
+  timeinput: {"key":"c3700f6b58d8da8673cde32e33d00336ab3aa75c","node":"21549:66851","type":"SET","inst":false,"default":"21549:5323","page":"      ↳ TimeInput","axes":["showlabel","showperiod","size"],"kv_count":2}
+  timeline: {"key":"261434c07cc5ec0fed417231ab5d76227a871364","node":"21729:812","type":"COMP","inst":true,"page":"      ↳ Timeline"}
+  tooltip: {"key":"f0740dacd46e999ba2c19f7f450fa00ac9feaf67","node":"1052:489","type":"SET","inst":false,"default":"1052:587","page":"      ↳ Tooltip","axes":["positioning","showcontentslot","showlabel","showsupportingtext"],"kv_count":9}
+  treemultiselect: {"key":"1c259f78d19fffbc8705205cf1151637a9af2c3b","node":"21534:51","type":"COMP","inst":true,"page":"      ↳ TreeMultiSelect","axes":["isopen"]}
+  treeselect: {"key":"e63d492348d4e229be5c52f4ed3abc0a87e16ce8","node":"21534:48","type":"COMP","inst":true,"page":"      ↳ TreeSelect","axes":["isopen"]}
+  upcoming-reviews: {"key":"5b7a059f5a579b33a66fcea4f9df1cfb2f141ddc","node":"17598:5039","type":"SET","inst":false,"default":"17598:5040","page":"      ↳ Card","axes":["device","pov","time","type"],"kv_count":22,"notes":["Variant axis \"pov\": values \"reviewer\" and \"reviewee\" look like a typo (distance 1).","Variant axis \"time\" looks like a typo of \"type\" (distance 2)."]}
+  upcoming-reviews-section: {"key":"86df99b2c280d92a02ed6f58c563c544f659274f","node":"17598:5396","type":"SET","inst":false,"default":"17598:5397","page":"      ↳ Card","axes":["device"],"kv_count":3}
