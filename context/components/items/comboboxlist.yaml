@@ -1,0 +1,53 @@
+# items/comboboxlist.yaml — detail complet du composant 'comboboxlist'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: comboboxlist
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+comboboxlist:
+  figma_key: 60ad86093d3c435cc4a3834c65a8a0ee3aec9dbb
+  figma_node_id: "21511:321"
+  component_type: COMPONENT
+  instanciable: true
+  page: "      ↳ ComboboxList"
+  description: "Select — single-value picker: the _BaseField shell as a trigger, plus a menu of options. Use it on its own, or swap it into the Field slot when it needs a label. AXES isOpen: whether the menu is shown. Off by default. Runtime only — turn it on to spec the open state, then back off when composing a screen. size, variant, state, status, the text and the start slot live on the nested _BaseField instance, which is exposed: pick it in the instance panel instead of looking for an axis here. Select does not duplicate the shell's 64 variants, it inherits them. COMPOSITION A Select can stand alone: with no label it is a bare control and needs nothing around it. As soon as it needs a label, a description or a status message, do not build that text beside it — swap it into the Field contentSlot. Field owns the whole text scaffold. Keep both statuses equal: an error Field holds a nested _BaseField in status=error. In code this is automatic. The trigger text is the shell's text property: the chosen value, or the placeholder while nothing is picked. Those two read differently — do not leave a placeholder in a screen meant to show a selection. The chevron sits in endIcon, and that is correct: it is the component's own control, not a decorative adornment you are free to replace. Do not put anything else there. A clear button takes that same position once a value is set — a code behaviour, not a second icon to draw. Fill the menu through its Menu items slot. Write real options, in the order and the wording the product uses; a list of Option 1 / Option 2 hides every layout problem that long labels create. The menu is anchored to the trigger and matches its width. Do not draw it wider or offset. Use Select when one value is picked from a known, short list. Searchable list → Autocomplete. Several values → MultiSelect. Two or three mutually exclusive options that all deserve to be visible → a radio group, not this. ACCESSIBILITY On its own a Select has no accessible name. It gets one from the Field label (or from aria-label in code). The trigger is a real button and the menu is a listbox: arrow keys move, typeahead jumps to a label, Escape closes, and the selected option is announced. Never spec it as a text field with an icon. The chevron is itself a button, labelled Show options and deliberately out of the tab order — the trigger is the tab stop. A tap on the shell's padding opens the menu too. A hidden native select backs form submission. The selected option carries a check in the menu — colour or weight alone is not enough to mark it. Disabled options stay readable and stay announced; they are skipped, not hidden. CODE — @42/ui-react Select Data-driven: pass data as strings, objects with value and label, or groups. value is a single string or null. The nested _BaseField carries the shell props: size→size, variant→variant, status=error→invalid (or the Field error prop), state Disabled→disabled, Hovered / Focused→runtime data-* (Ark UI). isOpen has no prop — the open state belongs to Ark's Select machine. showStartSlot + startSlot → startSlot. endIcon here is the component's own chevron button, NOT the endSlot prop. endSlot exists in code and renders inside the trigger, BEFORE the chevron — it has no Figma equivalent on this component. If a design needs an adornment there, say so in words; do not draw it in endIcon. Menu items → the options rendered from data; renderItem takes over the whole row when you need more than a label. status=success and status=warning have no React equivalent. React-only, do not mock these up here: clearable and clearSectionMode (the clear button replaces the chevron, or both show), placeholder (default \"Pick a value\"), variant=filled, size xs / lg / xl, color, readOnly, invalid override, name, classNames."
+  size: {w: 320, h: HUG}
+  direction: VERTICAL
+  text:
+    sample: Search...
+    fill: "@text-tertiary"
+    size: 14
+    weight: Regular
+    lineHeight: 20
+  slots:
+    menuItems: {slot_id: "I21511:323;16195:72772", node_type: SLOT, depth: 2}
+  nested_instances:
+    - name: _BaseField
+      depth: 1
+      main_component: _BaseField
+      variant_axes:
+        size: [sm, md]
+        variant: [unstyled, default]
+        state: [focused, disabled, hovered, placeholder]
+        status: [error, default]
+      bool_props:
+        showValue: false
+        showBadges: false
+        showPlaceholder: true
+        showStartSlot: true
+        showEndIcon: false
+    - name: _MenuOpen
+      depth: 1
+      visible: false
+      main_component: _MenuOpen
+      variant_axes:
+        state: [select, treeselect, treemultiselect, multicombobox, menu]
+      bool_props:
+        {showTitle: true}
+  text_nodes:
+    - {name: Placeholder, sample: Search...}
+  how_to_use: "1. Instancier le composant via figma_node_id (createInstance()).\n2. setTxt(inst, \"Placeholder\", \"Search...\")\n3. Si besoin masquer les actions : inst.findOne(n => n.name === \"_BaseField\")?.setProperties({\"showBadges\":false,\"showEndIcon\":false,\"showPlaceholder\":false,\"showStartSlot\":false,\"showValue\":false})"
+  variants:
+    isopen: [false, true]
+  defaults: {isopen: false}
