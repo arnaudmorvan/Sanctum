@@ -1,0 +1,42 @@
+# items/spinner.yaml — detail complet du composant 'spinner'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: spinner
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+spinner:
+  figma_key: 22b811415372b5eee34f72689ba636d12a271668
+  figma_node_id: "1192:610"
+  component_type: COMPONENT_SET
+  instanciable: false
+  default_variant_id: "1198:99438"
+  key_variants:
+    withtrack-false-size-md: "1196:283"
+    withtrack-true-size-md: "1192:607"
+    withtrack-true-size-sm: "1198:99394"
+    withtrack-false-size-sm: "1198:99438"
+    withtrack-true-size-lg: "1196:147"
+    withtrack-false-size-lg: "1196:271"
+    withtrack-true-size-xl: "1196:200"
+    withtrack-false-size-xl: "1196:264"
+  page: "      ↳ Spinner"
+  description: "AXES - with-track (false, true): the only shape axis. false is the bare rotating arc, true adds the full ring behind it. Default false, same as React. - size (sm, md, lg, xl): 32 / 48 / 56 / 64 px of drawn circle. No xs published. 8 published variants = 2 x 4. - supporting-text (true, false): boolean, shows the Loading... caption under the circle. Figma only, see CODE. - No color axis: the stroke is pinned to the brand paint, while React drives colour with a color prop. COMPOSITION - Variant frame is a horizontal auto-layout, centred both ways, wrapping a vertical stack Content: the circle then the caption. - Content > Spinner (the circle) + Text. Spinner holds two ellipses: Track (full ring, low opacity, driven by the with-track axis) and Arc (the rotating segment). - Content has no React counterpart. React ships the circle alone and lets the caller lay out any caption next to it. - Nothing here is a slot: the caption is a plain text node, retype it in the instance. - For a busy button use Buttons/Button state=loading, not this component. For the dotted mark use SpinnerDots. ACCESSIBILITY - The circle is decorative: the loading state must be carried by text, or by aria-busy on the container. - supporting-text = false leaves no text node at all, so the surrounding region needs aria-live or aria-busy. - Loading... is a placeholder. Name the operation (Saving, Syncing) rather than shipping the generic string. CODE - React: Spinner from @42/ui-react. with-track -> withTrack (boolean, default false); size -> size; the brand stroke -> color. - color takes the palette (brand, gray, red, green...) plus default (neutral high contrast, the same stroke as the React Button default variant) and currentColor. Omitting it inherits the surrounding text colour, which is how Button and ActionIcon embed the spinner with no extra plumbing. - label is a screen reader string, not the caption: it renders as an svg title and never shows on screen. Default Loading, label={null} marks the spinner decorative. - supporting-text has no React counterpart: the visible caption is Figma only. - The rotation is a CSS animation (animate-spin), not a Figma smart animate. KNOWN ISSUE - The size scales do not match. Figma draws 32 / 48 / 56 / 64 px, React draws 16 / 20 / 24 / 32 px for the same four names, and React also carries xs at 12. Figma sm is React xl. - with-track=false still paints a 4 percent track; React removes the ring entirely. with-track=true paints a 90 degree arc where React keeps the same 240 degree dash in both states. - No color axis, so every Figma spinner is brand while React defaults to the inherited text colour. CORRECTION 2026-08-25 - Axis Style (Line simple, Line spinner, Dot circle) replaced by with-track (true, false): Line simple -> true, Line spinner -> false. - The 4 Dot circle variants left the set and now live in SpinnerDots: React has no dotted form, keeping it as a Style value made the axis unmappable. - Layers renamed onto the React parts: Loading circle -> Spinner, Background -> Track, Line -> Arc. Property Supporting text -> supporting-text, axis Size -> size, to match the Buttons page convention. - Geometry untouched on purpose: the size scale is a spec decision, logged above as a known issue."
+  size: {w: 512, h: HUG}
+  direction: HORIZONTAL
+  align: {primary: CENTER, counter: CENTER}
+  text:
+    sample: Loading...
+    fill: "@text-secondary"
+    size: 14
+    weight: Medium
+    lineHeight: 20
+  text_nodes:
+    - {name: Text, sample: Loading...}
+  how_to_use: "1. Instancier via key_variants (jamais le ComponentSet).\n2. Exemple : const variantNode = await figma.getNodeByIdAsync(key_variants[\"<variant-slug>\"]); const inst = variantNode.createInstance()\n3. setTxt(inst, \"Text\", \"Loading...\")"
+  variants:
+    showsupportingtext: [false, true]
+    size: [lg, md, sm, xl]
+    withtrack: ["false", "true"]
+  defaults: {showsupportingtext: true, size: sm, withtrack: "false"}
+  notes: ["Variant axis name \"withTrack\" was normalised to \"withtrack\" (use lowercase slugs for consistency)."]
