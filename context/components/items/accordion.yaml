@@ -1,0 +1,27 @@
+# items/accordion.yaml — detail complet du composant 'accordion'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: accordion
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+accordion:
+  figma_key: a169b2b204e41dedec5e4b2b3232d7ad8a9b232f
+  figma_node_id: "23274:50867"
+  component_type: COMPONENT_SET
+  instanciable: false
+  default_variant_id: "23274:50865"
+  key_variants: {variant-default: "23274:50865", variant-separated: "23274:50866"}
+  page: "      ↳ Accordion"
+  description: "AXES - variant: default or separated. It moves the chrome between the root and the items. - items: SLOT, minimum 2, preferred value _AccordionItem, stretch on insert. It ships EMPTY on purpose. COMPOSITION - variant default: the ROOT is the surface. bg-primary fill, border-primary 1px INSIDE, radius-xs, clipsContent true, gap spacing-none. The items bring only their internal hairline, and the root border covers the hairline of the last one. - variant separated: the root carries nothing but the gap spacing-lg. Each item is its own surface. - Every inserted item MUST carry the same variant as the root. A separated item dropped into a default accordion produces stacked rounded boxes with doubled borders where the sections touch; the clip hides the outer corners, not the inner ones. Nothing in Figma can bind the variant of a nested instance to the variant of its parent: this is a review rule, not a constraint. - Width is FIXED 400 in the set. Set the instance to FILL in a real layout. - The slot ships empty because inserting through the plugin API appends to whatever is already in the slot: a default content would be duplicated on every generated screen. - Content inserted into a slot by API does not honour FILL. Resize the inserted node to the inner width of the slot. ACCESSIBILITY - One accordion is one list. Do not nest an Accordion inside an item content slot: the DS has no visual for depth 2. CODE - Maps to Accordion (Accordion.Root) of 42/ui-react, variant axis with the same two values. - No size axis and no color axis: React publishes neither. DEFAUT OUVERT 2026-09-15 - No hover, focus or disabled state on the trigger. React has them, this set does not: 4 item variants instead of 16. To reopen the day a screen needs a disabled section."
+  size: {w: 400, h: HUG}
+  radius: 4
+  direction: VERTICAL
+  fills: "@bg-primary"
+  stroke: {color: "@border-primary", width: 1, align: INSIDE}
+  slots:
+    items: {slot_id: "23274:50868", node_type: SLOT, depth: 1}
+  how_to_use: "1. Instancier via key_variants (jamais le ComponentSet).\n2. Exemple : const variantNode = await figma.getNodeByIdAsync(key_variants[\"<variant-slug>\"]); const inst = variantNode.createInstance()"
+  variants:
+    variant: [default, separated]
+  defaults: {variant: default}
