@@ -1,0 +1,47 @@
+# items/drawer.yaml — detail complet du composant 'drawer'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: drawer
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+drawer:
+  figma_key: f02e5e9aa00ee93fefdcf5b9e8972b8e02a95818
+  figma_node_id: "23184:50227"
+  component_type: COMPONENT_SET
+  instanciable: false
+  default_variant_id: "23184:49955"
+  key_variants:
+    placement-end: "23184:49955"
+    placement-start: "23184:50014"
+    placement-top: "23184:50093"
+    placement-bottom: "23184:50160"
+  page: "      ↳  Drawer"
+  description: "AXES - placement [start | end | top | bottom] — the edge the panel docks to, and the only axis of this component. start and end are logical edges (they flip under RTL), top and bottom are block edges. - withBackdrop — the dimming. True by default. - Size does NOT live here: it comes from the exposed _Drawer instance (size xs..xl), which this component pins to md, the React default. - 1440 x 960 by default. Resize the instance to the viewport being mocked: the backdrop and the stretched axis of the panel follow. COMPOSITION - Public entry point of the family. Instantiate this, never _Drawer on its own. - Auto-layout whose direction follows placement: HORIZONTAL for start and end (the panel takes the full height, its width comes from size), VERTICAL for top and bottom (the panel takes the full width, its height comes from size). Two children: _Background overlay, absolutely positioned with stretch constraints, and the _Drawer instance. - The _Drawer instance is exposed: size, withCloseButton, withGrabber and the SLOT content and SLOT footer are reachable from the instance panel of this component. - Body copy goes in the content slot, actions in the footer slot (Buttons/Button only, preferred values), aligned RIGHT: dismiss then confirm, confirm at the right edge. The footer is ONE zone, not two: a single action stays alone on the right. The left end is reserved for an action outside the validation flow (Back, Delete, Help) - drop it as the FIRST child of the slot and switch the slot spacing to Auto (space between); the confirm actions stay soldered inside their Button group. The title is edited in place in _Drawer header. The content slot is empty by default, stretches to fill the free height and stacks its children VERTICALLY with a 16 gap: drop blocks straight into it, no wrapper needed. - For a screen mock, drop this over the page frame and resize it. Do not detach. - Not for a centred dialog (Modal), not for a menu or an anchored panel (Menu, Popover). ACCESSIBILITY - The backdrop is decorative: everything readable must live inside the panel. - The close control carries no text node, so its accessible name comes from aria-label, never from the icon. - The title must stay the first readable node of the panel, since it is what names the dialog. - The grabber is a pointer affordance only: the keyboard and click paths must work with withGrabber off. CODE - React: Drawer (@42/ui-react). This component equals Portal plus Backdrop plus Positioner plus Content: the backdrop maps to withBackdrop, the docking edge to placement, the panel to Drawer.Content. - placement maps 1:1 to the placement prop, same logical edges, same default (end). size maps to the size prop, same xs..xl scale, same default (md), same rule: width for inline placements, height for block ones. - content slot maps to children (Drawer.Body); footer slot has no prop, compose Drawer.Footer - its right alignment is that row's own flex justify-end, and the out-of-flow left action is the same row with mr-auto on the first child: no second slot, no prop; the title text maps to title; the close control maps to withCloseButton, an ActionIcon (subtle, gray) in code; the grabber maps to withGrabber, false by default. - Not modelled here: description, padding (xs..xl), snapPoints, closeThreshold, and the swipe-to-dismiss and focus-trap behaviour Ark owns. KNOWN ISSUE - The size VALUES diverge from React by decision (2026-09-14): Figma reuses the width-xs..xl tokens (384 480 560 640 768) like Modal, React hardcodes 288 352 448 544 672 on width (18 22 28 34 42rem) and 30 40 55 70 85 dvh on height. The file keeps the tokens; the kit is expected to move onto them. - _Background overlay is a plain frame, not an instance: its dimming can only be toggled with withBackdrop, never swapped. - The wrapper carries no viewport axis: changing the mocked screen size means resizing the instance by hand."
+  size: {w: 1440, h: 960}
+  direction: HORIZONTAL
+  align: {primary: MAX}
+  text:
+    sample: Lorem ipsum dolor sit amet
+    fill: "@text-primary"
+    size: 18
+    weight: Bold
+    lineHeight: 28
+  slots:
+    content: {slot_id: "I23226:37959;23226:525", node_type: SLOT, depth: 2}
+    footer: {slot_id: "I23226:37959;23226:526", node_type: SLOT, depth: 2}
+  nested_instances:
+    - name: _Drawer
+      depth: 1
+      main_component: _Drawer
+      variant_axes:
+        size: [md, xs, sm, lg, xl]
+      bool_props:
+        {withGrabber: false, withCloseButton: true}
+  text_nodes:
+    - {name: Text, sample: Lorem ipsum dolor sit amet}
+  how_to_use: "1. Instancier via key_variants (jamais le ComponentSet).\n2. Exemple : const variantNode = await figma.getNodeByIdAsync(key_variants[\"<variant-slug>\"]); const inst = variantNode.createInstance()\n3. setTxt(inst, \"Text\", \"Lorem ipsum dolor sit amet\")\n4. Si besoin masquer les actions : inst.findOne(n => n.name === \"_Drawer\")?.setProperties({\"withCloseButton\":false,\"withGrabber\":false})"
+  variants:
+    placement: [bottom, end, start, top]
+    withbackdrop: [false, true]
+  defaults: {placement: end, withbackdrop: true}
