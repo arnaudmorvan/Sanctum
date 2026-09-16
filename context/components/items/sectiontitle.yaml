@@ -1,0 +1,55 @@
+# items/sectiontitle.yaml — detail complet du composant 'sectiontitle'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: sectiontitle
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+sectiontitle:
+  figma_key: 0f17efe17ee53d0a8d6474aa419f777b73f4f019
+  figma_node_id: "22442:44394"
+  component_type: COMPONENT_SET
+  instanciable: false
+  default_variant_id: "22442:44364"
+  key_variants:
+    size-xs: "22442:44364"
+    size-sm: "22442:44370"
+    size-md: "22442:44376"
+    size-lg: "22456:44188"
+    size-xl: "22442:44382"
+    size-2xl: "22442:44388"
+  page: "      ↳ SectionTitle"
+  description: "SectionTitle opens a section inside a page, a dashboard or a Card: one icon, one line of text, nothing else. AXES - size: xs, sm, md, lg, xl, 2xl. Default xs. Drives the text style, both icon boxes and the gap in one move. One step per text style, no hole. xs : Text sm Bold 14/20, icon 14, gap 4 sm : Text md Bold 16/24, icon 16, gap 6 md : Text lg Bold 18/28, icon 18, gap 6 lg : Text xl Bold 20/30, icon 20, gap 8 xl : Display xs Bold 24/32, icon 24, gap 8 2xl : Display sm Bold 30/38, icon 32, gap 8 - On a dashboard, prefer size=xl. It is the step that holds a section heading above a row of cards without competing with the page title above it. - 2xl exists for the page title and is used by PageHeader (22285:99503). Do not reach for it inside a page. - showLeadingIcon: boolean, default true. showTrailingIcon: boolean, default false. Two independent booleans, so a leading glyph, a trailing affordance, both, or neither. - leadingIcon and trailingIcon: INSTANCE_SWAP, both defaulting to the hourglass placeholder. Swap the glyph from the instance panel, never by deep-selecting the layer. - title: text property, default Section Title. - No color axis and no state: a section title is never interactive and never carries status. COMPOSITION - Horizontal auto-layout, hug on both axes, no padding, items centred on the cross axis. Three layers: Leading Icon, Title, Trailing Icon. - The icon follows the title. Its box is driven by size, so it scales with the text on its own; its glyph is chosen through leadingIcon or trailingIcon to say what the title says. Shipping the hourglass placeholder on a screen is never the right answer. - When SectionTitle sits above a Card, wrap the heading and the Card in one vertical auto-layout with gap 16 (spacing-xl). The heading and the surface it introduces are a single block; two siblings separated by a raw distance are not. - Use it above a list, a table, a chart, a group of cards, and in a Card header. - Do not use it for the page title: that is PageHeader (22285:99503), which composes this component at 2xl. Do not use it as a navigation or a menu label. - The title hugs and does not wrap. For a long heading, constrain the instance width at the call site and let the text truncate there; the component carries no truncation rule. - Section-level actions - a button, a menu, a filter - sit in the same row as SectionTitle but outside it. There is no action slot. ACCESSIBILITY - Both icons are decorative. Everything the section means has to be carried by the title string, which becomes the heading element in code. - Keep the heading level consistent with the page outline: under a PageHeader, the first SectionTitle is h2. The size axis is visual scale only and says nothing about document hierarchy. - A trailing glyph that carries meaning - an external-link mark, a chevron that expands - is not decorative. It belongs to the control it marks, not to the heading, and that control needs its own accessible name. CODE - No 1:1 component in @42/ui-react as of 2026-09-03. Compose it: a Flex row, gap from the size row above, holding a lucide icon and a Title. - Size mapping onto Title, whose scale falls back to the Tailwind defaults because theme.css defines no --text-2xl, --text-3xl or --text-4xl: lg is size=xl (20), xl is size=2xl (24, alias h3), 2xl is size=3xl (30, alias h2). - Pick Title order from the page outline and Title size from the row above: they are decoupled. Text with its decorative prefix slot is the lighter alternative when the heading does not need to be a real h1 to h6. - showLeadingIcon and showTrailingIcon: render the icon or not. leadingIcon and trailingIcon: which lucide glyph is passed in. - The gap-16 grouping above a Card is a layout concern, not a prop on this component: a Flex column with gap-4 owns it. KNOWN ISSUE - The size values are listed out of order in the instance panel - xs, sm, md, 2xl, xl, lg - because the property keeps the order the variants were created in, not the order they now sit in. The variants themselves are in ramp order in the set. - The ramp stops at 30/38 on purpose. The next step in this file, Typography-1/Display md, is 32/44: two more pixels of type for six more of leading is not a step. Note that Typography-1/Display md (32) and Typography-2/Display md (36) disagree with each other, and the kit token --text-display-md is 36. - The gaps (4, 6, 6, 8, 8, 8) and the icon boxes (14, 16, 18, 20, 24, 32) are raw numbers bound to no variable. 14 and 18 are off the even ramp used elsewhere in the kit, and 2xl is the only step whose icon box (32) does not equal its type size (30). - This set replaces an earlier SectionTitle of 10 variants (size x iconPosition, key 70fdef25f6f020e40d83a8978491a7ddb53ce5c5) which is now orphaned. Any YAML or tooling still holding that key points at nothing. - iconPosition is gone, replaced by the two booleans. A trailing-only title is showLeadingIcon false plus showTrailingIcon true."
+  size: {w: HUG, h: HUG}
+  direction: HORIZONTAL
+  gap: 4
+  align: {counter: CENTER}
+  text:
+    sample: Section Title
+    fill: "@white"
+    size: 14
+    weight: Bold
+    lineHeight: 20
+  slots:
+    Leading Icon: {slot_id: "22442:44365", node_type: INSTANCE, depth: 1}
+    Trailing Icon?: {slot_id: "22442:44368", node_type: INSTANCE, depth: 1}
+  nested_instances:
+    - {name: Leading Icon, depth: 1, main_component: hourglass}
+    - {name: Trailing Icon, depth: 1, visible: false, main_component: hourglass}
+  text_nodes:
+    - {name: Title, role: title, sample: Section Title}
+  how_to_use: "1. Instancier via key_variants (jamais le ComponentSet).\n2. Exemple : const variantNode = await figma.getNodeByIdAsync(key_variants[\"<variant-slug>\"]); const inst = variantNode.createInstance()\n3. setTxt(inst, \"Title\", \"Section Title\")"
+  variants:
+    leadingicon: "<instance>"
+    showleadingicon: [false, true]
+    showtrailingicon: [false, true]
+    size: [2xl, lg, md, sm, xl, xs]
+    title: "<text>"
+    trailingicon: "<instance>"
+  defaults:
+    leadingicon: "→18940:4134"
+    showleadingicon: true
+    showtrailingicon: false
+    size: xs
+    title: Section Title
+    trailingicon: "→18940:4134"
