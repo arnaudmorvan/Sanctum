@@ -1,0 +1,41 @@
+# items/modal.yaml — detail complet du composant 'modal'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: modal
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+modal:
+  figma_key: 8344de2d639c6954785e20bd6949d288f56c7df4
+  figma_node_id: "21813:124491"
+  component_type: COMPONENT
+  instanciable: true
+  page: "      ↳ Modal "
+  description: "AXES - No variant axis. Size comes from the exposed _Modal instance (size xs..xl), the dimming from the nested _Background overlay instance (Type: Default, Transparent). - 1440 x 960 by default. Resize the instance to the viewport being mocked: the backdrop stretches, the surface stays centred. COMPOSITION - Public entry point of the family. Instantiate this, never _Modal or _Background overlay on their own. - Vertical auto-layout, centred on both axes, padding 32, clips content. Two children: _Background overlay, absolutely positioned with stretch constraints, and the _Modal instance, fixed width and hugging height. - The _Modal instance is exposed: size, SLOT content and SLOT footer are reachable from the instance panel of this component. - Body copy goes in the content slot, actions in the footer slot (Buttons/Button only, preferred values), aligned RIGHT: dismiss then confirm, confirm at the right edge. The footer is ONE zone, not two: a single action stays alone on the right. The left end is reserved for an action outside the validation flow (Back, Delete, Help) - drop it as the FIRST child of the slot and switch the slot spacing to Auto (space between); the confirm actions stay soldered inside their Button group. The title is edited in place in _Modal header. The content slot is empty by default and stacks its children VERTICALLY with a 16 gap: drop blocks straight into it, no wrapper needed. - For a screen mock, drop this over the page frame and resize it. Do not detach. - Not for a side or bottom panel (drawerside, drawerbottom-v2), not for a calendar overlay (CalendarModal). ACCESSIBILITY - The backdrop is decorative: everything readable must live inside the surface. - The close control carries no text node, so its accessible name comes from aria-label, never from the icon. - The title must stay the first readable node of the surface, since it is what names the dialog. - Close target resolves to 36 square, over the 24 px minimum. CODE - React: Modal (@42/ui-react). This component equals Portal plus Backdrop plus Positioner plus Content: the backdrop maps to withBackdrop, the centring to position (center by default, top and bottom also exist), the surface to Modal.Content. - The exposed size maps 1:1 to the size prop, same xs..xl scale, same width tokens (max-w-(--width-xs..xl)). - content slot maps to children (Modal.Body); footer slot has no prop, compose Modal.Footer - its right alignment is that row's own flex justify-end, and the out-of-flow left action is the same row with mr-auto on the first child: no second slot, no prop; the title text maps to title; the close control maps to withCloseButton, an ActionIcon (subtle, gray, xs) in code. - Not modelled here: size full, radius (none..xl), padding (xs..xl), role alertdialog, and the imperative overlays manager (createOverlays). KNOWN ISSUE - _Background overlay is not exposed, so its Transparent variant cannot be reached from an instance of Modal. Expose the instance or drop the variant. - The wrapper carries no viewport axis: changing the mocked screen size means resizing the instance by hand. - Fixed 2026-08-31: the nested _Modal instance is pinned to size md, matching the React default. Change size on the exposed instance; the _Modal set&#39;s own defaultVariant is not what an instance of Modal inherits. - Padding, description placement, title type and vertical rhythm all diverge from React: see the _Modal description."
+  size: {w: FILL, h: FILL}
+  padding: {all: 32}
+  direction: VERTICAL
+  align: {primary: CENTER, counter: CENTER}
+  text:
+    sample: Lorem ipsum dolor sit amet
+    fill: "@text-primary"
+    size: 18
+    weight: Bold
+    lineHeight: 28
+  slots:
+    content: {slot_id: "I21813:124451;21813:122369", node_type: SLOT, depth: 2}
+    footer: {slot_id: "I21813:124451;21813:122457", node_type: SLOT, depth: 2}
+  nested_instances:
+    - name: _Modal
+      depth: 1
+      main_component: _Modal
+      variant_axes:
+        size: [xs, sm, md, lg, xl]
+      bool_props:
+        {withCloseButton: true}
+  text_nodes:
+    - {name: Text, sample: Lorem ipsum dolor sit amet}
+  how_to_use: "1. Instancier le composant via figma_node_id (createInstance()).\n2. setTxt(inst, \"Text\", \"Lorem ipsum dolor sit amet\")\n3. Si besoin masquer les actions : inst.findOne(n => n.name === \"_Modal\")?.setProperties({\"withCloseButton\":false})"
+  variants:
+    withbackdrop: [false, true]
+  defaults: {withbackdrop: true}
