@@ -1,0 +1,19 @@
+# analysis/variant-surfaces/navlink.yaml — la SURFACE peinte par chaque variante.
+# Hors de context/ deliberement : lu par la console, jamais par un agent.
+# Les surfaces identiques sont stockees une fois et pointees.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: navlink
+  generated_at: "2026-09-16"
+  variants: 1
+  surfaces: 1
+surfaces:
+  s1:
+    stroke: {color: "@white", width: 1, align: INSIDE}
+    padding: {v: 24, h: 20}
+    gap: 16
+    height: 900
+    text: {fill: "@text-primary", size: 14, weight: SemiBold, lineHeight: 20}
+variants:
+  property-1-default: s1
