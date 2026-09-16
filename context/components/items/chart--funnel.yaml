@@ -1,0 +1,27 @@
+# items/chart--funnel.yaml — detail complet du composant 'chart--funnel'. Genere par 42 — Sync Design System.
+
+meta:
+  figma_file_key: yoP06GsdWscdgqpJMV2YuN
+  slug: chart--funnel
+  source: figma-plugin-export
+  generated_at: 2026-09-16
+chart--funnel:
+  figma_key: c4f65f2ce40a535859d0bebef5b8c68e99e461f0
+  figma_node_id: "23046:360"
+  component_type: COMPONENT
+  instanciable: true
+  page: "      ↳ Charts"
+  description: "Funnel - successive stages of a path, from the widest to the narrowest. AXES - No axis. Five stages, each a row: label, centred bar, value. COMPOSITION Width carries the rate, the figure stays readable on the right in Kode Mono. ONE hue only: brand 600, 500, 400, 300, 200 top to bottom. The stage reads by intensity, not by a different colour on every line - a funnel where each stage has its own hue reads as five unrelated categories. Instantiate it INSIDE a card (cardscard), never bare on the canvas: a chart is card content, not a surface. Padding comes from the card padding prop (lg 24 / md 16 / sm 12) and is never doubled here. The chart takes the width of its container: paths carry SCALE constraints, grids and bars are auto-layout. ACCESSIBILITY The absolute value is written on every row. A funnel that only shows shapes cannot be compared between two periods. CODE @42/ui-react, component Chart (import from index.ts/chart), a wrapper over TanStack Charts. The chart TYPE is not a prop: it comes from the definition and the marks passed to the chart. So the variant axes below do NOT map one to one onto React props, they map onto separate definitions. Colour maps exactly: color takes one Color for a one-series chart (sets data-color and the ts-chart-1 slot), colors takes an ordered Color array for a multi-series chart (sets ts-chart-1 to ts-chart-N, see CHART_PALETTE and chartColors). TanStack cycles six categorical slots by default, which is why the Figma ramp stops at six. renderSvg and renderer are mutually exclusive. No TanStack funnel mark: build it as stacked rows, or as a Flex of bars. It is the one chart of the family with no Chart counterpart. DEFAUT OUVERT 2026-09-14 - the six Figma steps are assumed to be the counterpart of CHART_PALETTE but the values were never compared. Until someone diffs them, treat the ramp as a Figma-side convention, not as proven parity. Second open point: a one-series chart pins utility-brand-600 here, while the React color prop and the Figma collection 7. Accent both express an accent that can be switched. Two mechanisms for one job."
+  size: {w: 400, h: 200}
+  direction: VERTICAL
+  gap: 8
+  text:
+    sample: Vue
+    fill: "@text-tertiary"
+    size: 12
+    weight: Regular
+    lineHeight: 18
+  text_nodes:
+    - {name: Stage, sample: Vue}
+    - {name: Value, sample: 12 480}
+  how_to_use: "1. Instancier le composant via figma_node_id (createInstance()).\n2. setTxt(inst, \"Stage\", \"Vue\")\n3. setTxt(inst, \"Value\", \"12 480\")"
