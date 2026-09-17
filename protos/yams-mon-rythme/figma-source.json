@@ -1,0 +1,10 @@
+{
+  "figma_file_key": "yoP06GsdWscdgqpJMV2YuN",
+  "ds_sync": "2026-09-16",
+  "translated_on": "2026-09-17",
+  "screens": {
+    "mon-rythme": { "node": "23486:2328", "frame": "42next — YAMS v3 · Mon rythme · Amanda (Dark 1500) — modèle atelier 16/09" },
+    "simulateur": { "node": "23315:330", "frame": "42next — YAMS v2 · Simulateur · Amanda (Dark 1500)" },
+    "arret-maladie": { "node": "23383:40448", "frame": "42next — YAMS v2 · Mon rythme · arrêt maladie en cours · Amanda (Dark 1500)" }
+  }
+}
