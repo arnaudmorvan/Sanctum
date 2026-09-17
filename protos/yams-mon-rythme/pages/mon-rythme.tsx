@@ -77,7 +77,7 @@ function AbsenceModal({ open, onClose, onDeclarer }: { open: boolean; onClose: (
             <DatePicker defaultValue={new Date(2027, 1, 26)} />
           </Field>
         </div>
-        <div className="border border-pink-400/30 rounded-xs p-4 flex flex-col gap-1.5 w-full">
+        <div className="border border-pink-400/30 rounded-xs p-4 flex flex-col gap-2 w-full">
           <Text size="xs" c="secondary">Ce que ça change</Text>
           <Text size="sm" className={TYPO.mono("bold")}>AOÛT 2027</Text>
           <Text size="sm" c="secondary">fin projetée au lieu de juin 2027. Tu restes 10 mois sous le plafond de juin 2028.</Text>
@@ -119,7 +119,7 @@ export function MonRythme() {
         </div>
 
         <div className="flex flex-col gap-4">
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-2">
             <Route size={18} />
             <Text size="lg" className={TYPO.title() + " font-bold"}>Mon parcours</Text>
           </div>
@@ -162,7 +162,7 @@ export function MonRythme() {
         </div>
 
         <div className="flex flex-col gap-4">
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-2">
             <Target size={18} />
             <Text size="lg" className={TYPO.title() + " font-bold"}>Milestone 05 — en cours</Text>
           </div>
@@ -172,7 +172,7 @@ export function MonRythme() {
                 <Text size="md" className="font-bold">Réseau &amp; programmation système</Text>
                 <Badge color="pink" variant="light">En cours</Badge>
               </div>
-              <Progress value={17} color="pink" />
+              <Progress value={17} variant="gradient" />
               <div className="flex gap-10">
                 <div className="flex flex-col gap-1"><Text size="xs" c="secondary">Durée max</Text><Text size="sm" className={TYPO.mono("bold")}>126 jours</Text></div>
                 <div className="flex flex-col gap-1"><Text size="xs" c="secondary">Temps écoulé</Text><Text size="sm" className={TYPO.mono("bold")}>21 jours</Text></div>
@@ -194,7 +194,7 @@ export function MonRythme() {
         </div>
 
         <div className="flex flex-col gap-4">
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-2">
             <Clock size={18} />
             <Text size="lg" className={TYPO.title() + " font-bold"}>Poser des jours de marge</Text>
           </div>
@@ -222,7 +222,7 @@ export function MonRythme() {
 
       <div className="flex flex-col gap-10 w-[340px] shrink-0">
         <div className="flex flex-col gap-4">
-          <div className="flex items-center gap-1.5"><Flag size={18} /><Text size="lg" className={TYPO.title() + " font-bold"}>Prochaine étape</Text></div>
+          <div className="flex items-center gap-2"><Flag size={18} /><Text size="lg" className={TYPO.title() + " font-bold"}>Prochaine étape</Text></div>
           <Card variant="gradient" padding="sm">
             <div className="flex flex-col gap-3">
               <Text size="sm" className="font-semibold">minishell</Text>
@@ -234,7 +234,7 @@ export function MonRythme() {
         </div>
 
         <div className="flex flex-col gap-4">
-          <div className="flex items-center gap-1.5"><Wallet size={18} /><Text size="lg" className={TYPO.title() + " font-bold"}>Ma marge</Text></div>
+          <div className="flex items-center gap-2"><Wallet size={18} /><Text size="lg" className={TYPO.title() + " font-bold"}>Ma marge</Text></div>
           <Card padding="lg">
             <div className="flex flex-col gap-3">
               <Title order={2} size="2xl" className={TYPO.mono("bold")}>15 JOURS</Title>
@@ -250,7 +250,7 @@ export function MonRythme() {
         </div>
 
         <div className="flex flex-col gap-4">
-          <div className="flex items-center gap-1.5"><Target size={18} /><Text size="lg" className={TYPO.title() + " font-bold"}>Mon objectif</Text></div>
+          <div className="flex items-center gap-2"><Target size={18} /><Text size="lg" className={TYPO.title() + " font-bold"}>Mon objectif</Text></div>
           <Card padding="lg">
             <div className="flex flex-col gap-3">
               <Title order={2} size="2xl" className={TYPO.mono("bold")}>50 JOURS · 32 H/SEM</Title>
@@ -268,7 +268,7 @@ export function MonRythme() {
         </div>
 
         <div className="flex flex-col gap-4">
-          <div className="flex items-center gap-1.5"><Clock size={18} /><Text size="lg" className={TYPO.title() + " font-bold"}>Ma présence</Text></div>
+          <div className="flex items-center gap-2"><Clock size={18} /><Text size="lg" className={TYPO.title() + " font-bold"}>Ma présence</Text></div>
           <Card padding="lg">
             <div className="flex flex-col gap-3">
               <Title order={2} size="2xl" className={TYPO.mono("bold")}>32 H / SEMAINE</Title>
@@ -297,12 +297,12 @@ export function MonRythme() {
         </div>
 
         <div className="flex flex-col gap-4">
-          <div className="flex items-center gap-1.5"><MessageCircle size={18} /><Text size="lg" className={TYPO.title() + " font-bold"}>Ma participation</Text></div>
+          <div className="flex items-center gap-2"><MessageCircle size={18} /><Text size="lg" className={TYPO.title() + " font-bold"}>Ma participation</Text></div>
           <Card padding="lg">
             <div className="flex flex-col gap-3">
               <Title order={2} size="2xl" className={TYPO.mono("bold")}>5 REVIEWS</Title>
               <Text size="sm" c="secondary">données cette semaine · objectif 2 par semaine</Text>
-              <Progress value={100} color="pink" />
+              <Progress value={100} variant="gradient" />
               <Button variant="subtle" color="gray" size="sm" className="justify-start px-0">Voir mes reviews</Button>
             </div>
           </Card>

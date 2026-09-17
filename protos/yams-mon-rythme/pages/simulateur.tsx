@@ -31,7 +31,7 @@ function TrajectoireChart() {
             {[0, 1, 2, 3, 4].map((i) => (<div key={i} className="h-px bg-white/[0.08] w-full" />))}
           </div>
           <svg viewBox={`0 0 ${w} ${h}`} className="absolute inset-0 w-full h-full" preserveAspectRatio="none">
-            <polyline points={points} fill="none" stroke="var(--colors-utility-brand-600, #7f56d9)" strokeWidth="2" />
+            <polyline points={points} fill="none" className="stroke-pink-400" strokeWidth="2" />
           </svg>
         </div>
       </div>
@@ -54,7 +54,7 @@ export function Simulateur() {
         </div>
 
         <div className="flex flex-col gap-4">
-          <div className="flex items-center gap-1.5"><CalendarClock size={18} /><Text size="lg" className={TYPO.title() + " font-bold"}>Mes semaines à venir</Text></div>
+          <div className="flex items-center gap-2"><CalendarClock size={18} /><Text size="lg" className={TYPO.title() + " font-bold"}>Mes semaines à venir</Text></div>
           <Card padding="lg">
             <div className="flex flex-col gap-5">
               <div className="border border-white/10 rounded-xs overflow-hidden">
@@ -77,7 +77,7 @@ export function Simulateur() {
         </div>
 
         <div className="flex flex-col gap-4">
-          <div className="flex items-center gap-1.5"><TrendingUp size={18} /><Text size="lg" className={TYPO.title() + " font-bold"}>Ma trajectoire</Text></div>
+          <div className="flex items-center gap-2"><TrendingUp size={18} /><Text size="lg" className={TYPO.title() + " font-bold"}>Ma trajectoire</Text></div>
           <Card padding="lg">
             <div className="flex flex-col gap-5">
               <TrajectoireChart />
@@ -93,7 +93,7 @@ export function Simulateur() {
 
       <div className="flex flex-col gap-10 w-[340px] shrink-0">
         <div className="flex flex-col gap-4">
-          <div className="flex items-center gap-1.5"><Gauge size={18} /><Text size="lg" className={TYPO.title() + " font-bold"}>Ce que ça change</Text></div>
+          <div className="flex items-center gap-2"><Gauge size={18} /><Text size="lg" className={TYPO.title() + " font-bold"}>Ce que ça change</Text></div>
           <Card variant="gradient" padding="sm">
             <div className="flex flex-col gap-3">
               <Title order={2} size="2xl" className={TYPO.mono("bold")}>AVRIL 2027</Title>
@@ -104,7 +104,7 @@ export function Simulateur() {
         </div>
 
         <div className="flex flex-col gap-4">
-          <div className="flex items-center gap-1.5"><Lightbulb size={18} /><Text size="lg" className={TYPO.title() + " font-bold"}>Recommandations</Text></div>
+          <div className="flex items-center gap-2"><Lightbulb size={18} /><Text size="lg" className={TYPO.title() + " font-bold"}>Recommandations</Text></div>
           <Card padding="lg">
             <div className="flex flex-col gap-3">
               <div className="flex flex-col gap-1">
@@ -120,7 +120,7 @@ export function Simulateur() {
         </div>
 
         <div className="flex flex-col gap-4">
-          <div className="flex items-center gap-1.5"><Gauge size={18} /><Text size="lg" className={TYPO.title() + " font-bold"}>Mon rythme réel</Text></div>
+          <div className="flex items-center gap-2"><Gauge size={18} /><Text size="lg" className={TYPO.title() + " font-bold"}>Mon rythme réel</Text></div>
           <Card padding="lg">
             <div className="flex flex-col gap-3">
               <Text size="sm" c="secondary">la simulation part de là</Text>

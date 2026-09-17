@@ -60,7 +60,7 @@ export function ArretMaladie() {
         </div>
 
         <div className="flex flex-col gap-4">
-          <div className="flex items-center gap-1.5"><Route size={18} /><Text size="lg" className={TYPO.title() + " font-bold"}>Mon parcours</Text></div>
+          <div className="flex items-center gap-2"><Route size={18} /><Text size="lg" className={TYPO.title() + " font-bold"}>Mon parcours</Text></div>
           <Card padding="lg">
             <div className="flex flex-col gap-5">
               <Text size="sm" c="secondary">Common Core — 8 milestones, 329 jours de référence. Démarré le 29 juin 2026.</Text>
@@ -70,7 +70,7 @@ export function ArretMaladie() {
         </div>
 
         <div className="flex flex-col gap-4">
-          <div className="flex items-center gap-1.5"><Target size={18} /><Text size="lg" className={TYPO.title() + " font-bold"}>Milestone 04 — en cours</Text></div>
+          <div className="flex items-center gap-2"><Target size={18} /><Text size="lg" className={TYPO.title() + " font-bold"}>Milestone 04 — en cours</Text></div>
           <Card padding="lg">
             <div className="flex flex-col gap-5">
               <div className="flex items-center justify-between">
@@ -102,7 +102,7 @@ export function ArretMaladie() {
         {/* Seul écran de la série sans carte gradient : on ne demande rien à quelqu'un
             en arrêt (voir maj-protos-figma-apres-atelier-2026-09-16.md, §3.3). */}
         <div className="flex flex-col gap-4">
-          <div className="flex items-center gap-1.5"><ShieldOff size={18} /><Text size="lg" className={TYPO.title() + " font-bold"}>Ton cadre</Text></div>
+          <div className="flex items-center gap-2"><ShieldOff size={18} /><Text size="lg" className={TYPO.title() + " font-bold"}>Ton cadre</Text></div>
           <Card padding="lg">
             <div className="flex flex-col gap-3">
               <Title order={2} size="2xl" className={TYPO.mono("bold")}>EN PAUSE</Title>
@@ -113,7 +113,7 @@ export function ArretMaladie() {
         </div>
 
         <div className="flex flex-col gap-4">
-          <div className="flex items-center gap-1.5"><Clock size={18} /><Text size="lg" className={TYPO.title() + " font-bold"}>Ma présence</Text></div>
+          <div className="flex items-center gap-2"><Clock size={18} /><Text size="lg" className={TYPO.title() + " font-bold"}>Ma présence</Text></div>
           <Card padding="lg">
             <div className="flex flex-col gap-3">
               <Title order={2} size="2xl" className={TYPO.mono("bold")}>NON MESURÉE</Title>
@@ -124,7 +124,7 @@ export function ArretMaladie() {
         </div>
 
         <div className="flex flex-col gap-4">
-          <div className="flex items-center gap-1.5"><MessageCircle size={18} /><Text size="lg" className={TYPO.title() + " font-bold"}>Ma participation</Text></div>
+          <div className="flex items-center gap-2"><MessageCircle size={18} /><Text size="lg" className={TYPO.title() + " font-bold"}>Ma participation</Text></div>
           <Card padding="lg">
             <div className="flex flex-col gap-3">
               <Title order={2} size="2xl" className={TYPO.mono("bold")}>NON MESURÉE</Title>
