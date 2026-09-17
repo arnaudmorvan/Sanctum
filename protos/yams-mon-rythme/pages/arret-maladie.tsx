@@ -1,4 +1,4 @@
-import { Route, Target, ShieldPause, Clock, MessageCircle } from "lucide-react"
+import { Route, Target, ShieldOff, Clock, MessageCircle } from "lucide-react"
 import { Card } from "@42/ui-react/card"
 import { Title } from "@42/ui-react/title"
 import { Text } from "@42/ui-react/text"
@@ -102,7 +102,7 @@ export function ArretMaladie() {
         {/* Seul écran de la série sans carte gradient : on ne demande rien à quelqu'un
             en arrêt (voir maj-protos-figma-apres-atelier-2026-09-16.md, §3.3). */}
         <div className="flex flex-col gap-4">
-          <div className="flex items-center gap-1.5"><ShieldPause size={18} /><Text size="lg" className={TYPO.title() + " font-bold"}>Ton cadre</Text></div>
+          <div className="flex items-center gap-1.5"><ShieldOff size={18} /><Text size="lg" className={TYPO.title() + " font-bold"}>Ton cadre</Text></div>
           <Card padding="lg">
             <div className="flex flex-col gap-3">
               <Title order={2} size="2xl" className={TYPO.mono("bold")}>EN PAUSE</Title>
@@ -118,7 +118,7 @@ export function ArretMaladie() {
             <div className="flex flex-col gap-3">
               <Title order={2} size="2xl" className={TYPO.mono("bold")}>NON MESURÉE</Title>
               <Text size="sm" c="secondary">pendant un arrêt, ta présence n’est pas comptée</Text>
-              <Button variant="link" color="gray" size="sm" className="justify-start px-0">Voir mon assiduité</Button>
+              <Button variant="subtle" color="gray" size="sm" className="justify-start px-0">Voir mon assiduité</Button>
             </div>
           </Card>
         </div>
@@ -129,7 +129,7 @@ export function ArretMaladie() {
             <div className="flex flex-col gap-3">
               <Title order={2} size="2xl" className={TYPO.mono("bold")}>NON MESURÉE</Title>
               <Text size="sm" c="secondary">aucune review n’est attendue pendant ton arrêt</Text>
-              <Button variant="link" color="gray" size="sm" className="justify-start px-0">Voir mes reviews</Button>
+              <Button variant="subtle" color="gray" size="sm" className="justify-start px-0">Voir mes reviews</Button>
             </div>
           </Card>
         </div>

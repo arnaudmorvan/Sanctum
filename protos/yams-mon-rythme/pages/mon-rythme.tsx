@@ -64,7 +64,7 @@ function AbsenceModal({ open, onClose, onDeclarer }: { open: boolean; onClose: (
           description="Ce que ça change dépend du motif choisi."
           value={motif}
           onChange={(v) => setMotif(v as string)}
-          items={[
+          data={[
             { value: "vacances", label: "Vacances", description: "Le temps continue de courir sur ton budget. Tu vois l’impact avant de valider." },
             { value: "arret-maladie", label: "Arrêt maladie", description: "Le plafond est décalé d’autant, après validation sur justificatif." },
           ]}
@@ -287,8 +287,8 @@ export function MonRythme() {
                 ))}
               </div>
               <div className="flex flex-col gap-1 pt-1">
-                <Button variant="link" color="gray" size="sm" className="justify-start px-0">Voir mon assiduité</Button>
-                <Button variant="link" color="gray" size="sm" className="justify-start px-0" startSlot={<CalendarOff size={14} />} onClick={() => setAbsenceOpen(true)}>
+                <Button variant="subtle" color="gray" size="sm" className="justify-start px-0">Voir mon assiduité</Button>
+                <Button variant="subtle" color="gray" size="sm" className="justify-start px-0" startSlot={<CalendarOff size={14} />} onClick={() => setAbsenceOpen(true)}>
                   Déclarer une absence
                 </Button>
               </div>
@@ -303,7 +303,7 @@ export function MonRythme() {
               <Title order={2} size="2xl" className={TYPO.mono("bold")}>5 REVIEWS</Title>
               <Text size="sm" c="secondary">données cette semaine · objectif 2 par semaine</Text>
               <Progress value={100} color="pink" />
-              <Button variant="link" color="gray" size="sm" className="justify-start px-0">Voir mes reviews</Button>
+              <Button variant="subtle" color="gray" size="sm" className="justify-start px-0">Voir mes reviews</Button>
             </div>
           </Card>
         </div>
