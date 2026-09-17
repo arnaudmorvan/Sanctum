@@ -1,5 +1,6 @@
-import { Card } from "@42/ui-react/card"
 import { Button } from "@42/ui-react/button"
+import { Card } from "@42/ui-react/card"
+import { Container } from "@42/ui-react/container"
 import { Text } from "@42/ui-react/text"
 import { Title } from "@42/ui-react/title"
 import { TYPO } from "../../../src/typo"
@@ -11,6 +12,7 @@ import { DIRECTIONS } from "../data/invitations"
  *  is nothing to put in a side rail (foundations-layout — the column count follows from
  *  the content, it is not reached for). */
 export const Compare = () => (
+  <Container size="xl" padding="none">
   <div className="flex flex-col gap-10">
     <div className="flex flex-col gap-1.5">
       <Title order={1} size="3xl" className={TYPO.title()}>Program invitations</Title>
@@ -57,4 +59,5 @@ export const Compare = () => (
       </div>
     </div>
   </div>
+  </Container>
 )

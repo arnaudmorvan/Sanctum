@@ -1,6 +1,7 @@
 import { ArrowRight } from "lucide-react"
 import { Button } from "@42/ui-react/button"
 import { Card } from "@42/ui-react/card"
+import { Container } from "@42/ui-react/container"
 import { Text } from "@42/ui-react/text"
 import { Title } from "@42/ui-react/title"
 import { TYPO } from "../../../src/typo"
@@ -10,6 +11,7 @@ import { INVITATIONS } from "../data/invitations"
 /** DIRECTION C — the list. Same decidable card as B, but the path is not a dialog:
  *  it is a place you go to. */
 export const JourneyList = () => (
+  <Container size="xl" padding="none">
   <div className="flex flex-col gap-10">
     <PageIntro lead="Each invitation opens onto a path you can walk through before committing to it. Take a look around, then come back and decide." />
 
@@ -39,4 +41,5 @@ export const JourneyList = () => (
       ))}
     </div>
   </div>
+  </Container>
 )

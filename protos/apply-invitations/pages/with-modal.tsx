@@ -2,6 +2,7 @@ import { useState } from "react"
 import { ArrowRight } from "lucide-react"
 import { Button } from "@42/ui-react/button"
 import { Card } from "@42/ui-react/card"
+import { Container } from "@42/ui-react/container"
 import { Modal } from "@42/ui-react/modal"
 import { Text } from "@42/ui-react/text"
 import { Title } from "@42/ui-react/title"
@@ -53,6 +54,7 @@ export const WithModal = () => {
   const [open, setOpen] = useState<Invitation | null>(null)
 
   return (
+    <Container size="xl" padding="none">
     <div className="flex flex-col gap-10">
       <PageIntro lead="Everything you need to decide is on the card. Open the path when you want the detail — and you can say yes from there." />
 
@@ -92,5 +94,6 @@ export const WithModal = () => {
 
       <PathModal invitation={open} onClose={() => setOpen(null)} />
     </div>
+    </Container>
   )
 }
