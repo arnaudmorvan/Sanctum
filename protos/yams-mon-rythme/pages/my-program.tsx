@@ -41,6 +41,9 @@ const SEG = {
 const LINE = { today: "bg-pink-400", cap: "border-red-500", year: "border-white/25", pace: "border-white/50", paceLate: "border-orange-500" } as const
 
 const FRISE_H = 880
+/** Select est typé sur SES data : une value calculée en template literal n'est pas
+ *  assignable à l'union des options. Les libellés sont donc figés ici. */
+const TAKEN_OFF = ["None", "7 d", "14 d", "17 d"] as const
 
 interface Break { id: number; ms: number; after: number; len: number }
 
@@ -363,7 +366,7 @@ export function MyProgram() {
             </label>
             <label className="flex min-w-[200px] flex-col gap-2">
               <Text size="xs" c="muted" className="uppercase tracking-wider">Time off already taken</Text>
-              <Select size="sm" data={["None", "7 d", "14 d", "17 d"]} value={takenOff === 0 ? "None" : `${takenOff} d`} onChange={(v) => setTakenOff(v && v !== "None" ? parseInt(String(v), 10) : 0)} />
+              <Select size="sm" data={TAKEN_OFF} value={takenOff === 0 ? "None" : takenOff === 7 ? "7 d" : takenOff === 14 ? "14 d" : "17 d"} onChange={(v) => setTakenOff(v && v !== "None" ? parseInt(String(v), 10) : 0)} />
             </label>
           </div>
 
