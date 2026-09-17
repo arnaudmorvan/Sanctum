@@ -37,7 +37,7 @@ function Frise({ selected, onSelect }: { selected: string; onSelect: (n: string)
               ? `${m.n} · en cours · jour ${m.reel} sur ${m.ref} de référence · ${m.max} j de durée max`
               : `${m.n} · terminée · ${m.reel} j réels pour ${m.ref} j de référence${m.marge != null ? ` · +${m.marge} j d’avance` : ""}`
           return (
-            <Tooltip key={m.n} label={hint} withArrow>
+            <Tooltip key={m.n} label={hint} withArrow asChild>
               <button
                 type="button"
                 onClick={() => onSelect(m.n)}
