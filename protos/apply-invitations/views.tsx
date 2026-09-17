@@ -23,8 +23,8 @@ import { WithModal } from "./pages/with-modal"
  *    A (inline)  — no modal at all: every step, fully written, in the card.
  *    B (modal)   — the card becomes decidable, the modal carries the decision.
  *    C (page)    — the path is a territory on its own page, the decision in the rail.
- *    D (stepper) — the path is a stepper folded into the tile: all steps visible, each
- *                  one opening onto its detail. Added 2026-09-17 at the designer's ask;
+ *    D (stepper) — the path is a stepper folded into the tile: one control unfolds the
+ *                  whole path, each row then opens onto its detail. Added 2026-09-17;
  *                  it is A's promise without A's scroll, and it is now the recommended
  *                  one on the compare screen.
  *

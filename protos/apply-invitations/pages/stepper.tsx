@@ -30,12 +30,13 @@ import { INVITATIONS } from "../data/invitations"
  *  screen-reader-announced with no JavaScript and no ARIA of ours, separated by the kit's
  *  own `Divider`. When the vendored kit catches up, this collapses back to <Accordion>.
  *
- *  FOLDING — reworked 2026-09-17 at the designer's ask. The steps now arrive ALL CLOSED,
- *  and one control folds or unfolds the whole path in a single gesture. The first step no
- *  longer opens by itself: what a closed tile states is the shape of the commitment, and
- *  the reader who wants the prose wants it for every step, not seven times over. Each row
- *  stays individually operable — the master control sets them, it does not lock them —
- *  which is why `<details>` is driven by state here instead of its own `open` attribute. */
+ *  FOLDING, reworked twice on 2026-09-17 at the designer's ask. The control folds the
+ *  PATH itself, not the prose inside it: at rest the tile states the invitation and
+ *  nothing else, so what a candidate reads first is the commitment, not seven rows of
+ *  machinery. Unfolded, the steps arrive closed and each one opens onto its own detail.
+ *  Folding the path back clears them, so it never reopens onto a shape the reader did
+ *  not ask for: that is why `<details>` is driven by state here rather than by its own
+ *  `open` attribute. */
 const StepDisclosure = ({
   invitation,
   openIds,
@@ -84,8 +85,8 @@ const StepDisclosure = ({
 )
 
 const InvitationTile = ({ invitation }: { invitation: Invitation }) => {
+  const [pathOpen, setPathOpen] = useState(false)
   const [openIds, setOpenIds] = useState<string[]>([])
-  const allOpen = openIds.length === invitation.steps.length
 
   const toggleStep = (id: string, isOpen: boolean) =>
     setOpenIds((current) => {
@@ -93,8 +94,10 @@ const InvitationTile = ({ invitation }: { invitation: Invitation }) => {
       return current.filter((value) => value !== id)
     })
 
-  const toggleAll = () =>
-    setOpenIds(allOpen ? [] : invitation.steps.map((step) => step.id))
+  const togglePath = () => {
+    if (pathOpen) setOpenIds([])
+    setPathOpen(!pathOpen)
+  }
 
   return (
     <Card
@@ -122,24 +125,26 @@ const InvitationTile = ({ invitation }: { invitation: Invitation }) => {
                 size="sm"
                 variant="subtle"
                 color="gray"
-                aria-expanded={allOpen}
-                onClick={toggleAll}
+                aria-expanded={pathOpen}
+                onClick={togglePath}
                 endSlot={
                   <ChevronDown
                     size={16}
-                    className={`transition-transform ${allOpen ? "rotate-180" : ""}`}
+                    className={`transition-transform ${pathOpen ? "rotate-180" : ""}`}
                   />
                 }
               >
-                {allOpen ? "Collapse all steps" : "Expand all steps"}
+                {pathOpen ? "Hide the path" : "See the path"}
               </Button>
             </div>
 
-            <StepDisclosure
-              invitation={invitation}
-              openIds={openIds}
-              onToggleStep={toggleStep}
-            />
+            {pathOpen ? (
+              <StepDisclosure
+                invitation={invitation}
+                openIds={openIds}
+                onToggleStep={toggleStep}
+              />
+            ) : null}
           </div>
         </div>
       </Card.Content>
@@ -149,7 +154,7 @@ const InvitationTile = ({ invitation }: { invitation: Invitation }) => {
 
 export const Stepper = () => (
   <div className="flex flex-col gap-10">
-    <PageIntro lead="Every step of every invitation is listed below, folded. Open them all at once, or just the one you wonder about — nothing is hidden, and nothing is forced on you." />
+    <PageIntro lead="Each invitation keeps its path folded. Open it to see every step, then open just the step you wonder about. Nothing is hidden, and nothing is forced on you." />
 
     <div className="flex flex-col gap-4">
       {INVITATIONS.map((invitation) => (

@@ -162,9 +162,9 @@ export const DIRECTIONS = [
     id: "d",
     letter: "D",
     name: "The stepper folded into the tile",
-    claim: "Every step on screen, none of them shouting.",
-    detail: "The path is a stepper inside the invitation card: seven rows you take in at a glance — number, glyph, name — each opening onto its own prose. It is A's promise, that nothing hides behind a click, without A's scroll.",
-    cost: "A closed row says its name and nothing more. If the detail of a step is what decides, it is still one interaction away.",
+    claim: "The whole path in the tile, folded until you ask for it.",
+    detail: "The path is a stepper inside the invitation card, folded at rest. One control unfolds the seven rows you take in at a glance (number, glyph, name), and each row then opens onto its own prose. It is A's promise, that nothing hides behind a click, without A's scroll.",
+    cost: "Two levels of folding: from a card at rest, the detail of a step is two interactions away.",
     featured: true,
   },
 ]
