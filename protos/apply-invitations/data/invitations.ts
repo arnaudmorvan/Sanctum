@@ -138,7 +138,7 @@ export const DIRECTIONS = [
     claim: "No modal at all.",
     detail: "The steps live inside the invitation card. Nothing to click before deciding — what you are being asked is on screen from the first second.",
     cost: "The page gets long. With two invitations of 7 and 3 steps, the fold is far down.",
-    featured: true,
+    featured: false,
   },
   {
     id: "b",
@@ -157,5 +157,14 @@ export const DIRECTIONS = [
     detail: "The path opens as a real page: the steps at the centre as a map, the decision in the side rail. It is the DS dashboard template applied to an application.",
     cost: "Leaves the list. Heavier to build, and the back-and-forth has to be handled.",
     featured: false,
+  },
+  {
+    id: "d",
+    letter: "D",
+    name: "The stepper folded into the tile",
+    claim: "Every step on screen, none of them shouting.",
+    detail: "The path is a stepper inside the invitation card: seven rows you take in at a glance — number, glyph, name — each opening onto its own prose. It is A's promise, that nothing hides behind a click, without A's scroll.",
+    cost: "A closed row says its name and nothing more. If the detail of a step is what decides, it is still one interaction away.",
+    featured: true,
   },
 ]

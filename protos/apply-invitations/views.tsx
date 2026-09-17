@@ -4,6 +4,7 @@ import { Compare } from "./pages/compare"
 import { Inline } from "./pages/inline"
 import { Journey } from "./pages/journey"
 import { JourneyList } from "./pages/journey-list"
+import { Stepper } from "./pages/stepper"
 import { WithModal } from "./pages/with-modal"
 
 /** Apply — Program invitations.
@@ -18,10 +19,14 @@ import { WithModal } from "./pages/with-modal"
  *  deadline in the data. review:storytelling rejects manufactured urgency, and
  *  review:components requires the button colour to follow the action.
  *
- *  THREE DIRECTIONS, same content, same data, one variable: WHERE the path is read.
- *    A (inline)  — no modal at all: the steps are in the card.
+ *  FOUR DIRECTIONS, same content, same data, one variable: WHERE the path is read.
+ *    A (inline)  — no modal at all: every step, fully written, in the card.
  *    B (modal)   — the card becomes decidable, the modal carries the decision.
  *    C (page)    — the path is a territory on its own page, the decision in the rail.
+ *    D (stepper) — the path is a stepper folded into the tile: all steps visible, each
+ *                  one opening onto its detail. Added 2026-09-17 at the designer's ask;
+ *                  it is A's promise without A's scroll, and it is now the recommended
+ *                  one on the compare screen.
  *
  *  The CHROME is the skeleton's (`NAV` below) — never drawn inside the flow. */
 
@@ -38,7 +43,7 @@ export const NAV: ProtoNavItem[] = [
 ]
 
 export const VIEWS: ProtoView[] = [
-  { path: "compare", label: "Compare the 3 directions", render: () => <Compare /> },
+  { path: "compare", label: "Compare the 4 directions", render: () => <Compare /> },
   { path: "a", label: "A · Path inline", render: () => <Inline /> },
   { path: "b", label: "B · Card + modal", render: () => <WithModal /> },
   { path: "c", label: "C · List", render: () => <JourneyList /> },
@@ -48,4 +53,5 @@ export const VIEWS: ProtoView[] = [
     href: "#/c/selection-program",
     render: ({ program }) => <Journey program={program} />,
   },
+  { path: "d", label: "D · Stepper in the tile", render: () => <Stepper /> },
 ]

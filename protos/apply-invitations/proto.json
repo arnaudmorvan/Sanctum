@@ -2,10 +2,10 @@
   "slug": "apply-invitations",
   "title": "Apply — Program invitations",
   "author": "Nadèje",
-  "summary": "Three reworks of the candidate's invitation screen: the path shown inline, the decidable card with an enriched modal, and the path as a full page.",
+  "summary": "Four reworks of the candidate's invitation screen: the path inline, the decidable card with an enriched modal, the path as a full page, and the stepper folded into the tile.",
   "created_at": "2026-09-17",
   "updated_at": "2026-09-17",
-  "published_at": "2026-09-17T08:47:51Z",
+  "published_at": "2026-09-17T10:34:34Z",
   "files": [
     "components/bits.tsx",
     "data/invitations.ts",
@@ -14,6 +14,7 @@
     "pages/inline.tsx",
     "pages/journey-list.tsx",
     "pages/journey.tsx",
+    "pages/stepper.tsx",
     "pages/with-modal.tsx",
     "views.tsx"
   ]
