@@ -1,0 +1,17 @@
+{
+  "slug": "42next-home-quest",
+  "title": "42next — Home (quest)",
+  "author": "Arnaud",
+  "summary": "The 42next learner home rebuilt from a throwaway artifact: the next quest as the entry point, the milestone path, the active quests and the reviews, with the learner rail — plus the module drill-down behind the primary action.",
+  "created_at": "2026-09-17",
+  "updated_at": "2026-09-17",
+  "published_at": "2026-09-17T21:53:59Z",
+  "files": [
+    "data/home.ts",
+    "data/modules.ts",
+    "generation.json",
+    "pages/home.tsx",
+    "pages/module.tsx",
+    "views.tsx"
+  ]
+}
