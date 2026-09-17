@@ -2,16 +2,18 @@
   "slug": "yams-mon-rythme",
   "title": "YAMS — Mon rythme (Amanda)",
   "author": "Arnaud",
-  "summary": "",
+  "summary": "Le parcours d'Amanda : où elle en est, ce qu'elle vise, et où mène le rythme qu'elle tient — avec une frise pilotable.",
   "created_at": "2026-09-17",
   "updated_at": "2026-09-17",
-  "published_at": "2026-09-17T11:50:53Z",
+  "published_at": "2026-09-17T22:03:46Z",
   "files": [
+    "data/curriculum.ts",
     "data/fixtures.ts",
     "figma-source.json",
     "generation.json",
     "pages/arret-maladie.tsx",
     "pages/mon-rythme.tsx",
+    "pages/my-program.tsx",
     "pages/simulateur.tsx",
     "views.tsx"
   ]
