@@ -1,5 +1,4 @@
 import { Card } from "@42/ui-react/card"
-import { Container } from "@42/ui-react/container"
 import { Divider } from "@42/ui-react/divider"
 import { Text } from "@42/ui-react/text"
 import { Title } from "@42/ui-react/title"
@@ -17,7 +16,6 @@ import { INVITATIONS } from "../data/invitations"
  *  The cost, stated rather than hidden: the page is long. That is the direction's premise,
  *  not an accident. */
 export const Inline = () => (
-  <Container size="xl" padding="none">
   <div className="flex flex-col gap-10">
     <PageIntro lead="Each invitation below is a whole path, laid out step by step. Read it, then decide — there is nothing hidden behind a click." />
 
@@ -48,5 +46,4 @@ export const Inline = () => (
       ))}
     </div>
   </div>
-  </Container>
 )

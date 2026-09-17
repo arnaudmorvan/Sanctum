@@ -1,7 +1,6 @@
 import { ChevronDown } from "lucide-react"
 import { Badge } from "@42/ui-react/badge"
 import { Card } from "@42/ui-react/card"
-import { Container } from "@42/ui-react/container"
 import { Divider } from "@42/ui-react/divider"
 import { Text } from "@42/ui-react/text"
 import { Title } from "@42/ui-react/title"
@@ -77,7 +76,6 @@ const StepDisclosure = ({ invitation }: { invitation: Invitation }) => (
 )
 
 export const Stepper = () => (
-  <Container size="xl" padding="none">
   <div className="flex flex-col gap-10">
     <PageIntro lead="Every step of every invitation is listed below. Open the ones you want the detail on — nothing is hidden, and nothing is forced on you." />
 
@@ -108,5 +106,4 @@ export const Stepper = () => (
       ))}
     </div>
   </div>
-  </Container>
 )

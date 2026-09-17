@@ -1,7 +1,6 @@
 import { ArrowLeft } from "lucide-react"
 import { Button } from "@42/ui-react/button"
 import { Card } from "@42/ui-react/card"
-import { Container } from "@42/ui-react/container"
 import { Text } from "@42/ui-react/text"
 import { Title } from "@42/ui-react/title"
 import { TYPO } from "../../../src/typo"
@@ -26,7 +25,6 @@ export const Journey = ({ program }: { program?: string }) => {
   const invitation = bySlug(program)
 
   return (
-    <Container size="xl" padding="none">
     <div className="flex flex-col gap-10">
       <div className="flex flex-col gap-4">
         <div>
@@ -83,6 +81,5 @@ export const Journey = ({ program }: { program?: string }) => {
         </aside>
       </div>
     </div>
-    </Container>
   )
 }
