@@ -15,106 +15,179 @@ import { TYPO } from "../../../src/typo"
 import { MILESTONES_V3, PROJETS_M5, PRESENCE_4_SEM } from "../data/fixtures"
 import type { Milestone } from "../data/fixtures"
 
-// "frise-parcours" — pas de composant DS pour une frise référence/max par quest
+// "frise-parcours" — pas de composant DS pour une frise à plusieurs seuils par quest
 // (repéré ⚠ candidat composant DS sur la maquette elle-même) : composée à la main,
 // signalée comme manque dans le rapport de génération.
 //
-// V2 de la frise, sur retour du designer ("c'est le cœur du système"). L'axe est en
-// JOURS : chaque milestone occupe une largeur proportionnelle à sa durée, donc la frise
-// se lit comme une vraie ligne de temps et non comme huit jauges de largeur égale (le
-// défaut de la V1). Dans chaque colonne : le remplissage = durée RÉELLE, le repère blanc
-// = durée de RÉFÉRENCE, le vert clair entre les deux = l'AVANCE prise, l'orange au-delà
-// du repère = le dépassement. Clic + survol (Tooltip DS) pour le détail chiffré.
+// V3 de la frise, sur retour du designer : "on ne voit pas la durée de référence, on ne
+// voit pas comment on se fixe des objectifs — on peut faire les milestones en 1 an mais
+// max 2 ans". Le système a donc TROIS seuils, et une frise qui n'en montre qu'un ne dit
+// rien. Ici : trois pistes superposées sur UN MÊME axe en jours (0 → plafond), pour lire
+// d'un coup d'œil où finit l'objectif qu'on se fixe, où finit la référence, et où on en
+// est vraiment. La verticale claire marque aujourd'hui, à travers les trois pistes.
+function hintFor(m: Milestone) {
+  const base = `${m.n} · objectif ${m.objectif} j · référence ${m.ref} j · plafond ${m.max} j`
+  if (m.etat === "locked") return `${base} · pas encore commencée`
+  if (m.etat === "current") return `${base} · en cours, jour ${m.reel}`
+  return `${base} · terminée en ${m.reel} j`
+}
+
+function verdict(m: Milestone) {
+  if (m.reel == null) return { texte: "—", ton: "text-white/50" }
+  if (m.etat === "current") return { texte: `jour ${m.reel}`, ton: "text-pink-400" }
+  if (m.reel <= m.objectif) return { texte: `${m.reel} j · objectif tenu`, ton: "text-green-500" }
+  if (m.reel <= m.ref) return { texte: `${m.reel} j · dans la référence`, ton: "text-green-500" }
+  return { texte: `${m.reel} j · au-delà de la référence`, ton: "text-orange-500" }
+}
+
+function Segment({ m, jours, fill, selected, onSelect }: { m: Milestone; jours: number; fill: string; selected: boolean; onSelect: (n: string) => void }) {
+  const h = hintFor(m)
+  return (
+    <Tooltip label={h} withArrow asChild>
+      <button
+        type="button"
+        onClick={() => onSelect(m.n)}
+        aria-pressed={selected}
+        aria-label={h}
+        style={{ flexGrow: jours, flexBasis: 0 }}
+        className={`min-w-0 h-6 rounded-xs transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 ${fill} ${selected ? "ring-2 ring-white/60" : ""}`}
+      />
+    </Tooltip>
+  )
+}
+
 function Frise({ selected, onSelect }: { selected: string; onSelect: (n: string) => void }) {
   const sel = MILESTONES_V3.find((m) => m.n === selected) ?? MILESTONES_V3[4]
-  const largeur = (m: Milestone) => Math.max(m.ref, m.reel ?? 0)
   const totalRef = MILESTONES_V3.reduce((t, m) => t + m.ref, 0)
+  const totalObj = MILESTONES_V3.reduce((t, m) => t + m.objectif, 0)
   const totalMax = MILESTONES_V3.reduce((t, m) => t + m.max, 0)
   const jourCourant = MILESTONES_V3.reduce((t, m) => t + (m.reel ?? 0), 0)
-  const avanceTotale = MILESTONES_V3.reduce((t, m) => t + (m.marge ?? 0), 0)
+  const faits = MILESTONES_V3.filter((m) => m.reel != null)
+  const mois = (j: number) => Math.round(j / 30.4)
+  const pct = (j: number) => (j / totalMax) * 100
+  const v = verdict(sel)
 
   return (
-    <div className="flex flex-col gap-4 w-full">
-      <div className="flex gap-1 w-full">
-        {MILESTONES_V3.map((m) => {
-          const jours = largeur(m)
-          const refPct = (m.ref / jours) * 100
-          const reelPct = m.reel != null ? (m.reel / jours) * 100 : 0
-          const overRef = m.etat === "done-over-ref"
-          const avance = m.etat === "done" && reelPct < refPct
-          const isSelected = m.n === selected
-          const hint =
-            m.etat === "locked"
-              ? `${m.n} · à venir · ${m.ref} j de référence · ${m.max} j de durée max`
-              : m.etat === "current"
-              ? `${m.n} · en cours · jour ${m.reel} sur ${m.ref} de référence · ${m.max} j de durée max`
-              : `${m.n} · terminée en ${m.reel} j pour ${m.ref} j de référence${m.marge != null ? ` · +${m.marge} j de marge` : ""}`
-          return (
-            <Tooltip key={m.n} label={hint} withArrow asChild>
-              <button
-                type="button"
-                onClick={() => onSelect(m.n)}
-                aria-pressed={isSelected}
-                aria-label={hint}
-                style={{ flexGrow: jours, flexBasis: 0 }}
-                className={`min-w-0 flex flex-col items-start gap-2 text-left rounded-xs transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 ${isSelected ? "ring-2 ring-white/50" : ""}`}
-              >
-                <div className="relative w-full h-6 rounded-xs bg-white/10 border border-white/10">
-                  {m.etat !== "locked" && (
-                    <div
-                      className={`absolute inset-y-0 left-0 rounded-xs ${m.etat === "current" ? "bg-gradient-to-r from-pink-400 to-purple-300" : "bg-green-500"}`}
-                      style={{ width: `${overRef ? refPct : reelPct}%` }}
-                    />
-                  )}
-                  {overRef && (
-                    <div className="absolute inset-y-0 right-0 rounded-xs bg-orange-500" style={{ left: `${refPct}%` }} />
-                  )}
-                  {avance && (
-                    <div className="absolute inset-y-0 right-0 rounded-xs bg-green-500/20" style={{ left: `${reelPct}%` }} />
-                  )}
-                  <div className="absolute -top-1 -bottom-1 w-0.5 -ml-px bg-white/70" style={{ left: `${refPct}%` }} />
-                </div>
-                <Text size="xs" c="secondary" className={TYPO.mono() + " truncate w-full"}>{m.n}</Text>
-              </button>
-            </Tooltip>
-          )
-        })}
+    <div className="flex flex-col gap-5 w-full">
+      {/* L'axe : 0 → plafond du parcours. Les trois pistes se lisent dessus. */}
+      <div className="relative w-full h-6">
+        <div className="absolute inset-x-0 bottom-0 h-px bg-white/10" />
+        {[0, 6, 12].map((t) => (
+          <div key={t} className="absolute bottom-0 flex flex-col items-start gap-1" style={{ left: `${pct(t * 30.4)}%` }}>
+            <Text size="xs" c="muted" className={TYPO.mono() + " whitespace-nowrap"}>{t === 0 ? "DÉBUT" : t === 12 ? "1 AN" : `${t} MOIS`}</Text>
+            <div className="w-px h-2 bg-white/20" />
+          </div>
+        ))}
+        <div className="absolute bottom-0 right-0 flex flex-col items-end gap-1">
+          <Text size="xs" c="muted" className={TYPO.mono() + " whitespace-nowrap"}>PLAFOND · {mois(totalMax)} MOIS</Text>
+          <div className="w-px h-2 bg-white/20" />
+        </div>
       </div>
 
-      <div className="flex gap-10 flex-wrap">
-        <div className="flex flex-col gap-1">
-          <Text size="xs" c="secondary">Où j’en suis</Text>
-          <Text size="sm" className={TYPO.mono("bold")}>JOUR {jourCourant} / {totalRef}</Text>
+      <div className="relative flex flex-col gap-5 w-full">
+        {/* aujourd'hui, à travers les trois pistes */}
+        <div className="absolute inset-y-0 w-px bg-white/40 pointer-events-none" style={{ left: `${pct(jourCourant)}%` }} />
+
+        {/* piste 1 — mon objectif */}
+        <div className="flex flex-col gap-2 w-full">
+          <div className="flex items-baseline gap-2 flex-wrap">
+            <Text size="xs" className="uppercase font-semibold">Mon objectif</Text>
+            <Text size="xs" c="muted">ce que je me fixe — privé, toi seule es prévenue</Text>
+          </div>
+          <div className="flex gap-px w-full items-center">
+            {MILESTONES_V3.map((m) => (
+              <Segment key={m.n} m={m} jours={m.objectif} fill="bg-purple-300/40" selected={m.n === selected} onSelect={onSelect} />
+            ))}
+            <div style={{ flexGrow: totalMax - totalObj, flexBasis: 0 }} className="min-w-0 pl-2">
+              <Text size="xs" c="secondary" className={TYPO.mono() + " whitespace-nowrap"}>{totalObj} J · ≈ {mois(totalObj)} MOIS</Text>
+            </div>
+          </div>
         </div>
-        <div className="flex flex-col gap-1">
-          <Text size="xs" c="secondary">Avance cumulée</Text>
-          <Text size="sm" className={TYPO.mono("bold") + " text-green-500"}>+{avanceTotale} J DE MARGE</Text>
+
+        {/* piste 2 — la référence */}
+        <div className="flex flex-col gap-2 w-full">
+          <div className="flex items-baseline gap-2 flex-wrap">
+            <Text size="xs" className="uppercase font-semibold">Référence pédagogique</Text>
+            <Text size="xs" c="muted">le seuil que le staff regarde</Text>
+          </div>
+          <div className="flex gap-px w-full items-center">
+            {MILESTONES_V3.map((m) => (
+              <Segment key={m.n} m={m} jours={m.ref} fill="bg-white/15" selected={m.n === selected} onSelect={onSelect} />
+            ))}
+            <div style={{ flexGrow: totalMax - totalRef, flexBasis: 0 }} className="min-w-0 pl-2">
+              <Text size="xs" c="secondary" className={TYPO.mono() + " whitespace-nowrap"}>{totalRef} J · ≈ {mois(totalRef)} MOIS</Text>
+            </div>
+          </div>
+          <div className="flex gap-px w-full">
+            {MILESTONES_V3.map((m) => (
+              <div key={m.n} style={{ flexGrow: m.ref, flexBasis: 0 }} className="min-w-0">
+                <Text size="xs" c="muted" className={TYPO.mono() + " truncate block"}>{m.n}</Text>
+              </div>
+            ))}
+            <div style={{ flexGrow: totalMax - totalRef, flexBasis: 0 }} />
+          </div>
         </div>
-        <div className="flex flex-col gap-1">
-          <Text size="xs" c="secondary">Plafond du parcours</Text>
-          <Text size="sm" className={TYPO.mono("bold")}>{totalMax} J</Text>
+
+        {/* piste 3 — le réel */}
+        <div className="flex flex-col gap-2 w-full">
+          <div className="flex items-baseline gap-2 flex-wrap">
+            <Text size="xs" className="uppercase font-semibold">Réel</Text>
+            <Text size="xs" c="muted">ce qui s’est passé</Text>
+          </div>
+          <div className="flex gap-px w-full items-center">
+            {faits.map((m) => (
+              <Segment
+                key={m.n}
+                m={m}
+                jours={m.reel ?? 0}
+                fill={m.etat === "current" ? "bg-gradient-to-r from-pink-400 to-purple-300" : m.etat === "done-over-ref" ? "bg-orange-500" : "bg-green-500"}
+                selected={m.n === selected}
+                onSelect={onSelect}
+              />
+            ))}
+            <div style={{ flexGrow: totalMax - jourCourant, flexBasis: 0 }} className="min-w-0 pl-2">
+              <Text size="xs" c="secondary" className={TYPO.mono() + " whitespace-nowrap"}>AUJOURD’HUI · JOUR {jourCourant}</Text>
+            </div>
+          </div>
         </div>
       </div>
 
       <div className="flex gap-6 items-center flex-wrap">
-        <span className="flex items-center gap-2"><span className="size-2.5 rounded-full bg-green-500" /><Text size="xs" c="secondary">durée réelle</Text></span>
-        <span className="flex items-center gap-2"><span className="size-2.5 rounded-xs bg-green-500/20 border border-green-500" /><Text size="xs" c="secondary">avance prise sur la référence</Text></span>
-        <span className="flex items-center gap-2"><span className="size-2.5 rounded-full bg-orange-500" /><Text size="xs" c="secondary">dépassement de la référence</Text></span>
-        <span className="flex items-center gap-2"><span className="size-2.5 rounded-full bg-gradient-to-r from-pink-400 to-purple-300" /><Text size="xs" c="secondary">milestone en cours</Text></span>
-        <span className="flex items-center gap-2"><span className="size-2.5 rounded-full bg-white/20" /><Text size="xs" c="secondary">à venir</Text></span>
-        <span className="flex items-center gap-2"><span className="w-0.5 h-2.5 bg-white/70" /><Text size="xs" c="secondary">repère de référence</Text></span>
+        <span className="flex items-center gap-2"><span className="size-2.5 rounded-xs bg-purple-300/40" /><Text size="xs" c="secondary">mon objectif</Text></span>
+        <span className="flex items-center gap-2"><span className="size-2.5 rounded-xs bg-white/15" /><Text size="xs" c="secondary">référence</Text></span>
+        <span className="flex items-center gap-2"><span className="size-2.5 rounded-xs bg-green-500" /><Text size="xs" c="secondary">tenue dans la référence</Text></span>
+        <span className="flex items-center gap-2"><span className="size-2.5 rounded-xs bg-orange-500" /><Text size="xs" c="secondary">au-delà de la référence</Text></span>
+        <span className="flex items-center gap-2"><span className="size-2.5 rounded-xs bg-gradient-to-r from-pink-400 to-purple-300" /><Text size="xs" c="secondary">en cours</Text></span>
       </div>
       <Text size="xs" c="muted">
-        La largeur de chaque colonne, c’est sa durée en jours : la frise se lit comme une ligne de temps. Clique une milestone (ou survole-la) pour son détail.
+        Les trois pistes partagent le même axe en jours, du premier jour au plafond du parcours. Clique une milestone sur n’importe quelle piste pour comparer ses trois seuils.
       </Text>
 
-      <Text size="sm" className={TYPO.mono("semibold") + " text-pink-400"}>
-        {sel.etat === "locked"
-          ? `${sel.n} À VENIR — ${sel.ref} J DE RÉFÉRENCE · ${sel.max} J DE DURÉE MAX`
-          : sel.etat === "current"
-          ? `${sel.n} EN COURS — JOUR ${sel.reel} SUR ${sel.ref} DE RÉFÉRENCE · ${sel.max} J DE DURÉE MAX`
-          : `${sel.n} TERMINÉE — ${sel.reel} J RÉELS POUR ${sel.ref} J DE RÉFÉRENCE${sel.marge != null ? ` · +${sel.marge} J DE MARGE` : ""}`}
-      </Text>
+      <div className="flex gap-10 flex-wrap items-end">
+        <div className="flex flex-col gap-1">
+          <Text size="xs" c="secondary">Milestone</Text>
+          <Text size="sm" className={TYPO.mono("bold")}>{sel.n}</Text>
+        </div>
+        <div className="flex flex-col gap-1">
+          <Text size="xs" c="secondary">Mon objectif</Text>
+          <Text size="sm" className={TYPO.mono("bold")}>{sel.objectif} J</Text>
+        </div>
+        <div className="flex flex-col gap-1">
+          <Text size="xs" c="secondary">Référence</Text>
+          <Text size="sm" className={TYPO.mono("bold")}>{sel.ref} J</Text>
+        </div>
+        <div className="flex flex-col gap-1">
+          <Text size="xs" c="secondary">Plafond</Text>
+          <Text size="sm" className={TYPO.mono("bold")}>{sel.max} J</Text>
+        </div>
+        <div className="flex flex-col gap-1">
+          <Text size="xs" c="secondary">Résultat</Text>
+          <Text size="sm" className={TYPO.mono("bold") + " " + v.ton}>{v.texte}</Text>
+        </div>
+        <a href="#/simulateur">
+          <Button variant="outline" color="gray" size="sm">Ajuster mon objectif</Button>
+        </a>
+      </div>
     </div>
   )
 }

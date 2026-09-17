@@ -6,23 +6,31 @@ export type MilestoneEtat = "done" | "done-over-ref" | "current" | "locked"
 
 export interface Milestone {
   n: string
+  /** Durée de référence : le seuil pédagogique, celui que le staff voit. */
   ref: number
+  /** Durée max : le plafond dur de la quest (2× la référence dans le modèle atelier). */
   max: number
+  /** Objectif personnel que la learner se fixe sur la quest — privé. */
+  objectif: number
   reel: number | null
   marge: number | null
   etat: MilestoneEtat
 }
 
 // Frise "Mon parcours" — modèle atelier 16/09 (référence + durée max par quest).
+// ⚠ `objectif` n'existe PAS sur la maquette V3 : la maquette ne porte l'objectif que
+// pour M5 (carte "Mon objectif", 50 jours) dans le rail de droite. Les autres valeurs
+// sont des données de démo ajoutées à la demande du designer pour pouvoir lire, sur la
+// frise, les trois seuils du système : objectif personnel / référence / plafond.
 export const MILESTONES_V3: Milestone[] = [
-  { n: "M1", ref: 14, max: 28, reel: 11, marge: 4, etat: "done" },
-  { n: "M2", ref: 21, max: 42, reel: 19, marge: 4, etat: "done" },
-  { n: "M3", ref: 21, max: 42, reel: 26, marge: 3, etat: "done-over-ref" },
-  { n: "M4", ref: 35, max: 70, reel: 33, marge: 4, etat: "done" },
-  { n: "M5", ref: 63, max: 126, reel: 21, marge: null, etat: "current" },
-  { n: "M6", ref: 56, max: 112, reel: null, marge: null, etat: "locked" },
-  { n: "M7", ref: 77, max: 154, reel: null, marge: null, etat: "locked" },
-  { n: "M8", ref: 42, max: 84, reel: null, marge: null, etat: "locked" },
+  { n: "M1", ref: 14, max: 28, objectif: 12, reel: 11, marge: 4, etat: "done" },
+  { n: "M2", ref: 21, max: 42, objectif: 18, reel: 19, marge: 4, etat: "done" },
+  { n: "M3", ref: 21, max: 42, objectif: 20, reel: 26, marge: 3, etat: "done-over-ref" },
+  { n: "M4", ref: 35, max: 70, objectif: 30, reel: 33, marge: 4, etat: "done" },
+  { n: "M5", ref: 63, max: 126, objectif: 50, reel: 21, marge: null, etat: "current" },
+  { n: "M6", ref: 56, max: 112, objectif: 45, reel: null, marge: null, etat: "locked" },
+  { n: "M7", ref: 77, max: 154, objectif: 60, reel: null, marge: null, etat: "locked" },
+  { n: "M8", ref: 42, max: 84, objectif: 35, reel: null, marge: null, etat: "locked" },
 ]
 
 // Frise "Mon parcours" — ancien modèle (une seule durée par milestone), pour les écrans
