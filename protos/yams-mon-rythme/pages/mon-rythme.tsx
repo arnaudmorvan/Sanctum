@@ -50,7 +50,10 @@ function Segment({ m, jours, fill, selected, onSelect }: { m: Milestone; jours: 
         aria-pressed={selected}
         aria-label={h}
         style={{ flexGrow: jours, flexBasis: 0 }}
-        className={`min-w-0 h-6 rounded-xs transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 ${fill} ${selected ? "ring-2 ring-white/60" : ""}`}
+        // border-r transparent + bg-clip-padding : sépare visuellement deux milestones
+        // voisines de même couleur SANS manger de largeur (box-sizing: border-box), donc
+        // l'axe en jours reste exact — un `gap` aurait décalé les trois pistes entre elles.
+        className={`min-w-0 h-6 rounded-xs bg-clip-padding border-r-2 border-transparent transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 ${fill} ${selected ? "ring-2 ring-white/60" : ""}`}
       />
     </Tooltip>
   )
@@ -94,7 +97,7 @@ function Frise({ selected, onSelect }: { selected: string; onSelect: (n: string)
             <Text size="xs" className="uppercase font-semibold">Mon objectif</Text>
             <Text size="xs" c="muted">ce que je me fixe — privé, toi seule es prévenue</Text>
           </div>
-          <div className="flex gap-px w-full items-center">
+          <div className="flex w-full items-center">
             {MILESTONES_V3.map((m) => (
               <Segment key={m.n} m={m} jours={m.objectif} fill="bg-purple-300/40" selected={m.n === selected} onSelect={onSelect} />
             ))}
@@ -110,7 +113,7 @@ function Frise({ selected, onSelect }: { selected: string; onSelect: (n: string)
             <Text size="xs" className="uppercase font-semibold">Référence pédagogique</Text>
             <Text size="xs" c="muted">le seuil que le staff regarde</Text>
           </div>
-          <div className="flex gap-px w-full items-center">
+          <div className="flex w-full items-center">
             {MILESTONES_V3.map((m) => (
               <Segment key={m.n} m={m} jours={m.ref} fill="bg-white/15" selected={m.n === selected} onSelect={onSelect} />
             ))}
@@ -118,9 +121,9 @@ function Frise({ selected, onSelect }: { selected: string; onSelect: (n: string)
               <Text size="xs" c="secondary" className={TYPO.mono() + " whitespace-nowrap"}>{totalRef} J · ≈ {mois(totalRef)} MOIS</Text>
             </div>
           </div>
-          <div className="flex gap-px w-full">
+          <div className="flex w-full">
             {MILESTONES_V3.map((m) => (
-              <div key={m.n} style={{ flexGrow: m.ref, flexBasis: 0 }} className="min-w-0">
+              <div key={m.n} style={{ flexGrow: m.ref, flexBasis: 0 }} className="min-w-0 pr-1">
                 <Text size="xs" c="muted" className={TYPO.mono() + " truncate block"}>{m.n}</Text>
               </div>
             ))}
@@ -134,7 +137,7 @@ function Frise({ selected, onSelect }: { selected: string; onSelect: (n: string)
             <Text size="xs" className="uppercase font-semibold">Réel</Text>
             <Text size="xs" c="muted">ce qui s’est passé</Text>
           </div>
-          <div className="flex gap-px w-full items-center">
+          <div className="flex w-full items-center">
             {faits.map((m) => (
               <Segment
                 key={m.n}
@@ -148,6 +151,14 @@ function Frise({ selected, onSelect }: { selected: string; onSelect: (n: string)
             <div style={{ flexGrow: totalMax - jourCourant, flexBasis: 0 }} className="min-w-0 pl-2">
               <Text size="xs" c="secondary" className={TYPO.mono() + " whitespace-nowrap"}>AUJOURD’HUI · JOUR {jourCourant}</Text>
             </div>
+          </div>
+          <div className="flex w-full">
+            {faits.map((m) => (
+              <div key={m.n} style={{ flexGrow: m.reel ?? 0, flexBasis: 0 }} className="min-w-0 pr-1">
+                <Text size="xs" c="muted" className={TYPO.mono() + " truncate block"}>{m.n}</Text>
+              </div>
+            ))}
+            <div style={{ flexGrow: totalMax - jourCourant, flexBasis: 0 }} />
           </div>
         </div>
       </div>
