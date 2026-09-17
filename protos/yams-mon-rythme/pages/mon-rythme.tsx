@@ -55,7 +55,7 @@ function Frise() {
 }
 
 function AbsenceModal({ open, onClose, onDeclarer }: { open: boolean; onClose: () => void; onDeclarer: () => void }) {
-  const [motif, setMotif] = useState<string>("arret-maladie")
+  const [motif, setMotif] = useState<"vacances" | "arret-maladie">("arret-maladie")
   return (
     <Modal open={open} onOpenChange={(o) => !o && onClose()} title="Déclarer une absence" size="sm">
       <div className="flex flex-col gap-5 w-full">
@@ -63,7 +63,7 @@ function AbsenceModal({ open, onClose, onDeclarer }: { open: boolean; onClose: (
           label="Motif"
           description="Ce que ça change dépend du motif choisi."
           value={motif}
-          onChange={(v) => setMotif(v as string)}
+          onChange={(v) => setMotif(v as "vacances" | "arret-maladie")}
           data={[
             { value: "vacances", label: "Vacances", description: "Le temps continue de courir sur ton budget. Tu vois l’impact avant de valider." },
             { value: "arret-maladie", label: "Arrêt maladie", description: "Le plafond est décalé d’autant, après validation sur justificatif." },
