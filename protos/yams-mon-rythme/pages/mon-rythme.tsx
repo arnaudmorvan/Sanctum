@@ -13,29 +13,42 @@ import { Tooltip } from "@42/ui-react/tooltip"
 import { useState } from "react"
 import { TYPO } from "../../../src/typo"
 import { MILESTONES_V3, PROJETS_M5, PRESENCE_4_SEM } from "../data/fixtures"
+import type { Milestone } from "../data/fixtures"
 
 // "frise-parcours" — pas de composant DS pour une frise référence/max par quest
 // (repéré ⚠ candidat composant DS sur la maquette elle-même) : composée à la main,
-// signalée comme manque dans le rapport de génération. Rendue interactive (clic +
-// survol via Tooltip DS) et redessinée pour distinguer, sur CHAQUE milestone : la
-// durée réelle, le repère de référence et l'avance déjà prise — c'est le cœur du
-// système YAMS, à la demande du designer.
+// signalée comme manque dans le rapport de génération.
+//
+// V2 de la frise, sur retour du designer ("c'est le cœur du système"). L'axe est en
+// JOURS : chaque milestone occupe une largeur proportionnelle à sa durée, donc la frise
+// se lit comme une vraie ligne de temps et non comme huit jauges de largeur égale (le
+// défaut de la V1). Dans chaque colonne : le remplissage = durée RÉELLE, le repère blanc
+// = durée de RÉFÉRENCE, le vert clair entre les deux = l'AVANCE prise, l'orange au-delà
+// du repère = le dépassement. Clic + survol (Tooltip DS) pour le détail chiffré.
 function Frise({ selected, onSelect }: { selected: string; onSelect: (n: string) => void }) {
   const sel = MILESTONES_V3.find((m) => m.n === selected) ?? MILESTONES_V3[4]
+  const largeur = (m: Milestone) => Math.max(m.ref, m.reel ?? 0)
+  const totalRef = MILESTONES_V3.reduce((t, m) => t + m.ref, 0)
+  const totalMax = MILESTONES_V3.reduce((t, m) => t + m.max, 0)
+  const jourCourant = MILESTONES_V3.reduce((t, m) => t + (m.reel ?? 0), 0)
+  const avanceTotale = MILESTONES_V3.reduce((t, m) => t + (m.marge ?? 0), 0)
+
   return (
-    <div className="flex flex-col gap-3 w-full">
-      <div className="flex gap-2 w-full">
+    <div className="flex flex-col gap-4 w-full">
+      <div className="flex gap-1 w-full">
         {MILESTONES_V3.map((m) => {
-          const refPct = (m.ref / m.max) * 100
-          const reelPct = m.reel != null ? (m.reel / m.max) * 100 : 0
+          const jours = largeur(m)
+          const refPct = (m.ref / jours) * 100
+          const reelPct = m.reel != null ? (m.reel / jours) * 100 : 0
           const overRef = m.etat === "done-over-ref"
+          const avance = m.etat === "done" && reelPct < refPct
           const isSelected = m.n === selected
           const hint =
             m.etat === "locked"
-              ? `${m.n} · à venir · référence ${m.ref} j · durée max ${m.max} j`
+              ? `${m.n} · à venir · ${m.ref} j de référence · ${m.max} j de durée max`
               : m.etat === "current"
               ? `${m.n} · en cours · jour ${m.reel} sur ${m.ref} de référence · ${m.max} j de durée max`
-              : `${m.n} · terminée · ${m.reel} j réels pour ${m.ref} j de référence${m.marge != null ? ` · +${m.marge} j d’avance` : ""}`
+              : `${m.n} · terminée en ${m.reel} j pour ${m.ref} j de référence${m.marge != null ? ` · +${m.marge} j de marge` : ""}`
           return (
             <Tooltip key={m.n} label={hint} withArrow asChild>
               <button
@@ -43,9 +56,10 @@ function Frise({ selected, onSelect }: { selected: string; onSelect: (n: string)
                 onClick={() => onSelect(m.n)}
                 aria-pressed={isSelected}
                 aria-label={hint}
-                className={`flex-1 flex flex-col items-start gap-2 text-left rounded-xs transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 ${isSelected ? "ring-2 ring-white/50" : ""}`}
+                style={{ flexGrow: jours, flexBasis: 0 }}
+                className={`min-w-0 flex flex-col items-start gap-2 text-left rounded-xs transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 ${isSelected ? "ring-2 ring-white/50" : ""}`}
               >
-                <div className="relative w-full h-3 rounded-xs bg-white/10">
+                <div className="relative w-full h-6 rounded-xs bg-white/10 border border-white/10">
                   {m.etat !== "locked" && (
                     <div
                       className={`absolute inset-y-0 left-0 rounded-xs ${m.etat === "current" ? "bg-gradient-to-r from-pink-400 to-purple-300" : "bg-green-500"}`}
@@ -53,36 +67,45 @@ function Frise({ selected, onSelect }: { selected: string; onSelect: (n: string)
                     />
                   )}
                   {overRef && (
-                    <div
-                      className="absolute inset-y-0 rounded-xs bg-orange-500"
-                      style={{ left: `${refPct}%`, width: `${Math.max(reelPct - refPct, 0)}%` }}
-                    />
+                    <div className="absolute inset-y-0 right-0 rounded-xs bg-orange-500" style={{ left: `${refPct}%` }} />
                   )}
-                  {m.etat === "done" && reelPct < refPct && (
-                    <div
-                      className="absolute inset-y-0 rounded-xs bg-green-500/20"
-                      style={{ left: `${reelPct}%`, width: `${refPct - reelPct}%` }}
-                    />
+                  {avance && (
+                    <div className="absolute inset-y-0 right-0 rounded-xs bg-green-500/20" style={{ left: `${reelPct}%` }} />
                   )}
-                  <div className="absolute -top-1 -bottom-1 w-0.5 bg-white/70" style={{ left: `${refPct}%` }} />
+                  <div className="absolute -top-1 -bottom-1 w-0.5 -ml-px bg-white/70" style={{ left: `${refPct}%` }} />
                 </div>
-                <Text size="xs" c="secondary" className={TYPO.mono()}>{m.n}</Text>
+                <Text size="xs" c="secondary" className={TYPO.mono() + " truncate w-full"}>{m.n}</Text>
               </button>
             </Tooltip>
           )
         })}
       </div>
 
+      <div className="flex gap-10 flex-wrap">
+        <div className="flex flex-col gap-1">
+          <Text size="xs" c="secondary">Où j’en suis</Text>
+          <Text size="sm" className={TYPO.mono("bold")}>JOUR {jourCourant} / {totalRef}</Text>
+        </div>
+        <div className="flex flex-col gap-1">
+          <Text size="xs" c="secondary">Avance cumulée</Text>
+          <Text size="sm" className={TYPO.mono("bold") + " text-green-500"}>+{avanceTotale} J DE MARGE</Text>
+        </div>
+        <div className="flex flex-col gap-1">
+          <Text size="xs" c="secondary">Plafond du parcours</Text>
+          <Text size="sm" className={TYPO.mono("bold")}>{totalMax} J</Text>
+        </div>
+      </div>
+
       <div className="flex gap-6 items-center flex-wrap">
-        <span className="flex items-center gap-2"><span className="size-2.5 rounded-full bg-green-500" /><Text size="xs" c="secondary">terminée dans la référence</Text></span>
-        <span className="flex items-center gap-2"><span className="size-2.5 rounded-xs bg-green-500/20 border border-green-500" /><Text size="xs" c="secondary">avance prise (marge gagnée)</Text></span>
-        <span className="flex items-center gap-2"><span className="size-2.5 rounded-full bg-orange-500" /><Text size="xs" c="secondary">terminée au-delà de la référence</Text></span>
-        <span className="flex items-center gap-2"><span className="size-2.5 rounded-full bg-gradient-to-r from-pink-400 to-purple-300" /><Text size="xs" c="secondary">en cours</Text></span>
+        <span className="flex items-center gap-2"><span className="size-2.5 rounded-full bg-green-500" /><Text size="xs" c="secondary">durée réelle</Text></span>
+        <span className="flex items-center gap-2"><span className="size-2.5 rounded-xs bg-green-500/20 border border-green-500" /><Text size="xs" c="secondary">avance prise sur la référence</Text></span>
+        <span className="flex items-center gap-2"><span className="size-2.5 rounded-full bg-orange-500" /><Text size="xs" c="secondary">dépassement de la référence</Text></span>
+        <span className="flex items-center gap-2"><span className="size-2.5 rounded-full bg-gradient-to-r from-pink-400 to-purple-300" /><Text size="xs" c="secondary">milestone en cours</Text></span>
         <span className="flex items-center gap-2"><span className="size-2.5 rounded-full bg-white/20" /><Text size="xs" c="secondary">à venir</Text></span>
         <span className="flex items-center gap-2"><span className="w-0.5 h-2.5 bg-white/70" /><Text size="xs" c="secondary">repère de référence</Text></span>
       </div>
       <Text size="xs" c="muted">
-        Chaque barre est à l’échelle de sa propre durée max · le repère blanc marque la durée de référence · le vert clair au-delà du remplissage montre l’avance déjà prise. Clique une milestone (ou survole-la) pour voir son détail.
+        La largeur de chaque colonne, c’est sa durée en jours : la frise se lit comme une ligne de temps. Clique une milestone (ou survole-la) pour son détail.
       </Text>
 
       <Text size="sm" className={TYPO.mono("semibold") + " text-pink-400"}>
@@ -90,7 +113,7 @@ function Frise({ selected, onSelect }: { selected: string; onSelect: (n: string)
           ? `${sel.n} À VENIR — ${sel.ref} J DE RÉFÉRENCE · ${sel.max} J DE DURÉE MAX`
           : sel.etat === "current"
           ? `${sel.n} EN COURS — JOUR ${sel.reel} SUR ${sel.ref} DE RÉFÉRENCE · ${sel.max} J DE DURÉE MAX`
-          : `${sel.n} TERMINÉE — ${sel.reel} J RÉELS SUR ${sel.ref} DE RÉFÉRENCE${sel.marge != null ? ` · +${sel.marge} J D’AVANCE` : ""}`}
+          : `${sel.n} TERMINÉE — ${sel.reel} J RÉELS POUR ${sel.ref} J DE RÉFÉRENCE${sel.marge != null ? ` · +${sel.marge} J DE MARGE` : ""}`}
       </Text>
     </div>
   )
