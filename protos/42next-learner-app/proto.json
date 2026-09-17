@@ -1,0 +1,15 @@
+{
+  "slug": "42next-learner-app",
+  "title": "42next — Learner app (artifact port)",
+  "author": "Arnaud",
+  "summary": "The September artifact of the 42next LMS rebuilt with the real kit, one section per commit — starting with the home that leads on what is owed.",
+  "created_at": "2026-09-17",
+  "updated_at": "2026-09-17",
+  "published_at": "2026-09-17T22:08:47Z",
+  "files": [
+    "data/home.ts",
+    "generation.json",
+    "pages/home.tsx",
+    "views.tsx"
+  ]
+}
