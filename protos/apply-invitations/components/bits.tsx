@@ -85,7 +85,17 @@ export const Decision = () => (
  *  The source modal coloured its icons blue, red, green and grey — four hues on one
  *  dialog, which review:color rejects ("one colour predominates"). Here the glyphs are
  *  uniform and neutral: they identify the step, they do not rank it. */
-export const StepRail = ({ steps, dense = false }: { steps: Step[]; dense?: boolean }) => (
+export const StepRail = ({
+  steps,
+  dense = false,
+  showDetail = !dense,
+}: {
+  steps: Step[]
+  dense?: boolean
+  /** The prose under each step. Direction A folds it: the rail keeps stating the SHAPE of
+   *  the path (numbered, named steps), and the detail opens for the whole path at once. */
+  showDetail?: boolean
+}) => (
   <Timeline size={dense ? "sm" : "md"} lineVariant="solid">
     {steps.map((step, index) => {
       const Glyph = step.icon
@@ -104,7 +114,7 @@ export const StepRail = ({ steps, dense = false }: { steps: Step[]; dense?: bool
                 ) : null}
               </span>
             </Timeline.Title>
-            {dense ? null : <Text size="sm" c="muted">{step.detail}</Text>}
+            {showDetail ? <Text size="sm" c="muted">{step.detail}</Text> : null}
           </Timeline.Content>
         </Timeline.Item>
       )
