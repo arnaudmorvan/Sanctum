@@ -34,7 +34,7 @@ export const JourneyCard = () => (
         </Text>
         <Title order={2} size='xl' className={TYPO.title()}>Three forms, then the Piscine</Title>
         <Text size='sm' c='secondary' className='max-w-[68ch]'>
-          About six minutes. Once they are in, your seat at {APPLICATION.campus} for the Piscine
+          We need some quick informations to finalize your candidacy. Once they are in, your seat at {APPLICATION.campus} for the Piscine
           starting <span className={TYPO.mono('semibold')}>{APPLICATION.piscineStart}</span> is held,
           and we check your ID at the Meeting on <span className={TYPO.mono('semibold')}>{APPLICATION.meeting}</span>.
         </Text>
