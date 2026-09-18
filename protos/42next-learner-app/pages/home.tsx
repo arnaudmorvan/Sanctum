@@ -104,11 +104,22 @@ const SectionHead = ({
 
 /** The artifact's `hero-status`: three readings, each with its own page. Only the
  *  milestone carries a bar — a number there would compete with the level. */
-const HERO_STATS: { k: string; v: string; bar?: number }[] = [
-  { k: "Level", v: HERO.level },
-  { k: "Milestone", v: HERO.milestone, bar: HERO.milestonePct },
-  { k: "YAMS status", v: HERO.yams },
+const HERO_STATS: { k: string; v: string; bar?: number; href: string }[] = [
+  { k: "Level", v: HERO.level, href: "#/me/xp" },
+  { k: "Milestone", v: HERO.milestone, bar: HERO.milestonePct, href: "#/progression/milestones" },
+  { k: "YAMS status", v: HERO.yams, href: "#/progression/yams" },
 ]
+
+/** Where each suggestion goes. The artifact called a function per row; here the target is
+ *  a hash route, so a row that has no screen yet would be a dead link — every kind below
+ *  points at a screen this flow actually carries. */
+const SUGGESTION_HREF: Record<string, string> = {
+  retry: "#/learn/program",
+  feedback: "#/feedback/peer",
+  module: "#/learn/program",
+  project: "#/learn/program",
+  schedule: "#/review/availability",
+}
 
 /** ⚠️ REASONED glyph choices, not a survey: the artifact carried its own 18px line set and
  *  no Figma frame backs this flow. `review:icons` asks that such a choice be declared as
@@ -168,7 +179,8 @@ export const Home = () => (
 
         <div className="flex flex-wrap items-stretch gap-4">
           {HERO_STATS.map((s) => (
-            <Card key={s.k} variant="default" padding="lg" className="min-w-40 flex-1">
+            <a key={s.k} href={s.href} className="min-w-40 flex-1">
+            <Card variant="default" padding="lg" className="h-full">
               <Card.Content>
                 <div className="flex flex-col gap-2">
                   <Cap>{s.k}</Cap>
@@ -182,6 +194,7 @@ export const Home = () => (
                 </div>
               </Card.Content>
             </Card>
+            </a>
           ))}
         </div>
       </div>
@@ -248,8 +261,8 @@ export const Home = () => (
           icon={CalendarClock}
           title="Coming up"
           right={
-            <Button variant="outline" size="sm">
-              See full agenda
+            <Button variant="outline" size="sm" asChild>
+              <a href="#/agenda/calendar">See full agenda</a>
             </Button>
           }
         />
@@ -368,8 +381,10 @@ export const Home = () => (
                       </Text>
                     </div>
                   ) : null}
-                  <Button variant="outline" size="sm" className="mt-auto self-end">
-                    Go to project
+                  {/* the project page has not landed yet, so the row opens the module
+                      list rather than a route that does not exist */}
+                  <Button variant="outline" size="sm" className="mt-auto self-end" asChild>
+                    <a href="#/learn/program">Open in My program</a>
                   </Button>
                 </div>
               </Card.Content>
@@ -428,8 +443,8 @@ export const Home = () => (
                     <Text size="sm" c="muted" className={TYPO.mono("semibold")}>
                       {t.days} d
                     </Text>
-                    <Button variant="outline" size="xs">
-                      {t.action}
+                    <Button variant="outline" size="xs" asChild>
+                      <a href={t.peer ? "#/feedback/peer" : "#/feedback/vote"}>{t.action}</a>
                     </Button>
                   </div>
                 </div>
@@ -458,13 +473,10 @@ export const Home = () => (
                       <Text size="xs" c="secondary">
                         {s.sub}
                       </Text>
-                      <Button
-                        variant="subtle"
-                        size="xs"
-                        className="self-start"
-                        endSlot={<ArrowRight size={14} />}
-                      >
-                        {s.action}
+                      <Button variant="subtle" size="xs" className="self-start" asChild>
+                        <a href={SUGGESTION_HREF[s.kind] ?? "#/learn/program"}>
+                          {s.action} <ArrowRight size={14} />
+                        </a>
                       </Button>
                     </div>
                   </div>
@@ -481,12 +493,16 @@ export const Home = () => (
           <Card.Content>
             <div className="flex flex-wrap gap-4">
               {FRIENDS.map((f) => (
-                <div key={f} className="flex w-16 flex-col items-center gap-2">
+                <a
+                  key={f}
+                  href={`#/profile/${f}`}
+                  className="flex w-16 flex-col items-center gap-2"
+                >
                   <Avatar name={f} color="initials" size="lg" />
                   <Text size="xs" c="secondary" className={TYPO.mono("medium")}>
                     {f}
                   </Text>
-                </div>
+                </a>
               ))}
             </div>
           </Card.Content>
