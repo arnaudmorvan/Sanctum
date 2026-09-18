@@ -12,6 +12,23 @@ import type { ProtoNavItem, ProtoView } from "../../src/proto-types"
 import { Home } from "./pages/home"
 import { Holygraph, Module, Program } from "./pages/learn"
 import { AgendaCalendar, AgendaRegistrations, Exams } from "./pages/agenda"
+import {
+  Announcements,
+  Changelog,
+  Clubs,
+  ClusterMap,
+  Coalition,
+  Friends,
+} from "./pages/community"
+import {
+  Achievements,
+  Activities,
+  Attendance,
+  Paperwork,
+  Profile,
+  Skills,
+  Xp,
+} from "./pages/me"
 import { Milestones, Simulator, Yams } from "./pages/progression"
 import {
   ReviewAvailability,
@@ -82,20 +99,30 @@ export const NAV: ProtoNavItem[] = [
   },
   {
     label: "Community",
+    match: "community/",
     icon: <Users size={16} />,
     children: [
-      { label: "Coalition" },
-      { label: "Friends" },
-      { label: "Clubs" },
-      { label: "Announcements" },
-      { label: "Changelog" },
-      { label: "Cluster map" },
+      { label: "Coalition", path: "community/coalition" },
+      { label: "Friends", path: "community/friends" },
+      { label: "Clubs", path: "community/clubs" },
+      { label: "Announcements", path: "community/announcements" },
+      { label: "Changelog", path: "community/changelog" },
+      { label: "Cluster map", path: "community/cluster" },
     ],
   },
   {
     label: "My profile",
+    match: "me/",
     icon: <UserRound size={16} />,
-    children: [{ label: "Profile" }, { label: "Attendance" }, { label: "Paperwork" }],
+    children: [
+      { label: "Profile", path: "me/profile" },
+      { label: "Skills", path: "me/skills" },
+      { label: "Level & XP", path: "me/xp" },
+      { label: "Achievements", path: "me/achievements" },
+      { label: "My recent activities", path: "me/activities" },
+      { label: "Attendance", path: "me/attendance" },
+      { label: "Paperwork", path: "me/paperwork" },
+    ],
   },
 ]
 
@@ -132,4 +159,27 @@ export const VIEWS: ProtoView[] = [
     label: "Registrations",
     render: () => <AgendaRegistrations />,
   },
+
+  { path: "community/coalition", label: "Coalition", render: () => <Coalition /> },
+  { path: "community/friends", label: "Friends", render: () => <Friends /> },
+  { path: "community/clubs", label: "Clubs", render: () => <Clubs /> },
+  { path: "community/announcements", label: "Announcements", render: () => <Announcements /> },
+  { path: "community/changelog", label: "Changelog", render: () => <Changelog /> },
+  { path: "community/cluster", label: "Cluster map", render: () => <ClusterMap /> },
+
+  /* The artifact rendered the learner's own profile and any peer's from ONE function,
+     which is why these two routes share a component. */
+  { path: "me/profile", label: "My profile", render: () => <Profile login="erizzi" /> },
+  {
+    path: "profile/:login",
+    label: "Peer profile",
+    href: "#/profile/dvargas",
+    render: ({ login }) => <Profile login={login} />,
+  },
+  { path: "me/skills", label: "Skills", render: () => <Skills /> },
+  { path: "me/xp", label: "Level & XP", render: () => <Xp /> },
+  { path: "me/achievements", label: "Achievements", render: () => <Achievements /> },
+  { path: "me/activities", label: "My recent activities", render: () => <Activities /> },
+  { path: "me/attendance", label: "Attendance", render: () => <Attendance /> },
+  { path: "me/paperwork", label: "Paperwork", render: () => <Paperwork /> },
 ]
