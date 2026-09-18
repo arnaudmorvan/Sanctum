@@ -105,7 +105,7 @@ export const Identity = () => {
                   size='sm'
                   data={COUNTRY_CODES}
                   value={draft.phoneCode}
-                  onChange={value => set({ phoneCode: value })}
+                  onChange={value => set({ phoneCode: value ?? '+49' })}
                 />
                 <Input
                   size='sm'
