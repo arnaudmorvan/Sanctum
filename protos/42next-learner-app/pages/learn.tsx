@@ -66,7 +66,9 @@ const LockButton = ({ onClick }: { onClick: () => void }) => (
  *  point), `light` on the other live ones, `default` otherwise, with the label doing the
  *  talking. */
 export const Program = () => {
-  const [view, setView] = useState("Cards")
+  /** `SegmentGroup` narrows its value to the literals of `data`, so the state has to be
+   *  typed with them — a plain `string` does not compile. */
+  const [view, setView] = useState<"Cards" | "Map">("Cards")
   const [req, setReq] = useState<ModuleRow | null>(null)
   const [skills, setSkills] = useState<ModuleRow | null>(null)
 
@@ -168,7 +170,7 @@ export const Program = () => {
               size="sm"
               data={["Cards", "Map"]}
               value={view}
-              onChange={(v) => setView(String(v))}
+              onChange={(v) => setView(v as "Cards" | "Map")}
             />
           </>
         }
