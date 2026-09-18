@@ -10,6 +10,7 @@ import {
 } from "lucide-react"
 import type { ProtoNavItem, ProtoView } from "../../src/proto-types"
 import { Home } from "./pages/home"
+import { Holygraph, Module, Program } from "./pages/learn"
 import { Milestones, Simulator, Yams } from "./pages/progression"
 
 /** 42next — the learner app, ported from the artifact of 2026-09-17.
@@ -44,8 +45,12 @@ export const NAV: ProtoNavItem[] = [
   },
   {
     label: "Learn",
+    match: "learn/",
     icon: <GraduationCap size={16} />,
-    children: [{ label: "My program" }, { label: "Holygraph" }],
+    children: [
+      { label: "My program", path: "learn/program", match: "learn/module" },
+      { label: "Holygraph", path: "learn/holygraph" },
+    ],
   },
   {
     label: "Review",
@@ -88,4 +93,13 @@ export const VIEWS: ProtoView[] = [
   { path: "progression/yams", label: "YAMS dashboard", render: () => <Yams /> },
   { path: "progression/milestones", label: "Milestones", render: () => <Milestones /> },
   { path: "progression/simulator", label: "YAMS simulator", render: () => <Simulator /> },
+
+  { path: "learn/program", label: "My program", render: () => <Program /> },
+  { path: "learn/holygraph", label: "Holygraph", render: () => <Holygraph /> },
+  {
+    path: "learn/module/:slug",
+    label: "Module",
+    href: "#/learn/module/systems-and-networks-administration",
+    render: ({ slug }) => <Module slug={slug} />,
+  },
 ]
