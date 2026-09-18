@@ -11,7 +11,14 @@ import {
 import type { ProtoNavItem, ProtoView } from "../../src/proto-types"
 import { Home } from "./pages/home"
 import { Holygraph, Module, Program } from "./pages/learn"
+import { AgendaCalendar, AgendaRegistrations, Exams } from "./pages/agenda"
 import { Milestones, Simulator, Yams } from "./pages/progression"
+import {
+  ReviewAvailability,
+  ReviewGiven,
+  ReviewOverview,
+  ReviewReceived,
+} from "./pages/review"
 
 /** 42next — the learner app, ported from the artifact of 2026-09-17.
  *
@@ -54,19 +61,24 @@ export const NAV: ProtoNavItem[] = [
   },
   {
     label: "Review",
+    match: "review/",
     icon: <ClipboardCheck size={16} />,
     children: [
-      { label: "Overview" },
-      { label: "Received" },
-      { label: "Given" },
-      { label: "My availability" },
+      { label: "Overview", path: "review/overview" },
+      { label: "Received", path: "review/received" },
+      { label: "Given", path: "review/given" },
+      { label: "My availability", path: "review/availability" },
     ],
   },
-  { label: "Exams", icon: <FileCheck size={16} /> },
+  { label: "Exams", path: "exams", icon: <FileCheck size={16} /> },
   {
     label: "Agenda",
+    match: "agenda/",
     icon: <Calendar size={16} />,
-    children: [{ label: "Calendar" }, { label: "Registrations" }],
+    children: [
+      { label: "Calendar", path: "agenda/calendar" },
+      { label: "Registrations", path: "agenda/registrations" },
+    ],
   },
   {
     label: "Community",
@@ -101,5 +113,23 @@ export const VIEWS: ProtoView[] = [
     label: "Module",
     href: "#/learn/module/systems-and-networks-administration",
     render: ({ slug }) => <Module slug={slug} />,
+  },
+
+  { path: "review/overview", label: "Review overview", render: () => <ReviewOverview /> },
+  { path: "review/received", label: "Reviews received", render: () => <ReviewReceived /> },
+  { path: "review/given", label: "Reviews given", render: () => <ReviewGiven /> },
+  {
+    path: "review/availability",
+    label: "My availability",
+    render: () => <ReviewAvailability />,
+  },
+
+  { path: "exams", label: "Exams", render: () => <Exams /> },
+
+  { path: "agenda/calendar", label: "Calendar", render: () => <AgendaCalendar /> },
+  {
+    path: "agenda/registrations",
+    label: "Registrations",
+    render: () => <AgendaRegistrations />,
   },
 ]
