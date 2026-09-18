@@ -12,6 +12,7 @@ import type { ProtoNavItem, ProtoView } from "../../src/proto-types"
 import { Home } from "./pages/home"
 import { Holygraph, Module, Program } from "./pages/learn"
 import { AgendaCalendar, AgendaRegistrations, Exams } from "./pages/agenda"
+import { PeerFeedback, SocialVote } from "./pages/feedback"
 import {
   Announcements,
   Changelog,
@@ -182,4 +183,13 @@ export const VIEWS: ProtoView[] = [
   { path: "me/activities", label: "My recent activities", render: () => <Activities /> },
   { path: "me/attendance", label: "Attendance", render: () => <Attendance /> },
   { path: "me/paperwork", label: "Paperwork", render: () => <Paperwork /> },
+
+  /* The two forms the home's Action required panel opens. They are reached from a row,
+     not from the product navigation, which is why they carry no NAV entry. */
+  {
+    path: "feedback/peer",
+    label: "Post-review feedback",
+    render: () => <PeerFeedback />,
+  },
+  { path: "feedback/vote", label: "Who helped you", render: () => <SocialVote /> },
 ]
