@@ -10,6 +10,7 @@ import {
 } from "lucide-react"
 import type { ProtoNavItem, ProtoView } from "../../src/proto-types"
 import { Home } from "./pages/home"
+import { Milestones, Simulator, Yams } from "./pages/progression"
 
 /** 42next — the learner app, ported from the artifact of 2026-09-17.
  *
@@ -33,11 +34,12 @@ export const NAV: ProtoNavItem[] = [
   { label: "Home", path: "dashboard", icon: <House size={16} /> },
   {
     label: "My progression",
+    match: "progression/",
     icon: <LayoutDashboard size={16} />,
     children: [
-      { label: "YAMS dashboard" },
-      { label: "Milestones" },
-      { label: "YAMS simulator" },
+      { label: "YAMS dashboard", path: "progression/yams" },
+      { label: "Milestones", path: "progression/milestones" },
+      { label: "YAMS simulator", path: "progression/simulator" },
     ],
   },
   {
@@ -82,4 +84,8 @@ export const NAV: ProtoNavItem[] = [
 
 export const VIEWS: ProtoView[] = [
   { path: "dashboard", label: "Home", render: () => <Home /> },
+
+  { path: "progression/yams", label: "YAMS dashboard", render: () => <Yams /> },
+  { path: "progression/milestones", label: "Milestones", render: () => <Milestones /> },
+  { path: "progression/simulator", label: "YAMS simulator", render: () => <Simulator /> },
 ]
