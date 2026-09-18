@@ -1,0 +1,19 @@
+{
+  "slug": "apply-application-forms",
+  "title": "Apply — Application forms",
+  "author": "Nadèje",
+  "summary": "The candidate identity/address/context forms of an active application, reworked on Kit V3: the path is stated, the three sub-steps are navigable, and the screen says which door the forms open.",
+  "created_at": "2026-09-18",
+  "updated_at": "2026-09-18",
+  "published_at": "2026-09-18T15:11:51Z",
+  "files": [
+    "components/bits.tsx",
+    "data/application.ts",
+    "generation.json",
+    "pages/address.tsx",
+    "pages/context.tsx",
+    "pages/identity.tsx",
+    "pages/submitted.tsx",
+    "views.tsx"
+  ]
+}
